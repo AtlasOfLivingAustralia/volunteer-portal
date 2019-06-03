@@ -7,7 +7,6 @@ branches:
   only:
   - master
   - develop
-  - grails2
 services:
   - postgresql
 addons:

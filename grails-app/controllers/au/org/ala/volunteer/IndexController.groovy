@@ -2,17 +2,13 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import grails.gorm.DetachedCriteria
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
-    def userService
     def projectService
-    def leaderBoardService
-    def multimediaService
-    def institutionService
+    def volunteerStatsService
 
     def index() {
         log.debug("Index Controller, Index action")
@@ -30,9 +26,10 @@ class IndexController {
 //        }
 
         def featuredProjects = projectService.getFeaturedProjectList()
-
-        def potdSummary = projectService.makeSummaryListFromProjectList([frontPage.projectOfTheDay], null, null, null, null, null, null, null, null).projectRenderList?.get(0)
-
+        def potdSummary = null
+        if (frontPage?.projectOfTheDay) {
+            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
+        }
         render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
@@ -40,85 +37,17 @@ class IndexController {
         [:]
     }
 
-    def statsFragment() {
-        // Stats
-        def totalTasks = Task.count()
-        def completedTasks = Task.countByFullyTranscribedByIsNotNull()
-        def transcriberCount = User.countByTranscribedCountGreaterThan(0)
-        ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount]
-    }
-
     def stats(long institutionId, long projectId, String tagName) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
-        Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
-        Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
-        ProjectType pt = tagName ? ProjectType.findByName(tagName) : null
-
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, tagName: $tagName")
-
-        def sw = Stopwatch.createStarted()
-
-        def totalTasks
-        def completedTasks
-        def transcriberCount
-        if (disableStats) {
-            totalTasks = 0
-            completedTasks = 0
-            transcriberCount = 0
-        } else if (institution) {
-            totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
-            transcriberCount = institutionService.getTranscriberCount(institution)
-        } else if (tagName) {
-            totalTasks = projectService.countTasksForTag(pt)
-            completedTasks = projectService.countTranscribedTasksForTag(pt)
-            transcriberCount = projectService.getTranscriberCountForTag(pt)
-        } else { // TODO Project stats, not needed for v2.3
-            totalTasks = Task.count()
-            completedTasks = Task.countByFullyTranscribedByIsNotNull()
-            transcriberCount = User.countByTranscribedCountGreaterThan(0)
-        }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate volunteer-stats section")
-
-        sw.start()
-
-        def daily
-        def weekly
-        def monthly
-        def alltime
-
-        if (disableHonourBoard) {
-            daily = weekly = monthly = alltime = LeaderBoardService.EMPTY_LEADERBOARD_WINNER
-        } else { // TODO Project honour board, not needed for v2.3
-            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, pt)
-            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, pt)
-            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, pt)
-            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, pt)
-        }
-
-        // Encode the email addresses for gravatar before sending to the client to prevent
-        // the client having access to the user's email address info
-        [daily, weekly, monthly, alltime].each { it.email = it.email?.toLowerCase()?.encodeAsMD5() }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
-
-        sw.start()
-
-        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, pt, maxContributors)
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
-
-        def result = ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount,
-                      daily: daily, weekly: weekly, monthly: monthly, alltime: alltime, contributors: contributors]
-
+        def result = volunteerStatsService.generateStats(institutionId, projectId, tagName, maxContributors, disableStats, disableHonourBoard)
         render result as JSON
     }
 
-    private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
-        def latestTranscribers = Task.withCriteria {
+ /*   private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
+
+        def latestTranscribers = LatestTranscribers.withCriteria {
             if (institution) {
                 project {
                     eq('institution', institution)
@@ -135,12 +64,6 @@ class IndexController {
                 project {
                     ne('inactive', true)
                 }
-            }
-            isNotNull('fullyTranscribedBy')
-            projections {
-                groupProperty('project')
-                groupProperty('fullyTranscribedBy')
-                max('dateFullyTranscribed', 'maxDate')
             }
             order('maxDate', 'desc')
             maxResults(maxContributors)
@@ -214,23 +137,33 @@ class IndexController {
         }
 
         def transcribers = latestTranscribers.collect {
-            def proj = it[0]
-            def userId = it[1]
+            def proj = it.project
+            def userId = it.fullyTranscribedBy
             def details = userService.detailsForUserId(userId)
-            def c = Task.createCriteria()
-            def tasks = c.list(max: 5) {
-                eq('project', proj)
-                eq('fullyTranscribedBy', userId)
-                order('dateFullyTranscribed', 'desc')
-            }
-            def thumbnails = tasks.collect { Task t ->
-                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(t.multimedia?.first())]
+            def tasks = LatestTranscribersTask.withCriteria() {
+                            eq('project', proj)
+                            eq('fullyTranscribedBy', userId)
+                            order('dateFullyTranscribed', 'desc')
+                        }
+
+            def thumbnailLists = (tasks && (tasks.size() > 0)) ? tasks.subList(0, (tasks.size() < 5)? tasks.size(): 5): []
+
+            def thumbnails = thumbnailLists.collect { LatestTranscribersTask t ->
+                def taskMultimedia = t.multimedia[0] //Latest.findByTaskId(t.taskId)
+                Multimedia multimedia = new Multimedia(
+                                        task: new Task(id: t.id, project: t.project),
+                                        id: taskMultimedia.id,
+                                        filePath: taskMultimedia.filePath,
+                                        filePathToThumbnail: taskMultimedia.filePathToThumbnail,
+                                        mimeType: taskMultimedia.mimeType)
+
+                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(multimedia)]
             }
             [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
-             transcribedThumbs: thumbnails, transcribedItems: tasks.totalCount, timestamp: it[2].time / 1000]
+             transcribedThumbs: thumbnails, transcribedItems: tasks.size(), timestamp: it.maxDate.time / 1000]
         }
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)
         return contributors
-    }
+    } */
 }

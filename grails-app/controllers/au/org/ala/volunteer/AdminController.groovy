@@ -281,7 +281,7 @@ class AdminController {
 
             def dates = taskService.getProjectDates()
 
-            def projectSummaries = projectService.getProjectSummaryList(params)
+            def projectSummaries = projectService.getProjectSummaryList(params, true)
 
             def summaryMap = projectSummaries.projectRenderList.collectEntries { [(it.project.id) : it ] }
 

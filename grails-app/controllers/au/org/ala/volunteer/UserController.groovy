@@ -362,7 +362,7 @@ class UserController {
         int totalTranscribedTasks
 
         if (projectInstance) {
-            totalTranscribedTasks = Task.countByFullyTranscribedByAndProject(userInstance.getUserId(), projectInstance)
+            totalTranscribedTasks = taskService.countUserTranscriptionsForProject(userInstance.getUserId(), projectInstance)
         } else {
             totalTranscribedTasks = userInstance.transcribedCount
         }
@@ -383,7 +383,7 @@ class UserController {
                     project              : projectInstance,
                     totalTranscribedTasks: totalTranscribedTasks,
                     achievements         : achievements,
-                    validatedCount       : userService.getValidatedCount(userInstance, projectInstance),
+                    validatedCount       : taskService.countValidUserTranscriptionsForProject(userInstance.getUserId(), projectInstance),
                     score                : score,
                     selectedTab          : selectedTab,
                     isValidator          : userService.isValidator(projectInstance),
@@ -563,9 +563,9 @@ class UserController {
         log.debug("ajaxGetPoints| User.get(): ${sw.toString()}")
         sw.reset().start()
 
-        Long taskCount = Task.countByFullyTranscribedBy(userInstance.userId)
+        Long taskCount = Transcription.countByFullyTranscribedBy(userInstance.userId)
         sw.stop()
-        log.debug("ajaxGetPoints| Task.countByFullyTranscribedBy(): ${sw.toString()}")
+        log.debug("ajaxGetPoints| Transcription.countByFullyTranscribedBy(): ${sw.toString()}")
         sw.reset().start()
 
         final query = """{
@@ -623,7 +623,7 @@ class UserController {
         def userInstance = User.get(params.int("id"))
         //def simpleTemplateEngine = new SimpleTemplateEngine()
         Stopwatch sw = Stopwatch.createStarted()
-        def c = Task.createCriteria()
+        def c = Transcription.createCriteria()
         def expeditions = c {
             eq("fullyTranscribedBy", userInstance.userId)
             projections {

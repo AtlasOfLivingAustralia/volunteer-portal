@@ -196,7 +196,8 @@ enum DarwinCoreField {
     sequenceNumber("Sequence Number"),
     sightingCount("Number of sightings"),
     spacer("Empty field used for layout"),
-    widgetPlaceholder("Empty field used to render tool buttons etc.")
+    widgetPlaceholder("Empty field used to render tool buttons etc."),
+    sequenceGroupId("Identifies a group of images taken from the same event trigger in a camera trap")
     
     def label
     DarwinCoreField(label) { this.label = label }

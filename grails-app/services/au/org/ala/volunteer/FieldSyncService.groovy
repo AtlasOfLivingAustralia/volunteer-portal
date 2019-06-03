@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang3.StringUtils
 
@@ -7,11 +8,21 @@ import org.apache.commons.lang3.StringUtils
 class FieldSyncService {
 
     def logService
-    def fullTextIndexService
+    ValidationService validationService
 
-    Map retrieveFieldsForTask(Task taskInstance) {
+    Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
+
+        Transcription transcription = taskInstance.findUserTranscription(currentUserId)
+        retrieveFieldsForTranscription(taskInstance, transcription)
+    }
+
+    Map retrieveFieldsForTranscription(Task task, Transcription transcription) {
         Map recordValues = new LinkedHashMap()
-        taskInstance?.fields?.each { field ->
+
+        // If the transcription already exists, use any fields attached to the transcription.  Otherwise,
+        // use any fields loaded from the Task.
+        Set fields = transcription ? transcription.fields : task.getTaskFields()
+        fields?.each { field ->
             def recordMap = recordValues.get(field.recordIdx)
             if (recordMap == null) {
                 recordMap = new LinkedHashMap()
@@ -22,6 +33,56 @@ class FieldSyncService {
             }
         }
         recordValues
+    }
+
+    /**
+     * Retrieves the Fields to use to populate the Task template for a validator.
+     *
+     * If the the Task has not yet been validated, select the most appropriate Transcription to use: in the case
+     * of single Transcription Tasks, this will be the only Transcription.  In the case of multiple Transcription Tasks
+     * the Transcription with the most matching Fields will be selected.  (e.g. if there are 5 transcriptions and
+     * 3 of them have the same field values, one of the 3 matching transcriptions will be used).
+     *
+     * If the Task has already been validated, the fields supplied during the validation operation are returned.
+     *
+     */
+    Map retrieveValidationFieldsForTask(Task taskInstance) {
+
+        Transcription transcriptionToUse = null
+
+        if (taskInstance.isFullyTranscribed && !taskInstance.fullyValidatedBy) {
+            if (taskInstance.transcriptions.size() > 1) {
+                Map result = validationService.findBestMatchingTranscription(taskInstance)
+                transcriptionToUse = result.bestTranscription
+            }
+            else if (taskInstance.transcriptions.size() > 0) {
+                transcriptionToUse = taskInstance.transcriptions[0]
+            }
+        }
+        return retrieveFieldsForTranscription(taskInstance, transcriptionToUse)
+    }
+
+    List retrieveTranscribersFieldsForTask(Task taskInstance) {
+        /* if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+             def map = retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions[0])
+             return new ArrayList<Map>().add(map)
+         }
+         else if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) { */
+
+        def list = new ArrayList<Map>()
+
+        if (taskInstance.isFullyTranscribed && taskInstance.project.requiredNumberOfTranscriptions > 1) {
+            for (tr in taskInstance.transcriptions) {
+                Map fieldValues = retrieveFieldsForTranscription(taskInstance, tr)
+                if (fieldValues && fieldValues.size() > 0) {
+                    Map rec = new HashMap()
+                    rec.put('fields', fieldValues)
+                    rec.put('fullyTranscribedBy', tr.fullyTranscribedBy)
+                    list.add(rec)
+                }
+            }
+        }
+        return list
     }
 
     boolean fieldValuesAreEqual(String a, String b) {
@@ -56,7 +117,7 @@ class FieldSyncService {
         if (distinctValues.size() == 0) {
             return ""
         }
-        if (distinctValues.size() ==  1) {
+        if (distinctValues.size() == 1) {
             return distinctValues[0]
         }
 
@@ -84,20 +145,33 @@ class FieldSyncService {
      * @param fieldValues
      * @return
      */
-    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null) {
+    void syncFields(Task task, Map fieldValues, String transcriberUserId, Boolean markAsFullyTranscribed, Boolean markAsFullyValidated, Boolean isValid, List<String> truncateFields = [], String userIp = null, Transcription transcription = null) {
         //sync
         def idx = 0
         def hasMore = true
         while (hasMore) {
             def fieldValuesForRecord = fieldValues.get(idx.toString())
+            Map oldFieldValues
+
             if (fieldValuesForRecord) {
 
                 //get existing fields, and add to a map
-                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
-                        [task: task, recordIdx: idx])
+                def oldFields = Field.createCriteria().list {
+                    eq('task', task)
+                    eq('recordIdx', idx)
+                    eq('superceded', false)
+                    if (transcription) {
+                        eq('transcription', transcription)
+                    } else {
+                        isNull('transcription')
+                    }
+                }
+//                def oldFields = Field.executeQuery("from Field f where task = :task and recordIdx = :recordIdx and superceded = false",
+//                        [task: task, recordIdx: idx])
 
-                Map oldFieldValues = new LinkedHashMap()
+                oldFieldValues = new LinkedHashMap()
                 oldFields.each { field -> oldFieldValues.put(field.name, field) }
+
 
                 fieldValuesForRecord.each { keyValue ->
 
@@ -107,7 +181,7 @@ class FieldSyncService {
                         value = handleDuplicateFormFields(task, keyValue.key, value)
                     }
 
-                    Field oldFieldValue = oldFieldValues.get(keyValue.key)
+                    Field oldFieldValue = oldFieldValues?.get(keyValue.key) ?: null
                     if (oldFieldValue != null) {
 
                         if (!fieldValuesAreEqual(oldFieldValue.value, value)) {
@@ -119,6 +193,7 @@ class FieldSyncService {
                                 field.value = value
                                 field.transcribedByUserId = transcriberUserId
                                 field.task = task
+                                field.transcription = transcription
                                 field.recordIdx = idx
                                 field.updated = new Date()
                                 field.save(flush: true)
@@ -154,7 +229,7 @@ class FieldSyncService {
 
                     } else {
                         //persist these values
-                        Field field = new Field(recordIdx: idx, name: keyValue.key, value: value,
+                        Field field = new Field(recordIdx: idx, name: keyValue.key, value: value, transcription: transcription,
                                 task: task, transcribedByUserId: transcriberUserId, superceded: false)
                         field.save(flush: true)
                         if (field.hasErrors()) {
@@ -172,46 +247,50 @@ class FieldSyncService {
 
         // Slightly dodgy hack, as camera trap records can be removed on re-save or validation
         // and the record index is shared between selected images and unlisted write ins
-        def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect { Integer.parseInt(it) }.sort().reverse()
+        def sortedIndexes = fieldValues.keySet().findAll { StringUtils.isNumeric(it) }.collect {
+            Integer.parseInt(it)
+        }.sort().reverse()
         truncateFields.each { fieldName ->
             def truncIdx = maxIndexFor(fieldName, fieldValues, sortedIndexes)
-            markSuperceded(task, truncIdx, fieldName)
+            markSuperceded(task, truncIdx, fieldName, transcription)
         }
 
         def now = Calendar.instance.time;
 
         //set the transcribed by
         if (markAsFullyTranscribed) {
+            if (!transcription) {
+                throw new IllegalArgumentException("A Transcription is required if markAsFullyTranscribed is true")
+            }
             // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
-            if (!task.fullyTranscribedBy) {
-                task.fullyTranscribedBy = transcriberUserId
-                task.fullyTranscribedIpAddress = userIp
+            if (!transcription.fullyTranscribedBy) {
+                transcription.fullyTranscribedBy = transcriberUserId
+                transcription.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
                 user?.transcribedCount++
                 user?.save(flush: true)
             }
-            if (!task.dateFullyTranscribed) {
-                task.dateFullyTranscribed = now
+            if (!transcription.dateFullyTranscribed) {
+                transcription.dateFullyTranscribed = now
             }
-            if (!task.transcribedUUID) {
-                task.transcribedUUID = UUID.randomUUID()
+            if (!transcription.transcribedUUID) {
+                transcription.transcribedUUID = UUID.randomUUID()
+            }
+
+            if (task.allTranscriptionsComplete()) {
+                task.isFullyTranscribed = true
             }
         }
 
         if (markAsFullyValidated) {
             // Again, only update the validated user and date if it hasn't already been set.
+
             if (!task.fullyValidatedBy) {
-                task.fullyValidatedBy = transcriberUserId
                 def user = User.findByUserId(transcriberUserId)
                 user?.validatedCount++
                 user?.save(flush: true)
             }
-            if (!task.dateFullyValidated) {
-                task.dateFullyValidated = now
-            }
-            if (!task.validatedUUID) {
-                task.validatedUUID = UUID.randomUUID()
-            }
+            task.validate(transcriberUserId, isValid, now)
         }
 
         if (isValid != null) {
@@ -246,9 +325,18 @@ class FieldSyncService {
 //        }
     }
 
-    void markSuperceded(Task theTask, int truncIdx, String fieldName) {
-        Field.where {
-            task == theTask && superceded == false && recordIdx > truncIdx && name == fieldName
+    void markSuperceded(Task theTask, int truncIdx, String fieldName, Transcription transcriptionToUpdate) {
+
+        new DetachedCriteria(Field).build {
+            eq('task', theTask)
+            eq('name', fieldName)
+            eq('superceded', false)
+            gt('recordIdx', truncIdx)
+            if (transcriptionToUpdate) {
+                eq('transcription', transcriptionToUpdate)
+            } else {
+                isNull("transcription")
+            }
         }.updateAll(superceded: true)
     }
 

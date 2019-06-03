@@ -9,8 +9,6 @@
         <div id="ct-container" >
 
             <g:set var="wsParams" value="${template.viewParams2}" />
-            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
-
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
                     <div id="ct-image-well" class="panel panel-default">
@@ -20,21 +18,7 @@
                                     <g:imageViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-                            <div id="ct-image-sequence" class="film-strip">
-                                <g:each in="${sequences.previous}" var="p">
-                                    <div class="film-cell" data-seq-no="${p}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
-                                    </div>
-                                </g:each>
-                                <div class="film-cell active default" data-seq-no="${sequenceNumber}">
-                                    <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
-                                </div>
-                                <g:each in="${sequences.next}" var="n">
-                                    <div class="film-cell" data-seq-no="${n}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
-                                    </div>
-                                </g:each>
-                            </div>
+                            <g:render template="/transcribe/cameraTrapImageSequence"/>
 
                             <div style="margin-top:10px" class="text-center">
                                 <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>
@@ -106,7 +90,7 @@
                                                             <li>
                                                                 <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}">
                                                                     <g:if test="${entry.hash}">
-                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}_category.png")}" title="${entry.name}">
+                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.${entry.ext?:'png'}")}" height="100" width="100" title="${entry.name}">
                                                                     </g:if>
                                                                     <g:else>
                                                                         ${entry.name}
@@ -142,7 +126,56 @@
                                     </div>
                                 </div>
 
+                                <g:hiddenField name="skipNextAction" value="true"/>
                             </div>
+
+                            <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
+                                Transcribers answers
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-striped confirmation-table">
+                                            <tr>
+                                                <td>Transcriber</td>
+                                                <td>Problem With Image</td>
+                                                <td>Animals Visible?</td>
+                                                <td>Selected Animal</td>
+                                                <td>Individual Count</td>
+                                                <td>Comment</td>
+                                            </tr>
+                                            <tbody id="tbody-answer-summary">
+                                            <g:each in="${transcribersAnswers}" var="answers" status="st">
+                                                <g:set var="answer" value="${answers}"/>
+                                                <tr>
+                                                    <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
+                                                    <g:set var="ans" value="${answer.get('fields')[0]}" />
+                                                    <td>${ans.get('problemWithImage') ?: 'No'}</td>
+                                                    <g:if test="${ans.get('noAnimalsVisible') || ans.get('noAnimalsVisible') == 'yes'}">
+                                                        <td>No</td>
+                                                    </g:if>
+                                                    <g:elseif test="${ans.get('vernacularName') || ans.get('scientificName')}">
+                                                        <td>Yes</td>
+                                                        <td>
+                                                            <g:set var="selectedAnimalInfos"
+                                                                   value="${[wsParams.animals.find{t -> return ((ans.get('vernacularName') && t.vernacularName == ans.get('vernacularName')) || (ans.get('scientificName') && t.scientificName == ans.get('scientificName')))}]}"/>
+                                                            <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                                      model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+                                                        </td>
+                                                       %{-- <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>--}%
+                                                        %{--<td>${answer.get('fields')[0].get('vernacularName')} <i>(${(answer.get('fields')[0].get('scientificName'))})</i></td>--}%
+                                                        <td>${ans.get('individualCount')}</td>
+                                                        <td>${ans.get('comment')}</td>
+                                                    </g:elseif>
+                                                </tr>
+
+                                            </g:each>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </g:if>
+
 
                             <div id="ws-dynamic-container" class="ct-item clearfix"></div>
                         </div>
@@ -228,6 +261,7 @@
                 <a role="button" tabindex="-1" class="text clearall">Clear all</a>
             </div>
         </script>
+
         <asset:javascript src="transcribe/wildlifespotter" asset-defer=""/>
         <asset:script type="text/javascript">
             var imgPrefix = "<cl:imageUrlPrefix type="wildlifespotter" />";

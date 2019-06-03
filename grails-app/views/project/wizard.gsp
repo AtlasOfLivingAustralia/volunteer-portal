@@ -317,6 +317,28 @@
             </div>
         </div>
 
+        <div class="form-group" data-ng-if="projectTemplate.supportMultipleTranscriptions">
+            <label class="control-label col-md-3" for="numberOfTranscriptions">Number of Transcriptions</label>
+
+            <div class="col-md-6">
+                <g:textField class="form-control" name="numberOfTranscriptions" data-ng-model="project.transcriptionsPerTask"/>
+            </div>
+        </div>
+        <div class="form-group" data-ng-if="projectTemplate.supportMultipleTranscriptions">
+            <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
+
+            <div class="col-md-6">
+                <g:textField class="form-control" name="thresholdMatchingTranscriptions" data-ng-model="project.thresholdMatchingTranscriptions"  style="margin-top: 10px"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3" for="extractImageExifData">EXIF data from staged images should be included in project exports</label>
+            
+            <div class="col-md-6">
+                    <input type="checkbox" name="extractImageExifData" data-ng-model="project.extractImageExifData" style="margin-top: 20px"/>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="col-sm-12">
                 <div class="row">
@@ -390,6 +412,18 @@
             <tr>
                 <td class="prop-name">Template</td>
                 <td class="prop-value">{{::projectTemplate.name}}</td>
+            </tr>
+            <tr>
+                <td class="prop-name">Number of Transcriptions Per Task</td>
+                <td class="prop-value">{{::project.transcriptionsPerTask}}</td>
+            </tr>
+            <tr>
+                <td class="prop-name">Threshold of Matching Transcriptions (Autovalidation)</td>
+                <td class="prop-value">{{::project.thresholdMatchingTranscriptions}}</td>
+            </tr>
+            <tr>
+                <td class="prop-name">EXIF data from staged images should be included in project exports</td>
+                <td class="prop-value">{{::project.extractImageExifData ? "Yes" : "No"}}</td>
             </tr>
             <tr>
                 <td class="prop-name">Expedition type</td>

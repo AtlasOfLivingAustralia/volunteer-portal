@@ -17,6 +17,7 @@
                     <li><code>Literal</code> to assign the same static field value to every task</li>
                     <li><code>Sequence</code> assigns a automatically incremented number to each task</li>
                     <li><code>DataFileColumn</code> assigns a value from an uploaded csv file</li>
+                    <li><code>SequenceGroupId</code> assigns images into groups based on the time they were taken.  Should correspond to a trigger event for a camera trap project.</li>
                 </ul>
             </cl:helpText>
         </div>
@@ -93,7 +94,7 @@
             $("#definition").css("display", "block");
             $("#dataFileColumn").css("display", "none");
 
-            if (fieldType == 'Sequence') {
+            if (fieldType == 'Sequence' || fieldType == 'SequenceGroupId') {
                 $("#formatBlock").css('display', 'none');
             } else {
                 $("#formatBlock").css('display', 'block');

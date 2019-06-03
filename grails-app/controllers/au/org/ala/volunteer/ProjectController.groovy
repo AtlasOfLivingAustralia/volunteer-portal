@@ -98,7 +98,7 @@ class ProjectController {
                 newsItem = newsItems?.first()
             }
 
-            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null)?.projectRenderList?.get(0)
+            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null, false)?.projectRenderList?.get(0)
 
             def taskCount
             def tasksTranscribed
@@ -107,7 +107,7 @@ class ProjectController {
                 tasksTranscribed = projectSummary.transcribedCount
             } else {
                 taskCount = Task.countByProject(projectInstance)
-                tasksTranscribed = Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)
+                tasksTranscribed = Task.countByProjectAndIsFullyTranscribed(projectInstance, true)
             }
 
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
@@ -142,7 +142,7 @@ class ProjectController {
 
         if (projectInstance) {
             long startQ  = System.currentTimeMillis();
-            def taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:999])
+            def taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:999])
 
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
@@ -215,41 +215,6 @@ class ProjectController {
     }
 
     /**
-     * Utility to convert list of Fields to a Map of Maps with task.id as key
-     *
-     * @param fieldList
-     * @return
-     */
-    private static Map fieldListToMultiMap(List fieldList) {
-        Map taskMap = [:]
-
-        fieldList.each {
-            if (it.value) {
-                Map fm = null;
-
-                if (taskMap.containsKey(it.task.id)) {
-                    fm = taskMap.get(it.task.id)
-                } else {
-                    fm = [:]
-                    taskMap[it.task.id] = fm
-                }
-
-                Map valueMap = null;
-                if (fm.containsKey(it.name)) {
-                   valueMap = fm[it.name]
-                } else {
-                    valueMap = [:]
-                    fm[it.name] = valueMap
-                }
-
-                valueMap[it.recordIdx] = it.value
-            }
-        }
-
-        return taskMap
-    }
-
-    /**
      * Produce an export file
      */
     def exportCSV() {
@@ -261,7 +226,7 @@ class ProjectController {
             def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
-                taskList = Task.findAllByProjectAndFullyTranscribedByIsNotNull(projectInstance, [sort:"id", max:9999])
+                taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:9999])
             } else if (validatedOnly) {
                 taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
             } else {
@@ -269,11 +234,11 @@ class ProjectController {
             }
             log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
-            def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+
             log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
-            fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            fieldNames.addAll(fieldService.getAllFieldNames(taskList, validatedOnly))
             log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
@@ -290,7 +255,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, taskMap, fieldNames, response)
+                export_func(projectInstance, taskList, fieldNames, validatedOnly, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
@@ -314,7 +279,7 @@ class ProjectController {
 
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
-        def projectSummaryList = projectService.getProjectSummaryList(params)
+        def projectSummaryList = projectService.getProjectSummaryList(params, false)
 
         def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 
@@ -338,7 +303,7 @@ class ProjectController {
         def q = params.q ?: null
         ProjectType pt = ProjectType.findByName('cameratraps')
 
-        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt)
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, false)
 
         def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 
@@ -453,6 +418,14 @@ class ProjectController {
             final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
             return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
         }
+    }
+
+    def checkTemplateSupportMultiTranscriptions() {
+        def template = Template.findById(params.int("templateId"))
+        if (template) {
+            render (["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
+        }
+        render (["supportMultipleTranscriptions": "false"] as JSON)
     }
 
     def editTutorialLinksSettings() {
@@ -625,7 +598,13 @@ class ProjectController {
                     return false
                 }
             }
+
             projectInstance.properties = params
+
+            if (!projectInstance.template.supportMultipleTranscriptions) {
+                projectInstance.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+                projectInstance.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+            }
 
             if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
                 flash.message = "Expedition updated"
@@ -809,6 +788,7 @@ class ProjectController {
                 projectInstance.mapInitLongitude = longitude
             }
             flash.message = "Map settings updated"
+            projectInstance.save(flush:true, failOnError:true)
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)
     }

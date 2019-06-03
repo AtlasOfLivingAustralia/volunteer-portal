@@ -6,6 +6,9 @@ import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.NotImplementedException
+import org.elasticsearch.index.query.FilterBuilders
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.sort.SortBuilders
 import org.grails.orm.hibernate.HibernateSession
 import org.grails.web.json.JSONObject
 import org.elasticsearch.action.delete.DeleteResponse
@@ -94,10 +97,11 @@ class FullTextIndexService {
                 projectid           : task.project.id,
                 externalIdentifier  : task.externalIdentifier,
                 externalUrl         : task.externalUrl,
-                fullyTranscribedBy  : task.fullyTranscribedBy,
-                dateFullyTranscribed: task.dateFullyTranscribed,
+                isFullyTranscribed  : task.isFullyTranscribed,
                 fullyValidatedBy    : task.fullyValidatedBy,
                 dateFullyValidated  : task.dateFullyValidated,
+                timeToTranscribe    : task.timeToTranscribe,
+                timeToValidate      : task.timeToValidate,
                 isValid             : task.isValid,
                 created             : task.created,
                 lastViewed          : task.lastViewed ? new Date(task.lastViewed) : null,
@@ -115,7 +119,8 @@ class FullTextIndexService {
                         labels                 : task.project.labels?.collect {
                             [category: it.category, value: it.value]
                         } ?: []
-                ]
+                ],
+                transcriptions       : []
         ]
 
         if (task.project.mapInitLatitude && task.project.mapInitLongitude) {
@@ -133,6 +138,16 @@ class FullTextIndexService {
                 data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
+
+        def transcriptions = task.transcriptions //Transcription.findAllByTask(task)
+
+        transcriptions.each { transcription ->
+            if (transcription.fullyTranscribedBy) {
+                data.transcriptions << [transcriptionid: transcription.id, fullyTranscribedBy: transcription.fullyTranscribedBy, dateFullyTranscribed: transcription.dateFullyTranscribed,
+                                       fullyValidatedBy: transcription.fullyValidatedBy, dateFullyValidated: transcription.dateFullyValidated]
+            }
+        }
+
         return data
     }
 
@@ -164,6 +179,35 @@ class FullTextIndexService {
     QueryResults<Task> simpleTaskSearch(String query, Integer offset = null, Integer max = null, String sortBy = null, SortOrder sortOrder = null) {
         def qmap = [query: [filtered: [query:[query_string: [query: query?.toLowerCase()]]]]]
         return search(qmap, offset, max, sortBy, sortOrder)
+    }
+
+    /**
+     * Retrieves all Tasks from the same project that have the same value for a particular field.
+     * Optionally a field can be supplied to specify sort order.
+     * This is used to find all Tasks that have the same sequenceGroupId for the purposes of presenting a
+     * sequence of related camera trap images.
+     * @param project the Project to get tasks from.
+     * @param fieldName the field to search on.
+     * @param fieldValue the value of the field to search on.
+     * @param sortFieldName the field to sort by.
+     */
+    QueryResults<Task> findProjectTasksByFieldValue(Project project, String fieldName, String fieldValue, String sortFieldName = null) {
+        def query = QueryBuilders.constantScoreQuery(FilterBuilders.andFilter(
+                FilterBuilders.termFilter("projectid", project.id),
+                FilterBuilders.nestedFilter("fields", FilterBuilders.andFilter(
+                        FilterBuilders.termFilter("fields.name", fieldName),
+                        FilterBuilders.termFilter("fields.value", fieldValue)
+
+                ))
+        ))
+
+        def searchRequest = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(query)
+        if (sortFieldName) {
+            def sort = SortBuilders.fieldSort("fields.value").setNestedFilter(FilterBuilders.termFilter("fields.name", sortFieldName))
+            searchRequest.addSort(sort)
+        }
+        executeSearch(searchRequest, null, null, null, null)
+
     }
 
     QueryResults<Task> search(Map query, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
@@ -280,11 +324,12 @@ class FullTextIndexService {
         "projectId" : {"type" : "long"},
         "externalIdentifier" : {"type" : "string", "index": "not_analyzed" },
         "externalUrl" : {"type" : "string", "index": "not_analyzed"},
-        "fullyTranscribedBy" : {"type" : "string", "index": "not_analyzed"},
-        "dateFullyTranscribed" : {"type" : "date"},
+        "isFullyTranscribed": {"type":"boolean"},
         "fullyValidatedBy" : {"type" : "string", "index": "not_analyzed"},
         "dateFullyValidated" : {"type" : "date"},
         "isValid" : {"type" : "boolean"},
+        "timeToTranscribe" : {"type":"integer"},
+        "timeToValidate" : {"type":"integer"},
         "created" : {"type" : "date"},
         "lastViewed" : {"type" : "date"},
         "lastViewedBy" : {"type" : "string", "index": "not_analyzed"},
@@ -351,6 +396,17 @@ class FullTextIndexService {
               }
             }
           }
+        },
+        "transcriptions" : {
+          "type" : "nested",
+          "include_in_parent": true,
+          "properties": {
+            "transcriptionid" : {"type": "long" },
+            "fullyTranscribedBy": {"type": "string", "index": "not_analyzed" },
+            "dateFullyTranscribed" : {"type" : "date"},
+            "fullyValidatedBy": {"type": "string", "index": "not_analyzed" },
+            "dateFullyValidated" : {"type" : "date"}
+          }
         }
       }
     }
@@ -363,6 +419,10 @@ class FullTextIndexService {
         client.admin().indices().prepareCreate(INDEX_NAME).setSource(mappingsDoc).execute().actionGet()
 
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()
+    }
+
+    def flush () {
+        client.admin().indices().prepareFlush().execute().actionGet();
     }
 
     private QueryResults<Task> executeFilterSearch(FilterBuilder filterBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
@@ -397,7 +457,8 @@ class FullTextIndexService {
 
         executeGenericSearch(searchRequestBuilder, offset, max, sortBy, sortOrder) { SearchResponse searchResponse ->
             List<Task> taskList = benchmark("Object retrieval (${searchResponse?.hits?.hits?.length} of ${searchResponse?.hits?.totalHits} hits)") {
-                searchResponse.hits ? Task.findAllByIdInList(searchResponse.hits*.id*.toLong()) : []
+                List ids = searchResponse.hits*.id*.toLong()
+                ids ? Task.findAllByIdInList(ids) : []
             }
 
             return new QueryResults<Task>(list: taskList, totalCount: searchResponse?.hits?.totalHits ?: 0)

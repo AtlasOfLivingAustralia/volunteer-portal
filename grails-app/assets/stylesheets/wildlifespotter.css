@@ -571,16 +571,18 @@ ul.filterInfo li span {
     border: 5px dimgrey solid;
     width: 14.285714285%;
     cursor: pointer;
+    opacity: 0.5;
 }
 
 .film-cell.default.active {
-    border-color: black;
-}
-.film-cell.active {
     border-color: #df4a21;
 }
-.film-cell.default {
+.film-cell.active {
     border-color: black;
+}
+.film-cell.default {
+    border-color: #df4a21;
+    opacity: 1.0;
 }
 
 .film-cell img {

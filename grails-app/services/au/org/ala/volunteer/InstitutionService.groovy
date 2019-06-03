@@ -11,6 +11,7 @@ class InstitutionService {
     def collectoryClient
     def grailsLinkGenerator
     def sessionFactory
+    def taskService
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
         if (url && localPath) {
@@ -211,7 +212,6 @@ class InstitutionService {
     }
 
     def getProjectUnderwayCount(Institution institution) {
-        //select count(distinct p.id) from project p join task t on p.id = t.project_id where t.fully_transcribed_by is null and p.inactive = false and p.institution_id = 5590558;
         def c = Project.createCriteria()
         c.get {
             eq('institution', institution)
@@ -220,7 +220,7 @@ class InstitutionService {
                 isNull('inactive')
             }
             tasks {
-                isNull('fullyTranscribedBy')
+                isNull('fullyValidatedBy')
             }
             projections {
                 countDistinct('id')
@@ -271,7 +271,7 @@ WHERE
     }
 
     Long getTranscriberCount(Institution institution) {
-        Task.executeQuery("select count(distinct fullyTranscribedBy) from Task where project.institution = :institution", [institution: institution]).get(0)
+        Task.executeQuery("select count(distinct fullyTranscribedBy) from Transcription where project.institution = :institution", [institution: institution]).get(0)
     }
 
     Map countTasksForInstitutions(List<Institution> institutions, boolean includeDeactivated = false) {
@@ -299,7 +299,16 @@ WHERE
     }
 
     int countTranscribedTasksForInstitution(Institution institution) {
-        Task.executeQuery("select count(*) from Task where fullyTranscribedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
+
+        // TODO this isn't great, we should probably use either the search index or denormalise a bit and add
+        // a fullyTranscribed flag into the Task table.
+        int transcribedCount = 0
+        List projects = Project.findAllByInstitution(institution)
+        projects.each { project ->
+            transcribedCount += taskService.getNumberOfFullyTranscribedTasks(project)
+
+        }
+        transcribedCount
     }
 
     int countValidatedTasksForInstitution(Institution institution) {

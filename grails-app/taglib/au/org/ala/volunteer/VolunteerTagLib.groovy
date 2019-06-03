@@ -9,9 +9,8 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.http.client.utils.URIBuilder
-import org.grails.web.mapping.CachingLinkGenerator
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.servlet.support.RequestDataValueProcessor
+
 
 import java.text.SimpleDateFormat
 
@@ -379,20 +378,24 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         if (taskInstance) {
-            def validator = null;
-            def transcriber = null;
+            def validator = null
+            List transcribers = []
             if (taskInstance.fullyValidatedBy) {
                 validator = userService.detailsForUserId(taskInstance?.fullyValidatedBy)
             }
 
-            if (taskInstance.fullyTranscribedBy) {
-                transcriber = userService.detailsForUserId(taskInstance?.fullyTranscribedBy)
+            if (taskInstance.isFullyTranscribed) {
+                taskInstance.transcriptions.each {
+                    if (it.dateFullyTranscribed) {
+                        transcribers << [user:userService.detailsForUserId(it.fullyTranscribedBy), dateFullyTranscribed: it.dateFullyTranscribed]
+                    }
+                }
             }
             def mb = new MarkupBuilder(out)
 
-            if (transcriber) {
+            transcribers.each { transcriber ->
                 mb.span(class:"label label-info") {
-                    mkp.yield("Transcribed by ${transcriber.displayName} on ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
+                    mkp.yield("Transcribed by ${transcriber.user?.displayName} on ${transcriber.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
                 }
             }
 
@@ -411,6 +414,24 @@ class VolunteerTagLib {
                 }
             }
 
+        }
+    }
+
+    def transcribers = { attrs ->
+        def taskInstance = attrs.task as Task
+
+        int transcribedCount = 0
+        taskInstance?.transcriptions.each { transcription ->
+            if (transcription.dateFullyTranscribed) {
+                out << "<p>"
+                out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
+                out << "${cl.emailForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
+                out << "</p>"
+                transcribedCount++
+            }
+        }
+        if (transcribedCount == 0) {
+            out << "<span class=\"muted\">Not transcribed</span>"
         }
     }
 
@@ -537,25 +558,30 @@ class VolunteerTagLib {
         def seq = attrs.seqNo as String
         def task = taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)
         if (task) {
-            def url, fullUrl = ''
-            def mm = task.multimedia?.first()
-            if (mm) {
-                url = multimediaService.getImageThumbnailUrl(mm)
-                fullUrl = multimediaService.getImageUrl(mm)
-            }
+            attrs.task = task
+            out << multimediaThumbnail(attrs, body)
+        }
+    }
 
-            if (!url) {
-                // sample
-                url = resource(file:'/sample-task-thumbnail.jpg')
-            }
-            if (!fullUrl) {
-                fullUrl = resource(file: '/sample-task.jpg')
-            }
+    def multimediaThumbnail = { attrs, body ->
+        def url, fullUrl = ''
+        def mm = attrs.task.multimedia?.first()
+        if (mm) {
+            url = multimediaService.getImageThumbnailUrl(mm)
+            fullUrl = multimediaService.getImageUrl(mm)
+        }
 
-            if (url) {
-                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
-                out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
-            }
+        if (!url) {
+            // sample
+            url = resource(file:'/sample-task-thumbnail.jpg')
+        }
+        if (!fullUrl) {
+            fullUrl = resource(file: '/sample-task.jpg')
+        }
+
+        if (url) {
+            out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
+            out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
         }
     }
 
@@ -1040,4 +1066,39 @@ function notify() {
         def link = new URIBuilder(grailsApplication.config.security.cas.loginUrl).addParameter("service", g.createLink(uri: '/', absolute: true)).build().toString()
         return link
     }
+
+    /**
+     * Renders a list of the users who have transcribed a Task.  Each user is rendered as a link that goes to
+     * the user page.
+     *
+     * Used in the _taskListTable gsp.
+     */
+    def transcriberNames = { attrs ->
+
+        def taskInstance = attrs.task as Task
+
+        Set transcribers = new HashSet()
+        if (taskInstance) {
+
+            taskInstance.transcriptions.each {
+                if (it.dateFullyTranscribed) {
+                    transcribers << it.fullyTranscribedBy
+                }
+            }
+
+
+            def mb = new MarkupBuilder(out)
+            transcribers.each { transcriberUserId ->
+                User user = User.findByUserId(transcriberUserId)
+                mb.p {
+                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:user?.id) {
+                        cl.userDetails(id:transcriberUserId, displayName:true)
+                    })
+                }
+
+            }
+        }
+
+    }
+
 }

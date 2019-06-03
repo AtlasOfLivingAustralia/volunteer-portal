@@ -4,8 +4,8 @@
         Depending on your connection speed and the size of your images, it might be a good idea to stage images in batches of 200 or less.
     </div>
 
-    <g:form name="stageImagesForm" controller="task" action="stageImage" method="post" enctype="multipart/form-data"
-            class="form-horizontal">
+   <g:form id="stageImagesForm" name="stageImagesForm" enctype="multipart/form-data"
+         class="form-horizontal">
         <g:hiddenField name="projectId" value="${projectInstance.id}"/>
         <div class="form-group">
             <div class="col-md-12 text-center">
@@ -37,8 +37,15 @@
 
         $("#btnUploadImages").click(function (e) {
             e.preventDefault();
-            $("#uploadingMessage").css("display", "block");
             $("#stageImagesForm").submit();
+            bvp.hideModal();
+        });
+
+        $('#stageImagesForm').submit(function(e) {
+            e.preventDefault();
+            var fileList = $('#imageFile').get(0).files;
+            var arrayFileList = Array.from(fileList);
+            submitStagingFiles("${projectInstance.id}", arrayFileList);
         });
 
         // Initialize input type file

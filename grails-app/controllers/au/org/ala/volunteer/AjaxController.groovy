@@ -137,7 +137,7 @@ class AjaxController {
                     count('id')
                 }
             }).collectEntries { [(it[0]): it[1]] }
-            def ts = (Task.withCriteria {
+            def ts = (Transcription.withCriteria {
                 projections {
                     groupProperty('fullyTranscribedBy')
                     count('id')
@@ -156,9 +156,9 @@ class AjaxController {
             lastActivities
         }
 
-        def asyncProjectCounts = Task.async.withStatelessSession {
+        def asyncProjectCounts = Transcription.async.withStatelessSession {
             def sw4 = Stopwatch.createStarted()
-            def projectCounts = Task.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Task t group by t.fullyTranscribedBy ").collectEntries { [(it[0]): it[1]] }
+            def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
             sw4.stop()
             log.debug("UserReport projectCounts took ${sw4.toString()}")
             projectCounts
@@ -322,7 +322,7 @@ class AjaxController {
 
                 def fieldNames = new CSVWriterColumnsBuilder(columns).columns.collect { it.key }
                 def writer = new CSVWriter(response.writer, columns)
-                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
+                def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.transcription is null and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
 
                 for (Task t : fields.keySet()) {
                     writer << [task: t, fieldValues: fields[t]]

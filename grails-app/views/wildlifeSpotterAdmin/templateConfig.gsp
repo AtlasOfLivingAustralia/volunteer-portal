@@ -295,6 +295,7 @@
         }).then(function (resp) {
           $log.debug('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));
           hashable.hash = resp.data.hash;
+          hashable.ext = resp.data.format;
         }, function (resp) {
           bootbox.alert("Image upload failed");
           $log.error('Error status: ' + resp.status);
@@ -365,7 +366,7 @@
       var imageUrlTemplate = "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true"/>";
 
       self.entryUrl = function(e) {
-        var url = imageUrlTemplate.replace("{{name}}", e.hash).replace("{{width}}", "156").replace("{{height}}", "52").replace("{{format}}", "png");
+        var url = imageUrlTemplate.replace("{{name}}", e.hash).replace("{{width}}", "100").replace("{{height}}", "100").replace("{{format}}", "png");
         return url;
       };
 

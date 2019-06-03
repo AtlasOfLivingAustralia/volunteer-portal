@@ -9,9 +9,13 @@
         <g:each in="${extraFields}"
                 var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
 
-        <g:sortableColumn property="fullyTranscribedBy"
-                          title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}"
-                          params="${[q: params.q]}"/>
+        <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
+
+        <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+            <g:sortableColumn property="numberOfMatchingTranscriptions"
+                              title="${message(code: 'task.numberOfMatchingTranscriptions.label', default: 'Matching')}"
+                              params="${[q: params.q]}"/>
+        </g:if>
 
         <g:sortableColumn property="fullyValidatedBy"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
@@ -41,16 +45,31 @@
             </td>
 
             <g:each in="${extraFields}" var="field">
-                <td>${field?.value[taskInstance.id]?.value?.getAt(0)}</td>
+                <td>
+                    %{-- Use validator fields for validated tasks, otherwise just pick a field --}%
+                    <g:if test="${taskInstance.fullyValidatedBy}">
+                        ${field?.value[taskInstance.id]?.find{!it.transcription}?.value}
+                    </g:if>
+                    <g:else>
+                        ${field?.value[taskInstance.id]?.value?.getAt(0)}
+                    </g:else>
+                </td>
             </g:each>
 
             <td>
-                <g:if test="${taskInstance.fullyTranscribedBy}">
-                    <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                    <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails id="${taskInstance.fullyTranscribedBy}"
-                                                                                                displayName="true"/></g:link>
-                </g:if>
+                <cl:transcriberNames task="${taskInstance}"/>
             </td>
+
+            <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+                <td>
+                    <g:if test="${taskInstance.isFullyTranscribed}">
+                        ${taskInstance.numberOfMatchingTranscriptions}
+                    </g:if>
+                    <g:else>
+                        -
+                    </g:else>
+                </td>
+            </g:if>
 
             <td>
                 <g:if test="${taskInstance.fullyValidatedBy}">
@@ -72,7 +91,7 @@
                 %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
                 %{--</button>--}%
                 </g:if>
-                <g:elseif test="${taskInstance.fullyTranscribedBy}">
+                <g:elseif test="${taskInstance.isFullyTranscribed}">
                     <button class="btn btn-small"
                             onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
                 %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%

@@ -486,22 +486,50 @@
     border: 5px dimgrey solid;
     width: 14.285714285%;
     cursor: pointer;
+    opacity: 0.5;
 }
 
 .film-cell.default.active {
-    border-color: black;
+    /*border-color: black; */
+    border-color: #df4a21;
+    opacity: 1.0;
 }
 .film-cell.active {
-    border-color: #df4a21;
+    /*border-color: #df4a21; */
+    border-color: black;
 }
 .film-cell.default {
-    border-color: black;
+    border-color: #df4a21;
+    opacity: 1.0;
+   /* border-color: black;*/
 }
 
 .film-cell img {
     width: 100%;
     height: auto;
 }
+
+.transcribers-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.col-transcriber {
+    width: 15%;
+}
+
+.col-animal {
+    width: 10%;
+}
+
+.col-selection {
+    width: 50%;
+}
+
+.col-remark {
+    width: 20%;
+}
+
 
 /*.well hr {*/
     /*border-top-color: #e9eae0;*/

@@ -29,8 +29,10 @@ class TranscribeTagLib {
     def imageServiceService
     def institutionService
     def grailsLinkGenerator
+    def fieldService
+    def fullTextIndexService
 
-    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers']
+    static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers', 'taskSequence']
 
 
     /**
@@ -667,8 +669,60 @@ class TranscribeTagLib {
         } else {
             results = [previous:[], next:[]]
         }
-
         return results
+    }
+
+    def taskSequence = { attrs, body ->
+        Task task = attrs.task
+        Project project = task.project
+
+        Field field = null
+
+        // The query for the field will throw an Exception if the task hasn't been saved to the database, as is the case
+        // when a template is being previewed. (see TemplateController.preview)
+        if (task.id) {
+            field = fieldService.getFieldForTask(task, "sequenceGroupId")
+        }
+
+        Map tasks = [previous:[], current: task, next:[]]
+        if (!field) {
+
+            attrs.project = project
+
+            Map sequenceNumbers = sequenceNumbers(attrs, body)
+            sequenceNumbers.previous.each { seqNo ->
+                def seq = seqNo as String
+                tasks.previous << [sequenceNumber:seqNo, task:taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)]
+            }
+            sequenceNumbers.next.each { seqNo ->
+                def seq = seqNo as String
+                tasks.next << [sequenceNumber:seqNo, task:taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)]
+            }
+        }
+        else {
+
+            // Get other tasks with the same sequenceGroupId
+            String sequenceGroupId = field.value
+            QueryResults<Task> results = fullTextIndexService.findProjectTasksByFieldValue(project, "sequenceGroupId",sequenceGroupId, "sequenceNumber")
+
+            // The results are sorted by sequence number
+            List<Task> allTasks = results.list
+            int taskIndex = allTasks.indexOf(task)
+            int minIndex = Math.max(0, taskIndex-attrs.count)
+            int maxIndex = Math.min(allTasks.size()-1, taskIndex+attrs.count)
+
+            for (int i=minIndex; i<taskIndex; i++) {
+                tasks.previous << [sequenceNumber:i, task:allTasks[i]]
+            }
+            tasks.current = [sequenceNumber:taskIndex, task:task]
+            for (int i=taskIndex+1; i<=maxIndex; i++) {
+                tasks.next << [sequenceNumber:i, task:allTasks[i]]
+            }
+
+
+        }
+        return tasks
+
     }
 
     def transcriptionLogoUrl = { attrs, body ->

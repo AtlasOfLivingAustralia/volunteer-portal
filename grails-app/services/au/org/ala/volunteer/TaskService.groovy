@@ -16,6 +16,7 @@ import groovy.sql.Sql
 import java.sql.Connection
 import java.text.SimpleDateFormat
 
+
 @Transactional
 class TaskService {
 
@@ -30,51 +31,33 @@ class TaskService {
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
 
-  /**
-   * This could be a large result set for a system with many registered users.
-   */
-    Map getTasksTranscribedByCounts(){
-        def userTaskCounts = Task.executeQuery(
-            """select t.fullyTranscribedBy as userId, count(t.id) as taskCount from Task t
-               where t.fullyTranscribedBy is not null
-               group by t.fullyTranscribedBy""")
-        userTaskCounts.toMap()
-    }
-
-  /**
-   * Retrieve a count of tasks partially transcribed by a user.
-   *
-   * @param user
-   * @return
-   */
-    Integer getPartiallyTranscribedByCountsForUser(String userId){
-      def userTaskCounts = Task.executeQuery(
-          """select count(distinct t.id) from Task t
-             inner join t.fields fields
-             where fields.transcribedByUserId = :userId""", [userId: userId])
-      userTaskCounts.get(0)
-    }
 
     int countInactiveProjects() {
         return Project.countByInactive(true)
     }
 
     /**
-     *
-     * @return Map of project id -> count
+     * Returns the number of transcriptions a user has made for a project.
      */
-    Map getProjectTaskCounts() {
-        def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(t) as taskCount from Task t
-               group by t.project.id""")
-        projectTaskCounts.toMap()
+    Integer countUserTranscriptionsForProject(String userId, Project project) {
+        List userTranscriptionCount = Task.executeQuery(
+                "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.project = :project",
+                [userId:userId, project:project])
+        userTranscriptionCount.get(0)
     }
 
-    Map getProjectTaskCounts(List<Project> projects) {
-        def projectTaskCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(t) as taskCount from Task t where t.project in (:projects)
-                   group by t.project.id""", [projects: projects])
-        projectTaskCounts.toMap()
+    /**
+     * Returns the number of validated transcriptions a user has made for a project.
+     */
+    Integer countValidUserTranscriptionsForProject(String userId, Project project) {
+        String hql = "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.isValid = :valid"
+        Map params = [userId: userId, valid:true]
+        if (project) {
+            hql += " and t.project = :project"
+            params.project = project
+        }
+        List userTranscriptionCount = Task.executeQuery(hql, params)
+        userTranscriptionCount.get(0)
     }
 
     /**
@@ -106,59 +89,11 @@ class TaskService {
         projectTaskCounts.toMap()
     }
 
-    /**
-     * @return Map of project id -> count
-     */
-    Map getProjectTaskFullyTranscribedCounts(List<Project> projects, boolean activeOnly = false) {
-        def projectTaskCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(t) as taskCount
-               from Task t 
-               where 
-                t.project IN (:projects)
-                AND t.fullyTranscribedBy IS NOT NULL
-                ${activeOnly ? 'AND t.project.inactive != true' : ''} 
-               group by t.project.id""", [projects: projects])
-        projectTaskCounts.toMap()
-    }
-
-    Map getProjectTranscriberCounts() {
-        def volunteerCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
-               from Task t where t.fullyTranscribedBy is not null group by t.project.id"""
-        )
-        volunteerCounts.toMap()
-    }
-
-    Map getProjectTranscriberCounts(List<Project> projects) {
-        def volunteerCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(distinct t.fullyTranscribedBy) as volunteerCount
-               from Task t where t.project IN (:projects) AND t.fullyTranscribedBy is not null group by t.project.id""",
-                [projects: projects]
-        )
-        volunteerCounts.toMap()
-    }
-
-    Map getProjectValidatorCounts() {
-        def volunteerCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
-               from Task t where t.fullyValidatedBy is not null group by t.project.id"""
-        )
-        volunteerCounts.toMap()
-    }
-
-    Map getProjectValidatorCounts(List<Project> projects) {
-        def volunteerCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(distinct t.fullyValidatedBy) as volunteerCount
-               from Task t where t.project IN (:projects) AND t.fullyValidatedBy is not null group by t.project.id""",
-                [projects: projects]
-        )
-        volunteerCounts.toMap()
-    }
 
     Map getProjectDates() {
         def dates = Task.executeQuery(
-            """select t.project.id as projectId, min(t.dateFullyTranscribed), max(t.dateFullyTranscribed), min(t.dateFullyValidated), max(t.dateFullyValidated)
-               from Task t group by t.project.id order by t.project.id"""
+            """select t.project.id as projectId, min(trans.dateFullyTranscribed), max(trans.dateFullyTranscribed), min(t.dateFullyValidated), max(t.dateFullyValidated)
+               from Task t join t.transcriptions trans with trans.dateFullyTranscribed is not null group by t.project.id order by t.project.id"""
         )
 
         def map =[:]
@@ -169,24 +104,6 @@ class TaskService {
         map
     }
 
-    /**
-     *
-     * @return Map of project id -> count
-     */
-    Map getProjectTaskValidatedCounts() {
-        def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(t) as taskCount
-               from Task t where t.fullyValidatedBy is not null group by t.project.id""")
-        projectTaskCounts.toMap()
-    }
-
-    Map getProjectTaskValidatedCounts(List<Project> projects) {
-        def projectTaskCounts = Task.executeQuery(
-                """select t.project.id as projectId, count(t) as taskCount
-               from Task t where t.project IN (:projects) AND t.fullyValidatedBy is not null group by t.project.id""",
-                [projects: projects])
-        projectTaskCounts.toMap()
-    }
 
     /**
      *
@@ -195,9 +112,12 @@ class TaskService {
      */
     List getUserIdsForProject(Project project) {
         def userIds = Task.executeQuery(
-            """select distinct t.fullyTranscribedBy
-               from Task t where t.fullyTranscribedBy is not null and
-               t.project = :project order by t.fullyTranscribedBy""", [project: project])
+            """select distinct tn.fullyTranscribedBy
+               from Transcription tn
+               join tn.task t 
+               where tn.fullyTranscribedBy is not null and
+               t.project = :project 
+               order by tn.fullyTranscribedBy""", [project: project])
         userIds.toList()
     }
 
@@ -208,96 +128,138 @@ class TaskService {
      */
     List getUserIdsAndCountsForProject(Project project, Map params) {
         def userIds = Task.executeQuery(
-            """select t.fullyTranscribedBy, count(t)
-               from Task t where t.fullyTranscribedBy is not null and
-               t.project = :project group by t.fullyTranscribedBy order by count(t) desc""", [project: project], params)
+            """select tn.fullyTranscribedBy, count(t)
+               from Transcription tn 
+               join tn.task t 
+               where tn.fullyTranscribedBy is not null and
+               t.project = :project 
+               group by tn.fullyTranscribedBy order by count(t) desc""", [project: project], params)
         userIds.toList()
     }
 
-    /**
-     *
-     * @param project
-     * @return List of user id
-     */
-    def getCountsForProjectAndUserId(Project project, String userId) {
-        def userIds = Task.executeQuery(
-            """select count(t)
-               from Task t where t.fullyTranscribedBy = :userId and
-               t.project = :project""", [userId: userId, project: project])
-        userIds
+
+    int getNumberOfFullyTranscribedTasks(Project project) {
+        Task.countByProjectAndIsFullyTranscribed(project, true)
+    }
+
+    List getFullyTranscribedTasks(Project project, Map params) {
+        Task.findAllByProjectAndIsFullyTranscribed(project, true, params)
+    }
+
+    // The results above select all Tasks have have less than the required number of transcriptions that the
+    // user hasn't yet viewed.  We now have to check the views to see if there are any views of that Task
+    // that didn't result in a Transcription and occurred before our timeout window (ie. 2 hours ago)
+    private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1) {
+        Task transcribableTask = null
+        int matches = 0
+        results?.find { result ->
+            Task task = Task.get(result[0])
+
+            if (!task.isLockedForTranscription(userId, timeoutWindow)) {
+                // We can allocate this Task as all recent views have resulted in a completed transcription
+                // (i.e. views that didn't end up completing the transcription have timed out).
+                transcribableTask = task
+                matches++
+                if (matches >= jump) {
+                    return true
+                }
+            }
+        }
+        transcribableTask
     }
 
     /**
-     *
-     * @param project
-     * @return List of user id
-     */
-    def getCountsForUserId(String userId) {
-        def userIds = Task.executeQuery(
-            """select count(t)
-               from Task t where t.fullyTranscribedBy = :userId""", [userId: userId])
-        userIds
+     * Returns a Task that the user has never viewed where the number of distinct user views is < the total
+     * required number of transcriptions. Tasks with more distinct views will be returned first if jump is not
+     * required.
+     * @param userId The user to allocate a Task to
+     * @param project The Project the Task is for.
+     * @param transcriptionsPerTask the number of times each Task must be transcribed before it can be validated.
+     * @param lastId the last id the user viewed/transcribed.  This is used when tasks need to be skipped,
+     * predominently in camera trap projects where the user is shown images they aren't transcribing for context.
+     * The jump means they will be allocated a new image they haven't seen before.
+    */
+    private Task findUnviewedTask(String userId, Project project, Long transcriptionsPerTask = 1, Long lastId = -1, int jump = 1) {
+
+        Task task = null
+        Map queryParams = [userId: userId, project:project, transcriptionsPerTask:transcriptionsPerTask, max:jump]
+        if (jump > 1 && lastId >= 0) {
+            queryParams.lastId = lastId
+        }
+
+        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        String orderBy = "count(distinct views.userId) desc, task.id"
+        if (jump > 1 && lastId > 0) {
+            whereClause += "and task.id > :lastId "
+            orderBy = "task.id"
+        }
+        List results = Task.executeQuery(
+                "select task.id, count(distinct views.userId) from Task as task "+
+                        "left join task.viewedTasks as views " +
+                        "where " + whereClause +
+                        "group by task.id " +
+                        "having count(distinct views.userId) < :transcriptionsPerTask "+
+                        "order by "+orderBy,
+                queryParams
+        )
+
+        if (results) {
+            def taskResult = results.last()
+            task = Task.get(taskResult[0])
+            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+        }
+        task
     }
 
     /**
-     * Get the next task for this user
-     *
-     * @param userId
-     * @return
+     * Find tasks that have not been fully transcribed and have not been viewed by the supplied user.
+     * Views that have not resulted in a transcription and occurred within the timeout window will exclude a
+     * Task from being returned, as the Transcription is likely in progress.
+     * @param userId The user to allocate a Task to
+     * @param project The Project the Task is for.
+     * @param transcriptionsPerTask the number of times each Task must be transcribed before it can be validated.
+     * @param timeoutWindow the time (milliseconds since 1970) after which we consider a Transcription to still
+     * be in progress.
      */
-    Task getNextTask(String userId) {
+    private Task findUnfinishedTaskNotViewedByUser(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1, int jump = 1) {
 
-        if (!userId) {
-            return null
+        Map params = [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask]
+        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
+        if (jump > 1 && lastId >= 0) {
+            whereClause += "and task.id > :lastId "
+            params.lastId = lastId
         }
 
-        // Look for tasks that have never been viewed before!
-        def tasks = Task.createCriteria().list([max:1]) {
-            isNull("fullyTranscribedBy")
-            sizeLe("viewedTasks", 0)
-            order("id", "asc")
-        }
+        List results = Task.executeQuery(
+                "select task.id, count(transcriptions) from Task as task "+
+                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                        "where " + whereClause +
+                        "group by task.id " +
+                        "having count(transcriptions) < :transcriptionsPerTask "+
+                        "order by count(transcriptions) desc, task.id",
+                    params
+                )
 
-        if (tasks) {
-            def task = tasks.get(0)
-            println "getNextTask(no project) found a task with no views: ${task.id}"
-            return task
-        }
+        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
+        // too large.
+        processResults(results, timeoutWindow,  userId, jump)
+    }
 
-        // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
-        tasks = Task.createCriteria().list([max:1]) {
-            isNull("fullyTranscribedBy")
-            and {
-                ne("lastViewedBy", userId)
-                le("lastViewed", timeoutWindow)
-            }
-            order("lastViewed", "asc")
-        }
+    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow) {
+        // Finally, the only Tasks left are ones that the user has viewed but not transcribed
+        List results = Task.executeQuery(
+                "select task.id, count(transcriptions) from Task as task "+
+                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
+                        "where task.project = :project " +
+                        "and task.isFullyTranscribed = false and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
+                        "group by task.id " +
+                        "having count(transcriptions) < :transcriptionsPerTask "+
+                        "order by count(transcriptions) desc, task.id",
+                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
 
-        if (tasks) {
-            def task = tasks.get(0)
-            println "getNextTask(no project) found a task: ${task.id}"
-            return task
-        }
-
-        // Finally, we'll have to serve up a task that this user has seen before
-        tasks = Task.createCriteria().list([max:1]) {
-            isNull("fullyTranscribedBy")
-            or {
-                le("lastViewed", timeoutWindow)
-                eq("lastViewedBy", userId)
-            }
-            order("lastViewed", "asc")
-        }
-
-        if (tasks) {
-            def task = tasks.get(0)
-            println "getNextTask(no project) found a task: ${task.id}"
-            return task
-        }
-
-        return null
+        // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
+        // too large.
+        processResults(results, timeoutWindow, userId)
     }
 
     /**
@@ -312,122 +274,46 @@ class TaskService {
             return null;
         }
 
+        Task task = null
+        int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
+        int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
 
+        // This is the length of time for which a Task remains locked after a user views it
+        long timeout = grailsApplication.config.viewedTask.timeout as long
 
-        def jump = project?.template?.viewParams?.jumpNTasks
-        // This is the earliest last viewed time for a task to be unlocked
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
-
-        def tasks
         def sw = new Stopwatch()
 
-        // If the template calls for jumping forward n at a time and we have a jumping off point...
-        if (jump && lastId > 0) {
-            sw.start()
-            tasks = Task.createCriteria().list(max:jump) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull('fullyTranscribedBy')
-                sizeLe('viewedTasks', 0)
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 1st check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found a task to jump to: ${task.id}")
-                return task
-            }
-
-            sw.start()
-            tasks = Task.createCriteria().list([max:jump]) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull("fullyTranscribedBy")
-                and {
-                    ne("lastViewedBy", userId)
-                    le("lastViewed", timeoutWindow)
-                }
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 2nd check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
-                return task
-            }
-
-            sw.start()
-            tasks = Task.createCriteria().list([max:jump]) {
-                eq("project", project)
-                gt('id', lastId)
-                isNull("fullyTranscribedBy")
-                or {
-                    le("lastViewed", timeoutWindow)
-                    eq("lastViewedBy", userId)
-                }
-                order('id','asc')
-            }
-            log.debug("Took ${sw.stop()} for 3rd check")
-            if (tasks) {
-                def task = tasks.last()
-                log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
-                return task
-            }
-        }
-
-        sw.start()
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            sizeLe("viewedTasks", 0)
-            order("id", "asc")
-        }
-        log.debug("Took ${sw.stop()} for 4th check")
-        if (tasks) {
-            def task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task with no views: ${task.id}")
+        // First find a task that hasn't been viewed by the user and has been viewed by fewer users than are
+        // required to transcribe the Task.
+        task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
+        if (task) {
+            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        // Now we have to look for tasks whose last view was before than the lock period AND hasn't already been viewed by this user
-        sw.start()
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            and {
-                ne("lastViewedBy", userId)
-                le("lastViewed", timeoutWindow)
-            }
-            order("lastViewed", "asc")
-        }
-        log.debug("Took ${sw.stop()} for 5th check")
-
-        if (tasks) {
-            def task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
+        // If there are no Tasks found above the only Tasks left have been either viewed by the user
+        // or viewed by enough distinct users to have theoretically fully transcribed the Task if all views had
+        // resulted in a transcription.
+        // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
+        task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
+        if (task) {
+            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        // Finally, we'll have to serve up a task that this user has seen before
-        sw.start()
-        tasks = Task.createCriteria().list([max:1]) {
-            eq("project", project)
-            isNull("fullyTranscribedBy")
-            or {
-                le("lastViewed", timeoutWindow)
-                eq("lastViewedBy", userId)
-            }
-            order("lastViewed", "asc")
-        }
-        log.debug("Took ${sw.stop()}for 6th check")
-
-        if (tasks) {
-            def task = tasks.last()
-            log.info("getNextTask(project ${project.id}) found a task: ${task.id}")
+        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout)
+        if (task) {
+            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
-        return null
+        // If we have been unable to find a Task while jumping over Tasks, see if we can get any Task.
+        if (lastId >=0 && jump > 1) {
+            // Try it all again, but without the jump
+            task = getNextTask(userId, project)
+        }
+
+        return task
     }
 
     /**
@@ -450,7 +336,7 @@ class TaskService {
 
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
-            isNotNull("fullyTranscribedBy")
+            eq("isFullyTranscribed", true)
             isNull("fullyValidatedBy")
             and {
                 ne("lastViewedBy", userId)
@@ -468,7 +354,7 @@ class TaskService {
         // Finally, we'll have to serve up a task that this user has seen before
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
-            isNotNull("fullyTranscribedBy")
+            eq("isFullyTranscribed", true)
             isNull("fullyValidatedBy")
             or {
                 le("lastViewed", timeoutWindow)
@@ -584,58 +470,8 @@ class TaskService {
         }
     }
 
-  /**
-   * Get tasks saved by this user. Includes partial edits.
-   *
-   * @param userId
-   * @return list of tasks
-   */
-    List<Task> getRecentlySavedTasks(String userId, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where t.fullyTranscribedBy is null and
-        fields.transcribedByUserId = :userId
-        and fields.superceded = false""", [userId: userId], params)
-    }
 
-    /**
-   * Get tasks saved by this user. Includes partial edits.
-   *
-   * @param userId
-   * @return list of tasks
-   */
-    List<Task> getRecentlySavedTasksByProject(String userId, Project project, Map params) {
-      Task.executeQuery("""select distinct t from Task t
-        inner join t.fields fields
-        where t.fullyTranscribedBy is null and
-        t.project = :project and
-        fields.transcribedByUserId = :userId
-        and fields.superceded = false""", [userId: userId, project:project], params)
-    }
 
-    List<Task> getTranscribedTasksByUserAndProjectQuery(String userId, Project project, Map params) {
-
-        String query = "%" + (params.q?:"") + "%";
-        query= query.toLowerCase()
-
-        def tasks = Task.executeQuery("""select t from Task t
-                                         where t.fullyTranscribedBy = :userId and t.project = :project and
-                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
-                                        [userId: userId, project: project, query: query], params)
-        return tasks.toList()
-    }
-
-    List<Task> getTranscribedTasksByUserQuery(String userId, Map params) {
-
-        String query = "%" + (params.q?:"") + "%";
-        query= query.toLowerCase()
-
-        def tasks = Task.executeQuery("""select t from Task t
-                                         where t.fullyTranscribedBy = :userId and
-                                         (lower(t.project.name) like :query or lower(t.externalIdentifier) like :query)""",
-                                        [userId: userId, query: query], params)
-        return tasks.toList()
-    }
 
     private final static List<String> getNotificationWithClauses(projectQuery, boolean unseenOnly = true) { [
 """transcribed_and_validated_tasks AS (
@@ -898,6 +734,7 @@ ORDER BY record_idx, name;
         if (!filename.trim()) {
             filename = "image_" + taskId;
         }
+        filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
         def fileMap = [:]
 
@@ -948,52 +785,26 @@ ORDER BY record_idx, name;
         return fileMap
     }
 
-    int countTranscribedByProjectType(String projectType) {
-        Task.executeQuery("""
-            select count(*) from Task t
-            WHERE t.fullyTranscribedBy IS NOT NULL and t.project.id in (
-              select id from Project p  where p.template.id  in (select id from Template where name = '${projectType}')
-            )
-        """)[0]
-    }
-
-    List<Map> transcribedDatesByUser(String userid) {
-        String select = """
-            SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-            FROM Project p, Task t
-            LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = :userid and p.id = t.project_id
-            ORDER BY lastEdit ASC
-        """
-
-        def results = []
-
-        def sql = new Sql(dataSource: dataSource)
-        sql.eachRow(select, [userid: userid]) { row ->
-            def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
-            results.add(taskRow)
-        }
-
-        return results;
-    }
-
-
     List<Map> transcribedDatesByUserAndProject(String userid, long projectId, String labelTextFilter) {
         def select = """
             SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-            FROM Project p, Task t
+            FROM Project p 
+            JOIN Task t on p.id = t.project_id
+            JOIN Transcription trans on trans.task_id = t.id
             LEFT OUTER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-            WHERE t.fully_transcribed_by = :userid and p.id = t.project_id and p.id = :projectId
+            WHERE trans.fully_transcribed_by = :userid and p.id = :projectId
             ORDER BY lastEdit ASC
         """
 
         if (labelTextFilter) {
             select = """
                 SELECT t.id as id, t.is_valid as isValid, field2.lastEdit as lastEdit, p.name as project
-                FROM Project p, Task t
+                FROM Project p 
+                JOIN Task t ON p.id = t.project_id
+                JOIN Transcription trans on trans.task_id = t.id
                 INNER JOIN (select f.task_id, f.value from Field f where f.name = 'occurrenceRemarks' and f.superceded = false and f.value ilike :labelTextFilter) as field on field.task_id = t.id
                 INNER JOIN (SELECT task_id, max(updated) as lastEdit from field f where f.transcribed_by_user_id = :userid group by f.task_id) as field2 on field2.task_id = t.id
-                WHERE t.fully_transcribed_by = :userid and p.id = t.project_id and p.id = :projectId
+                WHERE trans.fully_transcribed_by = :userid and p.id = :projectId
             """
         }
 
@@ -1010,17 +821,17 @@ ORDER BY record_idx, name;
 
 
 
-    public Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
+    Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select ="""
             SELECT t.id as id
-            FROM Project p, Task t
-            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f where f.name = 'sequenceNumber' group by f.task_id) as fields on fields.task_id = t.id
-            WHERE p.id = :projectId and p.id = t.project_id and fields.value = :fieldValue
+            FROM Project p JOIN Task t ON p.id = t.project_id
+            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f inner join Task t2 on t2.id = f.task_id where t2.project_id = :projectId and f.name = :fieldName group by f.task_id) as fields on fields.task_id = t.id
+            WHERE p.id = :projectId and fields.value = :fieldValue
         """
 
         def sql = new Sql(dataSource: dataSource)
         int taskId = -1;
-        def row = sql.firstRow(select, [projectId: project.id, fieldValue: fieldValue])
+        def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
             taskId = row[0]
         }
@@ -1049,7 +860,8 @@ ORDER BY record_idx, name;
 
             String urlPrefix = grailsApplication.config.images.urlPrefix
             String imagesHome = grailsApplication.config.images.home
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            path = imagesHome + '/' + path.substring(urlPrefix?.length())
+            //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
             return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
@@ -1077,75 +889,6 @@ ORDER BY record_idx, name;
             log.info("Could not read image file: $resource - could not get image metadata")
         }
 
-    }
-
-    def calculateTaskDates() {
-        def taskList = Task.findAllByFullyTranscribedByIsNotNullAndDateFullyTranscribedIsNull()
-        println "Processing ${taskList.size()} tasks..."
-        def idList = taskList*.id
-
-        int count = 0
-        try {
-            idList.each { taskId ->
-
-                Task.withNewTransaction { status ->
-                    def task = Task.get(taskId)
-                    if (!task) {
-                        println "No task ${taskId}"
-                        return
-                    }
-
-                    // Find the most recent field whose transcribed by matches the tasks fully transcribed by...
-                    def transcribedCriteria = Field.createCriteria()
-
-                    def dateTranscribed = transcribedCriteria.list {
-                        eq("task", task)
-                        eq("transcribedByUserId", task.fullyTranscribedBy)
-
-                        projections {
-                            max("created")
-                        }
-                    }
-
-                    if (dateTranscribed && dateTranscribed[0]) {
-                        task.dateFullyTranscribed = dateTranscribed[0]
-                    } else {
-                        println "No transcription date ${task.id}. Using most recent created date"
-                        task.dateFullyTranscribed = findMostRecentDate("created", task)
-                    }
-
-                    if (StringUtils.isNotEmpty(task.fullyValidatedBy)) {
-
-                        def validatedCriteria = Field.createCriteria()
-                        def dateValidated = validatedCriteria.list {
-                            eq("task", task)
-                            eq("validatedByUserId", task.fullyValidatedBy)
-                            projections {
-                                max("updated")
-                            }
-                        }
-
-                        if (dateValidated && dateValidated[0]) {
-                            task.dateFullyValidated = dateValidated[0]
-                        } else {
-                            println "No validation date! ${task.id}. Using most recent updated date."
-                            task.dateFullyValidated = findMostRecentDate("updated", task)
-                        }
-                    }
-
-                    task.save()
-
-                    if (++count % 200 == 0) {
-                        println "${count} tasks processed."
-                    }
-
-                }
-            }
-
-            println "Done."
-        } catch (Exception ex) {
-            ex.printStackTrace()
-        }
     }
 
 
@@ -1291,7 +1034,7 @@ ORDER BY record_idx, name;
         final projectFilter = ' AND project_id = :project '
         String filter
         String additionalJoins = ''
-        String dateTranscribed = 't.date_fully_transcribed'
+        String dateTranscribed = 'tr.date_fully_transcribed'
         List<String> withClauses = [
                 """catalog_numbers AS (
                       SELECT f.task_id, ARRAY_AGG(f.value) as catalog_number
@@ -1309,7 +1052,7 @@ ORDER BY record_idx, name;
                 filter = 'TRUE' // filter occurs by joining with the updated and validator notes task ids.
                 break
             case 1:
-                filter = 't.fully_transcribed_by = :userId'
+                filter = 'tr.fully_transcribed_by = :userId'
                 break
             case 2:
                 withClauses += """saved_tasks AS (
@@ -1319,18 +1062,18 @@ ORDER BY record_idx, name;
                                       AND f.transcribed_by_user_id = :userId
                                       GROUP BY f.task_id
                                     )""".stripIndent()
-                filter = 't.fully_transcribed_by is null'
+                filter = 't.is_fully_transcribed = false'
                 additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
                 dateTranscribed = "COALESCE($dateTranscribed, s.date_last_updated)"
                 break
             case 3:
-                filter = 'fully_validated_by = :userId'
+                filter = 't.fully_validated_by = :userId'
                 break
             default:
                 throw new IllegalArgumentException("selectedTab must be between 0 and 3")
         }
         if (project) {
-            filter += ' AND project_id = :project '
+            filter += ' AND t.project_id = :project '
         }
 
         // SORTING
@@ -1355,7 +1098,7 @@ ORDER BY record_idx, name;
         final statusSnippet = """
             CASE WHEN t.is_valid = true THEN '$validatedStatus'
                  WHEN t.is_valid = false THEN '$invalidatedStatus'
-                WHEN t.fully_transcribed_by IS NOT NULL THEN '$transcribedStatus'
+                WHEN t.is_fully_transcribed = true THEN '$transcribedStatus'
                 ELSE '$savedStatus'
             END""".stripIndent()
 
@@ -1379,7 +1122,27 @@ OR ($statusSnippet) = :query
         def withClause = "WITH \n${withClauses.join(',\n')}"
         def selectClause = """
 SELECT
-t.*,
+t.id,
+t.created,
+t.external_identifier,
+t.external_url,
+t.fully_validated_by,
+t.project_id,
+t.viewed,
+t.is_valid,
+t.date_fully_validated,
+t.date_last_updated,
+t.last_viewed,
+t.last_viewed_by,
+t.validateduuid,
+t.time_to_validate,
+t.number_of_matching_transcriptions,
+t.is_fully_transcribed,
+tr.fully_transcribed_by,
+tr.date_fully_transcribed,
+tr.fully_transcribed_ip_address,
+tr.transcribeduuid,
+tr.time_to_transcribe,
     (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
     (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
     c.catalog_number[1] AS "catalog_number",
@@ -1387,12 +1150,13 @@ t.*,
     $statusSnippet AS "status",
     $dateTranscribed AS "date_transcribed"
 """
-        def countClause = "SELECT count(t.id)"
+        def countClause = "SELECT count(DISTINCT t.id)"
         def queryClause = """
 FROM task t
     JOIN project p ON t.project_id = p.id
+    LEFT OUTER JOIN (select DISTINCT ON (tr.task_id) * from transcription tr where tr.fully_transcribed_by = :userId ORDER BY tr.task_id) as tr on (t.id = tr.task_id)
     LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
-    LEFT OUTER JOIN vp_user tu ON t.fully_transcribed_by = tu.user_id
+    LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
     LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
     $additionalJoins
 WHERE
@@ -1437,7 +1201,7 @@ $pagingClause
             results.viewList = sql.rows(rowsQuery, params, (offset ?: 0) + 1, max).collect { row ->
                 [ id: row.id,
                   externalIdentifier: row.external_identifier,
-                  fullyTranscribedBy: row.fully_transcribed_by,
+                  isFullyTranscribed: row.is_fully_transcribed,
                   fullyValidatedBy: row.validator_display_name,
                   projectId: row.project_id,
                   projectName: row.project_name,
@@ -1457,6 +1221,7 @@ $pagingClause
                 results.viewList.each { it.unread = unreadIds.contains(it.id) }
             }
         }
+
         return results
     }
 

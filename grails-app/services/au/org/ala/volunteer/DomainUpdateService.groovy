@@ -16,6 +16,7 @@ class DomainUpdateService {
     def achievementService
     def settingsService
     def userService
+    def validationService
 
     private static ConcurrentLinkedQueue<QueueTask> _backgroundQueue = new ConcurrentLinkedQueue<QueueTask>()
     // Used to show the currently processing size, which is the size of the background queue + the number of
@@ -36,11 +37,16 @@ class DomainUpdateService {
                     Task.withCriteria {
                         inList('id', taskSet.toList())
                         or {
-                            isNotNull('fullyTranscribedBy')
+                            transcriptions {
+                                isNotNull('fullyTranscribedBy')
+                            }
                             isNotNull('fullyValidatedBy')
                         }
                         projections {
-                            property('fullyTranscribedBy')
+                            transcriptions {
+                                property('fullyTranscribedBy')
+                            }
+
                             property('fullyValidatedBy')
                         }
                     }
@@ -82,7 +88,6 @@ class DomainUpdateService {
         _backgroundQueue.add(new DeleteTaskTask(taskId: taskId))
     }
 
-
     def getQueueLength() {
         return _backgroundQueue.size() + currentlyProcessing.get()
     }
@@ -94,6 +99,8 @@ class DomainUpdateService {
         Set<Long> deletes = new HashSet<>()
         Set<Long> updates = new HashSet<>()
         Set<Long> indexes = new HashSet<>()
+        Set<Long> validations = new HashSet<>()
+
         Stopwatch sw = Stopwatch.createStarted()
 
         while (taskCount < maxTasks && (jobDescriptor = _backgroundQueue.poll()) != null) {
@@ -105,6 +112,7 @@ class DomainUpdateService {
                     case UpdateTaskTask:
                         updates.add(jobDescriptor.taskId)
                         indexes.add(jobDescriptor.taskId)
+                        validations.add(jobDescriptor.taskId)
                         taskCount++
                         currentlyProcessing.set(indexes.size())
                         break
@@ -141,7 +149,8 @@ class DomainUpdateService {
         if (deletes) fullTextIndexService.deleteTasks(deletes)
         if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
         if (updates) postIndexTaskActions(updates)
-        if (deletes || indexes || updates) log.info("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates")
+        if (validations) validationService.autoValidate(validations)
+        if (deletes || indexes || updates) log.info("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates, ${validations.size()} task validations")
     }
 }
 

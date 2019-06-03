@@ -21,7 +21,7 @@
     </div>
 </g:hasErrors>
 
-<g:form method="post" class="form-horizontal" action="updateGeneralSettings">
+<g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
@@ -84,6 +84,25 @@
         </div>
     </div>
 
+    %{--<g:if test="${projectInstance.template?.supportMultipleTranscriptions}">--}%
+        <div class="multipleTranscriptionsSupport">
+            <div class="form-group">
+                <label class="control-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
+
+                <div class="col-md-6">
+                    <g:textField class="form-control" name="transcriptionsPerTask" value="${projectInstance.transcriptionsPerTask}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
+
+                <div class="col-md-6">
+                    <g:textField class="form-control" name="thresholdMatchingTranscriptions" value="${projectInstance.thresholdMatchingTranscriptions}"/>
+                </div>
+            </div>
+        </div>
+    %{--</g:if>--}%
+
     <div class="form-group">
         <label class="control-label col-md-3" for="label">Tags</label>
 
@@ -125,6 +144,15 @@
 
     <div class="form-group">
         <div class="col-md-9 col-md-offset-3">
+            <label for="extractImageExifData" class="checkbox">
+                <g:checkBox name="extractImageExifData"
+                            checked="${projectInstance.extractImageExifData}"/>&nbsp;EXIF data from staged images should be included in project exports
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-9 col-md-offset-3">
             <g:submitButton name="update" class="save btn btn-primary"
                             value="${message(code: 'default.button.update.label', default: 'Update')}"/>
         </div>
@@ -134,6 +162,49 @@
 <asset:javascript src="institution-dropdown" asset-defer=""/>
 <asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script type="text/javascript">
+
+    function setProjectDefaults() {
+       var checkSupportMultipleTransUrl = "${createLink(controller: 'project', action: 'checkTemplateSupportMultiTranscriptions')}";
+
+       var templateId = $('#template').val();
+       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId}}).done(function(data) {
+           if (data && data.supportMultipleTranscriptions == 'true') {
+               if (!$('#transcriptionsPerTask').val()) {
+                   $('#transcriptionsPerTask').val('1');
+               }
+
+               if (!$('#thresholdMatchingTranscriptions').val()) {
+                    $('#thresholdMatchingTranscriptions').val('0');
+               }
+
+               $('.multipleTranscriptionsSupport').show();
+           } else {
+               $('.multipleTranscriptionsSupport').hide();
+           }
+       });
+    }
+
+    setProjectDefaults();
+    $('#template').change(function (e) {
+        setProjectDefaults();
+    });
+
+    $('#updateGeneralSettings').submit(function(e) {
+        if ($('.multipleTranscriptionsSupport').is(":visible")) {
+            var transcriptionsPerTask = parseInt($('#transcriptionsPerTask').val());
+            var thresholdMatchingTranscriptions = parseInt($('#thresholdMatchingTranscriptions').val());
+            if ((!transcriptionsPerTask) || (!thresholdMatchingTranscriptions) ||
+                (transcriptionsPerTask < 0) || (thresholdMatchingTranscriptions < 0)) {
+                bootbox.alert("The template supports multiple transcriptions.<br><br> " +
+                                "You must enter the number of transcriptions per task (1 or more) and set threshold of matching transcriptions to more than 0 and less than number of transcriptions.");
+                e.preventDefault();
+            } else if (thresholdMatchingTranscriptions > transcriptionsPerTask) {
+                bootbox.alert("You must set threshold to more than 0 and less than number of transcriptions per task.");
+                e.preventDefault();
+            }
+        }
+    });
+
     jQuery(function($) {
         var institutions = <cl:json value="${institutions}"/>;
         var nameToId = <cl:json value="${institutionsMap}"/>;
