@@ -66,6 +66,9 @@ function createProjectModule(config) {
     var picklistId = arguments.length <= 13 || arguments[13] === undefined ? null : arguments[13];
     var labelIds = arguments.length <= 14 || arguments[14] === undefined ? [] : arguments[14];
     var tutorialLinks = arguments.length <= 15 || arguments[15] === undefined ? [] : arguments[15];
+    var transcriptionsPerTask = arguments.length <= 16 || arguments[16] === undefined ? 1 : arguments[16];
+    var thresholdMatchingTranscriptions = arguments.length <= 17 || arguments[17] === undefined ? 0 : arguments[17];
+    var extractImageExifData = arguments.length <= 18 || arguments[18] === undefined ? false : arguments[18];
 
     _classCallCheck(this, ProjectDefintion);
 
@@ -86,6 +89,9 @@ function createProjectModule(config) {
     this.picklistId = picklistId;
     this.labelIds = labelIds;
     this.tutorialLinks = tutorialLinks;
+    this.transcriptionsPerTask = transcriptionsPerTask;
+    this.thresholdMatchingTranscriptions = thresholdMatchingTranscriptions;
+    this.extractImageExifData = extractImageExifData;
   };
   /* end generated */
 
@@ -421,6 +427,10 @@ function createProjectModule(config) {
         minLength: 2
       };
 
+      $scope.projectTemplate = _.find(config.templates, function(t) {
+          return t.id == project.templateId
+      });
+
       $scope.data = {
         displayKey: function(label) {
           return label.value + " (" + label.category + ")";
@@ -484,6 +494,20 @@ function createProjectModule(config) {
 
       $scope.loading = false;
       $scope.create = function() {
+        if ($scope.projectTemplate.supportMultipleTranscriptions) {
+            var transcriptionsPerTask = parseInt ($scope.project.transcriptionsPerTask);
+            var thresholdMatchingTranscriptions = parseInt ($scope.project.thresholdMatchingTranscriptions);
+            if ((!transcriptionsPerTask) || (!thresholdMatchingTranscriptions) ||
+                ((transcriptionsPerTask < 0) || (thresholdMatchingTranscriptions < 0))) {
+                bootbox.alert("Expedition is not created.<br>A template which supports multiple transcriptions is currently being set for this expedition.<br>" +
+                    "Please enter the number of transcriptions per task (1 or more) and set threshold of matching transcriptions to more than 0 and less than number of transcriptions.");
+                return;
+            } else if (transcriptionsPerTask < thresholdMatchingTranscriptions) {
+                bootbox.alert("You must set threshold of matching transcriptions to more than 0 and less than number of transcriptions per task.");
+                return;
+            }
+        }
+
         $scope.loading = true;
         $http.post(config.createUrl, project).then(
           function(resp) {

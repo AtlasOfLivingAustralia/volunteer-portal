@@ -66,8 +66,8 @@
             <div class="row">
                 <div class="col-sm-8">
                     Total Tasks: ${taskInstanceTotal},
-                    Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
-                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
+                    Transcribed Tasks: ${transcribedCount},
+                    Validated Tasks: ${validatedCount}
                     &nbsp;
                     <div class="btn-group btn-group-sm" role="group" aria-label="Export">
                         <button id="btnExportAll" class="btn btn-default">Export all</button>

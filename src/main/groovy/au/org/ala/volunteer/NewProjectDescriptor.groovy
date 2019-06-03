@@ -24,7 +24,9 @@ class NewProjectDescriptor implements Serializable {
     String picklistId
     List<Long> labelIds = []
     String tutorialLinks
-
+    int transcriptionsPerTask
+    int thresholdMatchingTranscriptions
+    boolean extractImageExifData
     String createdBy
 
     static NewProjectDescriptor fromJson(String s, def p) {
@@ -46,6 +48,9 @@ class NewProjectDescriptor implements Serializable {
                 picklistId: p.picklistId,
                 labelIds: p.labelIds,
                 tutorialLinks: p.tutorialLinks,
+                transcriptionsPerTask: p.transcriptionsPerTask as Integer,
+                thresholdMatchingTranscriptions: p.thresholdMatchingTranscriptions as Integer,
+                extractImageExifData: p.extractImageExifData,
                 createdBy: p.createdBy
         )
     }

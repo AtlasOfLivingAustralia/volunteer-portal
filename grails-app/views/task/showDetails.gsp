@@ -103,14 +103,7 @@
                         <tr>
                             <td>Transcribed</td>
                             <td>
-                                <g:if test="${taskInstance.dateFullyTranscribed}">
-                                    ${taskInstance.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.emailForUserId(id: taskInstance.fullyTranscribedBy) ?: "<span class='muted'>unknown</span>"}
-                                </g:if>
-                                <g:else>
-                                    <span class="muted">
-                                        Not transcribed
-                                    </span>
-                                </g:else>
+                                <cl:transcribers task="${taskInstance}"/>
                             </td>
                         </tr>
                         <tr>

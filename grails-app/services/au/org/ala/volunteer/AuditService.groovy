@@ -8,8 +8,7 @@ class AuditService {
     def grailsApplication
     def userService
 
-
-    def getLastViewForTask(Task taskInstance) {
+    ViewedTask getLastViewForTask(Task taskInstance) {
 
         def c = ViewedTask.createCriteria()
         def viewedTasks = c.list {
@@ -20,9 +19,14 @@ class AuditService {
         return viewedTasks ? viewedTasks[0] : null
     }
 
-    public boolean isTaskLockedForUser(Task taskInstance, String userId) {
-        def lastView = getLastViewForTask(taskInstance)
-        def currentUser = userService.currentUserId
+    boolean isTaskLockedForTranscription(Task taskInstance, String userId) {
+        long timeout = grailsApplication.config.viewedTask.timeout as long
+        return taskInstance.isLockedForTranscription(userId, timeout)
+    }
+
+    boolean isTaskLockedForValidation(Task taskInstance, String userId) {
+        ViewedTask lastView = getLastViewForTask(taskInstance)
+        String currentUser = userService.currentUserId
         if (lastView) {
             log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
             def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView

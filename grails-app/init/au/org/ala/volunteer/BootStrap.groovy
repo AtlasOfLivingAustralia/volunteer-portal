@@ -162,9 +162,10 @@ class BootStrap {
             def projectList = Project.list()
             if (projectList.size() > 0) {
                 frontPage.projectOfTheDay = projectList[0]
+                frontPage.save(flush: true, failOnError: true)
             }
 
-            frontPage.save(flush: true, failOnError: true)
+
         }
 
         FrontPage.metaClass.'static'.getFeaturedProject = {->

@@ -1,5 +1,9 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
+
+import java.util.concurrent.TimeUnit
+
 class ValidateController {
 
     def fieldSyncService
@@ -16,7 +20,7 @@ class ValidateController {
 
         if (taskInstance) {
 
-            if (auditService.isTaskLockedForUser(taskInstance, currentUser)) {
+            if (auditService.isTaskLockedForValidation(taskInstance, currentUser)) {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Returning to admin list.")
@@ -38,11 +42,11 @@ class ValidateController {
             def isValidator = userService.isValidator(project)
             log.info(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.fullyTranscribedBy && taskInstance.fullyTranscribedBy != currentUser && !(userService.isAdmin() || isValidator)) {
+            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
-                if ((currentUser == taskInstance.fullyTranscribedBy)) {
+                if (taskInstance.hasBeenTranscribedByUser(currentUser)) {
                     if (userService.isAdmin()) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
@@ -52,10 +56,18 @@ class ValidateController {
                 }
             }
 
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+            Stopwatch sw = new Stopwatch()
+            sw.start()
+            Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
+            sw.stop()
+            println sw.elapsed(TimeUnit.SECONDS)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
-            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
+            def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)
+/*            if (!recordValues && transcribersAnswers && transcribersAnswers.size() > 0) {
+                recordValues = transcribersAnswers[0].fields
+            }*/
+            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, transcribersAnswers: transcribersAnswers, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -80,6 +92,10 @@ class ValidateController {
             }
             WebUtils.cleanRecordValues(params.recordValues)
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+
+            if (taskInstance.hasErrors()) {
+                log.warn("Validation of task ${taskInstance.id} produced errors: "+errors)
+            }
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')

@@ -23,6 +23,7 @@ import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
 import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
+import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
@@ -218,7 +219,7 @@ class ProjectService {
             def taskCount = result[TASK_COUNT_COLUMN] ?: 0
             def transcribedCount = result[TRANSCRIBED_COUNT_COLUMN] ?: 0
             def validatedCount = result[VALIDATED_COUNT_COLUMN] ?: 0
-            makeProjectSummary(project, taskCount, transcribedCount, validatedCount, 0, 0)
+            makeProjectSummary(project, taskCount, transcribedCount, validatedCount,0, 0)
         }
 
         log.debug("make summary projects: ${sw.elapsed(MILLISECONDS)}ms")
@@ -264,11 +265,11 @@ class ProjectService {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
-        ps.transcriberCount = transcriberCount.toLong()
 
         ps.taskCount = taskCount.toLong()
         ps.transcribedCount = transcribedCount.toLong()
         ps.validatorCount = validatorCount.toLong()
+        ps.transcriberCount = transcriberCount.toLong()
         ps.validatedCount = fullyValidatedCount.toLong()
 
         return ps
@@ -279,11 +280,11 @@ class ProjectService {
         if (!userService.isInstitutionAdmin(institution)) {
             conditions += ACTIVE_ONLY
         }
-        makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter)
+        makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, false)
     }
 
-    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
-        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
+        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         if (!results) {
             return makeSummaryListFromResults(results, [])
         }
@@ -291,11 +292,11 @@ class ProjectService {
         return makeSummaryListFromResults(results, projects)
     }
 
-    def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
+    def makeSummaryListFromProjectList(List<Project> projects, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
         if (!projects) {
             return makeSummaryListFromResults([], [])
         }
-        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, true).fetchMaps()
+        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         return makeSummaryListFromResults(results, projects)
     }
 
@@ -340,35 +341,41 @@ class ProjectService {
         }
 
         def taskCountClause = jCount(TASK).'as'(TASK_COUNT_COLUMN)
-        def transcribedCountClause = jSum(jWhen(TASK.FULLY_TRANSCRIBED_BY.isNull(), 0).otherwise(1)).'as'(TRANSCRIBED_COUNT_COLUMN)
+
+        def fullyTranscribedTaskCountClause = jCount(TASK.IS_FULLY_TRANSCRIBED).filterWhere(TASK.IS_FULLY_TRANSCRIBED.eq(true)).'as'(TRANSCRIBED_COUNT_COLUMN)
         def validatedCountClause = jSum(jWhen(TASK.FULLY_VALIDATED_BY.isNull(), 0).otherwise(1)).'as'(VALIDATED_COUNT_COLUMN)
-        def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
-        def transcriberCountClause = jCountDistinct(TASK.FULLY_TRANSCRIBED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+        def validatorCountClause = jCountDistinct(TASK.FULLY_VALIDATED_BY).'as'(VALIDATOR_COUNT_COLUMN)
+        def transcriberCountClause = jCountDistinct(TRANSCRIPTION.FULLY_TRANSCRIBED_BY).'as'(TRANSCRIBER_COUNT_COLUMN)
 
         switch (statusFilter) {
             case ProjectStatusFilterType.showCompleteOnly:
-                whereClauses += taskCountClause.eq(transcribedCountClause)
+                whereClauses += taskCountClause.eq(fullyTranscribedTaskCountClause)
                 break
             case ProjectStatusFilterType.showIncompleteOnly:
-                whereClauses += taskCountClause.gt(transcribedCountClause)
+                whereClauses += taskCountClause.gt(fullyTranscribedTaskCountClause)
                 break
         }
 
         def taskJoinTableColumns = [
                 TASK.PROJECT_ID,
                 taskCountClause,
-                transcribedCountClause,
-                validatedCountClause,
+                fullyTranscribedTaskCountClause,
+                validatedCountClause
         ]
+        def taskJoinTable
         if (countUsers) {
             taskJoinTableColumns.add(transcriberCountClause)
             taskJoinTableColumns.add(validatorCountClause)
+            taskJoinTable = context.select(taskJoinTableColumns).from(TASK.leftOuterJoin(TRANSCRIPTION).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))).groupBy(TASK.PROJECT_ID).asTable('taskStats')
+        } else {
+            taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
         }
 
+       // def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
 
-        def taskJoinTable = context.select(taskJoinTableColumns).from(TASK).groupBy(TASK.PROJECT_ID).asTable('taskStats')
-
-        def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey().leftOuterJoin(INSTITUTION).onKey().leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
+        def fromClause = PROJECT.leftOuterJoin(PROJECT_TYPE).onKey()
+                                .leftOuterJoin(INSTITUTION).onKey()
+                                .leftOuterJoin(taskJoinTable).on(PROJECT.ID.eq(taskJoinTable.field(0, Long)))
 
         // apply the query paramter
         if (tag) {
@@ -391,10 +398,10 @@ class ProjectService {
         def sortCondition
         switch (sort) {
             case 'completed':
-                sortCondition = jWhen(taskCountClause.eq(transcribedCountClause), transcribedCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(transcribedCountClause.div(taskCountClause.cast(Double)))
-                break
+                sortCondition = jWhen(taskCountClause.eq(fullyTranscribedTaskCountClause), fullyTranscribedTaskCountClause.add(validatedCountClause).div(taskCountClause.cast(Double))).otherwise(fullyTranscribedTaskCountClause.div(taskCountClause.cast(Double)))
+               break
             case 'transcribed':
-                sortCondition = transcribedCountClause.div(taskCountClause.cast(Double))
+                sortCondition = fullyTranscribedTaskCountClause.div(taskCountClause.cast(Double))
                 break
             case 'validated':
                 sortCondition = validatedCountClause.div(taskCountClause.cast(Double))
@@ -435,7 +442,7 @@ class ProjectService {
         else return query
     }
 
-    ProjectSummaryList getProjectSummaryList(GrailsParameterMap params) {
+    ProjectSummaryList getProjectSummaryList(GrailsParameterMap params, boolean countUser) {
 
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
@@ -455,10 +462,10 @@ class ProjectService {
         def max = params?.int('max')
         def order = params?.order
 
-        return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode)
+        return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode, countUser)
     }
 
-    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null) {
+    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null, boolean countUser = false) {
         def conditions = []
         if (projectType) {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
@@ -469,7 +476,7 @@ class ProjectService {
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
 
-        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter)
+        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter, countUser)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
@@ -520,13 +527,12 @@ class ProjectService {
     }
 
     def calculateCompletion(List<Project> projects) {
-        Task.withCriteria {
+        Task.withCriteria{
             'in'('project', projects)
-
             projections {
                 groupProperty('project')
                 count('id', 'total')
-                count('fullyTranscribedBy', 'transcribed')
+                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
                 count('fullyValidatedBy', 'validated')
             }
         }.collectEntries { row ->
@@ -581,9 +587,11 @@ class ProjectService {
     def calculateNumberOfTranscribers(Project project) {
         Task.createCriteria().get {
             eq('project', project)
-            isNotNull('fullyTranscribedBy')
-            projections {
-                countDistinct('fullyTranscribedBy')
+            transcriptions {
+                isNotNull('fullyTranscribedBy')
+                projections {
+                    countDistinct('fullyTranscribedBy')
+                }
             }
         }
     }
@@ -591,9 +599,11 @@ class ProjectService {
     def calculateStartAndEndTranscriptionDates(Project project) {
         def result = Task.createCriteria().list {
             eq('project', project)
-            projections {
-                max('dateFullyTranscribed')
-                min('dateFullyTranscribed')
+            transcriptions {
+                projections {
+                    max('dateFullyTranscribed')
+                    min('dateFullyTranscribed')
+                }
             }
         }
         return result ? [start: result[0][1], end: result[0][0]] : null
@@ -609,12 +619,15 @@ class ProjectService {
     }
 
     def countTranscribedTasksForTag(ProjectType pt) {
-        Task.createCriteria().count {
+        def result = Task.createCriteria().list {
             project {
                 eq('projectType', pt)
             }
-            isNotNull('fullyTranscribedBy')
+            projections {
+                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
+            }
         }
+        return result[0]
     }
 
     def getTranscriberCountForTag(ProjectType pt) {
@@ -622,9 +635,13 @@ class ProjectService {
             project {
                 eq('projectType', pt)
             }
-            isNotNull('fullyTranscribedBy')
+            transcriptions {
+                isNotNull('fullyTranscribedBy')
+            }
             projections {
-                countDistinct 'fullyTranscribedBy'
+                transcriptions {
+                    countDistinct 'fullyTranscribedBy'
+                }
             }
         }
 

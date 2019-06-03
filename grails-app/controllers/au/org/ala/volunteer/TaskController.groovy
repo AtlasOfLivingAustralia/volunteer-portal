@@ -124,6 +124,9 @@ class TaskController {
                 taskInstanceTotal = Task.countByProject(projectInstance)
             }
 
+            int transcribedCount = taskService.getNumberOfFullyTranscribedTasks(projectInstance)
+            int validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)
+
             if (taskInstanceTotal) {
                 fieldNames.each {
                     extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
@@ -151,7 +154,8 @@ class TaskController {
             }
 
             // add some associated "field" values
-            render(view: view, model: [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal,
+            render(view: view, model:
+                    [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, validatedCount: validatedCount, transcribedCount: transcribedCount,
                     projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
@@ -166,11 +170,27 @@ class TaskController {
         def id = params.int('id')
         def sid = params.id
         def taskInstance = Task.get(params.int('id'))
-        Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+        Map recordValues = [:]
+        if (taskInstance.fullyValidatedBy) {
+            recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
+        }
+        else {
+            if (taskInstance.transcriptions) {
+                recordValues = fieldSyncService.retrieveFieldsForTranscription(taskInstance, taskInstance.transcriptions.first())
+            }
+        }
+
         def jsonObj = [:]
         jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)
         jsonObj.put("name", recordValues?.get(0)?.scientificName)
-        jsonObj.put("transcriber", userService.detailsForUserId(taskInstance.fullyTranscribedBy).displayName)
+
+        List transcribers = []
+        taskInstance.transcriptions.each {
+            if (it.dateFullyTranscribed) {
+                transcribers << userService.detailsForUserId(it.fullyTranscribedBy).displayName
+            }
+        }
+        jsonObj.put("transcriber", transcribers.join(", "))
         render jsonObj as JSON
     }
 
@@ -328,8 +348,23 @@ class TaskController {
 
 //                def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-                //retrieve the existing values
-                Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance)
+                //retrieve the existing values - if this is a multiple transcription task, we have to pick
+                // which transcription to show.
+                Transcription transcription = null //
+                if (!taskInstance.fullyValidatedBy) { // If the task is not validated, pick a transcription.
+                    // If the user has transcribed the Task, use the user's transcription.
+                    String userId = currentUser
+                    transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == userId}
+
+                    // Otherwise use the transcription from the user notebook, if supplied.
+                    if (params.userId) {
+                        transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == params.userId}
+                    }
+                    if (!transcription) {
+                        transcription = taskInstance.transcriptions.first()
+                    }
+                }
+                Map recordValues = fieldSyncService.retrieveFieldsForTranscription(taskInstance, transcription)
                 def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
                 def model = [
                         taskInstance: taskInstance,
@@ -595,6 +630,27 @@ class TaskController {
             redirect(controller: 'index')
             return
         }
+        [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+    /*    def profile = ProjectStagingProfile.findByProject(projectInstance)
+        if (!profile) {
+            profile = new ProjectStagingProfile(project: projectInstance)
+            profile.save(flush: true, failOnError: true)
+        }
+
+        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
+        }
+
+        cache false
+
+        def images = stagingService.buildTaskMetaDataList(projectInstance)
+
+        [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+        */
+    }
+
+    def stagedImages() {
+        def projectInstance = Project.get(params.int("projectId"))
         def profile = ProjectStagingProfile.findByProject(projectInstance)
         if (!profile) {
             profile = new ProjectStagingProfile(project: projectInstance)
@@ -605,9 +661,9 @@ class TaskController {
             profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
+        cache false
         def images = stagingService.buildTaskMetaDataList(projectInstance)
-
-        [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+        render template:'stagedImages', model: [images: images, profile:profile]
     }
 
     def selectImagesForStagingFragment() {
@@ -701,6 +757,8 @@ class TaskController {
     }
 
     def stageImage() {
+
+        int count = 0
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             if(request instanceof MultipartHttpServletRequest) {
@@ -714,6 +772,7 @@ class TaskController {
 
                         try {
                             stagingService.stageImage(projectInstance, f)
+                            count ++
                         } catch (Exception ex) {
                             flash.message = "Failed to upload image file: " + ex.message;
                         }
@@ -723,7 +782,10 @@ class TaskController {
             }
 
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        def processed = [:]
+        processed.put("processed", count)
+        render processed as JSON
     }
 
     def unstageImage() {
@@ -878,15 +940,6 @@ class TaskController {
         }
 
         redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
-    }
-
-    // One of task to help transition to explicit date recording against tasks
-    def calculateDates() {
-
-        taskService.calculateTaskDates()
-
-        redirect(controller:'admin', action:'index')
-
     }
 
     def exportOptionsFragment() {

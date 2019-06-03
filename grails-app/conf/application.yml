@@ -290,6 +290,8 @@ environments:
             properties:
                 jdbcInterceptors: ConnectionState;StatementCache(max=200);SlowQueryReport(logFailed=true)
     test:
+        elasticsearch:
+            location: "./target/elasticsearch/"
         flyway:
             baselineOnMigrate: false
         dataSource:

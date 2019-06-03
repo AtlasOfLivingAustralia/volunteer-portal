@@ -489,7 +489,7 @@ class ForumController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = params.sort ?: 'completed'
 
-        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params)
+        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params, false)
 
         def forumStats = [:]
 

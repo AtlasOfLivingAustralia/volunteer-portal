@@ -4,6 +4,7 @@ import au.org.ala.volunteer.sanitizer.SanitizedHtml
 
 class Project implements Serializable {
 
+    //Long id
     String name
     @SanitizedHtml
     String description
@@ -30,6 +31,10 @@ class Project implements Serializable {
     Boolean harvestableByAla = true
     Boolean imageSharingEnabled = false
     Boolean archived = false
+    /** If true, the EXIF data from uploaded images will be attempted to be extracted and stored in Task Fields */
+    Boolean extractImageExifData = false
+    Integer transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+    Integer thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
 
     Date dateCreated
     Date lastUpdated
@@ -42,9 +47,12 @@ class Project implements Serializable {
     def grailsLinkGenerator
     //def assetResourceLocator
 
+    static final Integer DEFAULT_TRANSCRIPTIONS_PER_TASK = 1
+    static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
+
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label]
-    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator']
+    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
+    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
         autoTimestamp true
@@ -57,6 +65,8 @@ class Project implements Serializable {
         version defaultValue: '0'
         imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
+        transcriptionsPerTask defaultValue: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+        thresholdMatchingTranscriptions defaultValue: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
     }
 
     static constraints = {
@@ -66,7 +76,6 @@ class Project implements Serializable {
         created nullable: true
         showMap nullable: true
         tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
-        featuredImage nullable: true
         featuredLabel nullable: true
         featuredOwner nullable: true
         institution nullable: true
@@ -86,6 +95,17 @@ class Project implements Serializable {
         mapInitLongitude nullable: true
         harvestableByAla nullable: true
         createdBy nullable: true
+        extractImageExifData nullable: true
+    }
+
+    /**
+     * Reads the project template configuration to determine the number of times each Task must be transcribed.
+     * The default is 1
+     */
+    int getRequiredNumberOfTranscriptions() {
+        //String transcriptionsPerTask = template?.viewParams?.transcriptionsPerTask ?: "1"
+        //Integer.parseInt(transcriptionsPerTask)
+        return transcriptionsPerTask?: DEFAULT_TRANSCRIPTIONS_PER_TASK
     }
 
     public String toString() {
@@ -167,4 +187,9 @@ class Project implements Serializable {
     def afterUpdate() {
         GormEventDebouncer.debounceProject(this.id)
     }
+
+    public String getKey() {
+        name ?: ''
+    }
+
 }

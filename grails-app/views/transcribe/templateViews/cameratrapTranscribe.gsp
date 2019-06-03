@@ -8,8 +8,6 @@
     <content tag="templateView">
         <div id="ct-container" >
 
-            <g:set var="sequences" value="${sequenceNumbers(project: taskInstance.project, number: sequenceNumber, count: 3)}"/>
-
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
                     <div id="ct-image-well" class="panel panel-default">
@@ -29,23 +27,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="ct-image-sequence" class="film-strip">
-                                <g:each in="${sequences.previous}" var="p">
-                                    <div class="film-cell" data-seq-no="${p}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${p}"/>
-                                    </div>
-                                </g:each>
-                                <div class="film-cell active default" data-seq-no="${sequenceNumber}">
-                                    <cl:taskThumbnail task="${taskInstance}" fixedHeight="${false}" withHidden="${true}"/>
-                                </div>
-                                <g:each in="${sequences.next}" var="n">
-                                    <div class="film-cell" data-seq-no="${n}">
-                                        <cl:sequenceThumbnail project="${taskInstance.project}" seqNo="${n}"/>
-                                    </div>
-                                </g:each>
-                            </div>
-
+                            <g:render template="/transcribe/cameraTrapImageSequence"/>
                             <div>
                                 <p style="margin-top:10px"
                                    class="text-center">${message(code: 'cameratrap.sequence.label', default: 'Move between the image sequence to see what\'s coming in or going out of the current image')}</p>
@@ -249,6 +231,51 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
+                                    Transcribers answers
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table table-striped confirmation-table transcribers-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-transcriber">Transcriber</th>
+                                                        <th class="col-animal">Animal Visible</th>
+                                                        <th class="col-selection">Selected Animal</th>
+                                                        <th class="col-remark">Remark</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbody-answer-summary">
+                                                <g:each in="${transcribersAnswers}" var="answers" status="st">
+                                                    <g:set var="answer" value="${answers}"/>
+                                                    <g:set var="ans1" value="${answer.get('fields')[0]}" />
+                                                    <tr>
+                                                        <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
+                                                        <td>${ans1.get('animalsVisible')}</td>
+                                                        <g:if test="${ans1.get('animalsVisible') == 'yes'}">
+                                                            <td>
+                                                                <div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div>
+                                                                <ct:showUnlist recs="${answer.get('fields')}"></ct:showUnlist>
+                                                            </td>
+                                                            <td>
+                                                                ${ans1.get('unknown') == "true"? 'Unknown animal in the image':'n/a'}
+                                                            </td>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <td>None Selected</td>
+                                                            <td>n/a</td>
+                                                        </g:else>
+                                                    </tr>
+
+                                                </g:each>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </g:if>
+
                             </div>
 
                             <div id="ct-full-image-container" class="ct-item clearfix"></div>
@@ -285,6 +312,19 @@
             <div class="thumbnail ct-thumbnail {{selected}}" data-image-select-key="{{key}}" data-image-select-value="{{value}}">
                 <span class="ct-badge ct-badge-sure"><i class="fa fa-check-circle"></i></span>
                 <span class="ct-badge ct-badge-uncertain"><i class="fa fa-question-circle"></i></span>
+                <img src="{{squareThumbUrl}}" alt="{{value}}">
+                <div class="ct-caption-table">
+                    <div class="ct-caption-cell">
+                        <div class="ct-caption dotdotdot" title="{{value}}">{{value}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </script>
+
+        <script id="selected-item-transcriber-template" type="x-tmpl-mustache">
+        <div class="griditem">
+            <div class="thumbnail ct-thumbnail {{selected}} transcriber-selection" data-transcriber-image-key="{{key}}" data-transcriber-image-value="{{value}}" data-transcriber-image-certainty="{{certainty}}">
                 <img src="{{squareThumbUrl}}" alt="{{value}}">
                 <div class="ct-caption-table">
                     <div class="ct-caption-cell">
@@ -350,7 +390,8 @@
             var items = <cl:json value="${animalInfos.items}"/>;
             var recordValues = <cl:json value="${recordValues}"/>;
             var placeholders = <cl:json value="${placeholders}"/>;
-            cameratrap(imageInfos, items, recordValues, placeholders);
+            var transcribersAnswers = <cl:json value="${transcribersAnswers}"/>;
+            cameratrap(imageInfos, items, recordValues, placeholders, transcribersAnswers);
         </asset:script>
     </content>
 </g:applyLayout>

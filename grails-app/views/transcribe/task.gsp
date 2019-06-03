@@ -92,7 +92,7 @@
 
             <div class="btn-group" role="group" aria-label="Transcription controls">
                 <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
-                        title="Skip the to next image">Skip</button>
+                        title="Skip to the next image">Skip</button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
                 <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
             </div>

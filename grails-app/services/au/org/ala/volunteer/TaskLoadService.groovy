@@ -150,6 +150,19 @@ class TaskLoadService {
                             file.delete()
                         }
                     }
+                    try {
+                        // Load EXIF data from the image if the Project is configured to do so.
+                        if (project.extractImageExifData) {
+                            Map exif = ImageUtils.getExifMetadata(imgData.file)
+                            exif.each { exifTag, value ->
+                                fieldService.setFieldValueForTask(task, exifTag, 0, value)
+                            }
+                        }
+                    }
+                    catch (Exception e) {
+                        log.error("Failed to extract EXIF data for task ${task.id}, image: ${imgData.file.name}", e)
+                    }
+
                     imgData.file.delete()
                 } catch (Exception ex) {
                     log.error("afterLoad for task ${task.id} failed:", ex)

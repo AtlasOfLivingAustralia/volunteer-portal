@@ -3,12 +3,13 @@ package au.org.ala.volunteer
 import grails.converters.JSON
 import org.grails.web.converters.exceptions.ConverterException
 
+
 import static grails.async.Promises.*
 
 class CameraTrapTagLib {
     static namespace = "ct"
 
-    static defaultEncodeAs = [taglib: 'html']
+    static defaultEncodeAs = [taglib: 'text']
     static encodeAsForTags = [cameraTrapImageInfos: [taglib:'none']]
     static returnObjectForTags = ['cameraTrapImageInfos']
 
@@ -30,7 +31,7 @@ class CameraTrapTagLib {
             myLast = task { [] }
         } else {
             valueCounts = Field.async.executeQuery("select f.value, count(f.id) from Field f JOIN f.task t WHERE t.project.id = :projectId GROUP BY f.value", [projectId: project.id])
-            myLast = Field.async.executeQuery("select distinct f.value, max(t.dateFullyTranscribed) from Field f JOIN f.task t WHERE t.project.id = :projectId AND t.fullyTranscribedBy = :userId GROUP BY f.value ORDER BY max(t.dateFullyTranscribed) DESC", [projectId: project.id, userId: userId])
+            myLast = Field.async.executeQuery("select distinct f.value, max(trans.dateFullyTranscribed) from Field f JOIN f.transcription trans JOIN trans.task t WHERE t.project.id = :projectId AND trans.fullyTranscribedBy = :userId GROUP BY f.value ORDER BY max(trans.dateFullyTranscribed) DESC", [projectId: project.id, userId: userId])
         }
 
         def items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, project?.picklistInstitutionCode)
@@ -157,4 +158,24 @@ class CameraTrapTagLib {
 
         [picklist: pl, items: items2, infos: imageInfos, warnings: warnings]
     }
+
+    def showUnlist = {attrs, body ->
+        def unlistStr = ''
+        attrs.recs.each {
+            if (it.value?.unlisted && it.value?.unlisted?.trim() != '')  {
+                if (unlistStr != '') {
+                    unlistStr = unlistStr + ', '
+                }
+                unlistStr = unlistStr + it.value.unlisted
+            }
+        }
+        if (unlistStr != '') {
+            out << "<b>Other: </b>" + unlistStr
+        } else {
+            out << ''
+        }
+
+        //out << attrs.recs.collect { it.value?.unlisted?:'' }.join(', ').replaceAll(/(^(\s*?\,+)+\s?)|(^\s+)|(\s+$)|((\s*?\,+)+\s?$)/, '')
+    }
+
 }

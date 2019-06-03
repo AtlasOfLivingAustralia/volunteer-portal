@@ -6,7 +6,7 @@
 //= require dotdotdot
 //= require transitionend
 //= require_self
-function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
+function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcribersAnswers) {
   jQuery(function ($) {
     var values = _.pluck([].concat(_.values(smItems)), 'value');
 
@@ -15,6 +15,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     var unlisted = [];
 
     var selections = {};
+
+    var transcribersSelections = {};
 
     // setup initial selection state from recordValues
     for (var index in recordValues) {
@@ -183,11 +185,23 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       })
       .on('click', '.ct-badge-uncertain', function (e) {
         ctBadgeClick(e, 0.5);
+      })
+      .on('click', '.transcriber-selection', function (e) {
+          var t = $(e.currentTarget);
+          var imageKey = t.data('transcriber-image-key');
+          var value = t.data('transcriber-image-value');
+          var certainty = t.data('transcriber-image-certainty');
+          if (selections.hasOwnProperty(value) && selections[value].certainty == selectionCertainty) {
+              delete selections[value];
+          } else {
+              selections[value] = {certainty: certainty, key: imageKey};
+          }
+          syncSelectionState();
       });
 
-    function ctBadgeClick(e, selectionCertainty) {
+      function ctBadgeClick(e, selectionCertainty) {
       var t = $(e.target);
-      var badge = t.closest('.badge');
+     // var badge = t.closest('.badge');
 
       var selectedThumbnail = t.closest('[data-image-select-value]');//.closest('.thumbnail');
       var value = selectedThumbnail.data('image-select-value');
@@ -219,6 +233,43 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
       };
       mu.appendTemplate(selElem, 'selected-item-template', opts);
       $('.ct-caption').dotdotdot();
+    }
+
+    function addTranscribersSelectionToContainer(sel, selElem) {
+        var answerFields = transcribersAnswers.find (function (t) { return t.fullyTranscribedBy == sel }).fields
+        if (answerFields) {
+            _.values(answerFields).forEach (function (e) {
+                if (e.vernacularName && e.certainty) {
+                    var imageKey = itemValueMap[e.vernacularName].imageIds;
+                    var firstKey = keyToArray(imageKey)[0];
+                    var imageInfo = firstInfoWithKey(firstKey);
+                    var imageUrl = imageInfo ? imageInfo.squareThumbUrl : null;
+                    var selected = (e.certainty > .5) ? 'ct-certain-selected' : 'ct-uncertain-selected';
+                    if (e.vernacularName && e.certainty) {
+                        var opts = {
+                            squareThumbUrl: imageUrl,
+                            value: e.vernacularName,
+                            key: imageKey,
+                            selected: selected,
+                            certainty: certainty
+                        };
+                        mu.appendTemplate(selElem, 'selected-item-transcriber-template', opts);
+                    }
+                }
+
+            });
+            $('.ct-caption').dotdotdot();
+        }
+    }
+
+    function syncTranscribersSelection() {
+      var selElem = $('.ct-selection-transcribers');
+      // var selections = transcribersSelections;
+
+      for (var i=0; i < selElem.length; ++i) {
+          var elem = selElem[i];
+          addTranscribersSelectionToContainer(elem.getAttribute('transcribedBy'), elem);
+      };
     }
 
     function syncSelectionState() {
@@ -350,10 +401,16 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     var $clicked = $defaultImg;
 
     function loadImage($src) {
-      $imgSeq.find('.active').removeClass('active');
-      $imgViewer.prop('src', $src.find('img').data('full-src'));
-      $imgViewer.panZoom('loadImage');
-      $src.addClass('active');
+      // This is a workaround for #328 - there is a difficult to reproduce issue where this function is
+      // called before the panZoom plugin is initalised.
+      // We just check if it is before loading a new image.
+      var panZoom = $imgViewer.data('panZoom');
+      if (panZoom) {
+        $imgSeq.find('.active').removeClass('active');
+        $imgViewer.prop('src', $src.find('img').data('full-src'));
+        $imgViewer.panZoom('loadImage');
+        $src.addClass('active');
+      }
     }
 
     $imgSeq.on('click', '.film-cell', function(e) {
@@ -529,6 +586,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders) {
     // force intial sync of saved values
     syncSelectionState();
     syncUnlistedTray();
+    syncTranscribersSelection();
 
     // enable tooltips
     $('[title]').tooltip();

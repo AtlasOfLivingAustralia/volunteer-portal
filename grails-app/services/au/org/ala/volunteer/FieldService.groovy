@@ -77,19 +77,24 @@ class FieldService {
         return count?.get(0) as Integer
     }
 
-    List getAllFieldsWithTasks(List<Task> taskList) {
+    List getAllFieldsWithTasks(List<Task> taskList, boolean retrieveValidatedOnly = false) {
         def fieldValues = Field.executeQuery(
                 """select f from Field f
                where f.superceded = false and
-               f.task in (:list) order by f.task.id""", [list: taskList])
+               f.task in (:list)
+               ${retrieveValidatedOnly? 'and f.transcription is null': ''}  
+               order by f.task.id""", [list: taskList])
         fieldValues.toList()
     }
 
-    List getAllFieldNames(List<Task> taskList) {
+    List getAllFieldNames(List<Task> taskList, boolean retrieveValidatedOnly = false ) {
+
         def fieldValues = Field.executeQuery(
                 """select distinct f.name from Field f
-               where f.superceded = false and
-               f.task in (:list) order by f.name""", [list: taskList])
+               where f.superceded = false 
+               and f.task in (:list)
+               ${retrieveValidatedOnly? 'and f.transcription is null': ''} 
+               order by f.name""", [list: taskList])
         fieldValues.toList()
     }
 
@@ -133,7 +138,7 @@ class FieldService {
         return null
     }
 
-    Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = "system") {
+    Field setFieldValueForTask(Task task, String fieldName, int recordIndex, String value, String userId = UserService.SYSTEM_USER) {
         // Check if there is an existing (current) value for this field/index
         if (task == null || fieldName == null || value == null) {
             return null

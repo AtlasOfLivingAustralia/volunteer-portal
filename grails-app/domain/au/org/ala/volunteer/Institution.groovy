@@ -42,4 +42,8 @@ class Institution implements Serializable {
         disableNewsItems defaultValue: 'false'
     }
 
+    public String getKey () {
+        return id?.toString()?:''
+    }
+
 }
