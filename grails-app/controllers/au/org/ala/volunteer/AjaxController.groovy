@@ -50,7 +50,7 @@ class AjaxController {
     def stats() {
         setNoCache()
 
-        log.error("stats")
+        log.info("stats")
 
         def stats = statsCache.get()
 
@@ -59,7 +59,7 @@ class AjaxController {
 
     private Map<String, ?> statsInternal() {
 
-        log.error("statsInternal")
+        log.info("statsInternal")
 
         def stats = [:]
 
