@@ -151,7 +151,7 @@
                                 <ul>
                                     <g:each in="${taskInstance.viewedTasks?.sort({ it.lastView })}" var="view">
                                         <li>Viewed by <cl:userDisplayString
-                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")})</li>
+                                                id="${view.userId}"/> ${view.numberOfViews > 1 ? "(" + view.numberOfViews + " times) " : ""} on ${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")}</li>
                                     </g:each>
                                 </ul>
                             </td>
