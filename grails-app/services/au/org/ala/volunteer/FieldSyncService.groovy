@@ -51,11 +51,15 @@ class FieldSyncService {
         Transcription transcriptionToUse = null
 
         if (taskInstance.isFullyTranscribed && !taskInstance.fullyValidatedBy) {
-            if (taskInstance.transcriptions.size() > 1) {
+            if (taskInstance.transcriptions.size() > 1 ) {
                 Map result = validationService.findBestMatchingTranscription(taskInstance)
                 transcriptionToUse = result.bestTranscription
             }
             else if (taskInstance.transcriptions.size() > 0) {
+                transcriptionToUse = taskInstance.transcriptions[0]
+            }
+        } else {
+            if (taskInstance.transcriptions.size() == 1 && taskInstance.fullyValidatedBy) {
                 transcriptionToUse = taskInstance.transcriptions[0]
             }
         }
