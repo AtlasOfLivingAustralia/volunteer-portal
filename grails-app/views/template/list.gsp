@@ -49,7 +49,7 @@
                                 templateName="${templateInstance.name}">
 
                                 <td>${fieldValue(bean: templateInstance, field: "name")}</td>
-                                <td>${cl.emailForUserId(id: templateInstance.author)}</td>
+                                <td>${cl.displayNameForUserId(id: templateInstance.author)}</td>
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td>
