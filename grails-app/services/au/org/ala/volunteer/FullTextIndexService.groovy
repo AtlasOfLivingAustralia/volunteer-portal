@@ -139,7 +139,7 @@ class FullTextIndexService {
             }
         }
 
-        def transcriptions = task.transcriptions //Transcription.findAllByTask(task)
+        def transcriptions = Transcription.findAllByTask(task)
 
         transcriptions.each { transcription ->
             if (transcription.fullyTranscribedBy) {
