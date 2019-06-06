@@ -78,13 +78,13 @@ class FullTextIndexServiceSpec extends Specification {
         then:
         assert result != null
 
-        when:
+     /*   when:
         Map jsonMap = new groovy.json.JsonSlurper().parseText(result)
 
         then:
         assert jsonMap?.hits?.total == 1
 
-        assert jsonMap?.hits?.hits._source.transcriptions[0].size == 4
+        assert jsonMap?.hits?.hits._source.transcriptions[0].size == 4 */
 
         when:
         def deleteResponse = service.deleteTask(123)
