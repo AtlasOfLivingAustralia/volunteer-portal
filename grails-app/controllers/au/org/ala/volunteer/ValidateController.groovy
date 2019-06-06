@@ -91,7 +91,12 @@ class ValidateController {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
             }
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+
+            Transcription transcription = null
+            if (taskInstance.project.requiredNumberOfTranscriptions == 1) {
+                transcription = taskInstance.transcriptions[0]
+            }
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
 
             if (taskInstance.hasErrors()) {
                 log.warn("Validation of task ${taskInstance.id} produced errors: "+errors)
@@ -120,7 +125,11 @@ class ValidateController {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
             }
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr)
+            Transcription transcription = null
+            if (taskInstance.project.requiredNumberOfTranscriptions == 1) {
+                transcription = taskInstance.transcriptions[0]
+            }
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
             redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')

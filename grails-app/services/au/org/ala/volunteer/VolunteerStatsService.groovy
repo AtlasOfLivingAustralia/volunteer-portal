@@ -189,6 +189,7 @@ class VolunteerStatsService {
             def proj = it.project
             def userId = it.fullyTranscribedBy
             def details = userService.detailsForUserId(userId)
+            
             def tasks = LatestTranscribersTask.withCriteria() {
                 eq('project', proj)
                 eq('fullyTranscribedBy', userId)
@@ -198,18 +199,12 @@ class VolunteerStatsService {
             def thumbnailLists = (tasks && (tasks.size() > 0)) ? tasks.subList(0, (tasks.size() < 5)? tasks.size(): 5): []
 
             def thumbnails = thumbnailLists.collect { LatestTranscribersTask t ->
-                def taskMultimedia = t.multimedia[0] //Latest.findByTaskId(t.taskId)
-                Multimedia multimedia = new Multimedia(
-                        task: new Task(id: t.id, project: t.project),
-                        id: taskMultimedia.id,
-                        filePath: taskMultimedia.filePath,
-                        filePathToThumbnail: taskMultimedia.filePathToThumbnail,
-                        mimeType: taskMultimedia.mimeType)
-
-                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(multimedia)]
+                def task = Task.findById (t.taskId)
+                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(task.multimedia?.first())]
             }
             [type             : 'task', projectId: proj.id, projectName: proj.name, userId: User.findByUserId(userId)?.id ?: -1, displayName: details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
              transcribedThumbs: thumbnails, transcribedItems: tasks.size(), timestamp: it.maxDate.time / 1000]
+
         }
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)

@@ -34,7 +34,7 @@
                         <div class="form-group">
                             <label for="author" class="col-md-3 control-label"><g:message code="template.author.label" default="Author"/></label>
                             <div class="col-md-6">
-                                <div id="author" class="form-control-static">${cl.emailForUserId(id: templateInstance.author)}</div>
+                                <div id="author" class="form-control-static">${cl.displayNameForUserId(id: templateInstance.author)}</div>
                             </div>
                         </div>
 

@@ -81,10 +81,8 @@ class TaskService {
     Map getProjectTaskFullyTranscribedCounts(boolean activeOnly = false) {
         def projectTaskCounts = Task.executeQuery(
             """select t.project.id as projectId, count(t) as taskCount
-               from Task t 
-               where 
-                t.fullyTranscribedBy is not null
-                ${activeOnly ? 'and t.project.inactive != true' : ''} 
+               from Transcription t
+                ${activeOnly ? 'where t.project.inactive != true' : ''} 
                group by t.project.id""")
         projectTaskCounts.toMap()
     }

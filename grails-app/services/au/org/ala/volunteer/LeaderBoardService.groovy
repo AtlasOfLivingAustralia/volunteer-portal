@@ -201,10 +201,22 @@ class LeaderBoardService {
                         inList "fully${activityType}By", ineligibleUserIds
                     }
                 }
+                if (institution) {
+                    project {
+                        eq("institution", institution)
+                    }
+                }
+
+                if (pt) {
+                    project {
+                        eq("projectType", pt)
+                    }
+                }
                 projections {
                     groupProperty("fully${activityType}By")
                     count("fully${activityType}By", 'count')
                 }
+
             }
         } else {
             results = Task.withCriteria {
@@ -214,6 +226,16 @@ class LeaderBoardService {
                 if (ineligibleUserIds) {
                     not {
                         inList "fully${activityType}By", ineligibleUserIds
+                    }
+                }
+                if (institution) {
+                    project {
+                        eq("institution", institution)
+                    }
+                }
+                if (pt) {
+                    project {
+                        eq("projectType", pt)
                     }
                 }
                 projections {
