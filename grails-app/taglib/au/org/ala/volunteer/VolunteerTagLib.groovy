@@ -425,7 +425,7 @@ class VolunteerTagLib {
             if (transcription.dateFullyTranscribed) {
                 out << "<p>"
                 out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
-                out << "${cl.emailForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
+                out << "${cl.displayNameForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
                 out << "</p>"
                 transcribedCount++
             }
@@ -849,7 +849,7 @@ class VolunteerTagLib {
         else user = null
 
         if (user) {
-            out << "${user.displayName.encodeAsHTML()} (${user.email.encodeAsHTML()})"
+            out << "${user.displayName.encodeAsHTML()}"
         } else if (muted) {
             out << "<span class='muted'>${notFound ?: id}</span>"
         } else {
