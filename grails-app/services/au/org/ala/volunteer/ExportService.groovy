@@ -522,7 +522,7 @@ class ExportService {
         Map taskMap = [:]
 
         fieldList.each {
-            if (it.value) {
+          //  if (it.value) {
                 Map transcriptionMap = null
                 Map fieldMap = null
 
@@ -551,7 +551,7 @@ class ExportService {
                 }
 
                 valueMap[it.recordIdx] = it.value
-            }
+           // }
         }
 
         return taskMap
