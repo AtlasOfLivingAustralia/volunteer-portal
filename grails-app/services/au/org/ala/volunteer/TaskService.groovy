@@ -911,16 +911,23 @@ ORDER BY record_idx, name;
             return
         }
 
-        if (!task.fullyTranscribedBy && !task.dateFullyTranscribed) {
+        if (!task.isFullyTranscribed && task.project.requiredNumberOfTranscriptions > 1) {
             return
         }
-        def transcriber = User.findByUserId(task.fullyTranscribedBy)
-        if (transcriber) {
-            transcriber.transcribedCount--
-        }
 
-        task.fullyTranscribedBy = null
-        task.dateFullyTranscribed = null
+        task.isFullyTranscribed = false
+        def tr = task.transcriptions
+        tr.each {
+            def transcriber = User.findByUserId(it.fullyTranscribedBy)
+            if (transcriber) {
+                transcriber.transcribedCount--
+            }
+
+            task.removeFromTranscriptions(it)
+            it.delete() // causes the GormDelete to have error
+            //it.fullyTranscribedBy = null
+            //it.dateFullyTranscribed = null
+        }
 
         // Also reset the validation status!
         resetValidationStatus(task)

@@ -967,6 +967,12 @@ class TaskController {
             redirect(action: 'showDetails')
             return
         }
+
+        //TODO: temporarily disable this functionality
+        flash.errorMessage = "Reset Transcribed Status is currently disabled"
+        redirect(action:'showDetails', id: taskInstance.id)
+        return
+        /*
         if (!userService.isAdmin()) {
             flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
             redirect(action:'showDetails', id: taskInstance.id)
@@ -975,6 +981,7 @@ class TaskController {
 
         taskService.resetTranscribedStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
+        */
     }
 
     def resetValidatedStatus() {
