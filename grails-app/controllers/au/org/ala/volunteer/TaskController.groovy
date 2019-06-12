@@ -287,6 +287,7 @@ class TaskController {
 
     def show() {
         def taskInstance = Task.get(params.id)
+        def userTask = params.get('userId')
         if (!taskInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
             redirect(action: "list")
@@ -332,6 +333,8 @@ class TaskController {
                             msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
                         }
                         readonly = true
+                    } else if (userTask && userTask != currentUser) {
+                        readonly = true
                     }
                 }
             }
@@ -351,7 +354,7 @@ class TaskController {
                 //retrieve the existing values - if this is a multiple transcription task, we have to pick
                 // which transcription to show.
                 Transcription transcription = null //
-                if (!taskInstance.fullyValidatedBy) { // If the task is not validated, pick a transcription.
+                if (!taskInstance.fullyValidatedBy || taskInstance.project.requiredNumberOfTranscriptions == 1) { // If the task is not validated, pick a transcription.
                     // If the user has transcribed the Task, use the user's transcription.
                     String userId = currentUser
                     transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == userId}
@@ -964,6 +967,12 @@ class TaskController {
             redirect(action: 'showDetails')
             return
         }
+
+        //TODO: temporarily disable this functionality
+        flash.errorMessage = "Reset Transcribed Status is currently disabled"
+        redirect(action:'showDetails', id: taskInstance.id)
+        return
+        /*
         if (!userService.isAdmin()) {
             flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
             redirect(action:'showDetails', id: taskInstance.id)
@@ -972,6 +981,7 @@ class TaskController {
 
         taskService.resetTranscribedStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
+        */
     }
 
     def resetValidatedStatus() {

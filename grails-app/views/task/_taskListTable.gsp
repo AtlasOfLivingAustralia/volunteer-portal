@@ -48,7 +48,12 @@
                 <td>
                     %{-- Use validator fields for validated tasks, otherwise just pick a field --}%
                     <g:if test="${taskInstance.fullyValidatedBy}">
-                        ${field?.value[taskInstance.id]?.find{!it.transcription}?.value}
+                        <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+                            ${field?.value[taskInstance.id]?.find{!it.transcription}?.value}
+                        </g:if>
+                        <g:else>
+                            ${field?.value[taskInstance.id]?.find{it.transcription}?.value}
+                        </g:else>
                     </g:if>
                     <g:else>
                         ${field?.value[taskInstance.id]?.value?.getAt(0)}

@@ -40,14 +40,14 @@ class FieldService {
                where f.superceded = false and
                f.name in (:fieldNames) and
                f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
                """, [projectInstance: projectInstance, query: '%' + query + '%', fieldNames: fieldNames], params)
         } else {
             taskList = Field.executeQuery(
                     """select distinct f.task from Field f
                where f.superceded = false and
                f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
                """, [projectInstance: projectInstance, query: '%' + query + '%'], params)
         }
 
@@ -64,14 +64,14 @@ class FieldService {
                where f.superceded = false and
                f.name in (:fieldNames) and
                f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
                """, [projectInstance: projectInstance, query: '%' + query + '%', fieldNames: fieldNames])
         } else {
             count = Field.executeQuery(
                     """select count(distinct f.task) from Field f
                where f.superceded = false and
                f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.task.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
+               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
                """, [projectInstance: projectInstance, query: '%' + query + '%'])
         }
         return count?.get(0) as Integer
