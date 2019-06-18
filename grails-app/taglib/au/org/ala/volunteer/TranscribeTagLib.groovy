@@ -377,7 +377,7 @@ class TranscribeTagLib {
 
             mb.div(id:'image-parent-container') {
                 mb.div(id:attrs.elementId ?: 'image-container', preserveWidthWhenPinned:attrs.preserveWidthWhenPinned) {
-                    mb.img(src:imageMetaData.url, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
+                    mb.img(src:imageMetaData?.url, alt: attrs.altMessage ?: 'Task image', 'image-height':imageMetaData?.height, 'image-width':imageMetaData?.width) {}
                     if (!attrs.hideControls) {
                         div(class:'imageviewer-controls') {
                             a(id:'panleft', href:"#", class:'left') {}

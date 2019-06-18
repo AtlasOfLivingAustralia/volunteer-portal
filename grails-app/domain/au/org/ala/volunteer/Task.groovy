@@ -75,9 +75,14 @@ class Task implements Serializable {
 
     /**
      * Returns true if the supplied user has transcribed (fully or partially) this Task.
+     *
      */
     boolean hasBeenTranscribedByUser(String userId) {
-        return findUserTranscription(userId) != null
+        Transcription userTranscription = transcriptions?.find{
+            it.fullyTranscribedBy == userId
+        }
+        return userTranscription != null
+        //return findUserTranscription(userId) != null
     }
 
     /**
@@ -100,6 +105,15 @@ class Task implements Serializable {
             }
         }
         userTranscription
+    }
+
+    Transcription getExistingEmptyTranscription() {
+
+        // If there is already an empty Transcription which could have been reset previously, return that
+        Transcription existingEmptyTranscription = transcriptions.find {
+            !it.fullyTranscribedBy
+        }
+        return existingEmptyTranscription
     }
 
     Transcription addTranscription() {

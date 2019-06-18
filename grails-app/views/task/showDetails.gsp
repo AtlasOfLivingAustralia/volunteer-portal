@@ -72,10 +72,16 @@
                         <a class="btn btn-default btn-small"
                            href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
                         <cl:ifAdmin>
-                            <a class="btn btn-small btn-warning"
-                               href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
-                            <a class="btn btn-small btn-warning"
-                               href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
+                            <g:if test="${taskInstance?.project.requiredNumberOfTranscriptions > 1}">
+                                <a class="btn btn-small btn-warning disabled">Reset transcribed status</a>
+                                <a class="btn btn-small btn-warning disabled">Reset validated status</a>
+                            </g:if>
+                            <g:else>
+                                <a class="btn btn-small btn-warning"
+                                   href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
+                                <a class="btn btn-small btn-warning"
+                                   href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
+                            </g:else>
                         </cl:ifAdmin>
                     </div>
                 </div>

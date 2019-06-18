@@ -911,7 +911,7 @@ ORDER BY record_idx, name;
             return
         }
 
-        if (!task.isFullyTranscribed && task.project.requiredNumberOfTranscriptions > 1) {
+        if (!task.isFullyTranscribed || task.project.requiredNumberOfTranscriptions > 1) {
             return
         }
 
@@ -923,10 +923,8 @@ ORDER BY record_idx, name;
                 transcriber.transcribedCount--
             }
 
-            task.removeFromTranscriptions(it)
-            it.delete() // causes the GormDelete to have error
-            //it.fullyTranscribedBy = null
-            //it.dateFullyTranscribed = null
+            it.fullyTranscribedBy = null
+            it.dateFullyTranscribed = null
         }
 
         // Also reset the validation status!

@@ -147,12 +147,15 @@ class TranscribeController {
     }
 
     /**
-     * Sync fields.
+     * Sync fields
      */
     def savePartial() {
         commonSave(params, false)
     }
 
+    /**
+     * CommonSave (cannot be used for validator's save fields. For multi transcriptions task, validators don't have their own transcription record, except for validator's fields
+     */
     private def commonSave(params, markTranscribed) {
         def currentUser = userService.currentUserId
 
@@ -166,7 +169,13 @@ class TranscribeController {
 
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
             if (!transcription) {
-                transcription = taskInstance.addTranscription()
+                // try to reuse existing transcription which could have been reset
+                if (taskInstance.project.requiredNumberOfTranscriptions == 1) {
+                    transcription = taskInstance.transcriptions[0]
+                }
+                if (!transcription) {
+                    transcription = taskInstance.addTranscription()
+                }
             }
 
             def seconds = params.getInt('timeTaken', null)

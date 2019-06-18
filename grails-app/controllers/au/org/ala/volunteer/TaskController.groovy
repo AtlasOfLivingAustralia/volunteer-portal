@@ -321,9 +321,11 @@ class TaskController {
                     log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
                     def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-                    if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
+                    boolean isTaskLockedForTranscription = auditService.isTaskLockedForTranscription(taskInstance, currentUser)
+                    //if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
+                    if (isTaskLockedForTranscription) {
                         // task is already being viewed by another user (with timeout period)
-                        log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
+                        //log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
                     } else if (taskInstance.fullyValidatedBy && taskInstance.isValid != null) {
@@ -968,11 +970,6 @@ class TaskController {
             return
         }
 
-        //TODO: temporarily disable this functionality
-        flash.errorMessage = "Reset Transcribed Status is currently disabled"
-        redirect(action:'showDetails', id: taskInstance.id)
-        return
-        /*
         if (!userService.isAdmin()) {
             flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
             redirect(action:'showDetails', id: taskInstance.id)
@@ -981,7 +978,7 @@ class TaskController {
 
         taskService.resetTranscribedStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
-        */
+
     }
 
     def resetValidatedStatus() {
