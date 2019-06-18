@@ -109,8 +109,8 @@
                         </g:if>
                         <g:else>
                             <button id="btnSave" type="button" class="btn btn-default pull-right btn-next bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
+                            <button id="btnSavePartial" type="button" class="btn btn-default pull-right">Save <i class="fa fa-check fa-sm"></i></button>
                         </g:else>
-                        <button id="btnSavePartial" type="button" class="btn btn-default pull-right">Save <i class="fa fa-check fa-sm"></i></button>
                         <button type="button" class="btn btn-default pull-left qt-previous"><i class="fa fa-chevron-left fa-sm"></i> Back</button>
                     </div>
                 </div>
