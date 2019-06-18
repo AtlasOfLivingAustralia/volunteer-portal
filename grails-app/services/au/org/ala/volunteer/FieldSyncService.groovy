@@ -13,6 +13,12 @@ class FieldSyncService {
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
 
         Transcription transcription = taskInstance.findUserTranscription(currentUserId)
+
+        // In case task transcription status is reset
+        if (transcription == null && taskInstance.project.requiredNumberOfTranscriptions == 1) {
+            transcription = taskInstance.getExistingEmptyTranscription()
+        }
+
         retrieveFieldsForTranscription(taskInstance, transcription)
     }
 
