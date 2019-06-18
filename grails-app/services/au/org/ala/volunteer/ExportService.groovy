@@ -108,7 +108,7 @@ class ExportService {
 
     def export_default = { Project project, taskList, fieldNames, validatedOnly, response ->
 
-        def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList, validatedOnly))
+        def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
         def sw = Stopwatch.createStarted()
         def c = Field.createCriteria()
 
@@ -187,7 +187,7 @@ class ExportService {
                 int transcriptionId = transcription?.id ?: -1
                 if (!validatedOnly || transcriptionId == -1) {
                     sw2.reset().start()
-                    def fieldMap = taskMap[task.id][transcriptionId]
+                    def fieldMap = taskMap[task.id] ? taskMap[task.id][transcriptionId] : null
                     def values = []
 
                     columnNames.each { columnName ->
@@ -225,7 +225,7 @@ class ExportService {
     }
 
     private void zipExport(Project project, taskList, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields, boolean validatedOnly) {
-        def valueMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList, validatedOnly))
+        def valueMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
         def sw = Stopwatch.createStarted()
         def datasetCategoryFields = [:]
         if (datasetCategories) {
@@ -472,7 +472,7 @@ class ExportService {
                             fieldValues.add(taskValidationStatus(task))
                             break;
                         default:
-                            if (fieldMap.containsKey(fieldName)) {
+                            if (fieldMap?.containsKey(fieldName)) {
                                 fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
                             } else {
                                 fieldValues.add("") // need to leave blank
