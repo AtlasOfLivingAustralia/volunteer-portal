@@ -566,6 +566,20 @@
                                     var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
                                     $(elemSelector).val(item.key).attr('collector_name', item.name);;
                                 }
+                            } else if (fieldName == 'occurrenceDetails') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]occurrenceDetails$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.occurrenceID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
+                            } else if (fieldName == 'verbatimLocality') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]verbatimLocality$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.verbatimLocalityID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
                             }
                         },
                         source: function(request, response) {
@@ -609,6 +623,40 @@
                     if (matches.length > 0) {
                         var recordIdx = matches[1];
                         var elemSelector = '#recordValues\\.' + recordIdx + '\\.recordedByID';
+                        var collectorName = $(elemSelector).attr("collector_name");
+                        if (value != collectorName) {
+                            $(elemSelector).val('');
+                            $(elemSelector).attr("collector_name", "");
+                        }
+                    }
+                });
+
+                $("input.occurrenceDetails").blur(function(e) {
+                    // If the value of the occurrenceDetails field does not match the name in the collector_name attribute
+                    // of the occurrenceID element it means that the collector name no longer matches the id, so the id
+                    // must be cleared.
+                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]occurrenceDetail$/);
+                    var value = $(this).val();
+                    if (matches.length > 0) {
+                        var recordIdx = matches[1];
+                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.occurrenceID';
+                        var collectorName = $(elemSelector).attr("collector_name");
+                        if (value != collectorName) {
+                            $(elemSelector).val('');
+                            $(elemSelector).attr("collector_name", "");
+                        }
+                    }
+                });
+
+                $("input.verbatimLocality").blur(function(e) {
+                    // If the value of the verbatimLocality field does not match the name in the collector_name attribute
+                    // of the verbatimLocalityID element it means that the collector name no longer matches the id, so the id
+                    // must be cleared.
+                    var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]verbatimLocality$/);
+                    var value = $(this).val();
+                    if (matches.length > 0) {
+                        var recordIdx = matches[1];
+                        var elemSelector = '#recordValues\\.' + recordIdx + '\\.verbatimLocalityID';
                         var collectorName = $(elemSelector).attr("collector_name");
                         if (value != collectorName) {
                             $(elemSelector).val('');
