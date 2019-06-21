@@ -4,7 +4,7 @@
 <head>
     <meta name="google" value="notranslate">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title><cl:pageTitle title="Edit Project"/></title>
+    <title><cl:pageTitle title="${message(code: 'project.project_settings.edit', default: 'Edit Project')}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:render template="/layouts/tinyMce" />
     <g:layoutHead/>

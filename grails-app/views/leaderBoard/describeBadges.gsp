@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<cl:headerContent title="${message(code: 'default.leaderboard.describeBadges.label', default: 'Badges')}">
+<cl:headerContent title="${message(code: 'user.notebook.badges', default: 'Badges')}">
     <% pageScope.crumbs = [] %>
 </cl:headerContent>
 

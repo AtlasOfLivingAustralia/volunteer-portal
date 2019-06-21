@@ -4,11 +4,13 @@
 <%
     PicklistService picklistService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.PicklistService').newInstance()
 %>
+
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
 <head>
     <title><cl:pageTitle title="${(validator) ? message(code: 'transcribe.templateViews.all.validate') : message(code: 'transcribe.templateViews.all.expedition')} ${taskInstance?.project?.i18nName}" /></title>
     <asset:stylesheet src="slickgrid"/>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <style>
     #dataGrid, #dataGrid div {
         -webkit-box-sizing: content-box;
@@ -119,8 +121,7 @@
         var spreadsheetDataView = null;
         var grid = null;
         var fieldList = <cl:json value="${fieldList}"/>;
-
-
+  
         $(document).ready(function() {
 
             $(".tutorialLinks a").each(function(index, element) {
@@ -202,21 +203,25 @@
             var columns = [
                 {id: 'id', name:'', field:'id', focusable: false, cssClass: 'fixed-column', maxWidth: 35, formatter: fixedColumnFormatter },
                 <g:each in="${fieldList}" var="field" status="fieldIndex">
-                <g:set var="fieldLabel" value="${StringEscapeUtils.escapeJavaScript(field.label?.toString() ?: field.fieldType.label)}"/>
-                <g:set var="fieldName" value="${field.fieldType.name()}"/>
-                <g:set var="fieldValue"
-               value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}"/>
-                <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText.toString())}"/>
-                <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance?.id ?: -1, field.fieldType)}"/>
-                <g:set var="validationRuleName" value="${field.validationRule}"/>
-                <g:set var="formatter" value=""/>
-                <g:set var="cssClass" value=""/>
-                <g:if test="${field.type == FieldType.checkbox}">
-                <g:set var="formatter" value="BVP.SlickGrid.Checkmark"/>
-                <g:set var="cssClass" value="checkbox-cell"/>
-                </g:if>
-                {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor}, validator: makeValidator('${validationRuleName}'), formatter: ${formatter ?: 'null'}, cssClass: "${cssClass ?: ''}" }<g:if
-            test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+                    <g:set var="fieldLabel" value="${field.label?.toString()}"/>
+                    <g:set var="fieldName" value="${field.fieldType.name()}"/>
+                    <g:set var="fieldValue"
+                        value="${StringEscapeUtils.escapeJavaScript(recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\'))}"/>
+                    <g:set var="fieldHelpText" value="${StringEscapeUtils.escapeJavaScript(field.helpText.toString())}"/>
+
+                    <g:set var="slickEditor" value="${editorExpr(field.type, taskInstance?.id ?: -1, field.fieldType)}"/>
+
+                    <g:set var="validationRuleName" value="${field.validationRule}"/>
+                    <g:set var="formatter" value=""/>
+                    <g:set var="cssClass" value=""/>
+                    <g:if test="${field.type == FieldType.checkbox}">
+                        <g:set var="formatter" value="BVP.SlickGrid.Checkmark"/>
+                        <g:set var="cssClass" value="checkbox-cell"/>
+                    </g:if>
+                    {'id':'${fieldName}', 'name':'${fieldLabel}', 'field':'${fieldName}', editor: ${slickEditor}, validator: makeValidator('${validationRuleName}'), formatter: ${formatter ?: 'null'}, cssClass: "${cssClass ?: ''}" }
+                    <g:if
+                        test="${fieldIndex < fieldList.size() - 1}">,
+                    </g:if>
                 </g:each>
             ];
 
@@ -249,8 +254,8 @@
             for (var i = 0; i < initRowCount; i++) {
                 var item = {id: i};
                 <g:each in="${fieldList}" var="field" status="fieldIndex">
-                <g:set var="fieldName" value="${field.fieldType.name()}"/>
-                item.${fieldName} = $("#recordValues\\." + i + "\\.${fieldName}").val();
+                    <g:set var="fieldName" value="${field.fieldType.name()}"/>
+                    item.${fieldName} = $("#recordValues\\." + i + "\\.${fieldName}").val();
                 </g:each>
                 grid_data[i] = item;
             }

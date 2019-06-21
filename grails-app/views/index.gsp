@@ -4,7 +4,8 @@
 <html>
 <head>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="layout" content="digivol-main"/>
     <meta name="section" content="home"/>
     <meta name="google" value="notranslate">
@@ -17,6 +18,7 @@
 <body>
 <div class="a-feature home" style="${frontPage.heroImage ? "background-image: url('${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/hero/${frontPage.heroImage}');" : ''}">
     <div class="container">
+
         <h1><g:message code="index.heading.line1" /><br/><g:message code="index.heading.line2"/><br/><g:message code="index.heading.line3"/></h1>
 
         <h2><g:message code="index.subheading" /></h2>

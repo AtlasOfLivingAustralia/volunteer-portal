@@ -9,11 +9,11 @@
 
 <body class="admin">
 
-<cl:headerContent title="Load Task Data" selectedNavItem="bvpadmin">
+<cl:headerContent title="${message(code: 'task.loadTaskData.load_task_data', default: 'Load Task Data')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.i18nName],
-                [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: "Edit Project"]
+                [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: "${message(code: 'task.load.edit_project', default: 'Edit project')}"]
         ]
     %>
 </cl:headerContent>

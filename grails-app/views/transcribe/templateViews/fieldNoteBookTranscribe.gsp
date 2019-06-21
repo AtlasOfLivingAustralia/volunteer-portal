@@ -121,7 +121,7 @@
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
-                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. {allTextField?.label ?: "${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text')}"}</span>
+                            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "${message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text')}"}</span>
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: message(code: 'transcribe.templateViews.fieldNoteBookSingleTranscribe.transcribe_all_text_as_it_appears')}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
