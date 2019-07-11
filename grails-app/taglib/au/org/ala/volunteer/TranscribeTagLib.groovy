@@ -196,6 +196,15 @@ class TranscribeTagLib {
             return '<span class="${auxClass}">&nbsp;</span>'
         }
 
+        def picklist
+        if (field.type.name() == 'autocomplete') {
+            if (field.fieldTypeClassifier) {
+                picklist = Picklist.findByNameAndFieldTypeClassifier(field.fieldType, field.fieldTypeClassifier)
+            } else {
+                picklist = Picklist.findByName(field.fieldType)
+            }
+        }
+
         def name = field.fieldType.name()
         def widgetName = genWidgetName(field, recordIdx)
         def cssClass = name
@@ -329,6 +338,7 @@ class TranscribeTagLib {
                     maxLength:200,
                     value: existingValue,
                     'class':"$cssClass form-control",
+                    'data-picklist-id' : picklist?.id,
                     validationRule: validationRule?.name,
                     tabindex: tabindex
                 )
