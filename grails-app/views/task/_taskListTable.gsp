@@ -46,18 +46,8 @@
 
             <g:each in="${extraFields}" var="field">
                 <td>
-                    %{-- Use validator fields for validated tasks, otherwise just pick a field --}%
-                    <g:if test="${taskInstance.fullyValidatedBy}">
-                        <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
-                            ${field?.value[taskInstance.id]?.find{!it.transcription}?.value}
-                        </g:if>
-                        <g:else>
-                            ${field?.value[taskInstance.id]?.find{it.transcription}?.value}
-                        </g:else>
-                    </g:if>
-                    <g:else>
-                        ${field?.value[taskInstance.id]?.value?.getAt(0)}
-                    </g:else>
+                    %{--Use superceded field or the first row --}%
+                    ${field?.value[taskInstance.id]?.value?.getAt(0)}
                 </td>
             </g:each>
 
