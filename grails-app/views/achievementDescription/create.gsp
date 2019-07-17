@@ -33,7 +33,7 @@
                     </g:eachError>
                 </ul>
             </g:hasErrors>
-            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal" style="position:relative;">
+            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal" style="position:relative;" accept-charset="UTF-8">
                 <g:render template="form"/>
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-9">

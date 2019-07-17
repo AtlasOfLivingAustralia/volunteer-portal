@@ -32,7 +32,7 @@
             </g:eachError>
         </ul>
     </g:hasErrors>
-    <g:form url="[resource: labelInstance, action: 'save']">
+    <g:form url="[resource: labelInstance, action: 'save']" accept-charset="UTF-8">
         <fieldset class="form">
             <g:render template="form"/>
         </fieldset>

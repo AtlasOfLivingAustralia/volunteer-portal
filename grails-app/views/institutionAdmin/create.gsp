@@ -32,7 +32,7 @@
                         </ul>
                     </g:hasErrors>
 
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save" class="form-horizontal" accept-charset="UTF-8">
                             <g:render template="form"/>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">

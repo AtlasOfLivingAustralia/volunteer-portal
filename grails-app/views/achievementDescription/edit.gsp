@@ -35,7 +35,7 @@
             </g:eachError>
         </ul>
     </g:hasErrors>
-    <g:form class="form-horizontal" url="[resource: achievementDescriptionInstance, action: 'update']" method="PUT">
+    <g:form class="form-horizontal" url="[resource: achievementDescriptionInstance, action: 'update']" method="PUT" accept-charset="UTF-8">
         <g:hiddenField name="version" value="${achievementDescriptionInstance?.version}"/>
         <g:render template="form"/>
         <div class="form-group">
