@@ -4,7 +4,7 @@ The [Atlas of Living Australia], in collaboration with the [Australian Museum], 
 to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up
 in biodiversity collections, field notebooks and survey sheets.
 
-##Running
+## Running
 
 The ansible inventories are currently out of date.  You can run DigiVol manually by using gradle to build:
 
@@ -31,7 +31,7 @@ ansible-playbook -i inventories/vagrant --user vagrant --private-key ~/.vagrant.
 
 ~~Deploying to a server can be done similarly, though you will need to define an ansible inventory first.~~
 
-##Contributing
+## Contributing
 
 DigiVol is a [Grails] v3.2.4 based web application.  It requires [PostgreSQL] for data storage.  Development follows the 
 [git flow] workflow.
