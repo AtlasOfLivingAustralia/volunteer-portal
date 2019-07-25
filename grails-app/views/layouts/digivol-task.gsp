@@ -580,6 +580,13 @@
                                     var elemSelector = '#recordValues\\.' + recordIdx + '\\.verbatimLocalityID';
                                     $(elemSelector).val(item.key).attr('collector_name', item.name);;
                                 }
+                            } else if (fieldName == 'collectionCode') {
+                                var matches = $(this).attr("id").match(/^recordValues[.](\d+)[.]collectionCode$/);
+                                if (matches.length > 0) {
+                                    var recordIdx = matches[1];
+                                    var elemSelector = '#recordValues\\.' + recordIdx + '\\.collectionID';
+                                    $(elemSelector).val(item.key).attr('collector_name', item.name);;
+                                }
                             }
                         },
                         source: function(request, response) {
