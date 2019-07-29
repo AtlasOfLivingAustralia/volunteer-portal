@@ -77,16 +77,7 @@ class ExportService {
 
     def export_zipFile = { Project project, taskList, fieldNames, validatedOnly, response ->
         def sw = Stopwatch.createStarted()
-        def c = Field.createCriteria()
-        def databaseFieldNames = c {
-            task {
-                eq("project", project)
-            }
-            projections {
-                groupProperty("name")
-                max("recordIdx")
-            }
-        }
+        def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
@@ -110,17 +101,7 @@ class ExportService {
 
         def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
         def sw = Stopwatch.createStarted()
-        def c = Field.createCriteria()
-
-        def databaseFieldNames = c {
-            task {
-                eq("project", project)
-            }
-            projections {
-                groupProperty("name")
-                max("recordIdx")
-            }
-        }
+        List databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
@@ -135,7 +116,7 @@ class ExportService {
                 if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
             }
             def maxIdx = fieldIndexMap.values().max()
-            for (int i = 0 ; i < maxIdx; ++i) {
+            for (int i = 0 ; i <= maxIdx; ++i) {
                 fieldNames.each {
                     if (fieldIndexMap.containsKey(it) && fieldIndexMap[it] && fieldIndexMap[it] >= i) columnNames << "${it}_$i"
                 }
@@ -158,7 +139,7 @@ class ExportService {
         log.debug("Got columnNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        def usersMap = getUserMapFromTaskList(taskList)
+        def usersMap = taskService.getUserMapFromTaskList(taskList)
         log.debug("Generated users map in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
@@ -181,7 +162,7 @@ class ExportService {
 
 
         taskList.each { Task task ->
-            List transcriptions = task.transcriptions?.collect{it}
+            List transcriptions = task.transcriptions?.collect{it} ?: []
             transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
             transcriptions.each { transcription ->
                 int transcriptionId = transcription?.id ?: -1
@@ -253,7 +234,7 @@ class ExportService {
         log.debug("Modified other repeating fields in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        def usersMap = getUserMapFromTaskList(taskList)
+        def usersMap = taskService.getUserMapFromTaskList(taskList)
         log.debug("Generated users map in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
@@ -391,27 +372,36 @@ class ExportService {
 
         writer.writeNext(columnNames.toArray(new String[0]))
         taskList.each { Task task ->
-            Map<String, Map> values = valueMap[task.id]
-            if (values) {
-                int recordIdx = 0;
-                def finished = false;
-                while (!finished) {
-                    boolean hasRecordForIndex = false;
-                    List<String> outputValues = [task.id.toString(), task.externalIdentifier, recordIdx.toString()]
-                    for (String fieldName : dataSetFieldNames) {
-                        Map fieldValues = values[fieldName]
-                        if (fieldValues?.containsKey(recordIdx)) {
-                            hasRecordForIndex = true;
-                            outputValues.add(cleanseValue(fieldValues[recordIdx]))
-                        } else {
-                            outputValues.add("")
+            Map valuesByTranscription = valueMap[task.id]
+
+            List transcriptions = task.transcriptions?.collect{it}
+            transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
+            transcriptions.each { transcription ->
+                int id = transcription?.id ?: -1 as int
+                println valuesByTranscription
+
+                Map<String, Map> values = valuesByTranscription[id]
+                if (values) {
+                    int recordIdx = 0;
+                    def finished = false;
+                    while (!finished) {
+                        boolean hasRecordForIndex = false;
+                        List<String> outputValues = [task.id.toString(), task.externalIdentifier, recordIdx.toString()]
+                        for (String fieldName : dataSetFieldNames) {
+                            Map fieldValues = values[fieldName]
+                            if (fieldValues?.containsKey(recordIdx)) {
+                                hasRecordForIndex = true;
+                                outputValues.add(cleanseValue(fieldValues[recordIdx]))
+                            } else {
+                                outputValues.add("")
+                            }
                         }
+                        if (hasRecordForIndex) {
+                            writer.writeNext(outputValues.toArray(new String[0]))
+                            recordIdx++
+                        }
+                        finished = !hasRecordForIndex;
                     }
-                    if (hasRecordForIndex) {
-                        writer.writeNext(outputValues.toArray(new String[0]))
-                        recordIdx++
-                    }
-                    finished = !hasRecordForIndex;
                 }
             }
         }
@@ -486,19 +476,6 @@ class ExportService {
         }
 
         return fieldValues.toArray(new String[0]) // String array
-    }
-
-    private Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
-        List transcribers = Transcription.createCriteria().list {
-            inList('task', tasks)
-            projections {
-                property 'fullyTranscribedBy'
-            }
-        }.unique()
-
-        def userIds = (tasks.collect { it.fullyValidatedBy } + transcribers).unique()
-
-        return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
     }
 
     private def taskValidationStatus(Task task) {

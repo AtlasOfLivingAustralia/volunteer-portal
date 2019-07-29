@@ -159,4 +159,22 @@ class FieldService {
         return field
     }
 
+    /**
+     * Finds and returns the maximum record index for each unique Field name recorded transcribed any Task in a Project
+     */
+    List getMaxRecordIndexByFieldForProject(Project project) {
+        def c = Field.createCriteria()
+
+        def databaseFieldNames = c {
+            task {
+                eq("project", project)
+            }
+            projections {
+                groupProperty("name")
+                max("recordIdx")
+            }
+        }
+        databaseFieldNames
+    }
+
 }

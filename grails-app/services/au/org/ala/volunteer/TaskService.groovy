@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
@@ -998,6 +999,20 @@ ORDER BY record_idx, name;
 
         return results
     }
+
+    Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
+        List transcribers = Transcription.createCriteria().list {
+            inList('task', tasks)
+            projections {
+                property 'fullyTranscribedBy'
+            }
+        }.unique()
+
+        def userIds = (tasks.collect { it.fullyValidatedBy } + transcribers).unique()
+
+        return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
+    }
+
 
     @NotTransactional // handle the read only transaction at the sql level
     // TODO Use Gradle, Flyway, JOOQ instead of plain SQL
