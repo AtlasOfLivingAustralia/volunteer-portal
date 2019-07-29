@@ -238,7 +238,7 @@ class ProjectController {
             log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
-            fieldNames.addAll(fieldService.getAllFieldNames(taskList, validatedOnly))
+            fieldNames.addAll(fieldService.getAllFieldNames(taskList))
             log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 

@@ -86,14 +86,11 @@ class FieldService {
         fieldValues.toList()
     }
 
-    List getAllFieldNames(List<Task> taskList, boolean retrieveValidatedOnly = false ) {
-
+    List getAllFieldNames(List<Task> taskList) {
         def fieldValues = Field.executeQuery(
                 """select distinct f.name from Field f
-               where f.superceded = false 
-               and f.task in (:list)
-               ${retrieveValidatedOnly? 'and f.transcription is null': ''} 
-               order by f.name""", [list: taskList])
+               where f.superceded = false and
+               f.task in (:list) order by f.name""", [list: taskList])
         fieldValues.toList()
     }
 

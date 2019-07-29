@@ -97,6 +97,43 @@ class ExportService {
         zipExport(project, taskList, fieldNames, response, ["dataset"], repeatingFields, validatedOnly)
     }
 
+    private Map<Transcription, Map> getTranscriptionsToExport(Project project, Task task, Map valuesMap, boolean validatedOnly) {
+
+        Map results = [:]
+        if (validatedOnly) {
+            if (task.fullyValidatedBy) {
+                if (project.requiredNumberOfTranscriptions > 1) {
+                    results << [-1, valuesMap[-1]]
+                }
+                else {
+                    results << getTranscribedAndUploadedFields(task, valuesMap)
+                }
+            }
+        }
+        else {
+            if (project.requiredNumberOfTranscriptions > 1) {
+                results = valuesMap
+            }
+            else {
+                results << getTranscribedAndUploadedFields(task, valuesMap)
+            }
+        }
+
+        return results
+    }
+
+    private Map getTranscribedAndUploadedFields(Task task, Map taskValuesMap) {
+        Transcription onlyTranscription = task.transcriptions?.first()
+        if (onlyTranscription) {
+            // Merge uploaded and EXIF field data into a single set of values.
+            Map transcribedValues = taskValuesMap[(int)onlyTranscription.id] ?: [:]
+            Map uploadedValues = taskValuesMap[-1] ?: [:]
+
+            return [(onlyTranscription.id): uploadedValues + transcribedValues]
+        }
+        return null
+    }
+
     def export_default = { Project project, taskList, fieldNames, validatedOnly, response ->
 
         def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
@@ -162,41 +199,40 @@ class ExportService {
 
 
         taskList.each { Task task ->
-            List transcriptions = task.transcriptions?.collect{it} ?: []
-            transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
-            transcriptions.each { transcription ->
-                int transcriptionId = transcription?.id ?: -1
-                if (!validatedOnly || transcriptionId == -1) {
-                    sw2.reset().start()
-                    def fieldMap = taskMap[task.id] ? taskMap[task.id][transcriptionId] : null
-                    def values = []
 
-                    columnNames.each { columnName ->
-                        sw3.reset().start()
-                        def fieldName = columnName
-                        def recordIndex = 0
-                        def matcher = columnIndexRegex.matcher(columnName)
-                        if (matcher.matches()) {
-                            fieldName = matcher.group(1)
-                            recordIndex = matcher.group(2) as int
-                        }
+            Map toExport = getTranscriptionsToExport(project, task, taskMap[task.id], validatedOnly)
+            toExport.each { transcriptionId, fieldMap ->
 
-                        String value
-                        if (fieldIndexMap.containsKey(fieldName)) {
-                            def valueMap = fieldMap?.getAt(fieldName)
-                            value = valueMap?.getAt(recordIndex) ?: ""
-                        } else {
-                            value = getTaskField(task, transcription, fieldName, usersMap)
-                        }
-                        values << value
-                        def elapsed = sw3.elapsed(MILLISECONDS)
-                        if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
+                Transcription transcription = task.transcriptions.find{it.id == transcriptionId}
+                sw2.reset().start()
+                def values = []
+
+                columnNames.each { columnName ->
+                    sw3.reset().start()
+                    def fieldName = columnName
+                    def recordIndex = 0
+                    def matcher = columnIndexRegex.matcher(columnName)
+                    if (matcher.matches()) {
+                        fieldName = matcher.group(1)
+                        recordIndex = matcher.group(2) as int
                     }
-                    def elapsed = sw2.elapsed(MILLISECONDS)
-                    if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
-                    writer.writeNext(values as String[])
+
+                    String value
+                    if (fieldIndexMap.containsKey(fieldName)) {
+                        def valueMap = fieldMap?.getAt(fieldName)
+                        value = valueMap?.getAt(recordIndex) ?: ""
+                    } else {
+                        value = getTaskField(task, transcription, fieldName, usersMap)
+                    }
+                    values << value
+                    def elapsed = sw3.elapsed(MILLISECONDS)
+                    if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
                 }
+                def elapsed = sw2.elapsed(MILLISECONDS)
+                if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
+                writer.writeNext(values as String[])
             }
+
 
         }
         log.debug("Wrote all tasks in {}ms", sw.elapsed(MILLISECONDS))
@@ -255,10 +291,10 @@ class ExportService {
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
         taskList.each { task ->
-            List transcriptions = task.transcriptions?.collect{it}
-            transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
-            transcriptions.each { transcription ->
-                String[] values = getFieldsForTask(task, transcription, fieldNames, valueMap, usersMap, validatedOnly)
+            Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id], validatedOnly)
+            toExport.each { transcriptionId, transcriptionValueMap ->
+                Transcription transcription = task.transcriptions.find{it.id == transcriptionId}
+                String[] values = getFieldsForTask(task, transcription, fieldNames, transcriptionValueMap, usersMap, validatedOnly)
                 if (values.length > 0) {
                     writer.writeNext(values)
                 }
@@ -275,7 +311,7 @@ class ExportService {
                 // Dataset files...
                 def dataSetFieldNames = datasetCategoryFields[category]
                 zipStream.putNextEntry(new ZipEntry(category.toString() +".csv"))
-                exportDataSet(taskList, valueMap, writer, dataSetFieldNames)
+                exportDataSet(project, taskList, valueMap, writer, dataSetFieldNames, validatedOnly)
                 writer.flush();
                 zipStream.closeEntry();
                 log.debug("Wrote {}.csv in {}ms", category, sw.elapsed(MILLISECONDS))
@@ -286,7 +322,7 @@ class ExportService {
         if (otherRepeatingFields) {
             otherRepeatingFields.each {
                 zipStream.putNextEntry(new ZipEntry("${it}.csv"))
-                exportDataSet(taskList, valueMap, writer, [it])
+                exportDataSet(project, taskList, valueMap, writer, [it], validatedOnly)
                 writer.flush();
                 zipStream.closeEntry();
                 log.debug("Wrote {}.csv in {}ms", it, sw.elapsed(MILLISECONDS))
@@ -366,7 +402,7 @@ class ExportService {
         }
     }
 
-    private void exportDataSet(List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames) {
+    private void exportDataSet(Project project, List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames, boolean validatedOnly) {
 
         def columnNames = ['taskID', 'externalIdentifier','recordIdx'] + dataSetFieldNames;
 
@@ -374,13 +410,9 @@ class ExportService {
         taskList.each { Task task ->
             Map valuesByTranscription = valueMap[task.id]
 
-            List transcriptions = task.transcriptions?.collect{it}
-            transcriptions << null // Validator fields & fields loaded at staging time have a null transcription
-            transcriptions.each { transcription ->
-                int id = transcription?.id ?: -1 as int
-                println valuesByTranscription
+            Map toExport = getTranscriptionsToExport(project, task, valuesByTranscription, validatedOnly)
+            toExport.each { transcriptionId, values ->
 
-                Map<String, Map> values = valuesByTranscription[id]
                 if (values) {
                     int recordIdx = 0;
                     def finished = false;
