@@ -25,6 +25,9 @@ class ExportService {
     def fieldService
 
     private String getUserDisplayName(String userId, Map<String, UserDetails> usersMap = [:]) {
+        if (!userId) {
+            return ''
+        }
         return usersMap[userId]?.displayName ?: userService.propertyForUserId(userId, 'displayName')
     }
 
@@ -58,7 +61,7 @@ class ExportService {
                 }
                 def date = new Date().format("dd-MMM-yyyy")
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
+                sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
                 result = sb.toString()
                 break;
             case "datetranscribed":
@@ -124,6 +127,7 @@ class ExportService {
 
     private Map getTranscribedAndUploadedFields(Task task, Map taskValuesMap) {
         Transcription onlyTranscription = task.transcriptions?.first()
+        taskValuesMap = taskValuesMap ?: [:]
         if (onlyTranscription) {
             // Merge uploaded and EXIF field data into a single set of values.
             Map transcribedValues = taskValuesMap[(int)onlyTranscription.id] ?: [:]
@@ -481,7 +485,7 @@ class ExportService {
                             }
                             def date = new Date().format("dd-MMM-yyyy")
                             def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                            sb.append("Exported on ${date} from ${appName} (http://volunteer.ala.org.au)")
+                            sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
                             fieldValues.add((String) sb.toString())
                             break;
                         case "datetranscribed":
