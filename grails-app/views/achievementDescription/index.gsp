@@ -64,10 +64,10 @@
                                          width="140px"/></td>
 
                                 <td style="vertical-align: middle;"><g:formatDate
-                                        date="${achievementDescriptionInstance.dateCreated}"/></td>
+                                        date="${achievementDescriptionInstance.dateCreated}" format="yyyy-MM-dd HH:mm:ss"/></td>
 
                                 <td style="vertical-align: middle;"><g:formatDate
-                                        date="${achievementDescriptionInstance.lastUpdated}"/></td>
+                                        date="${achievementDescriptionInstance.lastUpdated}" format="yyyy-MM-dd HH:mm:ss"/></td>
 
                             </tr>
                         </g:each>

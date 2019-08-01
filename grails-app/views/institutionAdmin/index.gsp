@@ -55,7 +55,7 @@
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
-                                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
+                                <td><g:formatDate date="${institutionInstance.dateCreated}" format="yyyy-MM-dd HH:mm:ss"/></td>
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
