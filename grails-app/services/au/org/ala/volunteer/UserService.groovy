@@ -365,8 +365,12 @@ class UserService {
      * Get the user details for a list of user ids
      */
     def detailsForUserIds(List<String> userIds) {
+
         if (!userIds) {
             return []
+        }
+        if(userIds.contains("system")){
+            userIds.remove("system");
         }
 
         UserDetailsFromIdListResponse serviceResults
@@ -470,6 +474,9 @@ class UserService {
         def ids = users*.userId
         UserDetailsFromIdListResponse results
         try {
+            if(ids.contains("system")){
+                ids.remove("system");
+            }
             results = authService.getUserDetailsById(ids, true)
         } catch (Exception e) {
             log.warn("couldn't get user details from web service", e)
