@@ -4,6 +4,7 @@ import com.google.common.io.Closer
 import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import groovy.time.TimeCategory
+import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
@@ -278,7 +279,7 @@ class AchievementService {
 
         def data = [class     : 'achievement.award', badgeUrl: getBadgeImageUrl(award.achievement),
                    id: award.id,
-                   message   : message.toString(),
+                   message   : StringEscapeUtils.escapeHtml(message.toString()) ,
                    profileUrl: grailsLinkGenerator.link(controller: 'user', action: 'notebook')]
         def msg = new Message.EventSourceMessage(to: award.user.userId, event: ACHIEVEMENT_AWARDED, data: data)
         return msg
