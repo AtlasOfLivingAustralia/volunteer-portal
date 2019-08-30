@@ -81,8 +81,10 @@ class UserService {
         if (deets) {
             users.each {
                 def deet = deets.users.get(it['userId'])
-                it['displayName'] = deet.displayName
-                it['email'] = deet.userName // this is actually the email address
+                if(deet){
+                    it['displayName'] = deet.displayName
+                    it['email'] = deet.userName // this is actually the email address
+                }
             }
         }
         return users;
