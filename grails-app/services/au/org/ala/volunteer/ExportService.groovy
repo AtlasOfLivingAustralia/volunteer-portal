@@ -109,7 +109,7 @@ class ExportService {
                     results << [-1, valuesMap[-1]]
                 }
                 else {
-                    results << getTranscribedAndUploadedFields(task, valuesMap)
+                    task.transcriptions?.size() > 0 ? results << getTranscribedAndUploadedFields(task, valuesMap) :  results
                 }
             }
         }
@@ -118,7 +118,7 @@ class ExportService {
                 results = valuesMap
             }
             else {
-                results << getTranscribedAndUploadedFields(task, valuesMap)
+                task.transcriptions?.size() > 0 ? results << getTranscribedAndUploadedFields(task, valuesMap) :  results
             }
         }
 
@@ -126,11 +126,11 @@ class ExportService {
     }
 
     private Map getTranscribedAndUploadedFields(Task task, Map taskValuesMap) {
-        Transcription onlyTranscription = task.transcriptions?.first()
+        Transcription onlyTranscription = task.transcriptions?.size() > 0 ? task.transcriptions?.first() : null
         taskValuesMap = taskValuesMap ?: [:]
         if (onlyTranscription) {
             // Merge uploaded and EXIF field data into a single set of values.
-            Map transcribedValues = taskValuesMap[(int)onlyTranscription.id] ?: [:]
+            Map transcribedValues = taskValuesMap[(long)onlyTranscription.id] ?: [:]
             Map uploadedValues = taskValuesMap[-1] ?: [:]
 
             return [(onlyTranscription.id): uploadedValues + transcribedValues]
@@ -163,7 +163,7 @@ class ExportService {
                 }
             }
         } else {
-            fieldNames.each {
+             fieldNames.each {
                 if (fieldIndexMap.containsKey(it)) {
                     if (fieldIndexMap[it]) {
                         for (int i = 0; i <= fieldIndexMap[it]; ++i) {
@@ -260,7 +260,9 @@ class ExportService {
                 // These fields are in a repeating group, and will be exported in a separate (normalized) file, so remove
                 // them from the list of columns to go in the main file...
                 fieldNames.removeAll { dataSetFieldNames.contains(it) }
-                datasetCategoryFields[category] = dataSetFieldNames
+                if (dataSetFieldNames?.size() > 0) {
+                    datasetCategoryFields[category] = dataSetFieldNames
+                }
             }
         }
         log.debug("Generated dataset category fields in {}ms", sw.elapsed(MILLISECONDS))
@@ -298,7 +300,9 @@ class ExportService {
             Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id], validatedOnly)
             toExport.each { transcriptionId, transcriptionValueMap ->
                 Transcription transcription = task.transcriptions.find{it.id == transcriptionId}
-                String[] values = getFieldsForTask(task, transcription, fieldNames, transcriptionValueMap, usersMap, validatedOnly)
+                def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
+                combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
+                String[] values = getFieldsForTask(task, transcription, fieldNames, combinedFieldsMap, usersMap, validatedOnly)
                 if (values.length > 0) {
                     writer.writeNext(values)
                 }
@@ -455,59 +459,57 @@ class ExportService {
         List fieldValues = []
         def taskId = task.id
 
-        if (taskMap.containsKey(taskId)) {
-            int transcriptionId = transcription?.id ?: -1
-            // No transcription will use Task fields which contain staging and validator data.
-            if (!validatedOnly || transcriptionId == -1) {
-                Map fieldMap = taskMap[taskId][transcriptionId]
-                def sw = Stopwatch.createUnstarted()
-                fields.eachWithIndex { String fieldName, fieldIndex ->
-                    sw.reset().start()
-                    switch (fieldName.toLowerCase()) {
-                        case "taskid":
-                            fieldValues.add(taskId.toString())
-                            break;
-                        case "transcriberid":
-                            fieldValues.add(getUserDisplayName(transcription ? transcription.fullyTranscribedBy : task.fullyValidatedBy, usersMap))
-                            break;
-                        case "validatorid":
-                            fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
-                            break;
-                        case "externalidentifier":
-                            fieldValues.add(task.externalIdentifier)
-                            break;
-                        case "exportcomment":
-                            def sb = new StringBuilder()
-                            if (transcription?.fullyTranscribedBy) {
-                                sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
-                            } else if (task.fullyValidatedBy) {
-                                sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
-                            }
-                            def date = new Date().format("dd-MMM-yyyy")
-                            def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                            sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
-                            fieldValues.add((String) sb.toString())
-                            break;
-                        case "datetranscribed":
-                            fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                            break;
-                        case "datevalidated":
-                            fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                            break;
-                        case "validationstatus":
-                            fieldValues.add(taskValidationStatus(task))
-                            break;
-                        default:
-                            if (fieldMap?.containsKey(fieldName)) {
-                                fieldValues.add(cleanseValue(fieldMap.get(fieldName)?.getAt(0)))
-                            } else {
-                                fieldValues.add("") // need to leave blank
-                            }
-                            break;
-                    }
-                    def elapsed = sw.elapsed(MILLISECONDS)
-                    if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
+        def transcriptionId = transcription?.id ?: -1
+        // No transcription will use Task fields which contain staging and validator data.
+        if (!validatedOnly || transcriptionId == -1) {
+            Map fieldMap = taskMap[transcriptionId]
+            def sw = Stopwatch.createUnstarted()
+            fields.eachWithIndex { String fieldName, fieldIndex ->
+                sw.reset().start()
+                switch (fieldName.toLowerCase()) {
+                    case "taskid":
+                        fieldValues.add(taskId.toString())
+                        break;
+                    case "transcriberid":
+                        fieldValues.add(getUserDisplayName(transcription ? transcription.fullyTranscribedBy : task.fullyValidatedBy, usersMap))
+                        break;
+                    case "validatorid":
+                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
+                        break;
+                    case "externalidentifier":
+                        fieldValues.add(task.externalIdentifier)
+                        break;
+                    case "exportcomment":
+                        def sb = new StringBuilder()
+                        if (transcription?.fullyTranscribedBy) {
+                            sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
+                        } else if (task.fullyValidatedBy) {
+                            sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
+                        }
+                        def date = new Date().format("dd-MMM-yyyy")
+                        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+                        sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
+                        fieldValues.add((String) sb.toString())
+                        break;
+                    case "datetranscribed":
+                        fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    case "datevalidated":
+                        fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                        break;
+                    case "validationstatus":
+                        fieldValues.add(taskValidationStatus(task))
+                        break;
+                    default:
+                        if (fieldMap?.containsKey(fieldName)) {
+                            fieldValues.add(cleanseValue(fieldMap.find{it.key == fieldName}?.value?.getAt(0)))
+                        } else {
+                            fieldValues.add("") // need to leave blank
+                        }
+                        break;
                 }
+                def elapsed = sw.elapsed(MILLISECONDS)
+                if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
             }
         }
 
@@ -546,7 +548,7 @@ class ExportService {
                     taskMap[it.task.id] = transcriptionMap
                 }
 
-                int transcriptionId = it.transcription?.id ?: -1 // Fields loaded during staging and validatior supplied fields don't have a transcription
+                def transcriptionId = it.transcription?.id ?: -1 // Fields loaded during staging and validatior supplied fields don't have a transcription
                 if (transcriptionMap.containsKey(transcriptionId)) {
                     fieldMap = transcriptionMap[transcriptionId]
                 }
