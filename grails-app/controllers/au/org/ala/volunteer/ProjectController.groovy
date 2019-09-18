@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.FetchMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -226,19 +227,33 @@ class ProjectController {
             def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
-                taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:9999])
+                taskList = Task.createCriteria().list (max:9999, sort:"id") {
+                    eq 'project', projectInstance
+                    eq 'isFullyTranscribed', true
+                    fetchMode 'transcriptions', FetchMode.JOIN
+                }
             } else if (validatedOnly) {
-                taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
+                taskList = Task.createCriteria().list (max:9999, sort:"id") {
+                    eq 'project', projectInstance
+                    eq 'isValid', true
+                    fetchMode 'transcriptions', FetchMode.JOIN
+                }
             } else {
-                taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
+                taskList = Task.executeQuery("""
+                                select t from Task t
+                                left outer join fetch t.transcriptions
+                                where t.project = :projectInstance
+                                order by t.id
+                            """, [projectInstance: projectInstance, max: 9999])
             }
             log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
-            log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
+            def fieldList = fieldService.getAllFieldsWithTasks(taskList)
+            log.debug("Got all fields for tasks in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
-            fieldNames.addAll(fieldService.getAllFieldNames(taskList))
+            fieldNames.addAll(fieldList.name.unique().sort())
             log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
@@ -255,7 +270,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, fieldNames, validatedOnly, response)
+                export_func(projectInstance, taskList, fieldNames, fieldList, validatedOnly, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")

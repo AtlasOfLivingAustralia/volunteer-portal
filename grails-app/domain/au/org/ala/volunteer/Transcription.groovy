@@ -35,7 +35,8 @@ class Transcription implements Serializable {
     }
 
     static mapping = {
-        task lazy: false
+        task lazy: false, index: 'transcription_task,transcription_task_project'
+        project lazy: false, index: 'transcription_project'
         transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
     }

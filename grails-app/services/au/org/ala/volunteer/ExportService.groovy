@@ -10,6 +10,7 @@ import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import org.springframework.context.i18n.LocaleContextHolder
+import groovyx.gpars.GParsPool
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -23,6 +24,8 @@ class ExportService {
     def messageSource
     def userService
     def fieldService
+
+    final int THREAD_POOL = 5
 
     private String getUserDisplayName(String userId, Map<String, UserDetails> usersMap = [:]) {
         if (!userId) {
@@ -78,7 +81,7 @@ class ExportService {
         return result
     }
 
-    def export_zipFile = { Project project, taskList, fieldNames, validatedOnly, response ->
+    def export_zipFile = { Project project, taskList, fieldNames, fieldList, validatedOnly, response ->
         def sw = Stopwatch.createStarted()
         def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
@@ -97,7 +100,7 @@ class ExportService {
         log.debug("Generated repeating fields in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        zipExport(project, taskList, fieldNames, response, ["dataset"], repeatingFields, validatedOnly)
+        zipExport(project, taskList, fieldNames, fieldList, response, ["dataset"], repeatingFields, validatedOnly)
     }
 
     private Map<Transcription, Map> getTranscriptionsToExport(Project project, Task task, Map valuesMap, boolean validatedOnly) {
@@ -138,11 +141,12 @@ class ExportService {
         return null
     }
 
-    def export_default = { Project project, taskList, fieldNames, validatedOnly, response ->
-
-        def taskMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+    def export_default = { Project project, taskList, fieldNames, fieldList, validatedOnly, response ->
         def sw = Stopwatch.createStarted()
-        List databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
+        def taskMap = fieldListToMultiMap(fieldList)
+        log.debug("Got taskMap in {}ms", sw.elapsed(MILLISECONDS))
+        sw.reset().start()
+        def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
@@ -198,55 +202,55 @@ class ExportService {
         sw.reset().start()
 
         def columnIndexRegex = Pattern.compile("^(\\w+)_(\\d+)\$")
-        def sw2 = Stopwatch.createUnstarted()
-        def sw3 = Stopwatch.createUnstarted()
 
+        int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
+        GParsPool.withPool threadPoolSize, {
+            taskList.eachParallel { Task task ->
+                def sw2 = Stopwatch.createUnstarted()
+                def sw3 = Stopwatch.createUnstarted()
+                Map toExport = getTranscriptionsToExport(project, task, taskMap[task.id], validatedOnly)
+                toExport.each { transcriptionId, fieldMap ->
 
-        taskList.each { Task task ->
+                    Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
+                    sw2.reset().start()
+                    def values = []
 
-            Map toExport = getTranscriptionsToExport(project, task, taskMap[task.id], validatedOnly)
-            toExport.each { transcriptionId, fieldMap ->
+                    columnNames.each { columnName ->
+                        sw3.reset().start()
+                        def fieldName = columnName
+                        def recordIndex = 0
+                        def matcher = columnIndexRegex.matcher(columnName)
+                        if (matcher.matches()) {
+                            fieldName = matcher.group(1)
+                            recordIndex = matcher.group(2) as int
+                        }
 
-                Transcription transcription = task.transcriptions.find{it.id == transcriptionId}
-                sw2.reset().start()
-                def values = []
-
-                columnNames.each { columnName ->
-                    sw3.reset().start()
-                    def fieldName = columnName
-                    def recordIndex = 0
-                    def matcher = columnIndexRegex.matcher(columnName)
-                    if (matcher.matches()) {
-                        fieldName = matcher.group(1)
-                        recordIndex = matcher.group(2) as int
+                        String value
+                        if (fieldIndexMap.containsKey(fieldName)) {
+                            def valueMap = fieldMap?.getAt(fieldName)
+                            value = valueMap?.getAt(recordIndex) ?: ""
+                        } else {
+                            value = getTaskField(task, transcription, fieldName, usersMap)
+                        }
+                        values << value
+                        def elapsed = sw3.elapsed(MILLISECONDS)
+                        if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
                     }
-
-                    String value
-                    if (fieldIndexMap.containsKey(fieldName)) {
-                        def valueMap = fieldMap?.getAt(fieldName)
-                        value = valueMap?.getAt(recordIndex) ?: ""
-                    } else {
-                        value = getTaskField(task, transcription, fieldName, usersMap)
-                    }
-                    values << value
-                    def elapsed = sw3.elapsed(MILLISECONDS)
-                    if (elapsed > 50) log.debug("Got column {} value {} in {}ms", fieldName, value, elapsed)
+                    def elapsed = sw2.elapsed(MILLISECONDS)
+                    if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
+                    writer.writeNext(values as String[])
                 }
-                def elapsed = sw2.elapsed(MILLISECONDS)
-                if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
-                writer.writeNext(values as String[])
             }
-
-
         }
+
         log.debug("Wrote all tasks in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
         writer.close()
     }
 
-    private void zipExport(Project project, taskList, List fieldNames, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields, boolean validatedOnly) {
-        def valueMap = fieldListToMultiMap(fieldService.getAllFieldsWithTasks(taskList))
+    private void zipExport(Project project, taskList, List fieldNames, fieldList, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields, boolean validatedOnly) {
+        def valueMap = fieldListToMultiMap(fieldList)
         def sw = Stopwatch.createStarted()
         def datasetCategoryFields = [:]
         if (datasetCategories) {
@@ -296,15 +300,18 @@ class ExportService {
         // write header line (field names)
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
-        taskList.each { task ->
-            Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id], validatedOnly)
-            toExport.each { transcriptionId, transcriptionValueMap ->
-                Transcription transcription = task.transcriptions.find{it.id == transcriptionId}
-                def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
-                combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
-                String[] values = getFieldsForTask(task, transcription, fieldNames, combinedFieldsMap, usersMap, validatedOnly)
-                if (values.length > 0) {
-                    writer.writeNext(values)
+        int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
+        GParsPool.withPool threadPoolSize, {
+            taskList.eachParallel { task ->
+                Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id], validatedOnly)
+                toExport.each { transcriptionId, transcriptionValueMap ->
+                    Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
+                    def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
+                    combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
+                    String[] values = getFieldsForTask(task, transcription, fieldNames, combinedFieldsMap, usersMap, validatedOnly)
+                    if (values.length > 0) {
+                        writer.writeNext(values)
+                    }
                 }
             }
         }

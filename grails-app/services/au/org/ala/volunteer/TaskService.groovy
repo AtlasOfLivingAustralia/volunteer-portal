@@ -1008,7 +1008,7 @@ ORDER BY record_idx, name;
             }
         }.unique()
 
-        def userIds = (tasks.collect { it.fullyValidatedBy } + transcribers).unique()
+        def userIds = (tasks.fullyValidatedBy?.grep{it && it != 'system'} + transcribers).unique()
 
         return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
     }

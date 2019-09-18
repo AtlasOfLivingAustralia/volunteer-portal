@@ -1,9 +1,13 @@
 package au.org.ala.volunteer
 
 import grails.transaction.Transactional
+import groovy.sql.Sql
+import javax.sql.DataSource
 
 @Transactional
 class FieldService {
+
+    DataSource dataSource
 
     List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
         if (!taskList) {
@@ -80,9 +84,10 @@ class FieldService {
     List getAllFieldsWithTasks(List<Task> taskList) {
         def fieldValues = Field.executeQuery(
                 """select f from Field f
-               where f.superceded = false and
-               f.task in (:list) 
-               order by f.task.id""", [list: taskList])
+                   left outer join fetch f.transcription 
+                   where f.superceded = false and
+                   f.task in (:list) 
+                   order by f.task.id""", [list: taskList])
         fieldValues.toList()
     }
 
@@ -160,17 +165,18 @@ class FieldService {
      * Finds and returns the maximum record index for each unique Field name recorded transcribed any Task in a Project
      */
     List getMaxRecordIndexByFieldForProject(Project project) {
-        def c = Field.createCriteria()
-
-        def databaseFieldNames = c {
-            task {
-                eq("project", project)
-            }
-            projections {
-                groupProperty("name")
-                max("recordIdx")
-            }
-        }
+        def select ="""
+                WITH task_ids AS 
+                    (SELECT id FROM task WHERE project_id = :projectId)
+                SELECT name , max(record_idx) AS recordIdx
+                FROM field
+                WHERE field.task_id in (SELECT id FROM task_ids)
+            GROUP BY name
+            ORDER BY name
+        """
+        def sql = new Sql(dataSource)
+        def databaseFieldNames = sql.rows(select, [projectId: project.id])
+        sql.close()
         databaseFieldNames
     }
 
