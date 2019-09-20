@@ -571,8 +571,7 @@ class AjaxController {
             mm = [:]
         }
 
-        final invalidState = 'N/A'
-        final defaultCountry = 'Australia' // we don't record country, so use this if we have a state, todo externalise
+        final defaultCountry = 'AU' // TODO externalise
 
         items.each {
             def id = it.id
@@ -581,6 +580,7 @@ class AjaxController {
             def thumbnailUrl = itemMM?.thumbUrl ?: itemMM?.url
             def userDetails = usersDetails.users[transcriber]
             def displayName = userDetails?.displayName ?: User.findByUserId(transcriber)?.displayName ?: ''
+            def userCountry = userDetails?.country
             def userState = userDetails?.state
             def userCity = userDetails?.city
             def fields = allFields[id]
@@ -604,8 +604,8 @@ class AjaxController {
 
             if (thumbnailUrl) it.subject.thumbnailUrl = thumbnailUrl
             if (displayName) it.contributor.transcriber = displayName
-            if (userState && userState != invalidState) it.contributor.physicalLocation = [
-                    country: defaultCountry,
+            if (userCity || userState || userCountry) it.contributor.physicalLocation = [
+                    country: userCountry ?: defaultCountry,
                     state: userState,
                     municipality: userCity
             ]
