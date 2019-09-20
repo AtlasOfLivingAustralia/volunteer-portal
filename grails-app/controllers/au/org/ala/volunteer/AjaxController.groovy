@@ -559,7 +559,7 @@ class AjaxController {
             allFields = Field.where {
                 transcription.id in ids && superceded == false
             }.collect { field ->
-                [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
+                [id: field.transcriptionId, recordIdx: field.recordIdx, name: field.name, value: field.value]
             }.groupBy { it.id }
             udsw.start()
             usersDetails = authService.getUserDetailsById(transcribers.toList(), true) ?: [users:[:]]
