@@ -23,7 +23,7 @@ plugins {
     //    id "com.moowork.node" version "1.1.1"
 }
 
-version "5.2.3.1"
+version "5.2.4-SNAPSHOT"
 group "au.org.ala"
 description "Digivol application"
 
