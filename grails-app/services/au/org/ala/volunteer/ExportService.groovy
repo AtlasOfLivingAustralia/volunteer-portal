@@ -34,7 +34,7 @@ class ExportService {
         return usersMap[userId]?.displayName ?: userService.propertyForUserId(userId, 'displayName')
     }
 
-    private String getTaskField(Task task, Transcription transcription, String fieldName, Map<String, UserDetails> usersMap = [:]) {
+    private String getTaskField(Project project, Task task, Transcription transcription, String fieldName, Map<String, UserDetails> usersMap = [:]) {
         def sw = Stopwatch.createStarted()
 
         def result = ""
@@ -56,11 +56,10 @@ class ExportService {
                 break;
             case "exportcomment":
                 def sb = new StringBuilder()
-                if (transcription?.fullyTranscribedBy) {
-                    sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
-                }
-                else if (task.fullyValidatedBy) {
+                if ((task.fullyValidatedBy) && (!transcription || (project.getRequiredNumberOfTranscriptions() == 1))) {
                     sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
+                } else if (transcription?.fullyTranscribedBy ) {
+                    sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
                 }
                 def date = new Date().format("dd-MMM-yyyy")
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
@@ -109,10 +108,10 @@ class ExportService {
         if (validatedOnly) {
             if (task.fullyValidatedBy) {
                 if (project.requiredNumberOfTranscriptions > 1) {
-                    results << [-1, valuesMap[-1]]
+                    results << [-1L, valuesMap[-1]]
                 }
                 else {
-                    task.transcriptions?.size() > 0 ? results << getTranscribedAndUploadedFields(task, valuesMap) :  results
+                    results << getTranscribedAndUploadedFields(task, valuesMap)
                 }
             }
         }
@@ -121,7 +120,7 @@ class ExportService {
                 results = valuesMap
             }
             else {
-                task.transcriptions?.size() > 0 ? results << getTranscribedAndUploadedFields(task, valuesMap) :  results
+                results << getTranscribedAndUploadedFields(task, valuesMap)
             }
         }
 
@@ -134,11 +133,13 @@ class ExportService {
         if (onlyTranscription) {
             // Merge uploaded and EXIF field data into a single set of values.
             Map transcribedValues = taskValuesMap[(long)onlyTranscription.id] ?: [:]
-            Map uploadedValues = taskValuesMap[-1] ?: [:]
+            Map uploadedValues = taskValuesMap[-1L] ?: [:]
 
             return [(onlyTranscription.id): uploadedValues + transcribedValues]
+        } else {
+            Map uploadedValues = taskValuesMap[-1L] ?: [:]
+            return [(-1L): uploadedValues]
         }
-        return null
     }
 
     def export_default = { Project project, taskList, fieldNames, fieldList, validatedOnly, response ->
@@ -230,7 +231,7 @@ class ExportService {
                             def valueMap = fieldMap?.getAt(fieldName)
                             value = valueMap?.getAt(recordIndex) ?: ""
                         } else {
-                            value = getTaskField(task, transcription, fieldName, usersMap)
+                            value = getTaskField(project, task, transcription, fieldName, usersMap)
                         }
                         values << value
                         def elapsed = sw3.elapsed(MILLISECONDS)
@@ -555,7 +556,7 @@ class ExportService {
                     taskMap[it.task.id] = transcriptionMap
                 }
 
-                def transcriptionId = it.transcription?.id ?: -1 // Fields loaded during staging and validatior supplied fields don't have a transcription
+                def transcriptionId = it.transcription?.id ?: -1L // Fields loaded during staging and validatior supplied fields don't have a transcription
                 if (transcriptionMap.containsKey(transcriptionId)) {
                     fieldMap = transcriptionMap[transcriptionId]
                 }
