@@ -504,29 +504,34 @@ class AjaxController {
             endTs = new Timestamp(System.currentTimeMillis())
         }
 
-        final count = Task.countByDateFullyTranscribedBetween(startTs, endTs)
-        final transcribers = []
-        final ids = []
+        final count = Transcription.countByDateFullyTranscribedBetween(startTs, endTs)
+        final transcribers = [] as Set
+        final taskIds = [] as Set
+        final ids = [] as Set
 
-        def items = Task.withCriteria {
+        def items = Transcription.withCriteria {
             between('dateFullyTranscribed', startTs, endTs)
-            join('project')
+            join('task')
+            join('task.project')
             maxResults(pageSize)
             firstResult(rowStart)
             order(sort, sortOrder)
-        }.collect { task ->
-            def id = task.id
-            def projectId = task.project.id
-            def projectName = task.project.name
-            def transcriber = task.fullyTranscribedBy
-            def timestamp = task.dateFullyTranscribed
-            def ipAddress = task.fullyTranscribedIpAddress
-            def uuid = task.transcribedUUID.toString()
+        }.collect { Transcription transcription ->
+            def id = transcription.id
+            def taskId = transcription.task.id
+            def projectId = transcription.task.project.id
+            def projectName = transcription.task.project.name
+            def transcriber = transcription.fullyTranscribedBy
+            def timestamp = transcription.dateFullyTranscribed
+            def ipAddress = transcription.fullyTranscribedIpAddress
+            def uuid = transcription.transcribedUUID.toString()
 
             transcribers << transcriber
+            taskIds << taskId
             ids << id
             [
                 id: id,
+                taskId: taskId,
                 projectId: projectId,
                 project: projectName,
                 guid: uuid,
@@ -552,14 +557,14 @@ class AjaxController {
         final mm
         if (ids) {
             allFields = Field.where {
-                task.id in ids && superceded == false
+                transcription.id in ids && superceded == false
             }.collect { field ->
                 [id: field.taskId, recordIdx: field.recordIdx, name: field.name, value: field.value]
             }.groupBy { it.id }
             udsw.start()
-            usersDetails = authService.getUserDetailsById(transcribers, true) ?: [users:[:]]
+            usersDetails = authService.getUserDetailsById(transcribers.toList(), true) ?: [users:[:]]
             udsw.stop()
-            mm = Multimedia.where { task.id in ids }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+            mm = Multimedia.where { task.id in taskIds }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
         } else {
             allFields = [:]
             usersDetails = [users:[]]
@@ -572,7 +577,7 @@ class AjaxController {
         items.each {
             def id = it.id
             def transcriber = it.contributor.id
-            def itemMM = mm[id] ? mm[id][0] : null
+            def itemMM = mm[it.taskId] ? mm[it.taskId][0] : null
             def thumbnailUrl = itemMM?.thumbUrl ?: itemMM?.url
             def userDetails = usersDetails.users[transcriber]
             def displayName = userDetails?.displayName ?: User.findByUserId(transcriber)?.displayName ?: ''

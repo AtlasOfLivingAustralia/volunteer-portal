@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 import grails.test.hibernate.HibernateSpec
 import grails.test.mixin.TestFor
 
-import static au.org.ala.volunteer.au.org.ala.volunteer.helper.TaskDataHelper.*
+import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
 @TestFor(AuditService)
 class AuditServiceSpec extends HibernateSpec {
