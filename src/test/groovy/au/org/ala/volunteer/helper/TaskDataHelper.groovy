@@ -1,4 +1,4 @@
-package au.org.ala.volunteer.au.org.ala.volunteer.helper
+package au.org.ala.volunteer.helper
 
 import au.org.ala.volunteer.Field
 import au.org.ala.volunteer.Project
@@ -6,12 +6,14 @@ import au.org.ala.volunteer.Task
 import au.org.ala.volunteer.Template
 import au.org.ala.volunteer.Transcription
 import au.org.ala.volunteer.ViewedTask
+import groovy.util.logging.Slf4j
 
 
 /**
  * Helper class for creating Projects, Tasks, Transcriptions, ViewedTasks in the database to assist setting up
  * data for testing.
  */
+@Slf4j
 class TaskDataHelper {
 
     static Project setupProject() {
@@ -31,10 +33,8 @@ class TaskDataHelper {
         task
     }
 
-    static void setupTasks(Project project, int numberOfTasks) {
-        for (int i=0; i<numberOfTasks; i++) {
-            addTask(project, i)
-        }
+    static List<Task> setupTasks(Project project, int numberOfTasks) {
+        (0..numberOfTasks).collect { i -> addTask(project, i) }
     }
 
     static void transcribe(Task task, String userId, Map<String, String> fields = null) {
@@ -47,7 +47,7 @@ class TaskDataHelper {
             task.save(failOnError:true)
         }
 
-        println "Updating transcription with id="+transcription.id
+        log.info("Updating transcription with id={}", transcription.id)
         transcription.fullyTranscribedBy = userId
         transcription.dateFullyTranscribed = new Date()
 

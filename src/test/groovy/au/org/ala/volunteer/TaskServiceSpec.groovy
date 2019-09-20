@@ -4,7 +4,7 @@ import grails.test.hibernate.HibernateSpec
 import grails.test.mixin.TestFor
 import org.grails.orm.hibernate.cfg.Settings
 
-import static au.org.ala.volunteer.au.org.ala.volunteer.helper.TaskDataHelper.*
+import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
 @TestFor(TaskService)
 class TaskServiceSpec extends HibernateSpec {

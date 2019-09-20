@@ -4,7 +4,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-import static au.org.ala.volunteer.au.org.ala.volunteer.helper.TaskDataHelper.*
+import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
