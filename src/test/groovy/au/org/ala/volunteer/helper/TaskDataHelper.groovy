@@ -34,7 +34,7 @@ class TaskDataHelper {
     }
 
     static List<Task> setupTasks(Project project, int numberOfTasks) {
-        (0..numberOfTasks).collect { i -> addTask(project, i) }
+        (0..<numberOfTasks).collect { i -> addTask(project, i) }
     }
 
     static void transcribe(Task task, String userId, Map<String, String> fields = null) {
