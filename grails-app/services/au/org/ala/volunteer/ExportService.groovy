@@ -108,7 +108,7 @@ class ExportService {
         if (validatedOnly) {
             if (task.fullyValidatedBy) {
                 if (project.requiredNumberOfTranscriptions > 1) {
-                    results << [-1, valuesMap[-1]]
+                    results << [-1L, valuesMap[-1]]
                 }
                 else {
                     results << getTranscribedAndUploadedFields(task, valuesMap)
@@ -133,11 +133,11 @@ class ExportService {
         if (onlyTranscription) {
             // Merge uploaded and EXIF field data into a single set of values.
             Map transcribedValues = taskValuesMap[(long)onlyTranscription.id] ?: [:]
-            Map uploadedValues = taskValuesMap[-1] ?: [:]
+            Map uploadedValues = taskValuesMap[-1L] ?: [:]
 
             return [(onlyTranscription.id): uploadedValues + transcribedValues]
         } else {
-            Map uploadedValues = taskValuesMap[-1] ?: [:]
+            Map uploadedValues = taskValuesMap[-1L] ?: [:]
             return [(-1L): uploadedValues]
         }
     }
@@ -206,7 +206,6 @@ class ExportService {
 
         int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
-    //        taskList.each { Task task ->
             taskList.eachParallel { Task task ->
                 def sw2 = Stopwatch.createUnstarted()
                 def sw3 = Stopwatch.createUnstarted()
@@ -557,7 +556,7 @@ class ExportService {
                     taskMap[it.task.id] = transcriptionMap
                 }
 
-                def transcriptionId = it.transcription?.id ?: -1 // Fields loaded during staging and validatior supplied fields don't have a transcription
+                def transcriptionId = it.transcription?.id ?: -1L // Fields loaded during staging and validatior supplied fields don't have a transcription
                 if (transcriptionMap.containsKey(transcriptionId)) {
                     fieldMap = transcriptionMap[transcriptionId]
                 }
