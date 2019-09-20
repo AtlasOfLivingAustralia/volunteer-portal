@@ -537,7 +537,7 @@ class AjaxController {
                 guid: uuid,
                 timestamp: timestamp,
                 subject: [
-                    link: createLink(absolute: true, controller: 'task', action: 'show', id: id),
+                    link: createLink(absolute: true, controller: 'task', action: 'show', id: taskId),
                 ],
                 contributor: [
                     id: transcriber,
