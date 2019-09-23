@@ -47,7 +47,7 @@ class TaskDataHelper {
             task.save(failOnError:true)
         }
 
-        log.info("Updating transcription with id={}", transcription.id)
+        println "Updating transcription with id=${transcription.id}"
         transcription.fullyTranscribedBy = userId
         transcription.dateFullyTranscribed = new Date()
 
