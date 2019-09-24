@@ -82,21 +82,16 @@ class FieldService {
     }
 
     List getAllFieldsWithTasks(List<Task> taskList) {
-        def fieldValues = Field.executeQuery(
-                """select f from Field f
+        List<Field> fieldValues = []
+        if (taskList && taskList.size() > 0) {
+            fieldValues = Field.executeQuery(
+                    """select f from Field f
                    left outer join fetch f.transcription 
                    where f.superceded = false and
                    f.task in (:list) 
                    order by f.task.id""", [list: taskList])
-        fieldValues.toList()
-    }
-
-    List getAllFieldNames(List<Task> taskList) {
-        def fieldValues = Field.executeQuery(
-                """select distinct f.name from Field f
-               where f.superceded = false and
-               f.task in (:list) order by f.name""", [list: taskList])
-        fieldValues.toList()
+        }
+        fieldValues
     }
 
     Field getFieldForTask(Task task, String fieldName) {

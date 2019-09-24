@@ -5,6 +5,7 @@ import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
+import org.hibernate.FetchMode
 import org.imgscalr.Scalr
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
@@ -143,6 +144,31 @@ class TaskService {
 
     List getFullyTranscribedTasks(Project project, Map params) {
         Task.findAllByProjectAndIsFullyTranscribed(project, true, params)
+    }
+
+    List getFullyTranscribedTasksAndTranscriptions(Project projectInstance, Map params) {
+        Task.createCriteria().list (params) {
+            eq 'project', projectInstance
+            eq 'isFullyTranscribed', true
+            fetchMode 'transcriptions', FetchMode.JOIN
+        }
+    }
+
+    List getValidTranscribedTasks(Project project, Map params) {
+        Task.createCriteria().list (params) {
+            eq 'project', project
+            eq 'isValid', true
+            fetchMode 'transcriptions', FetchMode.JOIN
+        }
+    }
+
+    List getAllTasksAndTranscriptionsIfExists(Project projectInstance, Map params) {
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
     }
 
     // The results above select all Tasks have have less than the required number of transcriptions that the
@@ -1001,16 +1027,20 @@ ORDER BY record_idx, name;
     }
 
     Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
-        List transcribers = Transcription.createCriteria().list {
-            inList('task', tasks)
-            projections {
-                property 'fullyTranscribedBy'
-            }
-        }.unique()
+        if (tasks && tasks.size() > 0) {
+            def transcribers = Transcription.createCriteria().list {
+                inList('task', tasks)
+                projections {
+                    property 'fullyTranscribedBy'
+                }
+            }.unique()
 
-        def userIds = (tasks.fullyValidatedBy?.grep{it && it != 'system'} + transcribers).unique()
+            def userIds = (tasks.fullyValidatedBy?.grep{it && it != 'system'} + transcribers).unique()
 
-        return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
+            return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
+        }
+
+        return [:]
     }
 
 

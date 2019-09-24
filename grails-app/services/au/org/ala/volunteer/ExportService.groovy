@@ -108,7 +108,7 @@ class ExportService {
         if (validatedOnly) {
             if (task.fullyValidatedBy) {
                 if (project.requiredNumberOfTranscriptions > 1) {
-                    results << [-1L, valuesMap[-1]]
+                    results = valuesMap
                 }
                 else {
                     results << getTranscribedAndUploadedFields(task, valuesMap)
@@ -309,7 +309,7 @@ class ExportService {
                     Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
                     def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
                     combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
-                    String[] values = getFieldsForTask(task, transcription, fieldNames, combinedFieldsMap, usersMap, validatedOnly)
+                    String[] values = getFieldsForTask(project, task, transcription, fieldNames, combinedFieldsMap, usersMap)
                     if (values.length > 0) {
                         writer.writeNext(values)
                     }
@@ -372,49 +372,53 @@ class ExportService {
         String[] columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
 
         writer.writeNext(columnNames)
-        def sw = Stopwatch.createUnstarted()
-        def commentsTime = 0, userIdTime = 0, userPropsTime = 0, outputTime = 0
-        def c = TaskComment.createCriteria();
-        def comments = c {
-            inList("task", taskList)
-            order('task', 'asc')
-            order('date', 'asc')
+        if (taskList && taskList.size() > 0) {
+            def sw = Stopwatch.createUnstarted()
+            def commentsTime = 0, userIdTime = 0, userPropsTime = 0, outputTime = 0
+            def c = TaskComment.createCriteria();
+            def comments = c {
+                inList("task", taskList)
+                order('task', 'asc')
+                order('date', 'asc')
+            }
+            log.debug("Got comments in {}ms", sw.elapsed(MILLISECONDS))
+            sw.reset().start()
+            for (TaskComment comment : comments) {
+                def userId = comment.user.userId
+                userIdTime += sw.elapsed(MILLISECONDS)
+                sw.reset().start()
+                def props = usersMap[userId] ?: userService.detailsForUserId(userId)
+                userPropsTime += sw.elapsed(MILLISECONDS)
+                sw.reset().start()
+                def task = comment.task
+                String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
+                writer.writeNext(outputValues)
+                outputTime += sw.elapsed(MILLISECONDS)
+                sw.reset().start()
+            }
+            log.debug("Wrote comments in userIds {}ms, userProps {}ms, output {}ms", commentsTime, userIdTime, userPropsTime, outputTime)
         }
-        log.debug("Got comments in {}ms", sw.elapsed(MILLISECONDS))
-        sw.reset().start()
-        for (TaskComment comment : comments) {
-            def userId = comment.user.userId
-            userIdTime += sw.elapsed(MILLISECONDS)
-            sw.reset().start()
-            def props = usersMap[userId] ?: userService.detailsForUserId(userId)
-            userPropsTime += sw.elapsed(MILLISECONDS)
-            sw.reset().start()
-            def task = comment.task
-            String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
-            writer.writeNext(outputValues)
-            outputTime += sw.elapsed(MILLISECONDS)
-            sw.reset().start()
-        }
-        log.debug("Wrote comments in userIds {}ms, userProps {}ms, output {}ms", commentsTime, userIdTime, userPropsTime, outputTime)
     }
 
     def exportMultimedia(List<Task> taskList, CSVWriter writer) {
         String[] columnNames = ['taskID', 'externalIdentifier', 'recordIdx', 'associatedMedia', 'mimetype', 'licence']
         writer.writeNext(columnNames)
-        def c = Multimedia.createCriteria()
-        def mms = c.scroll {
-            inList('task', taskList)
-            order('task', 'asc')
-        }
-        def recordIdx = 0
-        def lastTaskId = null
-        while (mms.next()) {
-            def multimedia = mms.get()[0]
-            def url = multimediaService.getImageUrl(multimedia)
-            def taskId = multimedia.task.id
-            String[] values = [multimedia.task.id.toString(), multimedia.task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
-            writer.writeNext(values)
-            recordIdx = taskId == lastTaskId ? recordIdx + 1 : 0
+        if (taskList && taskList.size() > 0) {
+            def c = Multimedia.createCriteria()
+            def mms = c.scroll {
+                inList('task', taskList)
+                order('task', 'asc')
+            }
+            def recordIdx = 0
+            def lastTaskId = null
+            while (mms.next()) {
+                def multimedia = mms.get()[0]
+                def url = multimediaService.getImageUrl(multimedia)
+                def taskId = multimedia.task.id
+                String[] values = [multimedia.task.id.toString(), multimedia.task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
+                writer.writeNext(values)
+                recordIdx = taskId == lastTaskId ? recordIdx + 1 : 0
+            }
         }
     }
 
@@ -463,62 +467,60 @@ class ExportService {
         return value.toString().replaceAll("\r\n|\n\r|\n|\r", '\\\\n')
     }
 
-    private String[] getFieldsForTask(Task task, Transcription transcription, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:], Boolean validatedOnly) {
+    private String[] getFieldsForTask(Project project, Task task, Transcription transcription, List fields, Map taskMap, Map<String, UserDetails> usersMap = [:]) {
         List fieldValues = []
         def taskId = task.id
 
         def transcriptionId = transcription?.id ?: -1
-        // No transcription will use Task fields which contain staging and validator data.
-        if (!validatedOnly || transcriptionId == -1) {
-            Map fieldMap = taskMap[transcriptionId]
-            def sw = Stopwatch.createUnstarted()
-            fields.eachWithIndex { String fieldName, fieldIndex ->
-                sw.reset().start()
-                switch (fieldName.toLowerCase()) {
-                    case "taskid":
-                        fieldValues.add(taskId.toString())
-                        break;
-                    case "transcriberid":
-                        fieldValues.add(getUserDisplayName(transcription ? transcription.fullyTranscribedBy : task.fullyValidatedBy, usersMap))
-                        break;
-                    case "validatorid":
-                        fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
-                        break;
-                    case "externalidentifier":
-                        fieldValues.add(task.externalIdentifier)
-                        break;
-                    case "exportcomment":
-                        def sb = new StringBuilder()
-                        if (transcription?.fullyTranscribedBy) {
-                            sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
-                        } else if (task.fullyValidatedBy) {
-                            sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
-                        }
-                        def date = new Date().format("dd-MMM-yyyy")
-                        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                        sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
-                        fieldValues.add((String) sb.toString())
-                        break;
-                    case "datetranscribed":
-                        fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                        break;
-                    case "datevalidated":
-                        fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
-                        break;
-                    case "validationstatus":
-                        fieldValues.add(taskValidationStatus(task))
-                        break;
-                    default:
-                        if (fieldMap?.containsKey(fieldName)) {
-                            fieldValues.add(cleanseValue(fieldMap.find{it.key == fieldName}?.value?.getAt(0)))
-                        } else {
-                            fieldValues.add("") // need to leave blank
-                        }
-                        break;
-                }
-                def elapsed = sw.elapsed(MILLISECONDS)
-                if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
+
+        Map fieldMap = taskMap[transcriptionId]
+        def sw = Stopwatch.createUnstarted()
+        fields.eachWithIndex { String fieldName, fieldIndex ->
+            sw.reset().start()
+            switch (fieldName.toLowerCase()) {
+                case "taskid":
+                    fieldValues.add(taskId.toString())
+                    break;
+                case "transcriberid":
+                    fieldValues.add(getUserDisplayName(transcription ? transcription.fullyTranscribedBy : task.fullyValidatedBy, usersMap))
+                    break;
+                case "validatorid":
+                    fieldValues.add(getUserDisplayName(task.fullyValidatedBy, usersMap))
+                    break;
+                case "externalidentifier":
+                    fieldValues.add(task.externalIdentifier)
+                    break;
+                case "exportcomment":
+                    def sb = new StringBuilder()
+                    if ((task.fullyValidatedBy) && (!transcription || (project.getRequiredNumberOfTranscriptions() == 1))) {
+                        sb.append("Validated by ${getUserDisplayName(task.fullyValidatedBy, usersMap)}. ")
+                    } else if (transcription?.fullyTranscribedBy ) {
+                        sb.append("Fully transcribed by ${getUserDisplayName(transcription.fullyTranscribedBy, usersMap)}. ")
+                    }
+                    def date = new Date().format("dd-MMM-yyyy")
+                    def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+                    sb.append("Exported on ${date} from ${appName} (https://volunteer.ala.org.au)")
+                    fieldValues.add((String) sb.toString())
+                    break;
+                case "datetranscribed":
+                    fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                    break;
+                case "datevalidated":
+                    fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                    break;
+                case "validationstatus":
+                    fieldValues.add(taskValidationStatus(task))
+                    break;
+                default:
+                    if (fieldMap?.containsKey(fieldName)) {
+                        fieldValues.add(cleanseValue(fieldMap.find{it.key == fieldName}?.value?.getAt(0)))
+                    } else {
+                        fieldValues.add("") // need to leave blank
+                    }
+                    break;
             }
+            def elapsed = sw.elapsed(MILLISECONDS)
+            if (elapsed > 50) log.debug("Got {} value in {}ms", fieldName, elapsed)
         }
 
         return fieldValues.toArray(new String[0]) // String array

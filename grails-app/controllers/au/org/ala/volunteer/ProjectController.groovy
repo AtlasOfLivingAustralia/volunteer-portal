@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.hibernate.FetchMode
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -227,24 +226,11 @@ class ProjectController {
             def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
-                taskList = Task.createCriteria().list (max:9999, sort:"id") {
-                    eq 'project', projectInstance
-                    eq 'isFullyTranscribed', true
-                    fetchMode 'transcriptions', FetchMode.JOIN
-                }
+                taskList = taskService.getFullyTranscribedTasksAndTranscriptions(projectInstance, [max:9999, sort:"id"])
             } else if (validatedOnly) {
-                taskList = Task.createCriteria().list (max:9999, sort:"id") {
-                    eq 'project', projectInstance
-                    eq 'isValid', true
-                    fetchMode 'transcriptions', FetchMode.JOIN
-                }
+                taskList = taskService.getValidTranscribedTasks(projectInstance, [max:9999, sort:"id"])
             } else {
-                taskList = Task.executeQuery("""
-                                select t from Task t
-                                left outer join fetch t.transcriptions
-                                where t.project = :projectInstance
-                                order by t.id
-                            """, [projectInstance: projectInstance, max: 9999])
+                taskList = taskService.getAllTasksAndTranscriptionsIfExists(projectInstance, [max: 9999])
             }
             log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
