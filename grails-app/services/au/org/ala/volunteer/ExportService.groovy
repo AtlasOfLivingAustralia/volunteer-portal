@@ -80,7 +80,7 @@ class ExportService {
         return result
     }
 
-    def export_zipFile = { Project project, taskList, fieldNames, fieldList, validatedOnly, response ->
+    def export_zipFile = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
         def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
@@ -99,29 +99,17 @@ class ExportService {
         log.debug("Generated repeating fields in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        zipExport(project, taskList, fieldNames, fieldList, response, ["dataset"], repeatingFields, validatedOnly)
+        zipExport(project, taskList, fieldNames, fieldList, response, ["dataset"], repeatingFields)
     }
 
-    private Map<Transcription, Map> getTranscriptionsToExport(Project project, Task task, Map valuesMap, boolean validatedOnly) {
+    private Map<Transcription, Map> getTranscriptionsToExport(Project project, Task task, Map valuesMap) {
 
         Map results = [:]
-        if (validatedOnly) {
-            if (task.fullyValidatedBy) {
-                if (project.requiredNumberOfTranscriptions > 1) {
-                    results = valuesMap
-                }
-                else {
-                    results << getTranscribedAndUploadedFields(task, valuesMap)
-                }
-            }
+        if (project.requiredNumberOfTranscriptions > 1) {
+            results = valuesMap
         }
         else {
-            if (project.requiredNumberOfTranscriptions > 1) {
-                results = valuesMap
-            }
-            else {
-                results << getTranscribedAndUploadedFields(task, valuesMap)
-            }
+            results << getTranscribedAndUploadedFields(task, valuesMap)
         }
 
         return results
@@ -142,7 +130,7 @@ class ExportService {
         }
     }
 
-    def export_default = { Project project, taskList, fieldNames, fieldList, validatedOnly, response ->
+    def export_default = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
         def taskMap = fieldListToMultiMap(fieldList)
         log.debug("Got taskMap in {}ms", sw.elapsed(MILLISECONDS))
@@ -209,7 +197,7 @@ class ExportService {
             taskList.eachParallel { Task task ->
                 def sw2 = Stopwatch.createUnstarted()
                 def sw3 = Stopwatch.createUnstarted()
-                Map toExport = getTranscriptionsToExport(project, task, taskMap[task.id], validatedOnly)
+                Map toExport = getTranscriptionsToExport(project, task, taskMap[task.id])
                 toExport.each { transcriptionId, fieldMap ->
 
                     Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
@@ -250,7 +238,7 @@ class ExportService {
         writer.close()
     }
 
-    private void zipExport(Project project, taskList, List fieldNames, fieldList, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields, boolean validatedOnly) {
+    private void zipExport(Project project, taskList, List fieldNames, fieldList, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
         def valueMap = fieldListToMultiMap(fieldList)
         def sw = Stopwatch.createStarted()
         def datasetCategoryFields = [:]
@@ -304,7 +292,7 @@ class ExportService {
         int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
             taskList.eachParallel { task ->
-                Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id], validatedOnly)
+                Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id])
                 toExport.each { transcriptionId, transcriptionValueMap ->
                     Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
                     def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
@@ -327,7 +315,7 @@ class ExportService {
                 // Dataset files...
                 def dataSetFieldNames = datasetCategoryFields[category]
                 zipStream.putNextEntry(new ZipEntry(category.toString() +".csv"))
-                exportDataSet(project, taskList, valueMap, writer, dataSetFieldNames, validatedOnly)
+                exportDataSet(project, taskList, valueMap, writer, dataSetFieldNames)
                 writer.flush();
                 zipStream.closeEntry();
                 log.debug("Wrote {}.csv in {}ms", category, sw.elapsed(MILLISECONDS))
@@ -338,7 +326,7 @@ class ExportService {
         if (otherRepeatingFields) {
             otherRepeatingFields.each {
                 zipStream.putNextEntry(new ZipEntry("${it}.csv"))
-                exportDataSet(project, taskList, valueMap, writer, [it], validatedOnly)
+                exportDataSet(project, taskList, valueMap, writer, [it])
                 writer.flush();
                 zipStream.closeEntry();
                 log.debug("Wrote {}.csv in {}ms", it, sw.elapsed(MILLISECONDS))
@@ -422,7 +410,7 @@ class ExportService {
         }
     }
 
-    private void exportDataSet(Project project, List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames, boolean validatedOnly) {
+    private void exportDataSet(Project project, List<Task> taskList, Map valueMap, CSVWriter writer, List dataSetFieldNames) {
 
         def columnNames = ['taskID', 'externalIdentifier','recordIdx'] + dataSetFieldNames;
 
@@ -430,7 +418,7 @@ class ExportService {
         taskList.each { Task task ->
             Map valuesByTranscription = valueMap[task.id]
 
-            Map toExport = getTranscriptionsToExport(project, task, valuesByTranscription, validatedOnly)
+            Map toExport = getTranscriptionsToExport(project, task, valuesByTranscription)
             toExport.each { transcriptionId, values ->
 
                 if (values) {

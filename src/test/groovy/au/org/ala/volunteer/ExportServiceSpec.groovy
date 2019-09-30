@@ -80,11 +80,10 @@ class ExportServiceSpec extends Specification {
         List<String> fieldNames = taskOrTranscriptionFields + ["occurenceRemarks"]
 
         when:
-        service.export_default(project, taskList, fieldNames, fields, false, response)
+        service.export_default(project, taskList, fieldNames, fields, response)
         List results = new CSVMapReader(new StringReader(response.text)).readAll()
 
         then:
-        //1 * fieldService.getAllFieldsWithTasks(taskList) >> fields
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['occurenceRemarks', 0]]
         1 * taskService.getUserMapFromTaskList(taskList) >> [(userId):[displayName:"Test user"]]
 
@@ -107,11 +106,10 @@ class ExportServiceSpec extends Specification {
         List<String> fieldNames = taskOrTranscriptionFields + ["occurenceRemarks"]
 
         when:
-        service.export_default(project, taskList, fieldNames, fields, false, response)
+        service.export_default(project, taskList, fieldNames, fields, response)
         List results = new CSVMapReader(new StringReader(response.text)).readAll()
 
         then:
-       // 1 * fieldService.getAllFieldsWithTasks(taskList) >> fields
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['occurenceRemarks', 2]]
         1 * taskService.getUserMapFromTaskList(taskList) >> [(userId):[displayName:"Test user"]]
 
@@ -135,11 +133,10 @@ class ExportServiceSpec extends Specification {
         List fields = transcribeTask(task, [], userId, transcriptionDate)
 
         when:
-        service.export_default(project, taskList, fieldNames, fields, false, response)
+        service.export_default(project, taskList, fieldNames, fields, response)
         List results = new CSVMapReader(new StringReader(response.text)).readAll()
 
         then:
-      //  1 * fieldService.getAllFieldsWithTasks(taskList) >> fields
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
         1 * taskService.getUserMapFromTaskList(taskList) >> [(userId):[displayName:"Test user"]]
 
