@@ -26,6 +26,7 @@ class ExportService {
     def fieldService
 
     final int THREAD_POOL = 5
+    final long EMPTY_TRANSCRIPTIONID = -1L
 
     private String getUserDisplayName(String userId, Map<String, UserDetails> usersMap = [:]) {
         if (!userId) {
@@ -121,12 +122,12 @@ class ExportService {
         if (onlyTranscription) {
             // Merge uploaded and EXIF field data into a single set of values.
             Map transcribedValues = taskValuesMap[(long)onlyTranscription.id] ?: [:]
-            Map uploadedValues = taskValuesMap[-1L] ?: [:]
+            Map uploadedValues = taskValuesMap[EMPTY_TRANSCRIPTIONID] ?: [:]
 
             return [(onlyTranscription.id): uploadedValues + transcribedValues]
         } else {
-            Map uploadedValues = taskValuesMap[-1L] ?: [:]
-            return [(-1L): uploadedValues]
+            Map uploadedValues = taskValuesMap[EMPTY_TRANSCRIPTIONID] ?: [:]
+            return [(EMPTY_TRANSCRIPTIONID): uploadedValues]
         }
     }
 
@@ -295,8 +296,14 @@ class ExportService {
                 Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id])
                 toExport.each { transcriptionId, transcriptionValueMap ->
                     Transcription transcription = task.transcriptions.find { it.id == transcriptionId }
-                    def combinedFieldsMap = new LinkedHashMap(valueMap[task.id])
-                    combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
+                    def combinedFieldsMap = new LinkedHashMap(valueMap[task.id]?: [:])
+                    if (transcriptionValueMap && transcriptionValueMap.size() > 0) {
+                        if (combinedFieldsMap[transcriptionId]) {
+                            combinedFieldsMap[transcriptionId].putAll(transcriptionValueMap)
+                        } else {
+                            combinedFieldsMap[transcriptionId] = transcriptionValueMap
+                        }
+                    }
                     String[] values = getFieldsForTask(project, task, transcription, fieldNames, combinedFieldsMap, usersMap)
                     if (values.length > 0) {
                         writer.writeNext(values)
@@ -459,7 +466,7 @@ class ExportService {
         List fieldValues = []
         def taskId = task.id
 
-        def transcriptionId = transcription?.id ?: -1
+        def transcriptionId = transcription?.id ?: EMPTY_TRANSCRIPTIONID
 
         Map fieldMap = taskMap[transcriptionId]
         def sw = Stopwatch.createUnstarted()
@@ -546,7 +553,7 @@ class ExportService {
                     taskMap[it.task.id] = transcriptionMap
                 }
 
-                def transcriptionId = it.transcription?.id ?: -1L // Fields loaded during staging and validatior supplied fields don't have a transcription
+                def transcriptionId = it.transcription?.id ?: EMPTY_TRANSCRIPTIONID // Fields loaded during staging and validatior supplied fields don't have a transcription
                 if (transcriptionMap.containsKey(transcriptionId)) {
                     fieldMap = transcriptionMap[transcriptionId]
                 }

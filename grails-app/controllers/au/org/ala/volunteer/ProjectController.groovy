@@ -256,7 +256,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, fieldNames, fieldList, validatedOnly, response)
+                export_func(projectInstance, taskList, fieldNames, fieldList, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")
