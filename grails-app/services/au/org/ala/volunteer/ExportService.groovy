@@ -6,6 +6,7 @@ import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
@@ -107,7 +108,13 @@ class ExportService {
 
         Map results = [:]
         if (project.requiredNumberOfTranscriptions > 1) {
-            results = valuesMap
+            if (valuesMap) {
+                results = valuesMap
+            } else {
+                // return empty map to allow the export of task fields even though there are no transcription fields
+                // this behaviour is consistent with the single transcription task
+                results = [(EMPTY_TRANSCRIPTIONID): [:]]
+            }
         }
         else {
             results << getTranscribedAndUploadedFields(task, valuesMap)
@@ -195,6 +202,7 @@ class ExportService {
 
         int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
+            final AtomicInteger numberOfTasks = new AtomicInteger(0)
             taskList.eachParallel { Task task ->
                 def sw2 = Stopwatch.createUnstarted()
                 def sw3 = Stopwatch.createUnstarted()
@@ -229,8 +237,12 @@ class ExportService {
                     def elapsed = sw2.elapsed(MILLISECONDS)
                     if (elapsed > 50) log.debug("Got column values in {}ms", elapsed)
                     writer.writeNext(values as String[])
+                    //valuesList.add(values as String[])
                 }
+                numberOfTasks.addAndGet(1)
+                //writer.writeAll(valuesList)
             }
+            log.info ("Wrote {} tasks", numberOfTasks.toString())
         }
 
         log.debug("Wrote all tasks in {}ms", sw.elapsed(MILLISECONDS))
@@ -292,6 +304,7 @@ class ExportService {
 
         int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
+            final AtomicInteger numberOfTasks = new AtomicInteger(0)
             taskList.eachParallel { task ->
                 Map toExport = getTranscriptionsToExport(project, task, valueMap[task.id])
                 toExport.each { transcriptionId, transcriptionValueMap ->
@@ -309,7 +322,9 @@ class ExportService {
                         writer.writeNext(values)
                     }
                 }
+                numberOfTasks.addAndGet(1)
             }
+            log.info ("Wrote {} tasks", numberOfTasks.toString())
         }
         writer.flush();
         zipStream.closeEntry();

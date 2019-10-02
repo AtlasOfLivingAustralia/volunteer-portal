@@ -146,22 +146,38 @@ class TaskService {
         Task.findAllByProjectAndIsFullyTranscribed(project, true, params)
     }
 
+    /***
+     * Obtain Fully Transcribed tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 fully transcribed tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
     List getFullyTranscribedTasksAndTranscriptions(Project projectInstance, Map params) {
-        Task.createCriteria().list (params) {
-            eq 'project', projectInstance
-            eq 'isFullyTranscribed', true
-            fetchMode 'transcriptions', FetchMode.JOIN
-        }
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        and t.isFullyTranscribed = true
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
     }
 
-    List getValidTranscribedTasks(Project project, Map params) {
-        Task.createCriteria().list (params) {
-            eq 'project', project
-            eq 'isValid', true
-            fetchMode 'transcriptions', FetchMode.JOIN
-        }
+    /***
+     * Obtain Fully Validated tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 validated tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
+    List getValidTranscribedTasks(Project projectInstance, Map params) {
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        and t.isValid = true
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
     }
 
+    /***
+     * Obtain all tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
     List getAllTasksAndTranscriptionsIfExists(Project projectInstance, Map params) {
         Task.executeQuery("""
                         select t from Task t

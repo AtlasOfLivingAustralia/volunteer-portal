@@ -27,6 +27,8 @@ class ExportServiceSpec extends Specification {
     def setup() {
         fieldService = Mock(FieldService)
         service.fieldService = fieldService
+        grailsApplication.config.exportCSVThreadPoolSize = 1
+        service.grailsApplication = grailsApplication
         taskService = Mock(TaskService)
         service.taskService = taskService
         response = new GrailsMockHttpServletResponse()
@@ -48,8 +50,8 @@ class ExportServiceSpec extends Specification {
         mockDomain(Project, [project])
     }
 
-    private Task createTask() {
-        Task task = new Task(transcriptions: new HashSet(), project:project)
+    private Task createTask(String externalIdentifier = '') {
+        Task task = new Task(transcriptions: new HashSet(), project:project, externalIdentifier: externalIdentifier)
         project.tasks.add(task)
         mockDomain(Task, [task])
 
@@ -70,6 +72,189 @@ class ExportServiceSpec extends Specification {
 
         fields
     }
+
+    def "Test non parrallel writes is working for larger tasks"() {
+        setup:
+        project.transcriptionsPerTask = 2
+        String userA = 'userA'
+        String userB = 'userB'
+
+        List allFields = new ArrayList()
+
+        int numOfTasks = 100
+        for (int i= 1; i <= numOfTasks; i++) {
+            Task task = createTask("image${i}.jpq")
+            List fields1 = transcribeTask(task, [[name:"scientificName", value:"Magpie"], [name:"individualCount", value:"10"]], userA)
+            allFields.addAll(fields1)
+            List fields2 = transcribeTask(task, [[name:"scientificName", value:"Crow"], [name:"individualCount", value:"5"]], userB)
+            allFields.addAll(fields2)
+        }
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields + ["scientificName", "individualCount"]
+
+        when:
+        service.export_default(project, taskList, fieldNames, allFields, response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
+        1 * taskService.getUserMapFromTaskList(taskList) >> [(userA):[displayName:userA], (userB):[displayName:userB]]
+
+        and:
+        results.size() == 200
+        for (int i= 1; i <= numOfTasks; i++) {
+            results.findAll { it.externalIdentifier == "image${i}.jpq" }.size() == 2
+        }
+        results.findAll{it.transcriberID == userA}.size() == numOfTasks
+        results.findAll{it.transcriberID == userB}.size() == numOfTasks
+    }
+
+    def "Test parrallel writes is working for larger tasks"() {
+        setup:
+        grailsApplication.config.exportCSVThreadPoolSize = 10
+        service.grailsApplication = grailsApplication
+
+        project.transcriptionsPerTask = 2
+        String userA = 'userA'
+        String userB = 'userB'
+
+        List allFields = new ArrayList()
+
+        int numOfTasks = 100
+        for (int i= 1; i <= numOfTasks; i++) {
+            Task task = createTask("image${i}.jpq")
+            List fields1 = transcribeTask(task, [[name:"scientificName", value:"Magpie"], [name:"individualCount", value:"10"]], userA)
+            allFields.addAll(fields1)
+            List fields2 = transcribeTask(task, [[name:"scientificName", value:"Crow"], [name:"individualCount", value:"5"]], userB)
+            allFields.addAll(fields2)
+        }
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields + ["scientificName", "individualCount"]
+
+        when:
+        service.export_default(project, taskList, fieldNames, allFields, response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
+        1 * taskService.getUserMapFromTaskList(taskList) >> [(userA):[displayName:userA], (userB):[displayName:userB]]
+
+        and:
+        results.size() == 200
+        for (int i= 1; i <= numOfTasks; i++) {
+            results.findAll { it.externalIdentifier == "image${i}.jpq" }.size() == 2
+        }
+        results.findAll{it.transcriberID == userA}.size() == 100
+        results.findAll{it.transcriberID == userB}.size() == 100
+    }
+
+    def "All project transcription tasks data can be exported in CSV form for multiple transcription project"() {
+        setup:
+        project.transcriptionsPerTask = 2
+        String userA = 'userA'
+        String userB = 'userB'
+        Task birdTask = createTask()
+        Task kangarooTask = createTask()
+        List birdFields1 = transcribeTask(birdTask, [[name:"scientificName", value:"Magpie"], [name:"individualCount", value:"10"]], userA)
+        List birdFields2 = transcribeTask(birdTask, [[name:"scientificName", value:"Crow"], [name:"individualCount", value:"5"]], userB)
+        List kangarooFields1 = transcribeTask(kangarooTask, [[name:"scientificName", value:"Red Kangaroo"], [name:"individualCount", value:"2"]], userA)
+        List kangarooFields2 = transcribeTask(kangarooTask, [[name:"scientificName", value:"Red Kangaroo"], [name:"individualCount", value:"2"]], userB)
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields + ["scientificName", "individualCount"]
+
+        when:
+        service.export_default(project, taskList, fieldNames, birdFields1 + birdFields2 + kangarooFields1 + kangarooFields2, response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
+        1 * taskService.getUserMapFromTaskList(taskList) >> [(userA):[displayName:userA], (userB):[displayName:userB]]
+
+        and:
+        results.size() == 4 // not counting headers
+        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName == 'Magpie'}.size() == 1
+        results.findAll{it.transcriberID == userA && it.taskID == kangarooTask.id.toString() && it.scientificName == 'Red Kangaroo'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == birdTask.id.toString() && it.scientificName == 'Crow'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString() && it.scientificName == 'Red Kangaroo'}.size() == 1
+    }
+
+    def "Partially transcribed project tasks data can be exported in CSV form for multiple transcription project"() {
+        setup:
+        project.transcriptionsPerTask = 2
+        String userA = 'userA'
+        String userB = 'userB'
+        Task birdTask = createTask()
+        Task kangarooTask = createTask()
+        List birdFields1 = transcribeTask(birdTask, [[name:"scientificName", value:"Magpie"], [name:"individualCount", value:"10"]], userA)
+        List kangarooFields1 = transcribeTask(kangarooTask, [[name:"scientificName", value:"Red Kangaroo"], [name:"individualCount", value:"2"]], userB)
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields + ["scientificName", "individualCount"]
+
+        when:
+        service.export_default(project, taskList, fieldNames, birdFields1 + kangarooFields1, response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
+        1 * taskService.getUserMapFromTaskList(taskList) >> [(userA):[displayName:userA], (userB):[displayName:userB]]
+
+        and:
+        results.size() == 2 //not counting headers
+        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName == 'Magpie'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString()  && it.scientificName == 'Red Kangaroo'}.size() == 1
+    }
+
+    def "For multiple transcription project with tasks that have not been transcribed, data can be exported in CSV"() {
+        setup:
+        project.transcriptionsPerTask = 2
+        String macpieImage = 'macpieImage.jpg'
+        String kangarooImage = 'kangarooImage.jpg'
+        Task birdTask = createTask(macpieImage)
+        Task kangarooTask = createTask(kangarooImage)
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields
+
+        when:
+        service.export_default(project, taskList, fieldNames, [], response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
+        1 * taskService.getUserMapFromTaskList(taskList) >> [:]
+
+        and:
+        results.size() == 2
+        results.find{it.taskID == kangarooTask.id.toString()}.externalIdentifier == kangarooImage
+        results.find{it.taskID == birdTask.id.toString()}.externalIdentifier == macpieImage
+    }
+
+    def "For single transcription project with tasks that have not been transcribed, data can be exported in CSV"() {
+        setup:
+        project.transcriptionsPerTask = 1
+        String macpieImage = 'macpieImage.jpg'
+        Task birdTask = createTask(macpieImage)
+
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields
+
+        when:
+        service.export_default(project, taskList, fieldNames, [], response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
+        1 * taskService.getUserMapFromTaskList(taskList) >> [:]
+
+        and:
+        results.size() == 1
+        results[0].externalIdentifier == macpieImage
+    }
+
 
     def "All project task data can be exported in CSV form for single transcription projects"() {
         setup:

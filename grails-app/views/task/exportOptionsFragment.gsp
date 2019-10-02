@@ -35,7 +35,7 @@
     $("#btnExportTasks").click(function (e) {
         e.preventDefault();
         var format = $("input:radio[name='optionsExport']:checked").val();
-        var url = "${createLink(controller:'project', action:'exportCSV', id: projectId, params:[validated: exportCriteria == 'validated', transcribed: exportCriteria=='transcribed'])}&exportFormat=" + format;
+        var url = "${createLink(controller:'project', action:'exportCSV', id: projectId, params:[validated: exportCriteria == 'validated', transcribed: exportCriteria=='transcribed']).encodeAsJavaScript()}&exportFormat=" + format;
         window.location = url;
     });
 
