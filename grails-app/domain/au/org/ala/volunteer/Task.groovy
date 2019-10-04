@@ -36,6 +36,7 @@ class Task implements Serializable {
         transcriptions cascade: 'all,delete-orphan'
         //transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
+        project index: 'task_project'
     }
 
     static constraints = {

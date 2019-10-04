@@ -1,9 +1,11 @@
 package au.org.ala.volunteer
 
+import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
+import org.hibernate.FetchMode
 import org.imgscalr.Scalr
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
@@ -142,6 +144,47 @@ class TaskService {
 
     List getFullyTranscribedTasks(Project project, Map params) {
         Task.findAllByProjectAndIsFullyTranscribed(project, true, params)
+    }
+
+    /***
+     * Obtain Fully Transcribed tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 fully transcribed tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
+    List getFullyTranscribedTasksAndTranscriptions(Project projectInstance, Map params) {
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        and t.isFullyTranscribed = true
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
+    }
+
+    /***
+     * Obtain Fully Validated tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 validated tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
+    List getValidTranscribedTasks(Project projectInstance, Map params) {
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        and t.isValid = true
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
+    }
+
+    /***
+     * Obtain all tasks and the corresponding transcriptions for the project (eager fetching)
+     * Note: if there are 2000 tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.
+     */
+    List getAllTasksAndTranscriptionsIfExists(Project projectInstance, Map params) {
+        Task.executeQuery("""
+                        select t from Task t
+                        left outer join fetch t.transcriptions
+                        where t.project = :projectInstance
+                        order by t.id
+                    """, [projectInstance: projectInstance], params)
     }
 
     // The results above select all Tasks have have less than the required number of transcriptions that the
@@ -998,6 +1041,24 @@ ORDER BY record_idx, name;
 
         return results
     }
+
+    Map<String, UserDetails> getUserMapFromTaskList(List<Task> tasks) {
+        if (tasks && tasks.size() > 0) {
+            def transcribers = Transcription.createCriteria().list {
+                inList('task', tasks)
+                projections {
+                    property 'fullyTranscribedBy'
+                }
+            }.unique()
+
+            def userIds = (tasks.fullyValidatedBy?.grep{it && it != 'system'} + transcribers).unique()
+
+            return userService.detailsForUserIds(userIds).collectEntries { [ (it.userId): it ]}
+        }
+
+        return [:]
+    }
+
 
     @NotTransactional // handle the read only transaction at the sql level
     // TODO Use Gradle, Flyway, JOOQ instead of plain SQL

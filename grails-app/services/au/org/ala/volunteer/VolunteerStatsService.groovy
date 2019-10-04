@@ -6,6 +6,7 @@ import grails.transaction.Transactional
 import grails.plugin.cache.Cacheable
 import javax.annotation.PostConstruct
 import static java.util.concurrent.TimeUnit.MILLISECONDS
+import grails.web.mapping.LinkGenerator
 
 @Transactional
 class VolunteerStatsService {
@@ -16,15 +17,9 @@ class VolunteerStatsService {
     def institutionService
     def projectService
 
-    private g
-
-    @PostConstruct
-    def initialise() {
-        g = applicationContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
-    }
+    LinkGenerator grailsLinkGenerator
 
     @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#tagName?:'') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
-    //@Cacheable(value = 'MainVolunteerContribution')
     def generateStats(long institutionId, long projectId, String tagName, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -92,8 +87,6 @@ class VolunteerStatsService {
 
     }
 
-
-  //  @Cacheable(value = 'MainVolunteerContribution', key = "#institution?.key?:'' + #projectInstance?.key?:'' + #pt?.key?:''")
     def generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
@@ -159,7 +152,7 @@ class VolunteerStatsService {
             def topicId = topic.id
             def details = userService.detailsForUserId(it.user.userId)
             def timestamp = it.date.time / 1000
-            def topicUrl = g.createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id)
+            def topicUrl = grailsLinkGenerator.link(controller: 'forum', action: 'viewForumTopic', id: topic.id)
 
             def forumName
             def forumUrl
@@ -169,15 +162,15 @@ class VolunteerStatsService {
                 def project = ((ProjectForumTopic) topic).project
                 forumName = project.name
                 thumbnail = project.featuredImage
-                forumUrl = g.createLink(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
                 forumName = task.project.name
                 thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
-                forumUrl = g.createLink(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
                 forumName = "General Discussion"
-                forumUrl = g.createLink(controller: 'forum', action: 'index', params: [selectedTab: 1])
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'index', params: [selectedTab: 1])
             }
 
             [type        : 'forum', topicId: topicId, topicUrl: topicUrl, forumName: forumName, forumUrl: forumUrl, userId: it.userId,

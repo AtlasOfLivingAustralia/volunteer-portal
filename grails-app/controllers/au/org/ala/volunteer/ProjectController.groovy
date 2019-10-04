@@ -226,19 +226,20 @@ class ProjectController {
             def sw = Stopwatch.createStarted()
             def taskList
             if (transcribedOnly) {
-                taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:9999])
+                taskList = taskService.getFullyTranscribedTasksAndTranscriptions(projectInstance, [max:9999, sort:"id"])
             } else if (validatedOnly) {
-                taskList = Task.findAllByProjectAndIsValid(projectInstance, true, [sort:"id", max:9999])
+                taskList = taskService.getValidTranscribedTasks(projectInstance, [max:9999, sort:"id"])
             } else {
-                taskList = Task.findAllByProject(projectInstance, [sort:"id", max:9999])
+                taskList = taskService.getAllTasksAndTranscriptionsIfExists(projectInstance, [max: 9999])
             }
             log.debug("Got task list in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
-            log.debug("Got field list multimap in {}ms", sw.elapsed(MILLISECONDS))
+            def fieldList = fieldService.getAllFieldsWithTasks(taskList)
+            log.debug("Got all fields for tasks in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
-            fieldNames.addAll(fieldService.getAllFieldNames(taskList, validatedOnly))
+            fieldNames.addAll(fieldList.name.unique().sort())
             log.debug("Got all field names in {}ms", sw.elapsed(MILLISECONDS))
             sw.reset().start()
 
@@ -255,7 +256,7 @@ class ProjectController {
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate");
                 response.setHeader("Pragma", "must-revalidate");
-                export_func(projectInstance, taskList, fieldNames, validatedOnly, response)
+                export_func(projectInstance, taskList, fieldNames, fieldList, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
                 throw new Exception("No export function for template ${projectInstance.template.name}!")

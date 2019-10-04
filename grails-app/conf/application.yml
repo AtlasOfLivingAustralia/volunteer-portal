@@ -185,6 +185,8 @@ digivol:
         - 'UA-7855618-24'
         - 'UA-64438237-2'
 
+exportCSVThreadPoolSize: 10
+
 #environments:
 #    development:
 #        grails:

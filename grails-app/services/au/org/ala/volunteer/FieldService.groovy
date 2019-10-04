@@ -1,9 +1,13 @@
 package au.org.ala.volunteer
 
 import grails.transaction.Transactional
+import groovy.sql.Sql
+import javax.sql.DataSource
 
 @Transactional
 class FieldService {
+
+    DataSource dataSource
 
     List getLatestFieldsWithTasks(String fieldName, List<Task> taskList, Map params) {
         if (!taskList) {
@@ -78,23 +82,16 @@ class FieldService {
     }
 
     List getAllFieldsWithTasks(List<Task> taskList) {
-        def fieldValues = Field.executeQuery(
-                """select f from Field f
-               where f.superceded = false and
-               f.task in (:list) 
-               order by f.task.id""", [list: taskList])
-        fieldValues.toList()
-    }
-
-    List getAllFieldNames(List<Task> taskList, boolean retrieveValidatedOnly = false ) {
-
-        def fieldValues = Field.executeQuery(
-                """select distinct f.name from Field f
-               where f.superceded = false 
-               and f.task in (:list)
-               ${retrieveValidatedOnly? 'and f.transcription is null': ''} 
-               order by f.name""", [list: taskList])
-        fieldValues.toList()
+        List<Field> fieldValues = []
+        if (taskList && taskList.size() > 0) {
+            fieldValues = Field.executeQuery(
+                    """select f from Field f
+                   left outer join fetch f.transcription 
+                   where f.superceded = false and
+                   f.task in (:list) 
+                   order by f.task.id""", [list: taskList])
+        }
+        fieldValues
     }
 
     Field getFieldForTask(Task task, String fieldName) {
@@ -157,6 +154,25 @@ class FieldService {
         def field = new Field(task: task, name: fieldName, recordIdx: recordIndex, superceded: false, value: value, transcribedByUserId: userId)
         field.save(flush: true, failOnError: true)
         return field
+    }
+
+    /**
+     * Finds and returns the maximum record index for each unique Field name recorded transcribed any Task in a Project
+     */
+    List getMaxRecordIndexByFieldForProject(Project project) {
+        def select ="""
+                WITH task_ids AS 
+                    (SELECT id FROM task WHERE project_id = :projectId)
+                SELECT name , max(record_idx) AS recordIdx
+                FROM field
+                WHERE field.task_id in (SELECT id FROM task_ids)
+            GROUP BY name
+            ORDER BY name
+        """
+        def sql = new Sql(dataSource)
+        def databaseFieldNames = sql.rows(select, [projectId: project.id])
+        sql.close()
+        databaseFieldNames
     }
 
 }
