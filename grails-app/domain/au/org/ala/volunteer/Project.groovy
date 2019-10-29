@@ -96,6 +96,8 @@ class Project implements Serializable {
         harvestableByAla nullable: true
         createdBy nullable: true
         extractImageExifData nullable: true
+        transcriptionsPerTask nullable: true
+        thresholdMatchingTranscriptions nullable: true
     }
 
     /**

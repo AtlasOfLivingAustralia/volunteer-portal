@@ -37,6 +37,7 @@ class AjaxController {
     def settingsService
     def achievementService
     def sessionFactory
+    def projectService
 
     static responseFormats = ['json', 'xml']
 
@@ -278,7 +279,7 @@ class AjaxController {
             project.description = p.description
             project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
             project.taskCount = Task.countByProject(p)
-            project.transcribedCount = Task.countByProjectAndFullyTranscribedByIsNotNull(p)
+            project.transcribedCount = Task.countByProjectAndIsFullyTranscribed(p, true)
             project.validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(p)
 
             sql.query("select count(distinct(fully_transcribed_by)) from task where project_id = ${p.id} and length(fully_transcribed_by) > 0") { ResultSet rs ->
@@ -314,7 +315,7 @@ class AjaxController {
                     'decimalLatitude' { findValue(it.fieldValues, 'decimalLatitude') }
                     'decimalLongitude' { findValue(it.fieldValues, 'decimalLongitude') }
                     'locality' { findValue(it.fieldValues, 'locality')}
-                    'transcriber' { it.task.fullyTranscribedBy }
+                    'transcribers' { it.task.transcriptions*.fullyTranscribedBy.join(',') }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
                     'associatedMedia' { multimediaService.getImageUrl((Multimedia) it.task?.multimedia?.first()) }
                     'occurrenceId' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
@@ -363,7 +364,7 @@ class AjaxController {
             taskInfo.projectId = task.project.id
             taskInfo.externalIdentifier = task.externalIdentifier
             taskInfo.externalUrl = task.externalUrl
-            taskInfo.fullyTranscribedBy = task.fullyTranscribedBy
+            taskInfo.fullyTranscribedBy = task.transcriptions*.fullyTranscribedBy.join(', ')
             taskInfo.fullyValidatedBy = task.fullyValidatedBy
             taskInfo.isValid = task.isValid
             taskInfo.created = task.created?.format("yyyy-MM-dd HH:mm:ss")
@@ -403,36 +404,7 @@ class AjaxController {
     def i18nService
 
     def harvesting() {
-//        final harvestables = Project.findAllByHarvestableByAla(true)
-        final c = Project.createCriteria()
-        final projects = c.scroll {
-            eq('harvestableByAla', true)
-        }
-
-        def results = []
-        while (projects.next()) {
-            Project project = (Project) projects.get()[0]
-            final link = createLink(absolute: true, controller: 'project', action: 'index', id: project.id)
-            final fullyTranscribedCount = project.tasks.count { t -> t.dateFullyTranscribed as boolean }
-            final fullyValidatedCount = project.tasks.count { t -> t.dateFullyValidated as boolean }
-            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: project.id)
-
-            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.name, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
-            def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
-            def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
-            results << [id: project.id, name: project.name, description: project.description, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
-        }
-
-        results.collect { result ->
-            final topics = ProjectForumTopic.withCriteria {
-                eq 'project.id', result.id
-            }
-            def forumMessagesCount = 0
-            if (topics) {
-                forumMessagesCount = topics.collect { topic -> (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }.sum()
-            }
-            result + [ forumMessagesCount: forumMessagesCount ]
-        }
+        def results = projectService.harvestProjects()
 
         respond results
     }

@@ -1,10 +1,14 @@
 package au.org.ala.volunteer.helper
 
 import au.org.ala.volunteer.Field
+import au.org.ala.volunteer.ForumMessage
+import au.org.ala.volunteer.ForumTopic
 import au.org.ala.volunteer.Project
+import au.org.ala.volunteer.ProjectForumTopic
 import au.org.ala.volunteer.Task
 import au.org.ala.volunteer.Template
 import au.org.ala.volunteer.Transcription
+import au.org.ala.volunteer.User
 import au.org.ala.volunteer.ViewedTask
 import groovy.util.logging.Slf4j
 
@@ -16,8 +20,8 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class TaskDataHelper {
 
-    static Project setupProject() {
-        Project p = new Project(name:"Test Project")
+    static Project setupProject(String name = 'Test Project', boolean harvestable = false) {
+        Project p = new Project(name:name, harvestableByAla: harvestable)
         p.template = new Template(name:"Test template", viewParams:[param1:'value1'], viewParams2: [param1:'value1'])
         p.template.save(failOnError:true)
         p.save(failOnError:true, flush:true)
@@ -29,7 +33,7 @@ class TaskDataHelper {
         task.transcriptions = []
         task.viewedTasks = new HashSet()
         task.fields = new HashSet()
-        task.save(failOnError:true)
+        task.save(flush: true, failOnError:true)
         task
     }
 
@@ -67,6 +71,11 @@ class TaskDataHelper {
 
     }
 
+    static void validate(Task task, String userId) {
+        task.validate(userId, true)
+        task.save(flush: true, failOnError: true)
+    }
+
     static void view(Task task, String userId, boolean recent = true) {
 
         long lastView = System.currentTimeMillis()
@@ -79,4 +88,18 @@ class TaskDataHelper {
         task.save(failOnError:true, flush:true)
     }
 
+    static User setupUser() {
+        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
+        return user.save(flush: true, failOnError: true)
+    }
+
+    static ProjectForumTopic setupProjectForum(Project project, User user, int messages) {
+        final pft = new ProjectForumTopic(project: project, creator: user, title: 'Test')
+        pft.messages = setupForumMessages(pft, messages)
+        return pft.save(flush: true, failOnError: true)
+    }
+
+    static Set<ForumMessage> setupForumMessages(ForumTopic ft, int messages) {
+        (0..<messages).collect { new ForumMessage(topic: ft, user: ft.creator, date: new Date(), text: 'test', deleted: false) }.toSet()
+    }
 }

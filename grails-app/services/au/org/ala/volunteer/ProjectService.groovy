@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import grails.web.mapping.LinkGenerator
 import groovy.transform.Immutable
 import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
@@ -10,15 +11,16 @@ import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 import org.jooq.Condition
-import org.jooq.SQLDialect
+import org.jooq.DSLContext
 import org.jooq.SortOrder
-import org.jooq.conf.Settings
 import org.jooq.impl.DSL
+import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
-import javax.sql.DataSource
 
+import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
+import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
 import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
 import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
@@ -27,9 +29,12 @@ import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
+import static org.jooq.impl.DSL.condition
+import static org.jooq.impl.DSL.count
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
+import static org.jooq.impl.DSL.not
 import static org.jooq.impl.DSL.nvl as jNvl
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.sum as jSum
@@ -50,13 +55,14 @@ class ProjectService {
 
     def userService
     def taskService
-    def grailsLinkGenerator
+    LinkGenerator grailsLinkGenerator
     def projectTypeService
     def forumService
     def multimediaService
-    def logService
+    def i18nService
     def grailsApplication
-    DataSource dataSource
+    @Autowired
+    Closure<DSLContext> jooqContextFactory
 
     def deleteTasksActor = Actors.actor {
         loop {
@@ -107,6 +113,65 @@ class ProjectService {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    @Transactional(readOnly = true)
+    def harvestProjects() {
+        def context = jooqContextFactory()
+
+        def forumMessageCountQuery = DSL.
+                select(count().filterWhere(condition(not(FORUM_MESSAGE.DELETED)) | FORUM_MESSAGE.DELETED.isNull()))
+                .from(FORUM_TOPIC).join(FORUM_MESSAGE).on(FORUM_TOPIC.ID.eq(FORUM_MESSAGE.TOPIC_ID))
+                .where(FORUM_TOPIC.CLASS.eq(ProjectForumTopic.class.name) & FORUM_TOPIC.PROJECT_ID.eq(PROJECT.ID))
+
+
+        def records = context
+                .select(PROJECT.ID, PROJECT.NAME, PROJECT.DESCRIPTION,
+                        count(TASK.ID),
+                        count().filterWhere(TASK.IS_FULLY_TRANSCRIBED),
+                        count().filterWhere(TASK.IS_VALID),
+                        forumMessageCountQuery.asField("forumMessageCount")
+                )
+                .from(PROJECT)
+                .leftJoin(TASK).on(TASK.PROJECT_ID.eq(PROJECT.ID))
+                .where(PROJECT.HARVESTABLE_BY_ALA)
+                .groupBy(PROJECT.ID, PROJECT.NAME, PROJECT.DESCRIPTION)
+                .fetch()
+
+        def result = records.collect { record ->
+            def id = record.value1()
+            def name = record.value2()
+            def description = record.value3()
+            def taskCount = record.value4()
+            def fullyTranscribedCount = record.value5()
+            def fullyValidatedCount = record.value6()
+            def forumMessageCount = record.value7()
+
+            final link = grailsLinkGenerator.link(absolute: true, controller: 'project', action: 'index', id: id)
+            final dataUrl = grailsLinkGenerator.link(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: id)
+
+            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [name, i18nService.message('default.application.name'), grailsLinkGenerator.link(uri: '/', absolute: true)])
+            def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
+            def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
+
+            [
+                id: id,
+                name: name,
+                description: description,
+                newsItemsCount: 0, // No longer used
+                tasksCount: taskCount,
+                tasksTranscribedCount: fullyTranscribedCount,
+                tasksValidatedCount: fullyValidatedCount,
+                expeditionHomePage: link,
+                dataUrl: dataUrl,
+                citation: citation,
+                licenseType: licenseType,
+                licenseVersion: licenseVersion,
+                forumMessagesCount: forumMessageCount
+            ]
+        }
+
+        result
     }
 
     @Immutable
@@ -206,7 +271,7 @@ class ProjectService {
     public List<ProjectSummary> getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
-        def resultMaps = generateProjectSummariesQuery(dataSource, [], null, null, 'transcribed', null, null, null, ProjectStatusFilterType.showIncompleteOnly, ProjectActiveFilterType.showActiveOnly, false).fetchMaps()
+        def resultMaps = generateProjectSummariesQuery(jooqContextFactory(), [], null, null, 'transcribed', null, null, null, ProjectStatusFilterType.showIncompleteOnly, ProjectActiveFilterType.showActiveOnly, false).fetchMaps()
 
         if (resultMaps.size() == 0) return []
 
@@ -284,7 +349,7 @@ class ProjectService {
     }
 
     private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
-        def results = generateProjectSummariesQuery(dataSource, conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
+        def results = generateProjectSummariesQuery(jooqContextFactory(), conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         if (!results) {
             return makeSummaryListFromResults(results, [])
         }
@@ -296,7 +361,7 @@ class ProjectService {
         if (!projects) {
             return makeSummaryListFromResults([], [])
         }
-        def results = generateProjectSummariesQuery(dataSource, [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
+        def results = generateProjectSummariesQuery(jooqContextFactory(), [PROJECT.ID.in(projects*.id)], tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         return makeSummaryListFromResults(results, projects)
     }
 
@@ -326,10 +391,7 @@ class ProjectService {
         )
     }
 
-    private static def generateProjectSummariesQuery(DataSource dataSource, Collection<? extends Condition> whereClauses, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
-        def postgres = SQLDialect.POSTGRES_9_5
-        def settings = new Settings().withRenderFormatted(false)
-        def context = DSL.using(dataSource, postgres, settings)
+    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
 
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
