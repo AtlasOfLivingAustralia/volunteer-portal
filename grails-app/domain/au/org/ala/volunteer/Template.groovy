@@ -24,6 +24,7 @@ class Template implements Serializable {
         name maxSize: 200
         viewName nullable: true
         viewParams nullable: true
+        viewParams2 nullable: true
         fieldOrder nullable: true
         supportMultipleTranscriptions defaultValue: 'false'
     }
