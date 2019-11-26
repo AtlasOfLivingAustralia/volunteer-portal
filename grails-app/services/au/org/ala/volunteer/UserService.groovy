@@ -151,15 +151,18 @@ class UserService {
      * @return
      */
     public boolean isValidator(Project project) {
-        isValidatorForProjectId(project?.id)
+        isValidatorForProjectId(project?.id, project?.institution?.id)
     }
 
     /**
      * returns true if the current user can validate tasks from the specified project
      * @param project
+     *        institutionId where the project belongs to (if any)
      * @return
+     *        true if user has validator access
+     *        false if user
      */
-    public boolean isValidatorForProjectId(Long projectId) {
+    public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
 
         def userId = currentUserId
 
@@ -178,18 +181,20 @@ class UserService {
         }
 
         // Otherwise check the intra app roles...
-        // If project is null, return true if the user can validate in any project
-        // If project is not null, return true only if they are validator for that project, or if they have a null project in their validator role (meaning 'all projects')
-
+        // If project is null, return true if the user can validate in any project and any institution
+        // If project is not null, return true only if they are validator for that project or institution, or if they have a null project and null institution in their validator role (meaning 'all projects' and 'all institutions')
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {
-                it.role.id == validatorRole.id && (it.project == null || projectId == null || it.project.id == projectId)
+                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
+                                                    projectId == null ||
+                                                    it.institution?.id == projectInstitutionId ||
+                                                    it.project?.id == projectId)
             }
             if (role) {
-                // a role exists for the current user and the specified project (or the user has a role with a null project
-                // indicating that they can validate tasks from any project)
+                // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
+                // indicating that they can validate tasks from any project and or institution)
                 return true;
             }
         }
@@ -229,7 +234,7 @@ class UserService {
 
     def isUserForumModerator(User user, Project projectInstance) {
         if (!user) return false
-        def moderators = getUsersWithRole("forum_moderator", projectInstance)
+        def moderators = getUsersWithRole("forum_moderator", projectInstance, user)
         return moderators.find { it?.userId == user?.userId }
     }
 
@@ -244,7 +249,7 @@ class UserService {
      * @param projectInstance
      * @return
      */
-    List<User> getUsersWithRole(String rolename, Project projectInstance = null) {
+    List<User> getUsersWithRole(String rolename, Project projectInstance = null, User user = null) {
 
         def results = new ArrayList<User>()
 
@@ -257,9 +262,14 @@ class UserService {
         def list = c {
             and {
                 eq("role", role)
+                if (user) eq("user", user)
                 or {
-                    isNull("project")
+                    and {
+                        isNull("project")
+                        isNull("institution")
+                    }
                     eq("project", projectInstance)
+                    eq("institution", projectInstance?.institution)
                 }
             }
         }

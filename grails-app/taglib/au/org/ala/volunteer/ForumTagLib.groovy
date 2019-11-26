@@ -146,6 +146,7 @@ class ForumTagLib {
         def topics = attrs.topics as List<ForumTopic>
         def paginateAction = attrs.paginateAction ?: "index"
         def hidePageButtons = attrs.hidePageButtons
+        Project projectInstance = attrs.projectInstance as Project ?: null
 
         def totalCount = attrs.totalCount
         // TODO Fix grails.orm.PagedResultList vs grails.gorm.PagedResultList after upgrade to Grails 2.4.4
@@ -155,7 +156,7 @@ class ForumTagLib {
         }
 
         def mb = new MarkupBuilder(out)
-        Project projectInstance = null
+      //  Project projectInstance = null
         if (!topics) {
             mb.div {
                 mkp.yield("No topics found")

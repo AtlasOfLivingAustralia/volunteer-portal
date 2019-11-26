@@ -164,7 +164,9 @@ class ForumController {
                 if (userService.isForumModerator(taskInstance.project)) {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    if (params.priotity) {
+                        priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    }
                     featured = params.featured == 'on'
                 }
             }
@@ -175,7 +177,9 @@ class ForumController {
                 if (userService.isForumModerator(projectInstance)) {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    if (params.priotity) {
+                       priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    }
                     featured = params.featured == 'on'
                 }
             }
@@ -185,7 +189,9 @@ class ForumController {
             if (userService.isForumModerator(null)) {
                 locked = params.locked == 'on'
                 sticky = params.sticky == 'on'
-                priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                if (params.priotity) {
+                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                }
                 featured = params.featured == 'on'
             }
             topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
