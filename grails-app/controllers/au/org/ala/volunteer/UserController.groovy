@@ -26,7 +26,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "project.harvestableByAla": true } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -59,7 +59,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "project.projectType": "fieldnotes" } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -70,7 +70,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "isValid": true } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -555,7 +555,7 @@ class UserController {
   "constant_score": {
     "filter": {
       "and": [
-        { "term": { "fullyTranscribedBy": "${userInstance.userId}" } },
+        { "term": { "transcriptions.fullyTranscribedBy": "${userInstance.userId}" } },
         { "nested" :
           {
             "path" : "fields",
