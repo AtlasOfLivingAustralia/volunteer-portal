@@ -190,24 +190,7 @@ class AchievementDescriptionController {
 
     def awardAll(AchievementDescription achievementDescriptionInstance) {
 
-        def awardedUsers = achievementDescriptionInstance.awards*.user*.id.toList()
-        def eligibleUsers = User.withCriteria {
-            if (awardedUsers) {
-                not { inList('id', awardedUsers) }
-            }
-            projections {
-                property('userId')
-            }
-        }
-
-        def awards = eligibleUsers
-                        .findAll { achievementService.evaluateAchievement(achievementDescriptionInstance, it) }
-                        .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
-
-//        AchievementAward.saveAll(awards)
-        awards*.save()
-
-        awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
+        def awards = achievementService.awardAchievementsToEligibleUsers(achievementDescriptionInstance)
 
         request.withFormat {
             form multipartForm {
