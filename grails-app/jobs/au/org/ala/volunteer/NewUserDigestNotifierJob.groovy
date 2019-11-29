@@ -35,7 +35,7 @@ class NewUserDigestNotifierJob {
 
                 def userIds = sql.rows("""
 SELECT t.fully_transcribed_by
-FROM task t
+FROM transcription t
 GROUP BY t.fully_transcribed_by
 HAVING
   sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < ?
