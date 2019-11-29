@@ -212,10 +212,7 @@ class AchievementDescriptionController {
             return
         }
 
-        def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
-        award.save flush: true
-
-        notify(AchievementService.ACHIEVEMENT_AWARDED, award)
+        def award = achievementService.awardUser(user, achievementDescriptionInstance)
 
         request.withFormat {
             form multipartForm {
@@ -227,10 +224,7 @@ class AchievementDescriptionController {
     }
 
     def unawardAll(AchievementDescription achievementDescriptionInstance) {
-        def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
-        log.info("Removing awarded achievements: ${awards.join('\n')}")
-
-        AchievementAward.deleteAll(awards)
+        achievementService.unawardAllUsers(achievementDescriptionInstance)
 
         request.withFormat {
             form multipartForm {
@@ -243,10 +237,8 @@ class AchievementDescriptionController {
 
     def unaward(AchievementDescription achievementDescriptionInstance) {
         def awardIds = params.list('ids[]')*.toLong()
-        def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
-        log.info("Removing awarded achievements: ${awards.join('\n')}")
 
-        AchievementAward.deleteAll(awards)
+        achievementService.unaward(awardIds, achievementDescriptionInstance)
 
         request.withFormat {
             form multipartForm {

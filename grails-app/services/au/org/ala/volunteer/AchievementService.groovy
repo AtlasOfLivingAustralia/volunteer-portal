@@ -270,6 +270,29 @@ class AchievementService {
 
         return awards
 
+    }
+
+    def awardUser(User user, AchievementDescription achievementDescriptionInstance) {
+        def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
+        award.save flush: true
+
+        notify(AchievementService.ACHIEVEMENT_AWARDED, award)
+
+        return award
+    }
+
+    def unawardAllUsers(AchievementDescription achievementDescriptionInstance) {
+        def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+
+        AchievementAward.deleteAll(awards)
+    }
+
+    def unaward(List<Long> awardIds, AchievementDescription achievementDescription) {
+        def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+
+        AchievementAward.deleteAll(awards)
 
     }
 
