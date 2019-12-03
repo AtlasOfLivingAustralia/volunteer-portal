@@ -455,3 +455,10 @@ a.fieldHelp {
     opacity: 0.5;
     pointer-events: none;
 }
+
+/* feature expedition */
+#parent {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
