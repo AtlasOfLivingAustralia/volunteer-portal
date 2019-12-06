@@ -24,7 +24,8 @@ class NewUserDigestNotifierJob {
 
     def execute() {
         if (grailsApplication.config.getProperty('digest.enabled', Boolean, false)) {
-            def recipient = grailsApplication.config.getProperty('digest.address')
+            /* Configure properties file like this: digest.address=email1,email2 */
+            def recipient = grailsApplication.config.getProperty('digest.address', List, [])
             def threshold = grailsApplication.config.getProperty('digest.threshold', Integer, 5)
             if (!recipient) {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but no email address (digest.address) was specified")
