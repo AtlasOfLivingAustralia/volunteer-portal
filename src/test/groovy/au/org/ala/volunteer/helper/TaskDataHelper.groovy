@@ -41,7 +41,7 @@ class TaskDataHelper {
         (0..<numberOfTasks).collect { i -> addTask(project, i) }
     }
 
-    static void transcribe(Task task, String userId, Map<String, String> fields = null) {
+    static void transcribe(Task task, String userId, Map <Integer, Map<String, String>> fields = null) {
 
         view(task, userId)
 
@@ -56,9 +56,11 @@ class TaskDataHelper {
         transcription.dateFullyTranscribed = new Date()
 
         if (fields) {
-            fields.each { k, v ->
-                Field field = new Field(name:k, value:v, transcribedByUserId: userId, task:task, transcription: transcription, recordIdx: 0)
-                transcription.addToFields(field)
+            fields.each { rec, fieldRec ->
+                fieldRec.each {k, v ->
+                    Field field = new Field(name: k, value: v, recordIdx: rec, transcribedByUserId: userId, task: task, transcription: transcription)
+                    transcription.addToFields(field)
+                }
             }
         }
 

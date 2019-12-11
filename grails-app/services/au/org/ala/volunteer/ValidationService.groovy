@@ -115,20 +115,39 @@ class ValidationService {
      * @return true if all of the fields in this Transcription have the same values as the other Transcription
      */
     private boolean fieldsMatch(Transcription t1, Transcription t2, Set excludedFields = EXCLUDED_FIELDS) {
-        Set t1Fields = (t1.fields ?: new HashSet()).findAll{it.superceded == false}
-        Set t2Fields = (t2.fields ?: new HashSet()).findAll{it.superceded == false}
+        Set t1Fields = (t1.fields ?: new HashSet()).findAll{it.superceded == false  && !excludedFields.contains(it.name)}
+        Set t2Fields = (t2.fields ?: new HashSet()).findAll{it.superceded == false  && !excludedFields.contains(it.name)}
 
         if (t1Fields?.size() != t2Fields.size()) {
             return false
         }
 
-        for (Field t1Field : t1Fields) {
-            if (!excludedFields.contains(t1Field.name)) {
-                Field t2Field = t2Fields.find{it.name == t1Field.name}
+        int maxRecIdx = t1Fields.recordIdx.max()
+        int maxRecIdx2 = t2Fields.recordIdx.max()
 
-                if (!t2Field || t1Field.value != t2Field.value) {
-                    return false
+        for (int t1RecIdx = 0; t1RecIdx <= maxRecIdx; t1RecIdx++) {
+
+            Set t1FieldsRec = t1Fields.findAll{it.recordIdx == t1RecIdx}
+
+            boolean isRecMatch = false
+
+            if (t1FieldsRec) {
+                // Comparing 2 sets of fields ignoring order of record idx.
+                for (int t2RecIdx = 0; t2RecIdx <= maxRecIdx2; t2RecIdx++) {
+                    Set t2FieldsRec = t2Fields.findAll { it.recordIdx == t2RecIdx }
+
+                    if (t2FieldsRec) {
+                        isRecMatch = compareFieldsRecord(t1FieldsRec, t2FieldsRec)
+                        if (isRecMatch) {
+                            break
+                        }
+                    }
                 }
+            }
+
+            // If t1 record idx doesn't match with any of the t2 record idx, should stop comparing and return false
+            if (!isRecMatch) {
+                return false
             }
 
         }
@@ -136,6 +155,19 @@ class ValidationService {
         return true
     }
 
+    private boolean compareFieldsRecord (Set t1FieldsRec, Set t2FieldsRec) {
+
+        for (Field t1Field : t1FieldsRec) {
+            Field t2Field = t2FieldsRec.find {
+                it.name == t1Field.name && it.value == t1Field.value
+            }
+
+            if (!t2Field) {
+                return false
+            }
+        }
+        return true
+    }
 
     private void markAsValid(Task task, Transcription validatedTranscription) {
 
