@@ -186,7 +186,7 @@ class ResumableUploadCommand implements Validateable {
             Files.move(dest, finalDest)
             srcs.each { it.delete() }
 
-            log.info("Successfully uploaded {} for project {}", filename, projectId)
+            log.debug("Successfully uploaded {} for project {}", filename, projectId)
         }
     }
 }

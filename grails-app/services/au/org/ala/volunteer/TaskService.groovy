@@ -716,7 +716,7 @@ ORDER BY record_idx, name;
         try {
             def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
-                log.info "Creating dir ${dir.absolutePath}"
+                log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath

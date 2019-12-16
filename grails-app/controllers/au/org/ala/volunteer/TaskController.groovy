@@ -1028,7 +1028,7 @@ class TaskController {
             return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
         }
 
-        log.info("Uploading {}:{} identifier {} size {} checksum {}", cmd.filename, cmd.resumableChunkNumber, cmd.identifier, cmd.resumableCurrentChunkSize, cmd.checksum)
+        log.debug("Uploading {}:{} identifier {} size {} checksum {}", cmd.filename, cmd.resumableChunkNumber, cmd.identifier, cmd.resumableCurrentChunkSize, cmd.checksum)
 
         if (request.method == 'POST') {
             try {
