@@ -15,6 +15,7 @@ import org.jooq.Configuration
 import org.jooq.DSLContext
 import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
+import org.springframework.beans.factory.annotation.Value
 
 import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
@@ -46,6 +47,9 @@ class TaskLoadService {
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext
+
+    @Value('${digivol.ingest.queue.size:200}')
+    Integer batchSize = 200
 
     static class Status {
         int count

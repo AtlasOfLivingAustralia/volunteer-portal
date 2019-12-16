@@ -24,7 +24,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="alert alert-info">
-                        <p>Tasks are staged in batches of 50 at a time and share a queue with all other projects.  If there are
+                        <p>Staged tasks are loaded in batches of ${grailsApplication.config.getProperty('digivol.ingest.queue.size', Integer, 200)} at a time and share a queue with all other projects.  If there are
                         other projects loading at the same time you may not see any progress on your project for a while.</p>
                     </div>
                     <div id="load-progress">
