@@ -13,6 +13,7 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
 import org.jooq.Configuration
 import org.jooq.DSLContext
+import org.jooq.TransactionalCallable
 import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Value
@@ -401,13 +402,21 @@ class TaskLoadService {
     }
 
     def doTaskLoad(Long projectId = null) {
+        int dequeuedTasks
+        while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
+            log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
+        }
+    }
+
+    private int doTaskLoadIteration(Long projectId = null) {
         def ctx = jooqContext.call()
 
         final List<LoadStatus> jobsStatuses = []
 
         def rollback = false
+        int dequeuedTasks = 0
         try {
-            ctx.transaction(taskLoadTransaction(jobsStatuses))
+            dequeuedTasks = ctx.transactionResult(taskLoadTransaction.curry(jobsStatuses, projectId) as TransactionalCallable<Integer>)
             log.debug("Task load completed successfully")
         } catch (RuntimeException e) {
             log.error("Task load aborted with rollback", e)
@@ -433,14 +442,14 @@ class TaskLoadService {
                             def mediaUrl = it.mediaLoadDescriptorRecord?.mediaUrl
                             def multimediaId = it.multimediaRecord?.id
 
-                            if (mediaUrl && multimediaId && taskId && projectId) {
+                            if (mediaUrl && multimediaId && taskId && statusProjectId) {
                                 taskService.rollbackMultimediaTransaction(mediaUrl, statusProjectId, taskId, multimediaId)
                             }
                         }
                         def mediaUrl = status.taskDescriptorRecord?.imageUrl
                         def multimediaId = status.mediaLoadStatus?.multimediaRecord?.id
 
-                        if (mediaUrl && multimediaId && taskId && projectId) {
+                        if (mediaUrl && multimediaId && taskId && statusProjectId) {
                             taskService.rollbackMultimediaTransaction(mediaUrl, statusProjectId, taskId, multimediaId)
                         }
                     } catch (e) {
@@ -483,12 +492,14 @@ class TaskLoadService {
             }
         }
 
+        return dequeuedTasks
+
     }
 
-    final static batchSize = 50
-
-    private TransactionalRunnable taskLoadTransaction = { List<LoadStatus> jobsStatuses, Configuration cfg ->
+    private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->
         def create = DSL.using(cfg)
+        def jobFilter = TASK_DESCRIPTOR.RETRIES_REMAINING.gt(0)
+        if (projectId) jobFilter = jobFilter & TASK_DESCRIPTOR.PROJECT_ID.eq(projectId)
         def jobs = create
                 .update(TASK_DESCRIPTOR)
                 .set([(TASK_DESCRIPTOR.RETRIES_REMAINING) : TASK_DESCRIPTOR.RETRIES_REMAINING - 1])
@@ -496,7 +507,7 @@ class TaskLoadService {
                         TASK_DESCRIPTOR.ID.in(
                                 select(TASK_DESCRIPTOR.ID)
                                         .from(TASK_DESCRIPTOR)
-                                        .where(TASK_DESCRIPTOR.RETRIES_REMAINING.gt(0))
+                                        .where(jobFilter)
                                         .orderBy(TASK_DESCRIPTOR.TIME_CREATED)
                                         .limit(batchSize)
                                         .forUpdate().skipLocked() // <-- row locks to prevent duplicate processing
@@ -505,6 +516,7 @@ class TaskLoadService {
                 .returning()
                 .fetch()
 
+        final dequeuedTasks = jobs.size()
         // handle duplicate tasks
 
         def jobsByReplaceDuplicates = jobs.groupBy { it.replaceDuplicates }
@@ -535,7 +547,7 @@ class TaskLoadService {
 
         if (jobs.isEmpty()) {
             log.debug("No more jobs")
-            return
+            return dequeuedTasks
         }
 
         // Load projects for project settings
@@ -618,9 +630,11 @@ class TaskLoadService {
                 }
             }
         }
-    } as TransactionalRunnable
 
-    Closure taskLoadStepGenerateTasks = { DSLContext create, List<LoadStatus> statuses ->
+        return dequeuedTasks
+    }
+
+    private Closure taskLoadStepGenerateTasks = { DSLContext create, List<LoadStatus> statuses ->
         statuses.each { LoadStatus status ->
             status.taskRecord = createInitialTaskRecordFromDescriptor(status.taskDescriptorRecord)
         }
@@ -634,7 +648,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepImportImage = { DSLContext create, List<LoadStatus> statuses ->
+    private Closure taskLoadStepImportImage = { DSLContext create, List<LoadStatus> statuses ->
         statuses.each { status ->
             status.mediaLoadStatus.multimediaRecord = createInitialMultimediaRecordFromDescriptor(status.taskDescriptorRecord, status.taskRecord)
         }
@@ -659,7 +673,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepGenerateFields = { DSLContext create, List<LoadStatus> statuses ->
+    private Closure taskLoadStepGenerateFields = { DSLContext create, List<LoadStatus> statuses ->
         statuses.each { status ->
             status.fieldRecords = createInitialFieldRecordsFromDescriptor(status.taskDescriptorRecord, status.taskRecord)
         }
@@ -673,7 +687,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepGenerateExtraMedia = { DSLContext create, Map<Long, Long> taskDescriptorIdToTaskIdMap, List<LoadStatus> statuses ->
+    private Closure taskLoadStepGenerateExtraMedia = { DSLContext create, Map<Long, Long> taskDescriptorIdToTaskIdMap, List<LoadStatus> statuses ->
         def mediaDescriptors = create.fetch(MEDIA_LOAD_DESCRIPTOR, MEDIA_LOAD_DESCRIPTOR.TASK_DESCRIPTOR_ID.in(statuses*.taskDescriptorRecord*.id))
 
         def mediaRecords = mediaDescriptors.inject(create.insertInto(MULTIMEDIA, MULTIMEDIA.ID, MULTIMEDIA.TASK_ID, MULTIMEDIA.CREATED)) { insert, md ->
@@ -710,7 +724,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepInsertExtraMedia = { DSLContext create, List<LoadStatus> statuses ->
+    private Closure taskLoadStepInsertExtraMedia = { DSLContext create, List<LoadStatus> statuses ->
         // Third failure point, Media After Load callback
         create.batchUpdate(statuses*.mediaRecords*.multimediaRecord.collectMany { it })
 
@@ -728,7 +742,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepShadowFiles = { DSLContext create, List<LoadStatus> statuses ->
+    private Closure taskLoadStepShadowFiles = { DSLContext create, List<LoadStatus> statuses ->
         def shadowDescriptors = create.fetch(SHADOW_FILE_DESCRIPTOR, SHADOW_FILE_DESCRIPTOR.TASK_DESCRIPTOR_ID.in(statuses*.taskDescriptorRecord*.id)).groupBy { it.taskDescriptorId }
 
         statuses.each { status ->
@@ -770,7 +784,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepExtractExifData = { DSLContext create, Map<Long, ProjectRecord> projects, List<LoadStatus> statuses ->
+    private Closure taskLoadStepExtractExifData = { DSLContext create, Map<Long, ProjectRecord> projects, List<LoadStatus> statuses ->
 
         statuses.each { status ->
             def project = projects[status.projectId]
@@ -808,7 +822,7 @@ class TaskLoadService {
         }
     }
 
-    Closure taskLoadStepInsertExtraFields = { DSLContext create, List<LoadStatus> statuses ->
+    private Closure taskLoadStepInsertExtraFields = { DSLContext create, List<LoadStatus> statuses ->
 
         def extraFieldsRecords = insertFields(create, statuses*.extraFieldRecords)
 
