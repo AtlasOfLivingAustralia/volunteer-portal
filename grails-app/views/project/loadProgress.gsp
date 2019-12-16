@@ -47,6 +47,9 @@
                 <td><b><span id="time_started">{{timeStarted}}</span></b></td>
             </tr>
             <tr>
+                <td>Estimated time of completion</td>
+                <td><b><span id="estimated_time_end">{{#finishEstimate}}{{finishEstimate}}{{/finishEstimate}}{{^finishEstimate}}Calculating...{{/finishEstimate}}</span></b></td>
+            <tr>
                 <td>Tasks being retried</td>
                 <td><b><span id="error_count">{{retryCount}}</span></b></td>
             </tr>
