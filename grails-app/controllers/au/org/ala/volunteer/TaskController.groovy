@@ -814,7 +814,7 @@ class TaskController {
         if (projectInstance && fieldName) {
 
             def fieldType = (params.fieldType as FieldDefinitionType) ?: FieldDefinitionType.Literal
-            def format = params.format ?: ""
+            def format = params.format ?: params.fmt ?: ""
             def recordIndex = params.int("recordIndex") ?: 0
 
             def profile = ProjectStagingProfile.findByProject(projectInstance)
