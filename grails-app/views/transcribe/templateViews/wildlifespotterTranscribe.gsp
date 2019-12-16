@@ -130,45 +130,64 @@
                             </div>
 
                             <g:if test="${validator && transcribersAnswers && transcribersAnswers.size() > 0}">
-                                Transcribers answers
+                                <br>
+                                <h4>Transcribers answers</h4>
 
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <table class="table table-striped confirmation-table">
                                             <tr>
-                                                <td>Transcriber</td>
-                                                <td>Problem With Image</td>
-                                                <td>Animals Visible?</td>
-                                                <td>Selected Animal</td>
-                                                <td>Individual Count</td>
-                                                <td>Comment</td>
+                                                <th>Transcriber</th>
+                                                <th>Problem With Image</th>
+                                                <th>Animals Visible?</th>
+                                                <th>Selected Animal</th>
+                                                <th>Individual Count</th>
+                                                <th>Comment</th>
                                             </tr>
                                             <tbody id="tbody-answer-summary">
-                                            <g:each in="${transcribersAnswers}" var="answers" status="st">
-                                                <g:set var="answer" value="${answers}"/>
-                                                <tr>
-                                                    <td><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></td>
-                                                    <g:set var="ans" value="${answer.get('fields')[0]}" />
-                                                    <td>${ans.get('problemWithImage') ?: 'No'}</td>
-                                                    <g:if test="${ans.get('noAnimalsVisible') || ans.get('noAnimalsVisible') == 'yes'}">
-                                                        <td>No</td>
-                                                    </g:if>
-                                                    <g:elseif test="${ans.get('vernacularName') || ans.get('scientificName')}">
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <g:set var="selectedAnimalInfos"
-                                                                   value="${[wsParams.animals.find{t -> return ((ans.get('vernacularName') && t.vernacularName == ans.get('vernacularName')) || (ans.get('scientificName') && t.scientificName == ans.get('scientificName')))}]}"/>
-                                                            <g:render template="/transcribe/wildlifeSpotterWidget"
-                                                                      model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
-                                                        </td>
-                                                       %{-- <td><div class="itemgrid ct-selection-transcribers" transcribedBy="${answer.get('fullyTranscribedBy')}"></div></td>--}%
-                                                        %{--<td>${answer.get('fields')[0].get('vernacularName')} <i>(${(answer.get('fields')[0].get('scientificName'))})</i></td>--}%
-                                                        <td>${ans.get('individualCount')}</td>
-                                                        <td>${ans.get('comment')}</td>
-                                                    </g:elseif>
-                                                </tr>
+                                                <g:each in="${transcribersAnswers}" var="answers" status="st">
+                                                    <g:set var="answer" value="${answers}"/>
+                                                    <tr>
+                                                        <th><cl:userDisplayName userId="${answer.get('fullyTranscribedBy')}"/></th>
 
-                                            </g:each>
+                                                        <g:set var="ans" value="${answer.get('fields')[0]}" />
+                                                        <td>${ans.get('problemWithImage') ?: 'No'}</td>
+                                                        <g:if test="${ans.get('noAnimalsVisible') || ans.get('noAnimalsVisible') == 'yes'}">
+                                                            <td>No</td>
+                                                        </g:if>
+
+                                                        <g:elseif test="${ans.get('vernacularName') || ans.get('scientificName')}">
+                                                            <g:each var="recordIdx" in="${ (0 ..(answer.get('fields').size() -1)) }" >
+                                                                <g:set var="selectedAnimalAns" value="${answer.get('fields')?.get(recordIdx)}" />
+                                                                <g:set var="selectedAnimalInfos"
+                                                                       value="${[wsParams.animals.find{t -> return ((selectedAnimalAns?.get('vernacularName') && t.vernacularName == selectedAnimalAns?.get('vernacularName')) || (selectedAnimalAns?.get('scientificName') && t.scientificName == selectedAnimalAns?.get('scientificName')))}]}"/>
+
+                                                                <g:if test="${recordIdx == 0}">
+                                                                    <td>Yes</td>
+                                                                    <td>
+                                                                        <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                                                  model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+                                                                    </td>
+                                                                    <td>${selectedAnimalAns?.get('individualCount')}</td>
+                                                                    <td>${selectedAnimalAns?.get('comment')}</td>
+                                                                </g:if>
+                                                                <g:else>
+                                                                    <tr>
+                                                                        <th colspan="3"></th>
+                                                                        <td>
+                                                                            <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                                                      model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+                                                                        </td>
+                                                                        <td>${selectedAnimalAns?.get('individualCount')}</td>
+                                                                        <td>${selectedAnimalAns?.get('comment')}</td>
+                                                                    </tr>
+                                                                </g:else>
+
+                                                            </g:each>
+                                                        </g:elseif>
+                                                    </tr>
+
+                                                </g:each>
                                             </tbody>
                                         </table>
 
