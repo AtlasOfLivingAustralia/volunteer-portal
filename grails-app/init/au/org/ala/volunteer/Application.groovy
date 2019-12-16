@@ -21,7 +21,7 @@ class Application extends GrailsAutoConfiguration {
 
     @Bean
     SQLDialect jooqDialect() {
-        SQLDialect.POSTGRES_9_5
+        SQLDialect.POSTGRES_10
     }
 
     @Bean

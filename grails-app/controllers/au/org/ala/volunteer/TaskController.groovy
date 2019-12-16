@@ -194,15 +194,6 @@ class TaskController {
         render jsonObj as JSON
     }
 
-    def loadCSV() {
-        def projectId = params.int('projectId')
-
-        if (params.csv) {
-            def csv = params.csv;
-            flash.message = taskService.loadCSV(projectId, csv)
-        }
-    }
-
     def loadCSVAsync() {
         def projectId = params.int('projectId')
         def replaceDuplicates = params.duplicateMode == 'replace'
@@ -213,7 +204,7 @@ class TaskController {
                 if (!success) {
                     flash.message = message + " - Try again when current load is complete."
                 }
-                redirect( controller:'loadProgress', action:'index')
+                redirect( controller:'project', action:'loadProgress', id: projectId)
             }
         }
     }
@@ -221,7 +212,7 @@ class TaskController {
     def cancelLoad() {
         taskLoadService.cancelLoad()
         flash.message = "Cancelled!"
-        redirect( controller:'loadProgress', action:'index')
+        redirect( controller:'project', action:'loadProgress', id: projectId)
     }
 
     def index() {
@@ -630,28 +621,22 @@ class TaskController {
     }
 
     def staging() {
-        def projectInstance = Project.get(params.int("projectId"))
+        def projectId = params.int("projectId")
+        def projectInstance = Project.get(projectId)
+
+        cache false
+
         if (!projectInstance) {
             redirect(controller: 'index')
             return
         }
-        [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
-    /*    def profile = ProjectStagingProfile.findByProject(projectInstance)
-        if (!profile) {
-            profile = new ProjectStagingProfile(project: projectInstance)
-            profile.save(flush: true, failOnError: true)
+
+        if (taskLoadService.isProjectLoadingAlready(projectId)) {
+            flash.message = 'Please wait while existing staged images are loaded'
+            redirect(controller: 'project', action: 'loadProgress', id: projectId)
+        } else {
+            [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
         }
-
-        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
-            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
-        }
-
-        cache false
-
-        def images = stagingService.buildTaskMetaDataList(projectInstance)
-
-        [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
-        */
     }
 
     def stagedImages() {
@@ -876,7 +861,7 @@ class TaskController {
             def results = taskLoadService.loadTasksFromStaging(projectInstance)
             flash.message = results.message
             if (results.success) {
-                redirect( controller:'loadProgress', action:'index')
+                redirect( controller:'project', action:'loadProgress', id: projectInstance.id)
                 return
             }
         }

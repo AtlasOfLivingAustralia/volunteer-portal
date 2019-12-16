@@ -1152,4 +1152,7 @@ class ProjectController {
         respond result
     }
 
+    def loadProgress(Project projectInstance) {
+        respond projectInstance
+    }
 }

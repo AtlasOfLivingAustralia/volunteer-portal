@@ -238,9 +238,10 @@ class AjaxController {
         }
     }
 
-    def loadProgress() {
+    def loadProgress(long id) {
         setNoCache()
-        respond taskLoadService.status()
+//        log.info("loadProgress($id)")
+        respond taskLoadService.status(id)
     }
 
     def taskLoadReport() {

@@ -49,7 +49,7 @@ class StagingService {
     List listStagedFiles(Project project, boolean sortByDateTaken = false) {
         def dir = new File(getStagingDirectory(project))
         if (!dir.exists()) {
-            dir.mkdirs();
+            dir.mkdirs()
         }
 
         def files = dir.listFiles()
@@ -70,12 +70,16 @@ class StagingService {
         images.sort(sort)
     }
 
-    def unstageImage(Project project, String imageName) {
-        def file = new File(createStagedPath(project, imageName))
+    def unstageImage(long projectId, String imageName) {
+        def file = new File(createStagedPath(projectId, imageName))
         if (file.exists()) {
             return file.delete()
         }
         return false
+    }
+
+    def unstageImage(Project project, String imageName) {
+        unstageImage(project.id, imageName)
     }
 
     def deleteStagedImages(Project project) {
@@ -301,7 +305,7 @@ class StagingService {
                         value = field.format
                         break;
                     case FieldDefinitionType.Sequence:
-                        value = "${sequenceNo}"
+                        value = "" + sequenceNo
                         break;
                     case FieldDefinitionType.SequenceGroupId:
                         long dateTaken = stagedFile.dateTaken ?: 0
