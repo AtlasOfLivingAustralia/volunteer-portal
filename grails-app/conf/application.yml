@@ -61,6 +61,8 @@ endpoints:
     jmx:
         enabled: true
         unique-names: true
+management:
+    context-path: /status
 
 ---
 grails:
@@ -306,14 +308,14 @@ environments:
             dbCreate: validate
             properties:
                 jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 25
-                maxWait: 10000
+                initialSize: 10
+                maxActive: 10
+                minIdle: 10
+                maxIdle: 10
+                maxWait: 5000
                 maxAge: 600000
                 timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
+                minEvictableIdleTimeMillis: 5000
                 validationQuery: SELECT 1
                 validationQueryTimeout: 3
                 validationInterval: 15000
@@ -326,3 +328,4 @@ environments:
                 removeAbandonedTimeout: 120
                 removeAbandoned: true
                 logAbandoned: false
+                rollbackOnReturn: true
