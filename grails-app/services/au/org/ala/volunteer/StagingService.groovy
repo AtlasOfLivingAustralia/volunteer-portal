@@ -1,11 +1,19 @@
 package au.org.ala.volunteer
 
+import com.github.benmanes.caffeine.cache.CacheLoader
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.LoadingCache
 import com.google.common.base.Charsets
+import com.google.common.hash.Hashing
+import com.google.common.io.Files
+import groovy.transform.Canonical
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
 
+import java.util.concurrent.CompletionException
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import grails.plugins.csv.CSVMapReader
 
@@ -48,6 +56,34 @@ class StagingService {
         println "copying stagedFile to " + filePath
         def newFile = new File(filePath);
         file.transferTo(newFile);
+    }
+
+    @Canonical
+    static class HashKey {
+        long length
+        String filename
+    }
+
+    private LoadingCache<HashKey, String> md5s = Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .refreshAfterWrite(10, TimeUnit.MINUTES)
+            .build({key -> md5Internal(key.filename) } as CacheLoader<HashKey, String>)
+
+    private String md5Internal(String filename) {
+        File file = new File(filename)
+        if (!file.exists()) {
+            throw new IOException("$filename doesn't exist")
+        }
+        return Files.hash(file, Hashing.md5()).toString()
+    }
+
+    def md5(File file) {
+        try {
+            md5s.get(new HashKey(length: file.length(), filename: file.absolutePath))
+        } catch (CompletionException e) {
+            throw e.cause
+        }
     }
 
     /**

@@ -176,6 +176,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.google.guava:guava:19.0'
+    compile 'com.github.ben-manes.caffeine:caffeine:2.8.0'
     compile 'org.apache.commons:commons-compress:1.11'
     compile 'org.apache.commons:commons-pool2:2.4.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'

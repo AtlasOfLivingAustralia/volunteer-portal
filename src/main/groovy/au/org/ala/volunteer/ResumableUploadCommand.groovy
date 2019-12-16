@@ -111,7 +111,7 @@ class ResumableUploadCommand implements Validateable {
         def c = completeChunkFile
         def f = new File(path)
         if (c.exists()) {
-            def calculatedChecksum = Files.hash(c, Hashing.md5()).toString()
+            def calculatedChecksum = stagingService.md5(c) //Files.hash(c, Hashing.md5()).toString()
             def checksum = stringParam(checksum)
             log.debug("checksums calculated: {}, received: {}", calculatedChecksum, checksum)
 
@@ -124,7 +124,7 @@ class ResumableUploadCommand implements Validateable {
         } else if (f.exists())  {
             if (f.length() != resumableTotalSize) return false
 
-            def calculatedChecksum = Files.hash(f, Hashing.md5()).toString()
+            def calculatedChecksum = stagingService.md5(f) // Files.hash(f, Hashing.md5()).toString()
             def checksum = stringParam(completeChecksum)
             log.debug("checksums calculated: {}, received: {}", calculatedChecksum, checksum)
 
