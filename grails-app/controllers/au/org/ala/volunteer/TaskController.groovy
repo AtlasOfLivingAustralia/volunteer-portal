@@ -845,6 +845,7 @@ class TaskController {
         if (projectInstance && fieldDefinition && newFieldType) {
             fieldDefinition.fieldDefinitionType = newFieldType
         }
+        fieldDefinition.save(flush: true)
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
@@ -855,6 +856,7 @@ class TaskController {
         if (projectInstance && fieldDefinition && newFieldFormat) {
             fieldDefinition.format = newFieldFormat
         }
+        fieldDefinition.save(flush: true)
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
@@ -862,7 +864,7 @@ class TaskController {
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         if (projectInstance && fieldDefinition) {
-            fieldDefinition.delete()
+            fieldDefinition.delete(flush: true)
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
