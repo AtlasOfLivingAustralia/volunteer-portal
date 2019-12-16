@@ -129,21 +129,8 @@
 
             <hr/>
 
-            <div class="row" id="uploadProgress" style="display: none">
-                <div class="col-md-12">
-                    <span id="uploadedProgressText">Uploading files to stage in progress</span>
-                    <div  class="progress" >
-
-                        <div class="progress-bar progress-bar-info progress-striped active" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="min-width: 30px">
-                            <span id="uploadedProgressPercentage"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <input type="hidden" id="totalUploaded" value="0">
+            <div id="upload-progress"></div>
             <div id="stagedImages">
-                %{--<g:render template="/task/stagedImages" model="[images: images]" />--}%
                 <g:include controller="task" action="stagedImages" />
             </div>
 
@@ -151,12 +138,47 @@
         </div>
     </div>
 </div>
+<script id="upload-progress-tmpl" type="text/x-handlebars">
+<div id="upload-progress">
+<div class="row">
+  <div class="col-sm-6">
+    <p>
+      <span>Files uploaded: {{complete}}</span>
+      {{#errors}}<span>Files failed: {{errors}}</span>{{/errors}}
+      <span>Files remaining: {{remaining}}</span>
+      <span>Total files: {{total}}</span>
+      <button id="pause-upload" class="btn btn-xs btn-warning{{#paused}} active{{/paused}}">{{^paused}}Pause{{/paused}}{{#paused}}Resume{{/paused}}</button>
+      <button id="cancel-upload" class="btn btn-xs btn-danger">Cancel</button>
+    </p>
+  </div>
+  <div class="col-sm-6">
+  {{#currentFiles}}
+    <div data-key="{{filename}}">
+      <p>{{filename}} uploading</p>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">{{progress}}%</span></div>
+      </div>
+    </div>
+  {{/currentFiles}}
+  </div>
+  <div class="col-sm-12">
+    <div class="progress">
+      <div class="progress-bar{{#remaining}} progress-bar-striped active{{/remaining}}" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%"><span class="sr-only">{{progress}}%</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</script>
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="digivol-stageImage.js" asset-defer="" />
 <asset:script type='text/javascript'>
 
     digivolStageFiles({
+        projectId: ${projectInstance.id},
+        stagedImagesUrl: "${createLink(action: 'stagedImages', params: [projectId: projectInstance.id])}",
+        uploadFileUrl: "${createLink(action: 'resumableUploadFile', params: [projectId: projectInstance.id])}",
         unStageImageUrl: "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=",
         addFieldUrl: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}",
         clearStagingUrl: "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}",
@@ -169,55 +191,36 @@
 
         bvp.bindTooltips("a.fieldHelp", 650);
 
-                setupListeners();
+        $(".btnAddFieldDefinition").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title: "Add field definition",
+                url: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}"
+            };
+            bvp.showModal(options);
+        });
 
-                $(".btnAddFieldDefinition").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title: "Add field definition",
-                        url: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}"
-                    };
-                    bvp.showModal(options);
-                });
+        $("#btnLoadTasks").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller: 'task', action: 'loadStagedTasks', params: [projectId: projectInstance.id])}";
+        });
 
-                $(".btnDeleteShadowFile").click(function(e) {
-                    var filename = $(this).attr("filename");
-                    if (filename) {
-                        window.location = "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=" + filename;
-                    }
-                });
+        $("#btnUploadDataFile").click(function(e) {
+            e.preventDefault();
+            var options = {
+                title: "Upload a data file",
+                url:"${createLink(action: 'uploadDataFileFragment', params: [projectId: projectInstance.id])}"
+            };
+            bvp.showModal(options);
 
-                $("#btnLoadTasks").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'task', action: 'loadStagedTasks', params: [projectId: projectInstance.id])}";
-                });
+        });
 
-                $("#btnUploadDataFile").click(function(e) {
-                    e.preventDefault();
-                    var options = {
-                        title: "Upload a data file",
-                        url:"${createLink(action: 'uploadDataFileFragment', params: [projectId: projectInstance.id])}"
-                    }
-                    bvp.showModal(options);
+        $("#btnClearDataFile").click(function(e) {
+            e.preventDefault();
+            window.location = "${createLink(controller: 'task', action: 'clearStagedDataFile', params: [projectId: projectInstance.id])}";
+        });
 
-                });
-
-                $("#btnClearDataFile").click(function(e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'task', action: 'clearStagedDataFile', params: [projectId: projectInstance.id])}";
-                });
-
-                $("#btnSelectImages").click(function(e) {
-                    e.preventDefault();
-                    var opts = {
-                        title:"Upload images to the staging area",
-                        url: "${createLink(action: "selectImagesForStagingFragment", params: [projectId: projectInstance.id])}"
-                    };
-
-                    bvp.showModal(opts);
-                });
-
-            });
+    });
 
 </asset:script>
 </body>

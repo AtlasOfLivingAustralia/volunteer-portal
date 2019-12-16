@@ -70,6 +70,7 @@
         });
 
         $("#btnSaveFieldDefinition").click(function (e) {
+            // debugger;
             e.preventDefault();
             var fieldName = encodeURIComponent($("#fieldName").val());
             var fieldType = encodeURIComponent($("#fieldType").val());
@@ -77,7 +78,7 @@
             var format = encodeURIComponent($("#definition").val());
 
             if (fieldName) {
-                window.location = "${createLink(controller:'task', action:'saveFieldDefinition', params:[projectId: projectInstance.id, fieldDefinitionId: fieldDefinition?.id])}&fieldName=" + fieldName + "&fieldType=" + fieldType + "&recordIndex=" + recordIndex + "&format=" + format
+                window.location = "${createLink(controller:'task', action:'saveFieldDefinition', params:[projectId: projectInstance.id, fieldDefinitionId: fieldDefinition?.id]).encodeAsJavaScript()}&fieldName=" + fieldName + "&fieldType=" + fieldType + "&recordIndex=" + recordIndex + "&fmt=" + format
             }
         });
 

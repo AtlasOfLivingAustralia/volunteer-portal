@@ -20,11 +20,23 @@ class StagingService {
     static long DEFAULT_BURST_THRESHOLD = 3*1000
 
     String getStagingDirectory(Project project) {
-        return "${grailsApplication.config.images.home}/${project.id}/staging"
+        getStagingDirectory(project.id)
+    }
+
+    String getStagingDirectory(long projectId) {
+        return "${grailsApplication.config.images.home}/${projectId}/staging"
     }
 
     String createStagedPath(Project project, String filename) {
-        return getStagingDirectory(project) + "/" + filename
+        createStagedPath(project.id, filename)
+    }
+
+    String createStagedPath(long projectId, String filename) {
+        return getStagingDirectory(projectId) + "/" + filename
+    }
+
+    String createUploadChunksPath(long projectId, String filename) {
+        return "${grailsApplication.config.images.home}/${projectId}/chunks/$filename/"
     }
 
     String createDataFilePath(Project project) {

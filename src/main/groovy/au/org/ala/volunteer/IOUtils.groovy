@@ -1,9 +1,14 @@
 package au.org.ala.volunteer
 
+import com.google.common.hash.HashFunction
+import com.google.common.hash.Hashing
+import com.google.common.hash.HashingOutputStream
+
 class IOUtils {
 
     protected static final int MAX_DIR_NAME_LENGTH = 200
     protected static final int MAX_FILE_NAME_LENGTH = 128
+    public static final int DEFAULT_BUFFER_SIZE = 1024 * 4
 
     /**
      * Converts any string into a string that is safe to use as a file name. The
@@ -36,5 +41,26 @@ class IOUtils {
             result = result.substring(result.length() - maxFileLength, result.length())
         }
         return result;
+    }
+
+    /**
+     * Combine the list files into the single file parameter and produce and md5 hash of the
+     * resulting single file whilst doing it.
+     *
+     * @param file The destination file
+     * @param files The list of source files, in order
+     * @return The MD5 hash of the destination file
+     */
+    static String combineFilesAndMd5(File file, List<File> files) {
+        def hos = new HashingOutputStream(Hashing.md5(), file.newOutputStream())
+        hos.withStream {
+            files.each {
+                it.withInputStream { fis ->
+                    org.apache.commons.io.IOUtils.copyLarge(fis, hos)
+                }
+            }
+            hos.flush()
+        }
+        return hos.hash().toString()
     }
 }

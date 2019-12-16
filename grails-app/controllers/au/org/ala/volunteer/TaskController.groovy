@@ -1,15 +1,21 @@
 package au.org.ala.volunteer
 
+import com.google.common.hash.Hashing
+import com.google.common.hash.HashingInputStream
+import com.google.common.io.Files
 import grails.converters.JSON
 import groovy.time.TimeCategory
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.transform.ToString
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
-import javax.servlet.http.HttpServletResponse
-
+import static javax.servlet.http.HttpServletResponse.SC_CREATED
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_PRECONDITION_FAILED
 
 class TaskController {
 
@@ -1003,6 +1009,61 @@ class TaskController {
         log.debug("Adding task view for $userId with task $task")
         auditService.auditTaskViewing(task, userService.currentUser.userId)
         respond status: SC_NO_CONTENT
+    }
+
+    def resumableUploadFile(ResumableUploadCommand cmd) {
+
+        if (cmd.hasErrors()) {
+            log.error("Resumable params are not valid {}", cmd)
+            return render(status: SC_BAD_REQUEST, text: "Params aren't valid")
+        }
+
+        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
+        if (!allowedMimeTypes.contains(cmd.type)) {
+            log.error("Resumable file content-type is not valid {}", cmd)
+            return render(status: SC_BAD_REQUEST, text: "The image file must be one of: ${allowedMimeTypes}")
+        }
+
+        if (!Project.exists(cmd.projectId)) {
+            return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
+        }
+
+        log.info("Uploading {}:{} identifier {} size {} checksum {}", cmd.filename, cmd.resumableChunkNumber, cmd.identifier, cmd.resumableCurrentChunkSize, cmd.checksum)
+
+        if (request.method == 'POST') {
+            try {
+                def resumableStream = getResumableStream()
+                if (resumableStream != null) {
+                    def chunkCheck = cmd.uploadAndCheckChunk(resumableStream)
+                    if (chunkCheck) {
+                        render status: SC_CREATED, text: ''
+                    } else {
+                        render status: SC_PRECONDITION_FAILED, text: 'Chunk checksum does not match'
+                    }
+                } else {
+                    render status: SC_BAD_REQUEST, text: 'No file part found'
+                }
+            } catch (e) {
+                log.error("Couldn't save uploaded chunk {}", cmd, e)
+                render status: SC_INTERNAL_SERVER_ERROR, text: "Couldn't save uploaded chunk ${cmd.filename}:${cmd.resumableChunkNumber}"
+            }
+        } else if (request.method == 'GET') {
+            if (cmd.isChunkComplete()) {
+                render(status: SC_NO_CONTENT, text: '')
+            } else {
+                render(status: SC_NOT_FOUND, text: '')
+            }
+        }
+    }
+
+    private getResumableStream() {
+        if (request instanceof MultipartHttpServletRequest) {
+            // theoretically there's only one chunk being sent in this request, so just find the first file part
+            def mfm = request.getMultiFileMap()
+            mfm.values().collectMany { it }.find()?.inputStream
+        } else {
+            request.inputStream
+        }
     }
 
 }
