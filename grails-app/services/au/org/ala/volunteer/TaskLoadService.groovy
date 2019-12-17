@@ -844,19 +844,22 @@ class TaskLoadService {
         }
     }
 
-    private continueAndSkipStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure continuation) {
+    private <T> T continueAndSkipStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure<T> continuation) {
         def results = statuses.groupBy { it.success && !it.skip }[true]
         if (results) continuation(results)
+        else null
     }
 
-    private continueStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure continuation) {
+    private <T> T continueStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure<T> continuation) {
         def results = statuses.groupBy { it.success }[true]
         if (results) continuation(results)
+        else null
     }
 
-    private failedStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure continuation) {
+    private <T> T failedStatuses(List<LoadStatus> statuses, @ClosureParams(FirstParam) Closure<T> continuation) {
         def results = statuses.groupBy { it.success }[false]
         if (results) continuation(results)
+        else null
     }
 
     private TaskRecord createInitialTaskRecordFromDescriptor(TaskDescriptorRecord taskDescriptor) {

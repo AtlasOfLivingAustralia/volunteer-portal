@@ -133,8 +133,6 @@
             <div id="stagedImages">
                 <g:include controller="task" action="stagedImages" />
             </div>
-
-
         </div>
     </div>
 </div>
