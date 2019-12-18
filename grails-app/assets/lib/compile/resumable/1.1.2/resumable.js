@@ -692,6 +692,13 @@
 
         var testHandler = function(e){
           $.tested = true;
+
+          // release listeners
+          $.xhr.removeEventListener('timeout', testHandler, false);
+          $.xhr.removeEventListener('load', testHandler, false);
+          $.xhr.removeEventListener('error', testHandler, false);
+          $.xhr = null;
+
           var status = $.status();
           if(status=='success') {
             $.callback(status, $.message());
@@ -776,14 +783,16 @@
         // Set up request and listen for event
         $.xhr = new XMLHttpRequest();
 
-        // Progress
-        $.xhr.upload.addEventListener('progress', function(e){
+        var progress = function(e){
           if( (new Date) - $.lastProgressCallback > $.getOpt('throttleProgressCallbacks') * 1000 ) {
             $.callback('progress');
             $.lastProgressCallback = (new Date);
           }
           $.loaded=e.loaded||0;
-        }, false);
+        };
+
+        // Progress
+        $.xhr.upload.addEventListener('progress', progress, false);
         $.loaded = 0;
         $.pendingRetry = false;
         $.callback('progress');
@@ -791,6 +800,15 @@
         // Done (either done, failed or retry)
         var doneHandler = function(e){
           var status = $.status();
+
+
+          // release listeners
+          $.xhr.upload.removeEventListener('progress', progress, false);
+          $.xhr.removeEventListener('load', doneHandler, false);
+          $.xhr.removeEventListener('error', doneHandler, false);
+          $.xhr.removeEventListener('abort', doneHandler, false);
+          $.xhr.removeEventListener('timeout', doneHandler, false);
+
           if(status=='success'||status=='error') {
             $.callback(status, $.message());
             $.resumableObj.uploadNextChunk();
@@ -809,6 +827,7 @@
         };
         $.xhr.addEventListener('load', doneHandler, false);
         $.xhr.addEventListener('error', doneHandler, false);
+        $.xhr.addEventListener('abort', doneHandler, false);
         $.xhr.addEventListener('timeout', doneHandler, false);
 
         // Set up the basic query data from Resumable
