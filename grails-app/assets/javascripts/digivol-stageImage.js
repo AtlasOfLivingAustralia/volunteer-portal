@@ -81,12 +81,7 @@ function digivolStageFiles (config, self) {
     };
 
     $('#upload-progress').on('click', '#pause-upload', function () {
-        paused = !paused;
-        if (paused) {
-            r.pause();
-        } else {
-            r.upload();
-        }
+        pause(!paused);
     }).on('click', '#cancel-upload', function () {
         r.cancel();
     });
@@ -95,6 +90,15 @@ function digivolStageFiles (config, self) {
     var errors = [];
     var complete = 0;
     var paused = false;
+
+    function pause(pause) {
+        paused = pause;
+        if (paused) {
+            r.pause();
+        } else {
+            r.upload();
+        }
+    }
 
     function renderProgress() {
         var files = r.files;
@@ -164,9 +168,20 @@ function digivolStageFiles (config, self) {
         console.log("file retry", arguments);
     });
     r.on('fileError', function (file, message) {
-        // console.log("file error", arguments);
-        errors.push(file);
-        bootbox.alert("There was an error uploading " + file.fileName + ".  Please try uploading it again and if the error persists please contact DigiVol support.");
+        if (message === "Access denied") {
+            pause(true);
+            bootbox.alert(
+                "You appear to have been logged out.  Please open a new tab, login to DigiVol again and click ok to resume",
+                function() {
+                    pause(false);
+                    file.retry();
+                }
+            );
+        } else {
+            console.log("file error", arguments);
+            errors.push(file);
+            bootbox.alert("There was an error uploading " + file.fileName + ".  Please try uploading it again and if the error persists please contact DigiVol support.");
+        }
     });
     r.on('complete', function () {
         // remove uploads
@@ -189,7 +204,9 @@ function digivolStageFiles (config, self) {
     });
     r.on('error', function (message, file) {
         console.log("error", arguments);
-        bootbox.alert("An error has occurred.  Please try uploading again and if the error persists please contact DigiVol support.");
+        if (!file) {
+            bootbox.alert("An error has occurred.  Please refresh the page, try uploading again and if the error persists please contact DigiVol support.");
+        }
     });
     r.on('pause', function () {
         // console.log("pause", arguments);
@@ -240,7 +257,12 @@ function digivolStageFiles (config, self) {
                     resumableFile.fullHash = resumableFile.sparkBuff.end(false);
                     resumableFile.sparkBuff.destroy();
                     delete resumableFile.sparkBuff;
-                    resumableFile.preprocessFinished();
+                    if (!paused) {
+                        resumableFile.preprocessFinished();
+                    } else {
+                        /// XXX hack to mark the file as preprocess finished but not start uploading it
+                        resumableFile.preprocessState = 2;
+                    }
                 }
             };
 
