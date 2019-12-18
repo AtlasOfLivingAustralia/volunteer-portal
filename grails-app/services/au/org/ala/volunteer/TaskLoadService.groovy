@@ -562,6 +562,7 @@ class TaskLoadService {
         }
 
         continueAndSkipStatuses(jobsStatuses, taskLoadStepImportImage.curry(create))
+        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateFields.curry(create))
 
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
@@ -671,6 +672,10 @@ class TaskLoadService {
                 status.message = e.message
             }
         }
+    }
+
+    private Closure taskLoadStepUpdateMultimedia = { DSLContext create, List<LoadStatus> statuses ->
+        create.batchUpdate(statuses*.mediaLoadStatus*.multimediaRecord).execute()
     }
 
     private Closure taskLoadStepGenerateFields = { DSLContext create, List<LoadStatus> statuses ->
