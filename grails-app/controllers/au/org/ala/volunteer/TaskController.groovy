@@ -215,12 +215,6 @@ class TaskController {
         }
     }
 
-    def cancelLoad() {
-        taskLoadService.cancelLoad()
-        flash.message = "Cancelled!"
-        redirect( controller:'project', action:'loadProgress', id: projectId)
-    }
-
     def index() {
         redirect(action: "list", params: params)
     }
@@ -752,38 +746,6 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
-    def stageImage() {
-
-        int count = 0
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            if(request instanceof MultipartHttpServletRequest) {
-                ((MultipartHttpServletRequest) request).getMultiFileMap().imageFile.each { f ->
-                    if (f != null) {
-                        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
-                        if (!allowedMimeTypes.contains(f.getContentType())) {
-                            flash.message = "The image file must be one of: ${allowedMimeTypes}"
-                            return
-                        }
-
-                        try {
-                            stagingService.stageImage(projectInstance, f)
-                            count ++
-                        } catch (Exception ex) {
-                            flash.message = "Failed to upload image file: " + ex.message;
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-        def processed = [:]
-        processed.put("processed", count)
-        render processed as JSON
-    }
-
     def unstageImage() {
         def projectInstance = Project.get(params.int("projectId"))
         def imageName = params.imageName
@@ -1009,61 +971,6 @@ class TaskController {
         log.debug("Adding task view for $userId with task $task")
         auditService.auditTaskViewing(task, userService.currentUser.userId)
         respond status: SC_NO_CONTENT
-    }
-
-    def resumableUploadFile(ResumableUploadCommand cmd) {
-
-        if (cmd.hasErrors()) {
-            log.error("Resumable params are not valid {}", cmd)
-            return render(status: SC_BAD_REQUEST, text: "Params aren't valid")
-        }
-
-        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
-        if (!allowedMimeTypes.contains(cmd.type)) {
-            log.error("Resumable file content-type is not valid {}", cmd)
-            return render(status: SC_BAD_REQUEST, text: "The image file must be one of: ${allowedMimeTypes}")
-        }
-
-        if (!Project.exists(cmd.projectId)) {
-            return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
-        }
-
-        log.debug("Uploading {}:{} identifier {} size {} checksum {}", cmd.filename, cmd.resumableChunkNumber, cmd.identifier, cmd.resumableCurrentChunkSize, cmd.checksum)
-
-        if (request.method == 'POST') {
-            try {
-                def resumableStream = getResumableStream()
-                if (resumableStream != null) {
-                    def chunkCheck = cmd.uploadAndCheckChunk(resumableStream)
-                    if (chunkCheck) {
-                        render status: SC_CREATED, text: ''
-                    } else {
-                        render status: SC_PRECONDITION_FAILED, text: 'Chunk checksum does not match'
-                    }
-                } else {
-                    render status: SC_BAD_REQUEST, text: 'No file part found'
-                }
-            } catch (e) {
-                log.error("Couldn't save uploaded chunk {}", cmd, e)
-                render status: SC_INTERNAL_SERVER_ERROR, text: "Couldn't save uploaded chunk ${cmd.filename}:${cmd.resumableChunkNumber}"
-            }
-        } else if (request.method == 'GET') {
-            if (cmd.isChunkComplete()) {
-                render(status: SC_NO_CONTENT, text: '')
-            } else {
-                render(status: SC_NOT_FOUND, text: '')
-            }
-        }
-    }
-
-    private getResumableStream() {
-        if (request instanceof MultipartHttpServletRequest) {
-            // theoretically there's only one chunk being sent in this request, so just find the first file part
-            def mfm = request.getMultiFileMap()
-            mfm.values().collectMany { it }.find()?.inputStream
-        } else {
-            request.inputStream
-        }
     }
 
 }

@@ -176,7 +176,7 @@
     digivolStageFiles({
         projectId: ${projectInstance.id},
         stagedImagesUrl: "${createLink(action: 'stagedImages', params: [projectId: projectInstance.id])}",
-        uploadFileUrl: "${createLink(action: 'resumableUploadFile', params: [projectId: projectInstance.id])}",
+        uploadFileUrl: "${createLink(controller: 'ajax', action: 'resumableUploadFile', params: [projectId: projectInstance.id])}",
         unStageImageUrl: "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=",
         addFieldUrl: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}",
         clearStagingUrl: "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}",

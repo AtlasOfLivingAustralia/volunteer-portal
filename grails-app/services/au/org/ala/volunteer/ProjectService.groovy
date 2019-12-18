@@ -4,6 +4,8 @@ import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.transform.Immutable
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.SimpleType
 import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
+import java.security.Principal
 
 import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
 import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
@@ -172,6 +175,14 @@ class ProjectService {
         }
 
         result
+    }
+
+    boolean isAdmin(Project project, Principal principal, @ClosureParams(value=SimpleType.class, options="java.lang.String") Closure<Boolean> roleResolver) {
+        if (roleResolver(BVPRole.SITE_ADMIN) || roleResolver(CASRoles.ROLE_ADMIN) || roleResolver(au.org.ala.web.CASRoles.ROLE_ADMIN)) {
+            return true
+        }
+        // TODO add project owner that isn't an admin
+        return false
     }
 
     @Immutable
