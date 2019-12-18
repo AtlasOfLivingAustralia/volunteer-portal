@@ -53,7 +53,7 @@
                     <div class="alert alert-info">
                         Total Tasks: ${taskInstanceTotal},
                         <g:if test="${projectInstance}">
-                            Transcribed Tasks: ${Task.countByProjectAndFullyTranscribedByIsNotNull(projectInstance)},
+                            Transcribed Tasks: ${Task.countByProjectAndTranscriptionsIsNotEmpty(projectInstance)},
                                     Validated Tasks: ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
                         </g:if>
                         &nbsp;&nbsp;
@@ -79,9 +79,7 @@
                             <g:each in="${extraFields}"
                                     var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
 
-                            <g:sortableColumn property="fullyTranscribedBy"
-                                              title="${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}"
-                                              params="${[q: params.q]}"/>
+                            <th><span class=""><g:message code="transcription.fullyTranscribedBy.label" default="Fully Transcribed By" /></span></th>
 
                             <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}"
                                               params="${[q: params.q]}" style="text-align: center;"/>
@@ -105,21 +103,20 @@
                             %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
 
                                 <td>
-                                    <g:if test="${taskInstance.fullyTranscribedBy}">
-                                        <g:set var="thisUser" value="${User.findByUserId(taskInstance.fullyTranscribedBy)}"/>
-                                        <g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails
-                                                id="${taskInstance.fullyTranscribedBy}" displayName="true"/></g:link>
+                                    <g:set var="transcribers" value="${taskInstance.transcriptions*.fullyTranscribedBy}" />
+                                    <g:if test="${transcribers}">
+                                        <g:each in="${transcribers}" var="transcriber" status="j"><g:if test="${j != 0}">, </g:if><g:set var="thisUser" value="${User.findByUserId(transcriber)}"/><g:link controller="user" action="show" id="${thisUser?.id}"><cl:userDetails id="${transcriber}" displayName="true"/></g:link></g:each>
                                     </g:if>
                                 </td>
 
                                 <td style="text-align: center;">
                                     <g:if test="${taskInstance.isValid == true}">validated</g:if>
                                     <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                                    <g:elseif test="${taskInstance.fullyTranscribedBy}">submitted</g:elseif>
+                                    <g:elseif test="${taskInstance.transcriptions*.fullyTranscribedBy}">submitted</g:elseif>
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <g:if test="${taskInstance.fullyTranscribedBy}">
+                                    <g:if test="${taskInstance.transcriptions*.fullyTranscribedBy}">
                                         <g:link class="btn btn-sm btn-info" controller="task" action="show"
                                                 id="${taskInstance.id}">view</g:link>
                                     </g:if>
