@@ -12,8 +12,8 @@
 <cl:headerContent title="${message(code: "default.progress.label", default: "Task Loading Progress")}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'project', action: 'index'), label: projectInstance.name ?: 'Project'],
-                [link: createLink(controller: 'project', action: 'editTaskSettings'), label: 'Tasks']
+                [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.name ?: 'Project'],
+                [link: createLink(controller: 'project', action: 'editTaskSettings', id: projectInstance.id), label: 'Tasks']
         ]
     %>
 </cl:headerContent>
