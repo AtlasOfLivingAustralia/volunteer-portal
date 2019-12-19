@@ -652,12 +652,11 @@ class AjaxController {
             return render(status: SC_BAD_REQUEST, text: "The image file must be one of: ${allowedMimeTypes}")
         }
 
-        def project = Project.get(cmd.projectId)
-        if (!project) {
+        if (!Project.exists(cmd.projectId)) {
             return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
         }
 
-        if (!projectService.isAdmin(project, request.userPrincipal, request.&isUserInRole)) {
+        if (!userService.isAdmin()) {
             return render(status: request.userPrincipal ? SC_FORBIDDEN : SC_UNAUTHORIZED, text: 'Access denied')
         }
 

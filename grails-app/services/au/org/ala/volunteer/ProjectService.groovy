@@ -177,14 +177,6 @@ class ProjectService {
         result
     }
 
-    boolean isAdmin(Project project, Principal principal, @ClosureParams(value=SimpleType.class, options="java.lang.String") Closure<Boolean> roleResolver) {
-        if (roleResolver(BVPRole.SITE_ADMIN) || roleResolver(CASRoles.ROLE_ADMIN) || roleResolver(au.org.ala.web.CASRoles.ROLE_ADMIN)) {
-            return true
-        }
-        // TODO add project owner that isn't an admin
-        return false
-    }
-
     @Immutable
     final static class DeleteTasksMessage {
         long projectId
