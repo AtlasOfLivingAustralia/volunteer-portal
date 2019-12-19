@@ -1,11 +1,19 @@
 package au.org.ala.volunteer
 
+import com.github.benmanes.caffeine.cache.CacheLoader
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.LoadingCache
 import com.google.common.base.Charsets
+import com.google.common.hash.Hashing
+import com.google.common.io.Files
+import groovy.transform.Canonical
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
 
+import java.util.concurrent.CompletionException
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import grails.plugins.csv.CSVMapReader
 
@@ -20,11 +28,23 @@ class StagingService {
     static long DEFAULT_BURST_THRESHOLD = 3*1000
 
     String getStagingDirectory(Project project) {
-        return "${grailsApplication.config.images.home}/${project.id}/staging"
+        getStagingDirectory(project.id)
+    }
+
+    String getStagingDirectory(long projectId) {
+        return "${grailsApplication.config.images.home}/${projectId}/staging"
     }
 
     String createStagedPath(Project project, String filename) {
-        return getStagingDirectory(project) + "/" + filename
+        createStagedPath(project.id, filename)
+    }
+
+    String createStagedPath(long projectId, String filename) {
+        return getStagingDirectory(projectId) + "/" + filename
+    }
+
+    String createUploadChunksPath(long projectId, String filename) {
+        return "${grailsApplication.config.images.home}/${projectId}/chunks/$filename/"
     }
 
     String createDataFilePath(Project project) {
@@ -38,6 +58,34 @@ class StagingService {
         file.transferTo(newFile);
     }
 
+    @Canonical
+    static class HashKey {
+        long length
+        String filename
+    }
+
+    private LoadingCache<HashKey, String> md5s = Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .refreshAfterWrite(10, TimeUnit.MINUTES)
+            .build({key -> md5Internal(key.filename) } as CacheLoader<HashKey, String>)
+
+    private String md5Internal(String filename) {
+        File file = new File(filename)
+        if (!file.exists()) {
+            throw new IOException("$filename doesn't exist")
+        }
+        return Files.hash(file, Hashing.md5()).toString()
+    }
+
+    def md5(File file) {
+        try {
+            md5s.get(new HashKey(length: file.length(), filename: file.absolutePath))
+        } catch (CompletionException e) {
+            throw e.cause
+        }
+    }
+
     /**
      * Reads the files in the project staging directory and returns information about them.  The dateTaken will be
      * added to the returned file information if sortByDateTaken is true.
@@ -49,7 +97,7 @@ class StagingService {
     List listStagedFiles(Project project, boolean sortByDateTaken = false) {
         def dir = new File(getStagingDirectory(project))
         if (!dir.exists()) {
-            dir.mkdirs();
+            dir.mkdirs()
         }
 
         def files = dir.listFiles()
@@ -70,12 +118,16 @@ class StagingService {
         images.sort(sort)
     }
 
-    def unstageImage(Project project, String imageName) {
-        def file = new File(createStagedPath(project, imageName))
+    def unstageImage(long projectId, String imageName) {
+        def file = new File(createStagedPath(projectId, imageName))
         if (file.exists()) {
             return file.delete()
         }
         return false
+    }
+
+    def unstageImage(Project project, String imageName) {
+        unstageImage(project.id, imageName)
     }
 
     def deleteStagedImages(Project project) {
@@ -301,7 +353,7 @@ class StagingService {
                         value = field.format
                         break;
                     case FieldDefinitionType.Sequence:
-                        value = "${sequenceNo}"
+                        value = "" + sequenceNo
                         break;
                     case FieldDefinitionType.SequenceGroupId:
                         long dateTaken = stagedFile.dateTaken ?: 0

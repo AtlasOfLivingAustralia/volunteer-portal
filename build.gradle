@@ -18,7 +18,7 @@ buildscript {
 
 plugins {
     id "org.flywaydb.flyway" version "4.2.0"
-    id 'nu.studer.jooq' version '2.0.7'
+    id 'nu.studer.jooq' version '3.0.3'
     id 'pl.codelabs.flywayJooq' version '1.3.1'
     //    id "com.moowork.node" version "1.1.1"
 }
@@ -65,26 +65,21 @@ jooq {
             password = project.ext.local.flywayPassword
         }
         generator {
-            name = 'org.jooq.util.DefaultGenerator'
+            name = 'org.jooq.codegen.JavaGenerator'
             strategy {
-                name = 'org.jooq.util.DefaultGeneratorStrategy'
+                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
             }
             database {
-                name = 'org.jooq.util.postgres.PostgresDatabase'
+                name = 'org.jooq.meta.postgres.PostgresDatabase'
                 inputSchema = 'public'
-//                    forcedTypes {
-//                        forcedType {
-//                            name = 'varchar'
-//                            expression = '.*'
-//                            types = 'JSONB?'
-//                        }
-//                        forcedType {
-//                            name = 'varchar'
-//                            expression = '.*'
-//                            types = 'INET'
-//                        }
-//                    }
-                // ...
+                forcedTypes {
+                    forcedType {
+                        userType = 'java.lang.Object'
+                        binding = 'au.org.ala.volunteer.jooq.PostgresJSONMoshiBinding'
+                        expression = '.*' // jooq 3.12 -> includeExpression
+                        types = 'JSONB?' // jooq 3.12 -> includeTypes
+                    }
+                }
             }
             generate {
                 relations = true
@@ -106,7 +101,7 @@ generateVolunteerJooqSchemaSource.dependsOn flywayMigrate
 // override spring boot dependency management versions here
 ext {
 //    set "tomcat.version", "8.5.20" // use this to force a tomcat version
-    set "jooq.version", '3.10.5'
+    set "jooq.version", '3.11.9'
 }
 
 repositories {
@@ -181,6 +176,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.google.guava:guava:19.0'
+    compile 'com.github.ben-manes.caffeine:caffeine:2.8.0'
     compile 'org.apache.commons:commons-compress:1.11'
     compile 'org.apache.commons:commons-pool2:2.4.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'

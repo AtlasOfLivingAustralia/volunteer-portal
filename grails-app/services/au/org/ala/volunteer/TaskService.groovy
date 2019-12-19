@@ -413,89 +413,6 @@ class TaskService {
         return null
     }
 
-    /**
-     * Loads a CSV of external identifiers and external URLs
-     * into the tables, loading the task and multimedia tables.
-     *
-     * @param projectId
-     * @param text
-     * @return
-     */
-    def loadCSV(Integer projectId, String text) {
-        def flashMsg = ""
-        log.debug("ProjectID: " + projectId)
-        def project = Project.get(projectId)
-        text.eachCsvLine { tokens ->
-            //only one line in this case
-            def task = new Task()
-            task.project = project
-
-            String imageUrl = ""
-            List<Field> fields = new ArrayList<Field>()
-
-            if(tokens.length == 1){
-              task.externalIdentifier = tokens[0]
-              imageUrl = tokens[0].trim()
-            } else if(tokens.length == 2) {
-              task.externalIdentifier = tokens[0]
-              imageUrl = tokens[1].trim()
-            } else if (tokens.length == 5) {
-                def externalIdentifier = tokens[0].trim()
-                task.externalIdentifier = externalIdentifier
-                imageUrl = tokens[1].trim()
-                // check for duplicate catalog number (overwrite duplicates)
-                def dupes = Task.findAllByExternalIdentifier(externalIdentifier)
-                for (Task t : dupes) {
-                    def msg = "Duplicate found (will be deleted): " + t.id + " - " + t.externalIdentifier
-                    flashMsg += msg + "<br/>"
-                    log.warn msg
-                    t.delete(flush: true)
-                }
-                // create associated fields
-                fields.add(new Field(name: 'institutionCode', recordIdx: 0, transcribedByUserId: 'system', value: tokens[2].trim()).save(flush: true))
-                fields.add(new Field(name: 'catalogNumber', recordIdx: 0, transcribedByUserId: 'system', value: tokens[3].trim()).save(flush: true))
-                fields.add(new Field(name: 'scientificName', recordIdx: 0, transcribedByUserId: 'system', value: tokens[4].trim()).save(flush: true))
-            } else {
-                // error
-                def msg = "CSV file has incorrect number of fields"
-                flashMsg += msg + "<br/>"
-                log.error msg
-                task = null // force save to error
-            }
-
-            if (task && !task.hasErrors()) {
-
-                task.save(flush: true)
-
-                // add the fields now that task has an ID
-                fields.each { field ->
-                    field.task = task
-                    field.save(flush: true)
-                }
-                task.fields = fields
-                task.save(flush: true)
-
-                def multimedia = new Multimedia()
-                multimedia.task = task
-                multimedia.filePath = imageUrl
-                multimedia.save(flush: true)
-                // GET the image via its URL and save various forms to local disk
-                def filePath = copyImageToStore(imageUrl, task.projectId, task.id, multimedia.id)
-                filePath = createImageThumbs(filePath) // creates thumbnail versions of images
-                multimedia.filePath = filePath.dir + "/" +filePath.raw
-                multimedia.filePathToThumbnail = filePath.dir + "/" +filePath.thumb
-                multimedia.save(flush: true)
-                log.info "Saved..." + tokens + " -> " + filePath['raw']
-            } else {
-                def msg = "Saving Task errors: " + task.errors
-                flashMsg += msg + "<br/>"
-                log.error msg
-            }
-        }
-
-        return flashMsg
-    }
-
   /**
    * Get tasks transcribed by this user. Includes partial edits and complete edits.
    *
@@ -762,6 +679,18 @@ ORDER BY record_idx, name;
         return [recordValues: recordValues, validatorDisplayName: validatorDisplayName, validatorNotes: validatorNotes]
     }
 
+    static class FileMap {
+
+        String dir
+        String raw
+        String localPath
+        String localUrlPrefix
+        String contentType
+        String thumb
+        String small
+        String medium
+        String large
+    }
 
     /**
      * GET the image via its URL and save various forms to local disk
@@ -777,7 +706,7 @@ ORDER BY record_idx, name;
         }
         filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
-        def fileMap = [:]
+        def fileMap = new FileMap()
 
         String urlPrefix = grailsApplication.config.images.urlPrefix
         if (!urlPrefix.endsWith('/')) {
@@ -787,7 +716,7 @@ ORDER BY record_idx, name;
         try {
             def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (!dir.exists()) {
-                log.info "Creating dir ${dir.absolutePath}"
+                log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
@@ -810,7 +739,7 @@ ORDER BY record_idx, name;
      * @param fieMap
      * @return fileMap
      */
-    def createImageThumbs = { Map fileMap ->
+    def createImageThumbs = { FileMap fileMap ->
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
@@ -820,10 +749,31 @@ ORDER BY record_idx, name;
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {
                 scaledImage = Scalr.resize(srcImage, it.value)
             }
-            ImageIO.write(scaledImage, "jpg", new File(fileMap.dir + "/" + fileMap[it.key]))
+            ImageIO.write(ensureOpaque(scaledImage), "jpg", new File(fileMap.dir + "/" + fileMap[it.key]))
         }
 
         return fileMap
+    }
+
+    static BufferedImage ensureOpaque(BufferedImage bi) {
+        if (bi.getTransparency() == BufferedImage.OPAQUE)
+            return bi;
+        int w = bi.getWidth();
+        int h = bi.getHeight();
+        int[] pixels = new int[w * h];
+        bi.getRGB(0, 0, w, h, pixels, 0, w);
+        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        bi2.setRGB(0, 0, w, h, pixels, 0, w);
+        return bi2;
+    }
+
+    /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
+    def rollbackMultimediaTransaction(String imageUrl, long projectId, long taskId, long multimediaId) {
+        // Just delete the whole MM directory.
+        if (projectId && taskId && multimediaId) {
+            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            if (dir.exists() && !dir.deleteDir()) throw new IOException("Couldn't delete $dir")
+        }
     }
 
     List<Map> transcribedDatesByUserAndProject(String userid, long projectId, String labelTextFilter) {

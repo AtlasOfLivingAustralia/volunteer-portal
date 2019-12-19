@@ -401,43 +401,6 @@ class AdminController {
         redirect action: 'tools'
     }
 
-    def stagingTasks() {
-        if (!checkAdmin()) {
-            render status: 403
-            return
-        }
-
-        def status = taskLoadService.status()
-        def queueItems = taskLoadService.currentQueue()
-
-        respond queueItems, model: [status: status]
-    }
-
-    def cancelStagingQueue() {
-        if (!checkAdmin()) {
-            render status: 403
-            return
-        }
-
-        taskLoadService.cancelLoad()
-        flash.message = "Task Load Cancel message sent"
-
-        redirect action: 'stagingTasks'
-    }
-
-    def clearStagingQueue() {
-        if (!checkAdmin()) {
-            render status: 403
-            return
-        }
-
-        def items = taskLoadService.clearQueue()
-        flash.message = "Task Load queue cleared, remaining items: ${items.join(', ')}"
-
-
-        redirect action: 'stagingTasks'
-    }
-
     def updateUsers() {
         if (!checkAdmin()) {
             render status: 403
