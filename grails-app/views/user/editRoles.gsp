@@ -9,14 +9,8 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
-    <asset:javascript src="jquery.js"/>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-    %{--<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>--}%
-
-    <asset:javascript src="sorttable.js" />
+    <asset:stylesheet src="compile/bootstrap-select/1.13.9/bootstrap-select.css" asset-defer="" />
+    <asset:javascript src="compile/bootstrap-select/1.13.9/bootstrap-select.js" asset-defer="" />
     <asset:script type="text/javascript">
 
         $(document).ready(function () {
@@ -34,7 +28,7 @@
                      selectedValue = $("#byinst").val();
                 }
                 if (selectedValue == 'none') {
-                     bootbox.alert("Please select " + byOption + " or All " + byOption);
+                     bootbox.alert("Please select " + byOption + " or All " + byOption + "s");
                      return;
                 } else {
                     $.ajax({
@@ -56,16 +50,18 @@
                 $('.' + $(this).attr("value")).show();
             });
 
-            var $newOption = $( "<option value='none'></option>")
-            var $newInstOption = $( "<option value=''>--- ALL INSTITUTIONS ---</option>")
-            $('#byinst').prepend($newOption, $newInstOption)
-            $('#byinst').val('none')
+            var $newOption = $( "<option value='none'></option>");
+            // var $newInstOption = $( "<option value=''>--- ALL INSTITUTIONS ---</option>");
+            $('#byinst').prepend($newOption);
+            $('#byinst').val('none');
+            $('#byinst').selectpicker('refresh');
 
-            var $newNoProjOption = $( "<option value='none'></option>")
-            var $newProjOption = $( "<option value=''>--- ALL PROJECTS ---</option>")
-            $('#byproj').prepend($newNoProjOption, $newProjOption)
-            $('#byproj').val('none')
-
+            //
+            var $newNoProjOption = $( "<option value='none'></option>");
+            // var $newProjOption = $( "<option value=''>--- ALL PROJECTS ---</option>");
+            $('#byproj').prepend($newNoProjOption);
+            $('#byproj').val('none');
+            $('#byproj').selectpicker('refresh');
 
             function setupListener() {
                  $(".deleteRole").click(function (e) {
@@ -158,7 +154,7 @@
                                 </td>
 
                                 <td width="50%" class="s1 byinst custom-select"><g:select name="institution" id="byinst" from="${institutions}" optionKey="id" class="form-control selectpicker"
-                                                                optionValue="name" data-live-search="true"></g:select></td>
+                                                                optionValue="name" data-live-search="true" noSelection="${[null: '<All Institutions>']}"></g:select></td>
                                 <td width="50%" class="s1 byproj custom-select"><g:select name="project" from="${projects}" id="byproj" optionKey="id" class="selectpicker form-control"
                                                                 optionValue="featuredLabel" data-live-search="true"
                                                                 noSelection="${[null: '<All Projects>']}"></g:select></td>
