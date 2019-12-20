@@ -60,7 +60,7 @@
         </table>
 
         {{^count}}
-        <g:link controller="task" action="staging" params="[projectId: projectInstance.id]">Back to staging</g:link>
+        <g:link controller="project" action="edit" id="${projectInstance.id}">Back to settings</g:link>
         {{/count}}
 
 </script>

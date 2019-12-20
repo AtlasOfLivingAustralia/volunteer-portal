@@ -24,7 +24,7 @@ function loadProgress(config) {
 
                     lastRemaining = data.count;
 
-                    data.finishEstimate = endTime ? endTime.toLocaleString() : null;
+                    data.finishEstimate = lastRemaining == 0 ? 'All tasks loaded' : endTime ? endTime.toLocaleString() : null;
                     mu.updateTemplate(document.getElementById('load-progress'), 'load-progress-template', data);
                 }, dataType: "json", complete: poll });
 

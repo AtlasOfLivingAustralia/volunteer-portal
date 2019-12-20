@@ -29,11 +29,22 @@
         </div>
     </div>
 
+    <g:if test="${currentlyLoading}">
     <div class="form-group">
-        <label class="control-label col-md-5">Attach new data to existing tasks</label>
+        <label class="control-label col-md-5">View task load progress</label>
 
         <div class="col-md-6">
             <a class="btn btn-default"
+               href="${createLink(controller: 'project', action: 'loadProgress', id: projectInstance.id)}">View progress</a>
+        </div>
+    </div>
+    </g:if>
+
+    <div class="form-group">
+        <label class="control-label col-md-5">Attach new data to existing tasks</label>
+
+        <div class="col-md-6" title="${currentlyLoading ? 'Tasks are currently loading, please wait for existing staged tasks to load before staging more tasks' : ''}">
+            <a class="btn btn-default${currentlyLoading ? ' disabled' : ''}"
                href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
         </div>
     </div>

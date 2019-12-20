@@ -32,7 +32,9 @@ import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.TaskDescriptor.TASK_DESCRIPTOR
 import static org.jooq.impl.DSL.count
 import static org.jooq.impl.DSL.currentTimestamp
+import static org.jooq.impl.DSL.defaultValue
 import static org.jooq.impl.DSL.min
+import static org.jooq.impl.DSL.now
 import static org.jooq.impl.DSL.row
 import static org.jooq.impl.DSL.select
 import static org.jooq.impl.DSL.val
@@ -640,8 +642,8 @@ class TaskLoadService {
             status.taskRecord = createInitialTaskRecordFromDescriptor(status.taskDescriptorRecord)
         }
 
-        def taskRecords = statuses*.taskRecord.inject(create.insertInto(TASK, TASK.ID, TASK.PROJECT_ID, TASK.EXTERNAL_IDENTIFIER)) { insert, taskRecord ->
-            insert.values(HIBERNATE_SEQUENCE.nextval(), val(taskRecord.projectId), val(taskRecord.externalIdentifier))
+        def taskRecords = statuses*.taskRecord.inject(create.insertInto(TASK, TASK.ID, TASK.PROJECT_ID, TASK.EXTERNAL_IDENTIFIER, TASK.VIEWED, TASK.IS_FULLY_TRANSCRIBED, TASK.CREATED, TASK.DATE_LAST_UPDATED)) { insert, taskRecord ->
+            insert.values(HIBERNATE_SEQUENCE.nextval(), val(taskRecord.projectId), val(taskRecord.externalIdentifier), defaultValue(TASK.VIEWED), defaultValue(TASK.IS_FULLY_TRANSCRIBED), currentTimestamp(), currentTimestamp())
         }.returning().fetch()
 
         statuses.eachWithIndex { LoadStatus status, int i ->
