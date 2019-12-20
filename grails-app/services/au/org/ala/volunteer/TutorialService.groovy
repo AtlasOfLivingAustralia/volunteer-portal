@@ -28,7 +28,7 @@ class TutorialService {
             tutorials << [file: it, name: it.name, url: url]
         }
 
-        return tutorials
+        return tutorials.sort { it.name }
     }
 
     def uploadTutorialFile(MultipartFile file) {
