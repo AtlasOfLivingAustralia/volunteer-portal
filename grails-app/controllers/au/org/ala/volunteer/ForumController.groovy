@@ -609,26 +609,14 @@ class ForumController {
         
         if (user && projectInstance && params.containsKey("watch")) {
             def watch = params.boolean("watch")
-            
-            def watchList = ProjectForumWatchList.findByProject(projectInstance)
-            if (!watchList) {
-                watchList = new ProjectForumWatchList(project: projectInstance)
-                watchList.save(failOnError: true)
-            }
 
+            forumService.watchProject(user, projectInstance, watch)
             if (watch) {
-                if (!watchList.containsUser(user)) {
-                    watchList.addToUsers(user)
-                }
                 results.message = "You will be sent a notification email when messages are posted to this project"
             } else {
-                if (watchList.containsUser(user)) {
-                    watchList.removeFromUsers(user)
-                }
                 results.message = "You will no longer be sent notification emails when messages are posted to this project"
             }
 
-            watchList.save()
             results.success = true;
         }
         
