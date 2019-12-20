@@ -9,8 +9,8 @@
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
 
-    <asset:stylesheet src="compile/bootstrap-select/1.13.9/bootstrap-select.css" asset-defer="" />
-    <asset:javascript src="compile/bootstrap-select/1.13.9/bootstrap-select.js" asset-defer="" />
+    <asset:stylesheet src="bootstrap-select.css" asset-defer="" />
+    <asset:javascript src="bootstrap-select.js" asset-defer="" />
     <asset:script type="text/javascript">
 
         $(document).ready(function () {
