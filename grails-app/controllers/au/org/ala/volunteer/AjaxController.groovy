@@ -10,6 +10,8 @@ import com.google.common.collect.Sets
 import com.google.gson.Gson
 import grails.converters.JSON
 import grails.converters.XML
+import groovy.util.logging.Slf4j
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -22,7 +24,16 @@ import grails.plugins.csv.CSVWriterColumnsBuilder
 import java.util.concurrent.TimeUnit
 
 import static grails.async.Promises.*
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_CREATED
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static javax.servlet.http.HttpServletResponse.SC_PRECONDITION_FAILED
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 
+@Slf4j
 class AjaxController {
 
     def taskService
@@ -37,6 +48,7 @@ class AjaxController {
     def settingsService
     def achievementService
     def sessionFactory
+    def projectService
 
     static responseFormats = ['json', 'xml']
 
@@ -237,9 +249,10 @@ class AjaxController {
         }
     }
 
-    def loadProgress() {
+    def loadProgress(long id) {
         setNoCache()
-        respond taskLoadService.status()
+//        log.info("loadProgress($id)")
+        respond taskLoadService.status(id)
     }
 
     def taskLoadReport() {
@@ -278,7 +291,7 @@ class AjaxController {
             project.description = p.description
             project.expeditionPageURL = createLink(controller: 'project', action: 'index', id: p.id, absolute: true)
             project.taskCount = Task.countByProject(p)
-            project.transcribedCount = Task.countByProjectAndFullyTranscribedByIsNotNull(p)
+            project.transcribedCount = Task.countByProjectAndIsFullyTranscribed(p, true)
             project.validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(p)
 
             sql.query("select count(distinct(fully_transcribed_by)) from task where project_id = ${p.id} and length(fully_transcribed_by) > 0") { ResultSet rs ->
@@ -314,7 +327,7 @@ class AjaxController {
                     'decimalLatitude' { findValue(it.fieldValues, 'decimalLatitude') }
                     'decimalLongitude' { findValue(it.fieldValues, 'decimalLongitude') }
                     'locality' { findValue(it.fieldValues, 'locality')}
-                    'transcriber' { it.task.fullyTranscribedBy }
+                    'transcribers' { it.task.transcriptions*.fullyTranscribedBy.join(',') }
                     'eventDate' { findValue(it.fieldValues, 'eventDate') }
                     'associatedMedia' { multimediaService.getImageUrl((Multimedia) it.task?.multimedia?.first()) }
                     'occurrenceId' { createLink(controller: 'task', action: 'show', id: it?.task?.id, absolute: true ) }
@@ -363,7 +376,7 @@ class AjaxController {
             taskInfo.projectId = task.project.id
             taskInfo.externalIdentifier = task.externalIdentifier
             taskInfo.externalUrl = task.externalUrl
-            taskInfo.fullyTranscribedBy = task.fullyTranscribedBy
+            taskInfo.fullyTranscribedBy = task.transcriptions*.fullyTranscribedBy.join(', ')
             taskInfo.fullyValidatedBy = task.fullyValidatedBy
             taskInfo.isValid = task.isValid
             taskInfo.created = task.created?.format("yyyy-MM-dd HH:mm:ss")
@@ -403,36 +416,7 @@ class AjaxController {
     def i18nService
 
     def harvesting() {
-//        final harvestables = Project.findAllByHarvestableByAla(true)
-        final c = Project.createCriteria()
-        final projects = c.scroll {
-            eq('harvestableByAla', true)
-        }
-
-        def results = []
-        while (projects.next()) {
-            Project project = (Project) projects.get()[0]
-            final link = createLink(absolute: true, controller: 'project', action: 'index', id: project.id)
-            final fullyTranscribedCount = project.tasks.count { t -> t.dateFullyTranscribed as boolean }
-            final fullyValidatedCount = project.tasks.count { t -> t.dateFullyValidated as boolean }
-            final dataUrl = createLink(absolute: true, controller:'ajax', action:'expeditionBiocacheData', id: project.id)
-
-            def citation = i18nService.message("harvest.citation", '{0} digitised at {1} ({2})', [project.name, i18nService.message('default.application.name'), createLink(uri: '/', absolute: true)])
-            def licenseType = i18nService.message('harvest.license.type', 'Creative Commons Attribution Australia', [])
-            def licenseVersion = i18nService.message('harvest.license.version', '3.0', [])
-            results << [id: project.id, name: project.name, description: project.description, newsItemsCount: project.newsItems.size(), tasksCount: project.tasks.size(), tasksTranscribedCount: fullyTranscribedCount, tasksValidatedCount: fullyValidatedCount, expeditionHomePage: link, dataUrl: dataUrl, citation: citation, licenseType: licenseType, licenseVersion: licenseVersion]
-        }
-
-        results.collect { result ->
-            final topics = ProjectForumTopic.withCriteria {
-                eq 'project.id', result.id
-            }
-            def forumMessagesCount = 0
-            if (topics) {
-                forumMessagesCount = topics.collect { topic -> (ForumMessage.countByTopicAndDeleted(topic, false) ?: 0) + (ForumMessage.countByTopicAndDeletedIsNull(topic) ?: 0) }.sum()
-            }
-            result + [ forumMessagesCount: forumMessagesCount ]
-        }
+        def results = projectService.harvestProjects()
 
         respond results
     }
@@ -636,8 +620,6 @@ class AjaxController {
         respond results
     }
 
-
-
     private static def getNamedFieldValues(List fields, String name) {
         fields?.findAll { it.name == name && it.value }?.sort { it.recordIdx }?.collect { it.value }?.join(', ')
     }
@@ -654,5 +636,65 @@ class AjaxController {
             result = format.parse(timestamp).toTimestamp()
         }
         return result
+    }
+
+
+    def resumableUploadFile(ResumableUploadCommand cmd) {
+
+        if (cmd.hasErrors()) {
+            log.error("Resumable params are not valid {}", cmd)
+            return render(status: SC_BAD_REQUEST, text: "Params aren't valid")
+        }
+
+        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
+        if (!allowedMimeTypes.contains(cmd.type)) {
+            log.error("Resumable file content-type is not valid {}", cmd)
+            return render(status: SC_BAD_REQUEST, text: "The image file must be one of: ${allowedMimeTypes}")
+        }
+
+        if (!Project.exists(cmd.projectId)) {
+            return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
+        }
+
+        if (!userService.isAdmin()) {
+            return render(status: request.userPrincipal ? SC_FORBIDDEN : SC_UNAUTHORIZED, text: 'Access denied')
+        }
+
+        log.debug("Uploading {}:{} identifier {} size {} checksum {}", cmd.filename, cmd.resumableChunkNumber, cmd.identifier, cmd.resumableCurrentChunkSize, cmd.checksum)
+
+        if (request.method == 'POST') {
+            try {
+                def resumableStream = getResumableStream()
+                if (resumableStream != null) {
+                    def chunkCheck = cmd.uploadAndCheckChunk(resumableStream)
+                    if (chunkCheck) {
+                        render status: SC_CREATED, text: ''
+                    } else {
+                        render status: SC_PRECONDITION_FAILED, text: 'Chunk checksum does not match'
+                    }
+                } else {
+                    render status: SC_BAD_REQUEST, text: 'No file part found'
+                }
+            } catch (e) {
+                log.error("Couldn't save uploaded chunk {}", cmd, e)
+                render status: SC_INTERNAL_SERVER_ERROR, text: "Couldn't save uploaded chunk ${cmd.filename}:${cmd.resumableChunkNumber}"
+            }
+        } else if (request.method == 'GET') {
+            if (cmd.isChunkComplete()) {
+                render(status: SC_NO_CONTENT, text: '')
+            } else {
+                render(status: SC_NOT_FOUND, text: '')
+            }
+        }
+    }
+
+    private getResumableStream() {
+        if (request instanceof MultipartHttpServletRequest) {
+            // theoretically there's only one chunk being sent in this request, so just find the first file part
+            def mfm = request.getMultiFileMap()
+            mfm.values().collectMany { it }.find()?.inputStream
+        } else {
+            request.inputStream
+        }
     }
 }

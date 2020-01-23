@@ -24,7 +24,8 @@ class NewUserDigestNotifierJob {
 
     def execute() {
         if (grailsApplication.config.getProperty('digest.enabled', Boolean, false)) {
-            def recipient = grailsApplication.config.getProperty('digest.address')
+            /* Configure properties file like this: digest.address=email1,email2 */
+            def recipient = grailsApplication.config.getProperty('digest.address', List, [])
             def threshold = grailsApplication.config.getProperty('digest.threshold', Integer, 5)
             if (!recipient) {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but no email address (digest.address) was specified")
@@ -35,7 +36,7 @@ class NewUserDigestNotifierJob {
 
                 def userIds = sql.rows("""
 SELECT t.fully_transcribed_by
-FROM task t
+FROM transcription t
 GROUP BY t.fully_transcribed_by
 HAVING
   sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < ?

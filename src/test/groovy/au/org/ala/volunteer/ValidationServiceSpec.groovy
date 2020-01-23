@@ -36,7 +36,13 @@ class ValidationServiceSpec extends Specification {
     }
 
     Map fields() {
-        ["name":"test", "name2":"value2", "name3":"value3"]
+        [0: ["name":"test", "name2":"value2", "name3":"value3"]]
+    }
+
+    Map recFields()  {
+        [0: ["vernacularName":"koala", "individualCount": "1"],
+         1: ["vernacularName":"lizard", "individualCount": "1"],
+         2: ["vernacularName":"kangaroo", "individualCount": "1"]]
     }
 
     def cleanup() {
@@ -64,7 +70,7 @@ class ValidationServiceSpec extends Specification {
         !task.isValid
     }
 
-    void "Fully transcribed Tasks with all transcriptions the same should be auto-validated"() {
+    void "Fully transcribed Tasks with all transcriptions (single record) the same should be auto-validated"() {
         setup:
         for (int i=0; i<3; i++) {
             transcribe(task, Integer.toString(i), fields())
@@ -81,13 +87,67 @@ class ValidationServiceSpec extends Specification {
 
     }
 
+    void "Fully transcribed Tasks with transcriptions that have identical field records should be auto-validated"() {
+        setup:
+        for (int i=0; i<3; i++) {
+            transcribe(task, Integer.toString(i), recFields())
+        }
+
+        when:
+        service.autoValidate(taskSet)
+
+        then:
+        Task task = Task.get(task.id)
+        task.isValid == true
+        task.fullyValidatedBy == UserService.SYSTEM_USER
+        1 * fieldSyncService.syncFields(task, _, UserService.SYSTEM_USER, false, true, true)
+    }
+
+    void "Fully transcribed Tasks with the transcriptions with same number of the records but 1 of the record differ should not be auto-validated"() {
+        setup: "2 Tasks are transcribed with the same fields, the 3rd has transcription has one of the record different"
+        for (int i=0; i<2; i++) {
+            transcribe(task, Integer.toString(i), recFields())
+        }
+        Map fields = recFields()
+        fields[1].individualCount = "2"
+        transcribe(task, "2", fields)
+
+        when:
+        service.autoValidate(taskSet)
+
+        then:
+        Task task = Task.get(task.id)
+        !task.isValid == true
+        task.fullyValidatedBy == null
+        task.numberOfMatchingTranscriptions == 2
+    }
+
+    void "Fully transcribed Tasks with one of the task with transcription that has 1 less record but should not be auto-validated"() {
+        setup: "2 Tasks are transcribed with the same fields, the 3rd transcription has one less record"
+        for (int i=0; i<2; i++) {
+            transcribe(task, Integer.toString(i), recFields())
+        }
+        Map fields = recFields()
+        fields.remove(1)
+        transcribe(task, "2", fields)
+
+        when:
+        service.autoValidate(taskSet)
+
+        then:
+        Task task = Task.get(task.id)
+        !task.isValid == true
+        task.fullyValidatedBy == null
+        task.numberOfMatchingTranscriptions == 2
+    }
+
     void "Fully transcribed Tasks with the number of matching transcriptions less than the threshold should not be auto-validated"() {
         setup: "2 Tasks are transcribed with the same fields, the 3rd has one value different"
         for (int i=0; i<2; i++) {
             transcribe(task, Integer.toString(i), fields())
         }
         Map fields = fields()
-        fields.name = "different"
+        fields[0].name = "different"
         transcribe(task, "2", fields)
 
         when:
@@ -105,7 +165,7 @@ class ValidationServiceSpec extends Specification {
         setup: "No tasks are transcribed with the same fields"
         for (int i=0; i<3; i++) {
             Map fields = fields()
-            fields.name = "name $i"
+            fields[0].name = "name $i"
             transcribe(task, Integer.toString(i), fields)
         }
 
@@ -125,8 +185,8 @@ class ValidationServiceSpec extends Specification {
 
         Map fields = fields()
         for (int i=0; i<3; i++) {
-            fields.put("transcriberNotes", "Transcriber $i")
-            fields.put("validatorNotes", "Validator $i")
+            fields[0].put("transcriberNotes", "Transcriber $i")
+            fields[0].put("validatorNotes", "Validator $i")
             transcribe(task, Integer.toString(i), fields)
         }
 
@@ -161,7 +221,7 @@ class ValidationServiceSpec extends Specification {
         task.project.thresholdMatchingTranscriptions = 2
         for (int i=0; i<2; i++) {
             Map fields = fields()
-            fields.name = "name $i"
+            fields[0].name = "name $i"
             transcribe(task, Integer.toString(i), fields)
         }
 

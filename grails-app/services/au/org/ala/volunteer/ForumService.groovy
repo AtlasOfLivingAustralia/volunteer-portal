@@ -172,6 +172,26 @@ class ForumService {
         }
     }
 
+    public void watchProject(User user, Project projectInstance, boolean watch) {
+        def watchList = ProjectForumWatchList.findByProject(projectInstance)
+        if (!watchList) {
+            watchList = new ProjectForumWatchList(project: projectInstance)
+            watchList.save(failOnError: true)
+        }
+
+        if (watch) {
+            if (!watchList.containsUser(user)) {
+                watchList.addToUsers(user)
+            }
+        } else {
+            if (watchList.containsUser(user)) {
+                watchList.removeFromUsers(user)
+            }
+        }
+
+        watchList.save()
+    }
+
     public void scheduleTopicNotification(ForumTopic topic, ForumMessage lastMessage) {
 
         // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications

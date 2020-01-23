@@ -27,7 +27,6 @@
                         <a href="${createLink(action: 'mappingTool')}" class="btn btn-default">Mapping tool</a>
                         <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
                            class="btn btn-default">Expedition-Institution migration tool</a>
-                        <a href="${createLink(action: 'stagingTasks')}" class="btn btn-default">Manage staging queue</a>
                         <g:link controller="project" action="archiveList" class="btn btn-warning">Archive Expeditions</g:link>
                         <g:link action="updateUsers" class="btn btn-default">Update users now</g:link>
                     </div>

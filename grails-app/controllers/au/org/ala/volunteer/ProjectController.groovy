@@ -1,13 +1,16 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.jooq.tables.TaskDescriptor
 import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.jooq.DSLContext
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
+import static au.org.ala.volunteer.jooq.tables.TaskDescriptor.TASK_DESCRIPTOR
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
@@ -40,6 +43,7 @@ class ProjectController {
     def projectStagingService
     def projectTypeService
     def authService
+    Closure<DSLContext> jooqContext
 
     /**
      * Project home page - shows stats, etc.
@@ -483,13 +487,15 @@ class ProjectController {
     }
 
     def editTaskSettings() {
-        def projectInstance = Project.get(params.int("id"))
+        def projectId = params.long("id")
+        def projectInstance = Project.get(projectId)
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
+            def currentlyLoading = jooqContext.call().fetchExists(TASK_DESCRIPTOR, TASK_DESCRIPTOR.PROJECT_ID.eq(projectId))
             def taskCount = Task.countByProject(projectInstance)
-            return [projectInstance: projectInstance, taskCount: taskCount]
+            return [projectInstance: projectInstance, taskCount: taskCount, currentlyLoading: currentlyLoading]
         }
     }
 
@@ -1152,4 +1158,7 @@ class ProjectController {
         respond result
     }
 
+    def loadProgress(Project projectInstance) {
+        respond projectInstance
+    }
 }

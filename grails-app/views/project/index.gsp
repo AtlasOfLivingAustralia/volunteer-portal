@@ -319,7 +319,11 @@ $(document).ready(function () {
         if ($(this).attr('href') == "#tutorial") {
             e.preventDefault();
             var content = $("#tutorialContent").html();
-            bootbox.alert(content);
+            bootbox.dialog({
+                message: content,
+                onEscape: true,
+                backdrop: true
+            });
         }
 
     });

@@ -26,7 +26,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "project.harvestableByAla": true } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -59,7 +59,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "project.projectType": "fieldnotes" } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -70,7 +70,7 @@ class UserController {
     "filter": {
       "and": [
         { "term": { "isValid": true } },
-        { "term": { "fullyTranscribedBy": "${userId}" } }
+        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
       ]
     }
   }
@@ -319,7 +319,7 @@ class UserController {
         def isValidator = userService.isValidator(projectInstance)
 
         results.viewList.each {
-            it['isValidator'] = userService.isValidatorForProjectId(it.projectId)
+            it['isValidator'] = userService.isValidatorForProjectId(it.projectId, it.institutionId)
         }
 
         def result = new TaskListResult(
@@ -468,6 +468,8 @@ class UserController {
     def editRoles() {
 
         def userInstance = User.get(params.id)
+        userInstance.userRoles = sortUserRoles (userInstance)
+
         def currentUser = userService.currentUserId
         if (!userInstance || !currentUser) {
             flash.message = "User not found!"
@@ -480,64 +482,45 @@ class UserController {
             redirect(action: "show")
         }
 
-        [userInstance: userInstance, currentUser: currentUser, roles: Role.list(), projects: Project.list(sort: 'name', order: 'asc')]
+        [userInstance: userInstance, currentUser: currentUser, roles: Role.findAllByNameNotEqual('site_admin'), institutions: Institution.list (sort: 'name', order: 'asc'), projects: Project.list(sort: 'name', order: 'asc')]
     }
 
-    @Transactional
-    def updateRoles() {
-        def userInstance = User.get(params.id)
+    private def sortUserRoles (def userInstance) {
+        return userInstance.userRoles.sort {a, b ->
+            a.role.name <=> b.role.name ?: a.project?.name <=> b.project?.name ?: a.institution?.name <=> b.institution?.name
+        }
+    }
 
+    def deleteRoles() {
+        def userRoleId = params.selectedUserRoleId
+        def userRole = UserRole.get(userRoleId)
+        if (userRole) {
+            userRole.delete(flush: true)
+        }
+        render ([status: "success"] as JSON)
+    }
+
+    def addRoles() {
+        def userInstance = User.get(params.long("id"))
         if (!userInstance) {
             flash.message = "User not found!"
             redirect(action: "list")
             return
         }
-
-        if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
-            redirect(action: "show")
-            return
+        def selectedProject = null
+        def selectedInstitution = null
+        def selectedValue = params.int("selectedValue")
+        if (params.byoption == "project") {
+            selectedProject = Project.get(selectedValue)
+        } else {
+            selectedInstitution = Institution.get(selectedValue)
         }
-
-        def roleAction = params.selectedUserRoleAction
-        def userRoleId = params.selectedUserRoleId
-        if (roleAction == 'delete' && userRoleId) {
-            def userRole = UserRole.get(userRoleId)
-            if (userRole) {
-                userRole.delete(flush: true)
-            }
-        } else if (roleAction == 'addRole') {
-            def role = Role.list()[0]
-            def userRole = new UserRole(user: userInstance, role: role, project: null)
-            userInstance.addToUserRoles(userRole)
-        } else if (roleAction == 'update') {
-            // This is an update....
-            def userRoles = UserRole.findAllByUser(userInstance)
-            userRoles.each { userRole ->
-                def roleId = params.int("userRole_${userRole.id}_role")
-                def projectId = params.int("userRole_${userRole.id}_project")
-                println "Testing userRole ${userRole.id} against role: ${roleId} and project: ${projectId}"
-                boolean changed = false;
-                if (userRole.role.id != roleId) {
-                    changed = true;
-                }
-                if (userRole.project?.id != projectId) {
-                    changed = true;
-                }
-
-                if (changed) {
-                    println "UserRole ${userRoleId} has changed - updating and saving."
-                    userRole.role = Role.get(roleId)
-                    userRole.project = Project.get(projectId)
-
-                    userRole.save(flush: true, failOnError: true)
-                }
-
-            }
-        }
-
-        redirect(action: 'editRoles', id: userInstance?.id)
-
+        def role = Role.get(params.long("role")) //Role.list()[0]
+        def userRole = new UserRole(user: userInstance, role: role, project: selectedProject, institution: selectedInstitution)
+        userRole.save(flush: true, failOnError: true)
+        userInstance.addToUserRoles(userRole)
+        userInstance.userRoles = sortUserRoles (userInstance)
+        render template:'userRoles', model: [userInstance: userInstance]
     }
 
     def notebook() {
@@ -572,7 +555,7 @@ class UserController {
   "constant_score": {
     "filter": {
       "and": [
-        { "term": { "fullyTranscribedBy": "${userInstance.userId}" } },
+        { "term": { "transcriptions.fullyTranscribedBy": "${userInstance.userId}" } },
         { "nested" :
           {
             "path" : "fields",

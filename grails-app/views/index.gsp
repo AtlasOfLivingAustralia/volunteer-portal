@@ -9,6 +9,17 @@
     <content tag="selectedNavItem">bvp</content>
     <asset:stylesheet src="digivol-image-resize.css" />
     <g:set var="frontPage" value="${FrontPage.instance()}" />
+    <asset:script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#parent').readmore({
+              speed: 75,
+              lessLink: '<a href="#">Read less</a>',
+              moreLink: '<a href="#">Read More...</a>'
+
+            });
+        });
+    </asset:script>
 </head>
 <body>
 <div class="a-feature home" style="${frontPage.heroImage ? "background-image: url('${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/hero/${frontPage.heroImage}');" : ''}">
@@ -97,12 +108,13 @@
                     class="not-a-badge"><span
                         class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
-                <p>
+                <div id="parent">
                     ${raw(frontPage.projectOfTheDay?.description)}
-                </p>
+                </div>
 
-                <g:render template="/project/projectSummaryProgressBar" model="[projectSummary: potdSummary]" />
-
+                <div style="margin-top: 10px">
+                    <g:render template="/project/projectSummaryProgressBar" model="[projectSummary: potdSummary]" />
+                </div>
             </div>
         </div>
     </div>
@@ -139,5 +151,6 @@
 </section>
 <a name="learnMore"></a>
 <asset:javascript src="digivol-image-resize.js" asset-defer="" />
+<asset:javascript src="readmore.js" asset-defer=""/>
 </body>
 </html>

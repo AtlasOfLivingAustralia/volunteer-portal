@@ -49,13 +49,13 @@
                             <div class="small">
                                 <span style="font-weight: normal">( ${field.fieldDefinitionType}: <b>${field.format}</b> - </span>
 
-                                <a href="#" class="btnEditField btn btn-xs btn-default" title="Edit column definition">
+                                <button class="btnEditField btn btn-xs btn-default" title="Edit column definition">
                                     <i class="fa fa-edit"></i>
-                                </a>
+                                </button>
                                 <g:if test="${field.fieldName != 'externalIdentifier'}">
-                                    <a href="#" class="btnDeleteField btn btn-xs btn-danger" title="Remove column">
+                                    <button class="btnDeleteField btn btn-xs btn-danger" title="Remove column">
                                         <i class="fa fa-remove"></i>
-                                    </a>
+                                    </button>
                                 </g:if>
                                 )
                             </div>
@@ -79,10 +79,10 @@
                                             <g:set var="shadowLabel"
                                                    value="${shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")}"/>
                                             <i class="fa fa-chevron-right"></i> ${shadowLabel}
-                                            <a href="#" class="btnDeleteShadowFile btn btn-xs btn-danger"
+                                            <button class="btnDeleteShadowFile btn btn-xs btn-danger"
                                                title="Delete shadow file ${shadow.stagedFile.name}"
                                                filename="${shadow.stagedFile.name}"><i
-                                                    class="fa fa-remove"></i></a>
+                                                    class="fa fa-remove"></i></button>
                                         </div>
                                     </li>
                                 </g:each>
