@@ -63,9 +63,9 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'wildlifeSpotterAdmin', action: 'edit')}">Configure Wildlife Spotter</a>
+                                   href="${createLink(controller: 'landingPageAdmin', action: 'index')}">Configure Landing Page</a>
                             </td>
-                            <td>Configure the appearance of the wildlife spotter landing page</td>
+                            <td>Configure the appearance of a landing page</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
