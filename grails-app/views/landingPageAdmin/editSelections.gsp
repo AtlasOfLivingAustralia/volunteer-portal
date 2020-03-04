@@ -75,7 +75,7 @@
             var landingPageId = $('#id').val();
             var labelIdToRemove = e.target.dataset.labelId
 
-           $.ajax({
+            $.ajax({
                 type: 'POST',
                 dataType: 'json',
                 cache: false,
@@ -85,9 +85,9 @@
                     var p = t.parent("span");
                     p.remove();
                 },  error: function (jqXHR, textStatus, errorThrown) {
-                    console.log('landingPageAdmin/filterLabelCategory: Error - ' + errorThrown);
+                    console.log('landingPageAdmin/deleteLabel: Error - ' + errorThrown);
                 }
-           });
+            });
         }
 
         $('#labels').on('click', 'i.delete-label', onDeleteLabelClick);

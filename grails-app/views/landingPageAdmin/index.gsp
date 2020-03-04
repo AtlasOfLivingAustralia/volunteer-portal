@@ -60,19 +60,14 @@
                                         <g:if test="${landingPage.bodyCopy}">
                                             <p><markdown:renderHtml text="${landingPage.bodyCopy}" /></p>
                                         </g:if>
-                                        %{--<p>${fieldValue(bean: landingPage, field: "bodyCopy")}</p>--}%
                                     </div>
                                 </td>
 
                                 <td style="vertical-align: middle;">${fieldValue(bean: landingPage, field: "enabled")}</td>
 
                                 <td style="vertical-align: middle;">${landingPage.projectType?.label}</td>
-                                %{--<td style="vertical-align: middle;">${fieldValue(bean: landingPage, field: "projectType?.label")}</td>--}%
 
                                 <td style="vertical-align: middle;">${(landingPage.label)? landingPage.label*.toMap().value.join(", ") : ''}</td>
-
-                              %{--  <td><img src="${cl.achievementBadgeUrl(achievement: achievementDescriptionInstance)}" height="140px"
-                                         width="140px"/></td>--}%
 
                                 <td style="vertical-align: middle;"><g:formatDate
                                         date="${landingPage.dateCreated}"/></td>

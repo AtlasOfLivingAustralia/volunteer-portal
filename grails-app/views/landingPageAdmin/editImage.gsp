@@ -53,8 +53,7 @@
             // submit the forms after the file is selected
             e.target.form.submit();
         });
-
-     });
+    });
 
 </asset:script>
 
