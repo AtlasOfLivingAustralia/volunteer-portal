@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import grails.web.mapping.LinkGenerator
@@ -27,6 +28,8 @@ import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
 import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
 import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
+import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
+import static au.org.ala.volunteer.jooq.tables.Label.LABEL
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
@@ -351,7 +354,7 @@ class ProjectService {
         makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, false)
     }
 
-    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
+    private def makeSummaryListFromConditions(Collection<? extends Condition> conditions, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUser) {
         def results = generateProjectSummariesQuery(jooqContextFactory(), conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser).fetchMaps()
         if (!results) {
             return makeSummaryListFromResults(results, [])
@@ -394,7 +397,7 @@ class ProjectService {
         )
     }
 
-    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
+    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
 
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
@@ -444,7 +447,8 @@ class ProjectService {
 
         // apply the query paramter
         if (tag) {
-            whereClauses += PROJECT_TYPE.LABEL.containsIgnoreCase(tag)
+            def labelJoinTable = context.select([PROJECT_LABELS.PROJECT_ID]).from(PROJECT_LABELS.leftJoin(LABEL).on(PROJECT_LABELS.LABEL_ID.eq(LABEL.ID))).where(LABEL.VALUE.in(tag))
+            whereClauses +=  PROJECT.ID.in(labelJoinTable)
         }
 
         if (q) {
@@ -530,7 +534,8 @@ class ProjectService {
         return makeSummaryListFromConditions(conditions, tag, query, sort, offset, max, order, statusFilterMode, activeFilterMode, countUser)
     }
 
-    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null, boolean countUser = false) {
+    // used by customLandingPage or wildLifeSpotter
+    ProjectSummaryList getProjectSummaryList(ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, String q, String sort, int offset, int max, String order, ProjectType projectType = null, def tag = null, boolean countUser = false) {
         def conditions = []
         if (projectType) {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
@@ -541,7 +546,7 @@ class ProjectService {
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
 
-        return makeSummaryListFromConditions(conditions, null, q, sort, offset, max, order, statusFilter, activeFilter, countUser)
+        return makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser)
     }
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
@@ -674,42 +679,60 @@ class ProjectService {
         return result ? [start: result[0][1], end: result[0][0]] : null
     }
 
-    def countTasksForTag(ProjectType pt) {
+    def countTasksForTag(def projectsInLabels = null) {
 
-        Task.createCriteria().count {
-            project {
-                eq('projectType', pt)
-            }
-        }
-    }
-
-    def countTranscribedTasksForTag(ProjectType pt) {
-        def result = Task.createCriteria().list {
-            project {
-                eq('projectType', pt)
-            }
-            projections {
-                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
-            }
-        }
-        return result[0]
-    }
-
-    def getTranscriberCountForTag(ProjectType pt) {
-        def result = Task.createCriteria().list {
-            project {
-                eq('projectType', pt)
-            }
-            transcriptions {
-                isNotNull('fullyTranscribedBy')
-            }
-            projections {
-                transcriptions {
-                    countDistinct 'fullyTranscribedBy'
+        if (projectsInLabels?.size() > 0) {
+            Task.createCriteria().count {
+                project {
+                    'in' 'id', projectsInLabels
                 }
             }
+        } else {
+            return 0
         }
+    }
 
-        return result[0]
+    def countTranscribedTasksForTag(def projectsInLabels = null) {
+
+        if (projectsInLabels?.size() > 0) {
+            def result = Task.createCriteria().list {
+                if (projectsInLabels) {
+                    project {
+                        'in' 'id', projectsInLabels
+                    }
+                }
+                projections {
+                    sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
+                }
+            }
+            return result[0]
+        } else {
+            return 0
+        }
+    }
+
+    def getTranscriberCountForTag(def projectsInLabels = null) {
+
+        if (projectsInLabels?.size() > 0) {
+            def result = Task.createCriteria().list {
+                if (projectsInLabels) {
+                    project {
+                        'in' 'id', projectsInLabels
+                    }
+                }
+                transcriptions {
+                    isNotNull('fullyTranscribedBy')
+                }
+                projections {
+                    transcriptions {
+                        countDistinct 'fullyTranscribedBy'
+                    }
+                }
+            }
+
+            return result[0]
+        } else {
+            return 0
+        }
     }
 }
