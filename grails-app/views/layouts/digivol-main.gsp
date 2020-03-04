@@ -51,7 +51,7 @@
                 </g:form>
             </div>
 
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right main-menu">
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
                         uri="/">Home</g:link>
                 </li>
@@ -59,8 +59,10 @@
                         controller="institution" action="list">Institutions</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
                         controller="project" action="list">Expeditions</g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'wildlife-spotter' ? 'active' : ''}"><g:link
-                        controller="project" action="wildlifespotter">Wildlife Spotter</g:link></li>
+               %{-- <li class="${pageProperty(name: 'page.selectedNavItem') == 'wildlife-spotter' ? 'active' : ''}"><g:link
+                        controller="project" action="wildlifespotter">Wildlife Spotter</g:link></li>--}%
+                <cl:showLandingPage />
+
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
                         controller="tutorials" action="index">Tutorials</g:link></li>
                 <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
