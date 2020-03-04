@@ -180,6 +180,10 @@ class ProjectService {
         result
     }
 
+    def saveProject (Project projectInstance, boolean flush = true, boolean failOnError = null) {
+        projectInstance.save(flush: flush, failOnError: failOnError)
+    }
+
     @Immutable
     final static class DeleteTasksMessage {
         long projectId
