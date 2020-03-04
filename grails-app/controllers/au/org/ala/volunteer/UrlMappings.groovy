@@ -14,6 +14,8 @@ class UrlMappings {
         "/admin/label/$action?" (controller: 'label')
         "/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
+        name landingPage: "/admin/landingPage/$action?/$id?" (controller: 'landingPageAdmin')
+
 
         "/$controller/$action?/$id?(.$format)?"{
             constraints {
