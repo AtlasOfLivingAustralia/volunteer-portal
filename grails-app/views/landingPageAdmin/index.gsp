@@ -32,13 +32,13 @@
                             <g:sortableColumn property="title" mapping="landingPageTitle"
                                               title="${message(code: 'landingPageAdmin.title', default: 'Title')}"/>
 
-                            <g:sortableColumn width="10%" property="enabled" mapping="enabled"
+                            <g:sortableColumn width="8%" property="enabled" mapping="enabled"
                                               title="${message(code: 'landingPageAdmin.enabled.label', default: 'Enabled')}"/>
 
-                            <g:sortableColumn width="20%" property="bodyCopy" mapping="expeditionType"
+                            <g:sortableColumn width="13%" property="projectType" mapping="projectType"
                                               title="${message(code: 'landingPageAdmin.enabled.label', default: 'Expedition Type')}"/>
 
-                            <g:sortableColumn property="labels" mapping="Tags"
+                            <g:sortableColumn width="20%" property="label.value" mapping="label"
                                               title="${message(code: 'landingPageAdmin.tags.label', default: 'Tags')}"/>
 
                             <g:sortableColumn width="15%" property="dateCreated" mapping="dateCreated"
