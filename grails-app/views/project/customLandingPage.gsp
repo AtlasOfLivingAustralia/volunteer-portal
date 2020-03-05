@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
     <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
-    <g:set var="bgurl" value="${landingPageInstance.landingPageImage ? cl.imageUrlPrefix(type: 'wildlifespotter', name: landingPageInstance.landingPageImage) : asset.assetPath(src: 'wildlifespotter.jpg')}" />
+    <g:set var="bgurl" value="${landingPageInstance.landingPageImage ? cl.imageUrlPrefix(type: 'landingPage', name: landingPageInstance.landingPageImage) : asset.assetPath(src: 'wildlifespotter.jpg')}" />
     <asset:stylesheet src="digivol-image-resize"/>
 </head>
 
