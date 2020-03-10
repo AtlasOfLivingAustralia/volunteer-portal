@@ -274,9 +274,9 @@ processResources {
     }
 }
 
-/*publish {
+publish {
     dependsOn assemble
-}*/
+}
 
 
 //node {
