@@ -298,7 +298,7 @@ class ProjectController {
         ]
     }
 
-    def wildlifespotter() {
+  /*  def wildlifespotter() {
         def offset = params.getInt('offset', 0)
         def max = Math.min(params.int('max', 24), 1000)
         def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -324,10 +324,11 @@ class ProjectController {
                 totalUsers: User.countByTranscribedCountGreaterThan(0)
         ]
         render(view: 'wildlifespotter', model: model)
-    }
+    } */
 
     def customLandingPage() {
-        long id = params.getLong('id')
+        //long id = params.getLong('id')
+        String uri = params.id ?: ''
         def offset = params.getInt('offset', 0)
         def max = Math.min(params.int('max', 24), 1000)
         def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -336,7 +337,7 @@ class ProjectController {
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
         def q = params.q ?: null
 
-        LandingPage landingPage = LandingPage.findById (id)
+        LandingPage landingPage = LandingPage.findByShortUrl(uri) //LandingPage.findById (id)
         ProjectType pt = landingPage.getProjectType()
         def labels = landingPage.label
         def tag = null
@@ -881,7 +882,7 @@ class ProjectController {
         }
 
         projectInstance.addToLabels(label)
-        
+
         projectService.saveProject(projectInstance, true)
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)

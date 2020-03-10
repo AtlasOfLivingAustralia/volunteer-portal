@@ -194,6 +194,7 @@ class BootStrap {
         if (!wildLifeSpotter) {
             wildLifeSpotter = new LandingPage()
             wildLifeSpotter.title = 'Wildlife Spotter'
+            wildLifeSpotter.shortUrl = 'wildlife-spotter'
             wildLifeSpotter.enabled = true
             ProjectType cameraTraps = ProjectType.findByName('cameratraps')
             wildLifeSpotter.projectType = cameraTraps

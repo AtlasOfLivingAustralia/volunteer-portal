@@ -77,11 +77,11 @@ class VolunteerTagLib {
         def buildLandingPage = {
             landingPages.each {
                 if (it) {
-                    def id = it.id
+                    def shortUrl = it.shortUrl //it.id
                     def title = it.title
 
                     mb.li(class: '') {
-                        a(href: "/project/customLandingPage/${id}") {
+                        a(href: "/project/customLandingPage/${shortUrl}") {
                             mkp.yield(title)
                         }
                     }

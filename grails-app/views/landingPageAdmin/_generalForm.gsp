@@ -16,6 +16,14 @@
        </div>
     </div>
 
+    <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'has-error')} required">
+        <label for="shortUrl" class="control-label col-md-3"><g:message code="landingPage.shortUrl.label"
+                                                                     default="Title"/></label>
+        <div class="col-md-9">
+            <g:field name="shortUrl" type="text" class="form-control" value="${landingPageInstance.shortUrl}"/>
+        </div>
+    </div>
+
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'enabled', 'has-error')} required">
        <label for="enabled" class="control-label col-md-3"><g:message code="landingPage.enabled.label"
                                                                       default="Is this landing page enabled?"/></label>

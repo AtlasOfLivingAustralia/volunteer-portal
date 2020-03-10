@@ -19,4 +19,6 @@ CREATE TABLE IF NOT EXISTS landing_page_label (
    PRIMARY KEY (landing_page_id, label_id),
    FOREIGN KEY (landing_page_id) REFERENCES landing_page (id),
    FOREIGN KEY (label_id) REFERENCES label (id)
-)
+);
+
+ALTER TABLE landing_page ADD COLUMN IF NOT EXISTS short_url text;

@@ -7,6 +7,7 @@ class LandingPage {
     Integer numberOfContributors = 10
 
     String title
+    String shortUrl
 
     @SanitizedHtml
     String bodyCopy
@@ -40,6 +41,7 @@ class LandingPage {
         landingPageImage nullable: true
         imageAttribution nullable: true
         projectType nullable: true
+        shortUrl unique: true, nullable: false, maxSize: 50, validator: { val -> if (val.contains(' ')) return 'value.hasASpace' }
     }
 
 }

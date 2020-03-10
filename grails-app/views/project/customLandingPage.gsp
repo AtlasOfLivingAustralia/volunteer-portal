@@ -13,7 +13,7 @@
 
 <body class="digivol">
 
-    <cl:headerContent title="${message(code:'default.wildlifespotter.label', default: "Wildlife Spotter")}" selectedNavItem="wildlife-spotter" complexBodyMarkup="true"></cl:headerContent>
+    <cl:headerContent title="${landingPageInstance.title}" selectedNavItem="${landingPageInstance.shortUrl}" complexBodyMarkup="true"></cl:headerContent>
 
     <div class="a-feature wildlifespotter" style="background-image: url('${bgurl}');">
         <div class="container">
@@ -163,7 +163,7 @@
 
         function doSearch() {
             var q = $("#searchbox").val();
-            var url = "${createLink(controller: 'project', action: 'wildlifespotter')}?statusFilter=${params.statusFilter}&activeFilter=${params.activeFilter}&offset=${params.offset}&max=${params.max}&sort=${params.sort}&order=${params.order}&q=" + encodeURIComponent(q);
+            var url = "${createLink(controller: 'project', action: 'customLandingPage')}/${landingPageInstance.shortUrl}?statusFilter=${params.statusFilter}&activeFilter=${params.activeFilter}&offset=${params.offset}&max=${params.max}&sort=${params.sort}&order=${params.order}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
         });

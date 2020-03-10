@@ -26,8 +26,12 @@ class LandingPageAdminController {
 
     def edit (LandingPage landingPageInstance) {
         if (!landingPageInstance) {
-            def landingPageId = params['id']
-            landingPageInstance = LandingPage.findById(landingPageId)
+            if (chainModel?.landingPage) {
+                landingPageInstance = chainModel.landingPage
+            } else {
+                def landingPageId = params['id']
+                landingPageInstance = LandingPage.findById(landingPageId)
+            }
         }
         ['landingPageInstance': landingPageInstance, projectTypes: ProjectType.listOrderByName()]
     }
@@ -92,7 +96,11 @@ class LandingPageAdminController {
     @Transactional
     def save(LandingPage landingPageInstance) {
         if (landingPageInstance.hasErrors()) {
-            chain action: "create", model: ['landingPage': landingPageInstance]
+            if (!landingPageInstance.id) {
+                chain action: "create", model: ['landingPage': landingPageInstance]
+            } else {
+                chain action: "edit", model: ['landingPage': landingPageInstance]
+            }
             return
         } else {
             landingPageInstance.save flush: true
