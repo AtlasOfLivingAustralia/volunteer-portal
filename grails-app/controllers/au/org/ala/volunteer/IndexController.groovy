@@ -37,11 +37,11 @@ class IndexController {
         [:]
     }
 
-    def stats(long institutionId, long projectId, String tagName) {
+    def stats(long institutionId, long projectId, String projectType, String tags) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
-        def result = volunteerStatsService.generateStats(institutionId, projectId, tagName, maxContributors, disableStats, disableHonourBoard)
+        def result = volunteerStatsService.generateStats(institutionId, projectId, projectType, tags, maxContributors, disableStats, disableHonourBoard)
         render result as JSON
     }
 

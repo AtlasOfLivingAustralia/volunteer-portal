@@ -89,7 +89,7 @@
 
     </asset:script>
 
-    <style>
+ %{--   <style>
         .bootstrap-select .btn {
             border-radius: 5px;
         }
@@ -102,12 +102,9 @@
             white-space: normal;
         }
 
-        /*.btn-group .btn {
-            margin: 0 !important;
-            padding: 0 !important;
-        }*/
-    </style>
 
+    </style>
+--}%
 </head>
 
 <body class="admin">

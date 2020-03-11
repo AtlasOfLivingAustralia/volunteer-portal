@@ -6,7 +6,7 @@ class ProjectType implements Serializable {
     String label
     String description
 
-    static hasMany = [projects: Project]
+    static hasMany = [projects: Project, landingPages: LandingPage]
 
     static constraints = {
         name nullable: false

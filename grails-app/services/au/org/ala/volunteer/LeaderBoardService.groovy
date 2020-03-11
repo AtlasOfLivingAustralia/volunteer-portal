@@ -17,7 +17,7 @@ class LeaderBoardService {
     def settingsService
     def userService
 
-    def winner(LeaderBoardCategory category, Institution institution, ProjectType pt = null) {
+    def winner(LeaderBoardCategory category, Institution institution, def pt = null) {
         def today = todaysDate
 
         def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
@@ -51,7 +51,7 @@ class LeaderBoardService {
                     } else {
                         result = EMPTY_LEADERBOARD_WINNER
                     }
-                } else if (pt) {
+                } else if (pt?.size() >= 0) {
                     def tmp = getTopNForProjectType(1, pt, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
@@ -125,7 +125,7 @@ class LeaderBoardService {
         [category: category, results: results, heading: heading]
     }
 
-    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = [], ProjectType pt = null) {
+    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = [], def pt = null) {
         def results = getTopNForPeriod(startDate, endDate, 1, institution, ineligbleUsers, pt)
         if (results) {
             return results[0]
@@ -142,14 +142,14 @@ class LeaderBoardService {
         return mergeScores(validatedMap, scoreMap, count)
     }
 
-    List getTopNForProjectType(int count, ProjectType pt, List<String> ineligibleUsers = []) {
+    List getTopNForProjectType(int count, def projectsInLabels = null, List<String> ineligibleUsers = []) {
 
-        def scoreMap = getUserCountsForProjectType(pt, ActivityType.Transcribed, ineligibleUsers)
-        def validatedMap = getUserCountsForProjectType(pt, ActivityType.Validated, ineligibleUsers)
+        def scoreMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Transcribed, ineligibleUsers) : [:]
+        def validatedMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Validated, ineligibleUsers) : [:]
         return mergeScores(validatedMap, scoreMap, count)
     }
 
-    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], ProjectType pt = null) {
+    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], def pt = null) {
 
         // Get a map of users who transcribed tasks during this period, along with the count
         def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution, ineligibleUsers, pt)
@@ -189,7 +189,7 @@ class LeaderBoardService {
         return list.subList(0, Math.min(list.size(), count))
     }
 
-    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, ProjectType pt = null) {
+    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, def projectsInLabels = null) {
         def results
         if (ActivityType.Transcribed == activityType) {
             results = Transcription.withCriteria {
@@ -207,9 +207,9 @@ class LeaderBoardService {
                     }
                 }
 
-                if (pt) {
+                if (projectsInLabels) {
                     project {
-                        eq("projectType", pt)
+                        'in' 'id', projectsInLabels
                     }
                 }
                 projections {
@@ -233,9 +233,9 @@ class LeaderBoardService {
                         eq("institution", institution)
                     }
                 }
-                if (pt) {
+                if (projectsInLabels) {
                     project {
-                        eq("projectType", pt)
+                        'in' 'id', projectsInLabels
                     }
                 }
                 projections {
@@ -302,13 +302,13 @@ class LeaderBoardService {
         return map
     }
 
-    private getUserCountsForProjectType(ProjectType projectType, ActivityType activityType, List<String> exceptUsers = []) {
+    private getUserCountsForProjectType(def projectsInLabels = null, ActivityType activityType, List<String> exceptUsers = []) {
         def results
         if (ActivityType.Transcribed == activityType) {
             results = Transcription.withCriteria {
-                if (projectType) {
+                if (projectsInLabels) {
                     project {
-                        eq("projectType", projectType)
+                        'in' 'id', projectsInLabels
                     }
                 }
 
@@ -324,9 +324,9 @@ class LeaderBoardService {
             }
         } else {
             results = Task.withCriteria {
-                if (projectType) {
+                if (projectsInLabels) {
                     project {
-                        eq("projectType", projectType)
+                        'in' 'id', projectsInLabels
                     }
                 }
 
@@ -341,7 +341,6 @@ class LeaderBoardService {
                 }
             }
         }
-
 
         def map = [:]
         results.each { row ->

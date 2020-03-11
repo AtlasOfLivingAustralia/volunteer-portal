@@ -26,6 +26,7 @@ class VolunteerTagLib {
     def authService
     def achievementService
     def taskService
+    def adminService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -63,6 +64,48 @@ class VolunteerTagLib {
         if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
+    }
+
+   /**
+    * Build navigation links to the custom landing page
+    */
+    def showLandingPage = {attrs, body ->
+        def numberOfCustomLinksAtTopPage = grailsApplication.config.numberOfCustomLinksAtTopPage ?: 1
+
+        List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
+        def mb = new groovy.xml.MarkupBuilder(out)
+        def buildLandingPage = {
+            landingPages.each {
+                if (it) {
+                    def shortUrl = it.shortUrl //it.id
+                    def title = it.title
+
+                    mb.li(class: '') {
+                        a(href: "/project/customLandingPage/${shortUrl}") {
+                            mkp.yield(title)
+                        }
+                    }
+
+                }
+            }
+        }
+        if (landingPages.size() > numberOfCustomLinksAtTopPage) {
+            mb.li(class: "dropdown") {
+                a([href: "#", class:"dropdown-toggle", 'data-toggle': "dropdown"]) {
+                    span(class: 'glyphicon glyphicon-camera') {
+                        mkp.yield("")
+                    }
+                    mkp.yield(' Camera Traps')
+                    span(class: "glyphicon glyphicon-chevron-down")
+                }
+                mb.ul(class: 'dropdown-menu profile-links') {
+                    buildLandingPage()
+                }
+            }
+        } else {
+            buildLandingPage()
+        }
+
     }
 
     /**
