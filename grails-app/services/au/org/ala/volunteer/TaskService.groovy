@@ -813,12 +813,14 @@ ORDER BY record_idx, name;
 
 
     Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
-        def select ="""
-            SELECT t.id as id
-            FROM Project p JOIN Task t ON p.id = t.project_id
-            LEFT OUTER JOIN (SELECT task_id, min(value) as value from field f inner join Task t2 on t2.id = f.task_id where t2.project_id = :projectId and f.name = :fieldName group by f.task_id) as fields on fields.task_id = t.id
-            WHERE p.id = :projectId and fields.value = :fieldValue
+        def select = """
+            WITH task_ids AS (SELECT id from task where project_id = :projectId)
+            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.name = :fieldName group by task_id having min(value) = :fieldValue;
         """
+        // Slower on PG 10, maybe faster on PG 11?
+//        def select = """
+//            SELECT f.task_id as id from field f join task t on t.id = f.task_id where t.project_id = :projectId and f.name = :fieldName group by task_id having min(value) = :fieldValue;
+//        """
 
         def sql = new Sql(dataSource: dataSource)
         int taskId = -1;
