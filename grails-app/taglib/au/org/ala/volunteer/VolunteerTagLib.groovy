@@ -81,7 +81,7 @@ class VolunteerTagLib {
                     def title = it.title
 
                     mb.li(class: '') {
-                        a(href: "/project/customLandingPage/${shortUrl}") {
+                        a(href: createLink(mapping: 'landingPage', params: [shortUrl: shortUrl])) {
                             mkp.yield(title)
                         }
                     }

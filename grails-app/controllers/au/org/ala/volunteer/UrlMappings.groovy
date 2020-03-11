@@ -6,7 +6,6 @@ class UrlMappings {
 
         "/"(controller: "index", action: 'index')
 
-        "/wildlife-spotter"(controller: 'project', action: 'wildlifespotter')
         "/es"(controller: 'eventSource', action: 'index')
         "/image/$prefix/$width/$height/$name.$format"(controller: 'image', action: 'size')
 
@@ -14,8 +13,9 @@ class UrlMappings {
         "/admin/label/$action?" (controller: 'label')
         "/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
-        name landingPage: "/admin/landingPage/$action?/$id?" (controller: 'landingPageAdmin')
+        name landingPageAdmin: "/admin/landingPage/$action?/$id?" (controller: 'landingPageAdmin')
 
+        name landingPage: "/$shortUrl"(controller: 'project', action: 'customLandingPage')
 
         "/$controller/$action?/$id?(.$format)?"{
             constraints {

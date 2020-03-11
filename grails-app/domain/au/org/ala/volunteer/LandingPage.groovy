@@ -29,6 +29,7 @@ class LandingPage {
         numberOfContributors defaultValue: '10'
         enabled defaultValue: false
         version defaultValue: '0'
+        shortUrl index: 'landing_page_short_url_idx'
        // version false
         autoTimestamp true
     }
