@@ -7,7 +7,6 @@ branches:
   only:
   - master
   - develop
-  - feature/bushfire-recovery
 services:
   - postgresql
 addons:
