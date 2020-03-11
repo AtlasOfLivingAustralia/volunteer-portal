@@ -189,7 +189,7 @@ class BootStrap {
       This can be created or updated from existing wildlife spotter
      */
     private void prepareCustomLandingPage() {
-        LandingPage wildLifeSpotter = LandingPage.findByTitle ('Wildlife Spotter')
+        LandingPage wildLifeSpotter = LandingPage.findByShortUrl ('wildlife-spotter')
         WildlifeSpotter existingWildLifeSpotterPage = WildlifeSpotter.instance()
         if (!wildLifeSpotter) {
             wildLifeSpotter = new LandingPage()

@@ -1,0 +1,1 @@
+CREATE INDEX landing_page_short_url_idx ON landing_page (short_url);

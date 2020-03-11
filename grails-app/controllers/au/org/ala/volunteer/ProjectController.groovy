@@ -327,8 +327,7 @@ class ProjectController {
     } */
 
     def customLandingPage() {
-        //long id = params.getLong('id')
-        String uri = params.id ?: ''
+        String shortUrl = params.shortUrl ?: ''
         def offset = params.getInt('offset', 0)
         def max = Math.min(params.int('max', 24), 1000)
         def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -337,7 +336,23 @@ class ProjectController {
         def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
         def q = params.q ?: null
 
-        LandingPage landingPage = LandingPage.findByShortUrl(uri) //LandingPage.findById (id)
+        LandingPage landingPage = LandingPage.findByShortUrl(shortUrl)
+        if (!landingPage) {
+            Long id = params.getLong('id')
+            if (id) {
+                landingPage = LandingPage.get(id)
+            }
+        }
+
+        if (!landingPage) {
+            if (shortUrl) {
+                // if we've accidentally captured an attempt a controller default action, forward that here.
+                return forward(controller: shortUrl, params: params)
+            } else {
+                return redirect(uri: '/')
+            }
+        }
+
         ProjectType pt = landingPage.getProjectType()
         def labels = landingPage.label
         def tag = null
