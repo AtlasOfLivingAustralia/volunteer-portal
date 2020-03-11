@@ -8,6 +8,7 @@ class ProjectStagingService {
     def grailsApplication
     def projectService
     def institutionService
+    def forumService
 
     public Project createProject(NewProjectDescriptor projectDescriptor) {
 
@@ -37,7 +38,8 @@ class ProjectStagingService {
         }
 
         project.inactive = true
-        project.createdBy = User.findByUserId(Long.parseLong(projectDescriptor.createdBy?.toString()))
+        def user = User.findByUserId(Long.parseLong(projectDescriptor.createdBy?.toString()))
+        project.createdBy = user
 
         if (projectDescriptor.labelIds) {
             Label.findAllByIdInList(projectDescriptor.labelIds).each { project.addToLabels(it) }
@@ -68,6 +70,9 @@ class ProjectStagingService {
 
         // if we get here we can clean up the staging area...
         purgeProject(projectDescriptor)
+
+        // sign the creator up for project forum topic notifications
+        forumService.watchProject(user, project, true)
 
         return project
     }

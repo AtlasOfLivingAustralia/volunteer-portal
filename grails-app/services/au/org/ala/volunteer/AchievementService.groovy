@@ -248,6 +248,53 @@ class AchievementService {
         log.info("Marked ${total} achievements as seen for ${user.userId}")
     }
 
+    def awardAchievementsToEligibleUsers (AchievementDescription achievementDescriptionInstance) {
+        def awardedUsers = achievementDescriptionInstance.awards*.user*.id.toList()
+        def eligibleUsers = User.withCriteria {
+            if (awardedUsers) {
+                not { inList('id', awardedUsers) }
+            }
+            projections {
+                property('userId')
+            }
+        }
+
+        def awards = eligibleUsers
+                .findAll { evaluateAchievement(achievementDescriptionInstance, it) }
+                .collect { new AchievementAward(user: User.findByUserId(it), achievement: achievementDescriptionInstance, awarded: new Date()) }
+
+//        AchievementAward.saveAll(awards)
+        awards*.save()
+
+        awards.each { notify(AchievementService.ACHIEVEMENT_AWARDED, it) }
+
+        return awards
+
+    }
+
+    def awardUser(User user, AchievementDescription achievementDescriptionInstance) {
+        def award = new AchievementAward(user: user, achievement: achievementDescriptionInstance, awarded: new Date())
+        award.save flush: true
+
+        notify(AchievementService.ACHIEVEMENT_AWARDED, award)
+
+        return award
+    }
+
+    def unawardAllUsers(AchievementDescription achievementDescriptionInstance) {
+        def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+
+        AchievementAward.deleteAll(awards)
+    }
+
+    def unaward(List<Long> awardIds, AchievementDescription achievementDescription) {
+        def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
+        log.info("Removing awarded achievements: ${awards.join('\n')}")
+
+        AchievementAward.deleteAll(awards)
+
+    }
 
     @Selector('achievement.awarded')
     void achievementAwarded(AchievementAward award) {

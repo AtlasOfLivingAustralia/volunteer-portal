@@ -1,15 +1,21 @@
 package au.org.ala.volunteer
 
+import com.google.common.hash.Hashing
+import com.google.common.hash.HashingInputStream
+import com.google.common.io.Files
 import grails.converters.JSON
 import groovy.time.TimeCategory
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.transform.ToString
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
-import javax.servlet.http.HttpServletResponse
-
+import static javax.servlet.http.HttpServletResponse.SC_CREATED
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_PRECONDITION_FAILED
 
 class TaskController {
 
@@ -194,15 +200,6 @@ class TaskController {
         render jsonObj as JSON
     }
 
-    def loadCSV() {
-        def projectId = params.int('projectId')
-
-        if (params.csv) {
-            def csv = params.csv;
-            flash.message = taskService.loadCSV(projectId, csv)
-        }
-    }
-
     def loadCSVAsync() {
         def projectId = params.int('projectId')
         def replaceDuplicates = params.duplicateMode == 'replace'
@@ -213,15 +210,9 @@ class TaskController {
                 if (!success) {
                     flash.message = message + " - Try again when current load is complete."
                 }
-                redirect( controller:'loadProgress', action:'index')
+                redirect( controller:'project', action:'loadProgress', id: projectId)
             }
         }
-    }
-
-    def cancelLoad() {
-        taskLoadService.cancelLoad()
-        flash.message = "Cancelled!"
-        redirect( controller:'loadProgress', action:'index')
     }
 
     def index() {
@@ -630,28 +621,22 @@ class TaskController {
     }
 
     def staging() {
-        def projectInstance = Project.get(params.int("projectId"))
+        def projectId = params.int("projectId")
+        def projectInstance = Project.get(projectId)
+
+        cache false
+
         if (!projectInstance) {
             redirect(controller: 'index')
             return
         }
-        [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
-    /*    def profile = ProjectStagingProfile.findByProject(projectInstance)
-        if (!profile) {
-            profile = new ProjectStagingProfile(project: projectInstance)
-            profile.save(flush: true, failOnError: true)
+
+        if (taskLoadService.isProjectLoadingAlready(projectId)) {
+            flash.message = 'Please wait while existing staged images are loaded'
+            redirect(controller: 'project', action: 'loadProgress', id: projectId)
+        } else {
+            [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
         }
-
-        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
-            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
-        }
-
-        cache false
-
-        def images = stagingService.buildTaskMetaDataList(projectInstance)
-
-        [projectInstance: projectInstance, images: images, profile:profile, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
-        */
     }
 
     def stagedImages() {
@@ -761,38 +746,6 @@ class TaskController {
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
-    def stageImage() {
-
-        int count = 0
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            if(request instanceof MultipartHttpServletRequest) {
-                ((MultipartHttpServletRequest) request).getMultiFileMap().imageFile.each { f ->
-                    if (f != null) {
-                        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
-                        if (!allowedMimeTypes.contains(f.getContentType())) {
-                            flash.message = "The image file must be one of: ${allowedMimeTypes}"
-                            return
-                        }
-
-                        try {
-                            stagingService.stageImage(projectInstance, f)
-                            count ++
-                        } catch (Exception ex) {
-                            flash.message = "Failed to upload image file: " + ex.message;
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-        def processed = [:]
-        processed.put("processed", count)
-        render processed as JSON
-    }
-
     def unstageImage() {
         def projectInstance = Project.get(params.int("projectId"))
         def imageName = params.imageName
@@ -814,7 +767,7 @@ class TaskController {
         if (projectInstance && fieldName) {
 
             def fieldType = (params.fieldType as FieldDefinitionType) ?: FieldDefinitionType.Literal
-            def format = params.format ?: ""
+            def format = params.format ?: params.fmt ?: ""
             def recordIndex = params.int("recordIndex") ?: 0
 
             def profile = ProjectStagingProfile.findByProject(projectInstance)
@@ -845,6 +798,7 @@ class TaskController {
         if (projectInstance && fieldDefinition && newFieldType) {
             fieldDefinition.fieldDefinitionType = newFieldType
         }
+        fieldDefinition.save(flush: true)
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
@@ -855,6 +809,7 @@ class TaskController {
         if (projectInstance && fieldDefinition && newFieldFormat) {
             fieldDefinition.format = newFieldFormat
         }
+        fieldDefinition.save(flush: true)
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
 
@@ -862,7 +817,7 @@ class TaskController {
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         if (projectInstance && fieldDefinition) {
-            fieldDefinition.delete()
+            fieldDefinition.delete(flush: true)
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])
     }
@@ -874,7 +829,7 @@ class TaskController {
             def results = taskLoadService.loadTasksFromStaging(projectInstance)
             flash.message = results.message
             if (results.success) {
-                redirect( controller:'loadProgress', action:'index')
+                redirect( controller:'project', action:'loadProgress', id: projectInstance.id)
                 return
             }
         }

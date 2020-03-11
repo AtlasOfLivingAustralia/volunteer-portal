@@ -164,7 +164,9 @@ class ForumController {
                 if (userService.isForumModerator(taskInstance.project)) {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    if (params.priotity) {
+                        priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    }
                     featured = params.featured == 'on'
                 }
             }
@@ -175,7 +177,9 @@ class ForumController {
                 if (userService.isForumModerator(projectInstance)) {
                     locked = params.locked == 'on'
                     sticky = params.sticky == 'on'
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    if (params.priotity) {
+                       priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    }
                     featured = params.featured == 'on'
                 }
             }
@@ -185,7 +189,9 @@ class ForumController {
             if (userService.isForumModerator(null)) {
                 locked = params.locked == 'on'
                 sticky = params.sticky == 'on'
-                priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                if (params.priotity) {
+                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                }
                 featured = params.featured == 'on'
             }
             topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
@@ -603,26 +609,14 @@ class ForumController {
         
         if (user && projectInstance && params.containsKey("watch")) {
             def watch = params.boolean("watch")
-            
-            def watchList = ProjectForumWatchList.findByProject(projectInstance)
-            if (!watchList) {
-                watchList = new ProjectForumWatchList(project: projectInstance)
-                watchList.save(failOnError: true)
-            }
 
+            forumService.watchProject(user, projectInstance, watch)
             if (watch) {
-                if (!watchList.containsUser(user)) {
-                    watchList.addToUsers(user)
-                }
                 results.message = "You will be sent a notification email when messages are posted to this project"
             } else {
-                if (watchList.containsUser(user)) {
-                    watchList.removeFromUsers(user)
-                }
                 results.message = "You will no longer be sent notification emails when messages are posted to this project"
             }
 
-            watchList.save()
             results.success = true;
         }
         

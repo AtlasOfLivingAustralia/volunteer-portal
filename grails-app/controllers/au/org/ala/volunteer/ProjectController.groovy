@@ -1,13 +1,16 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.jooq.tables.TaskDescriptor
 import com.google.common.base.Stopwatch
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.jooq.DSLContext
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
+import static au.org.ala.volunteer.jooq.tables.TaskDescriptor.TASK_DESCRIPTOR
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
@@ -40,6 +43,7 @@ class ProjectController {
     def projectStagingService
     def projectTypeService
     def authService
+    Closure<DSLContext> jooqContext
 
     /**
      * Project home page - shows stats, etc.
@@ -294,7 +298,7 @@ class ProjectController {
         ]
     }
 
-    def wildlifespotter() {
+  /*  def wildlifespotter() {
         def offset = params.getInt('offset', 0)
         def max = Math.min(params.int('max', 24), 1000)
         def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
@@ -320,6 +324,43 @@ class ProjectController {
                 totalUsers: User.countByTranscribedCountGreaterThan(0)
         ]
         render(view: 'wildlifespotter', model: model)
+    } */
+
+    def customLandingPage() {
+        //long id = params.getLong('id')
+        String uri = params.id ?: ''
+        def offset = params.getInt('offset', 0)
+        def max = Math.min(params.int('max', 24), 1000)
+        def sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
+        def order = params.getOrDefault('sort', 'asc')
+        def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params?.activeFilter)
+        def q = params.q ?: null
+
+        LandingPage landingPage = LandingPage.findByShortUrl(uri) //LandingPage.findById (id)
+        ProjectType pt = landingPage.getProjectType()
+        def labels = landingPage.label
+        def tag = null
+        if (labels && labels.size() > 0) {
+            tag = labels*.value
+        }
+
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, tag, false)
+
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+
+        session.expeditionSort = params.sort
+
+        def model = [
+                landingPageInstance: landingPage,
+                projectType: pt.name,
+                tags: tag,
+                projects: projectSummaryList.projectRenderList,
+                filteredProjectsCount: projectSummaryList.matchingProjectCount,
+                numberOfUncompletedProjects: numberOfUncompletedProjects,
+                totalUsers: User.countByTranscribedCountGreaterThan(0)
+        ]
+        render(view: 'customLandingPage', model: model)
     }
 
     def create() {
@@ -359,7 +400,7 @@ class ProjectController {
             return
         }
 
-        if (projectInstance.save(flush: true)) {
+        if (projectService.saveProject(projectInstance)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
             redirect(action: "index", id: projectInstance.id)
         } else {
@@ -483,13 +524,15 @@ class ProjectController {
     }
 
     def editTaskSettings() {
-        def projectInstance = Project.get(params.int("id"))
+        def projectId = params.long("id")
+        def projectInstance = Project.get(projectId)
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
+            def currentlyLoading = jooqContext.call().fetchExists(TASK_DESCRIPTOR, TASK_DESCRIPTOR.PROJECT_ID.eq(projectId))
             def taskCount = Task.countByProject(projectInstance)
-            return [projectInstance: projectInstance, taskCount: taskCount]
+            return [projectInstance: projectInstance, taskCount: taskCount, currentlyLoading: currentlyLoading]
         }
     }
 
@@ -607,7 +650,7 @@ class ProjectController {
                 projectInstance.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
             }
 
-            if (!projectInstance.hasErrors() && projectInstance.save(flush: true)) {
+            if (!projectInstance.hasErrors() && projectService.saveProject(projectInstance)) {
                 flash.message = "Expedition updated"
                 return true
             } else {
@@ -682,7 +725,7 @@ class ProjectController {
         }
 
         projectInstance.featuredImageCopyright = params.featuredImageCopyright
-        projectInstance.save(flush: true)
+        projectService.saveProject(projectInstance)
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.id)
     }
@@ -722,7 +765,7 @@ class ProjectController {
 
         projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
         projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
-        projectInstance.save(flush: true)
+        projectService.saveProject(projectInstance)
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
@@ -757,7 +800,8 @@ class ProjectController {
                 def icons = role.icons
                 if (iconIndex >= 0 && iconIndex < icons.size()) {
                     project.leaderIconIndex = iconIndex
-                    project.save()
+                    projectService.saveProject(project, false)
+                    //project.save()
                 }
             }
         }
@@ -789,7 +833,8 @@ class ProjectController {
                 projectInstance.mapInitLongitude = longitude
             }
             flash.message = "Map settings updated"
-            projectInstance.save(flush:true, failOnError:true)
+            projectService.saveProject(projectInstance, true, true)
+            //projectInstance.save(flush:true, failOnError:true)
         }
         redirect(action:'editMapSettings', id:projectInstance?.id)
     }
@@ -837,6 +882,8 @@ class ProjectController {
         }
 
         projectInstance.addToLabels(label)
+
+        projectService.saveProject(projectInstance, true)
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
         render status: 204
@@ -1152,4 +1199,7 @@ class ProjectController {
         respond result
     }
 
+    def loadProgress(Project projectInstance) {
+        respond projectInstance
+    }
 }

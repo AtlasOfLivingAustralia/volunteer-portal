@@ -51,7 +51,8 @@ function digivolStats(config) {
         params: {
           institutionId: config.institutionId,
           projectId: config.projectId,
-          tagName: config.tagName,
+          projectType: config.projectType,
+          tags: config.tags,
           maxContributors: config.maxContributors,
           disableStats: config.disableStats,
           disableHonourBoard: config.disableHonourBoard

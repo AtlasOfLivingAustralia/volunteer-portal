@@ -19,13 +19,32 @@ class VolunteerStatsService {
 
     LinkGenerator grailsLinkGenerator
 
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#tagName?:'') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
-    def generateStats(long institutionId, long projectId, String tagName, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
+    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+    def generateStats(long institutionId, long projectId, String projectType, String tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
-        ProjectType pt = tagName ? ProjectType.findByName(tagName) : null
 
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, tagName: $tagName")
+        List<Project> projectsInLabels = null
+        if (tags && tags != '[]') {
+            List<String> tagList = tags.tokenize(',[]')*.trim()
+            def labels = tags ? Label.findAllByValueInList(tagList) : null
+            if (labels && labels.size() > 0) {
+                //projectsInLabels = labels*.projects?.id[0]
+                projectsInLabels = labels*.projects[0].grep { project ->
+                    if (projectType) {
+                        project.projectType?.name == projectType
+                    } else {
+                        return true
+                    }
+                }.id
+            }
+        } else if (projectType) {
+            ProjectType pt = projectType ? ProjectType.findByName(projectType) : null
+            projectsInLabels = Project.findAllByProjectType(pt)?.id
+
+        }
+
+        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectType, projectsInLabels: $projectsInLabels")
 
         def sw = Stopwatch.createStarted()
 
@@ -40,10 +59,10 @@ class VolunteerStatsService {
             totalTasks = institutionService.countTasksForInstitution(institution)
             completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
-        } else if (tagName) {
-            totalTasks = projectService.countTasksForTag(pt)
-            completedTasks = projectService.countTranscribedTasksForTag(pt)
-            transcriberCount = projectService.getTranscriberCountForTag(pt)
+        } else if (projectsInLabels?.size() >= 0) {
+            totalTasks = projectService.countTasksForTag(projectsInLabels)
+            completedTasks = projectService.countTranscribedTasksForTag(projectsInLabels)
+            transcriberCount = projectService.getTranscriberCountForTag(projectsInLabels)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
             completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
@@ -62,10 +81,10 @@ class VolunteerStatsService {
         if (disableHonourBoard) {
             daily = weekly = monthly = alltime = LeaderBoardService.EMPTY_LEADERBOARD_WINNER
         } else { // TODO Project honour board, not needed for v2.3
-            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, pt)
-            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, pt)
-            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, pt)
-            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, pt)
+            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, projectsInLabels)
+            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, projectsInLabels)
+            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, projectsInLabels)
+            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, projectsInLabels)
         }
 
         // Encode the email addresses for gravatar before sending to the client to prevent
@@ -76,7 +95,7 @@ class VolunteerStatsService {
 
         sw.start()
 
-        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, pt, maxContributors)
+        List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, projectsInLabels, maxContributors)
         //generateContributors(institution, projectInstance, pt, maxContributors)
 
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
@@ -87,7 +106,7 @@ class VolunteerStatsService {
 
     }
 
-    def generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
+    def generateContributors(Institution institution, Project projectInstance, def pt = null, maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
             if (institution) {
@@ -97,7 +116,7 @@ class VolunteerStatsService {
                 }
             } else if (pt) {
                 project {
-                    eq('projectType', pt)
+                    'in' 'id', pt
                     ne('inactive', true)
                 }
             } else if (projectInstance) {
@@ -117,8 +136,41 @@ class VolunteerStatsService {
             latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
             latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
         } else if (pt) {
-            latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
-            latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
+      //      latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
+       //     latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
+            def projects = Project.findAllByIdInList(pt)
+                    /*Project.createCriteria().list {
+                and {
+                    if (pt) {
+                        eq('projectType', pt)
+                    }
+                    if (pt) {
+                        'in'('id', pt)
+                    }
+                }
+            }*/
+
+            latestMessages = ForumMessage.withCriteria{
+                or {
+                    'in'('topic', new DetachedCriteria(ProjectForumTopic).build {
+                        'in'('project', projects)
+                        projections {
+                            property('id')
+                        }
+                    })
+                    'in'('topic', new DetachedCriteria(TaskForumTopic).build {
+                        task {
+                            'in'('project', projects)
+                        }
+                        projections {
+                            property('id')
+                        }
+                    })
+                }
+                order('date', 'desc')
+                maxResults(maxContributors)
+            }
+
         } else if (projectInstance) {
             latestMessages = ForumMessage.withCriteria {
                 or {

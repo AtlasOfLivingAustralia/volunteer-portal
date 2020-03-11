@@ -193,7 +193,7 @@
                                 </div>
 
                                 <vpf:topicTable topics="${topics.topics}" totalCount="${topics.totalCount}"
-                                                paginateAction="projectForum"/>
+                                                paginateAction="projectForum" projectInstance="${projectInstance}"/>
 
                             </div>
 

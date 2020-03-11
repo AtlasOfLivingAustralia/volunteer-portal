@@ -78,6 +78,8 @@ div.pagination {
     border-color: #d5502a;
 }
 
+.main-menu > li > a {
+    padding: 25px 14px; }
 
 /** special closable label tags */
 
@@ -455,3 +457,22 @@ a.fieldHelp {
     opacity: 0.5;
     pointer-events: none;
 }
+
+/* feature expedition */
+#parent {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.bootstrap-select .btn {
+    border-radius: 5px;
+}
+
+.custom-select {
+    position: absolute;
+}
+
+.bootstrap-select.btn-group .dropdown-toggle .filter-option {
+    white-space: normal;
+}
+

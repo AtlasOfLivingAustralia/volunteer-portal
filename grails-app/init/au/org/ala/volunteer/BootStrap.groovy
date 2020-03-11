@@ -35,6 +35,8 @@ class BootStrap {
 
         prepareWildlifeSpotter()
 
+        prepareCustomLandingPage()
+
         preparePickLists()
 
         prepareValidationRules()
@@ -181,6 +183,32 @@ class BootStrap {
             ws.save(flush: true, failOnError: true)
         }
     }
+
+    /*
+      Must have at least 1 default custom landing page which is the wildlife spotter page
+      This can be created or updated from existing wildlife spotter
+     */
+    private void prepareCustomLandingPage() {
+        LandingPage wildLifeSpotter = LandingPage.findByTitle ('Wildlife Spotter')
+        WildlifeSpotter existingWildLifeSpotterPage = WildlifeSpotter.instance()
+        if (!wildLifeSpotter) {
+            wildLifeSpotter = new LandingPage()
+            wildLifeSpotter.title = 'Wildlife Spotter'
+            wildLifeSpotter.shortUrl = 'wildlife-spotter'
+            wildLifeSpotter.enabled = true
+            ProjectType cameraTraps = ProjectType.findByName('cameratraps')
+            wildLifeSpotter.projectType = cameraTraps
+
+            // Copy from existing
+            wildLifeSpotter.bodyCopy = existingWildLifeSpotterPage.bodyCopy
+            wildLifeSpotter.numberOfContributors = existingWildLifeSpotterPage.numberOfContributors?: 10
+            wildLifeSpotter.landingPageImage = existingWildLifeSpotterPage.heroImage
+            wildLifeSpotter.imageAttribution = existingWildLifeSpotterPage.heroImageAttribution
+
+            wildLifeSpotter.save(flush: true, failOnError: true)
+        }
+    }
+
 
     private void addSanitizer() {
         final ctx = grailsApplication.mainContext

@@ -9,8 +9,8 @@ class Label implements Serializable {
     String category
     String value
 
-    static belongsTo = Project
-    static hasMany = [projects: Project]
+    static belongsTo = [Project, LandingPage]
+    static hasMany = [projects: Project, landingPages: LandingPage]
 
     static constraints = {
         category unique: 'value'
