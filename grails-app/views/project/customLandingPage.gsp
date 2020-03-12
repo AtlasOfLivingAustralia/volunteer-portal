@@ -163,7 +163,7 @@
 
         function doSearch() {
             var q = $("#searchbox").val();
-            var url = "${createLink(controller: 'project', action: 'customLandingPage')}/${landingPageInstance.shortUrl}?statusFilter=${params.statusFilter}&activeFilter=${params.activeFilter}&offset=${params.offset}&max=${params.max}&sort=${params.sort}&order=${params.order}&q=" + encodeURIComponent(q);
+            var url = "${createLink(mapping: 'landingPage', params: [shortUrl: landingPageInstance.shortUrl])}?statusFilter=${params.statusFilter}&activeFilter=${params.activeFilter}&offset=${params.offset}&max=${params.max}&sort=${params.sort}&order=${params.order}&q=" + encodeURIComponent(q);
                 window.location = url;
             }
         });
