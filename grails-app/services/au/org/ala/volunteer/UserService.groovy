@@ -4,8 +4,8 @@ import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
@@ -83,7 +83,7 @@ class UserService {
             where (transcribedCount > 0 or validatedCount > 0)
             ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
             order by (transcribedCount + validatedCount) desc
-        """, params, args)
+        """.toString(), params, args)
         def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
             users.each {

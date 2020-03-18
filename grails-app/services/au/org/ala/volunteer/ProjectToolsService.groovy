@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import org.h2.util.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.hibernate.FlushMode
 
 class ProjectToolsService {
@@ -53,7 +53,7 @@ class ProjectToolsService {
                         def targetField = fieldList.find { it.name.equals(keyField) && it.recordIdx == field.recordIdx }
                         boolean isCandidate = false
                         if (targetField) {
-                            if (StringUtils.isNullOrEmpty(targetField.value?.trim()) || targetField.value.contains("[Ljava.lang.String;")) {
+                            if (StringUtils.isBlank(targetField.value?.trim()) || targetField.value.contains("[Ljava.lang.String;")) {
                                 isCandidate = true
                             }
                         } else {

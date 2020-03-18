@@ -2,9 +2,9 @@ package au.org.ala.volunteer
 
 class TaskIngestJob {
 
-    def concurrent = false
+    static concurrent = false
 
-    def description = "Background job to load tasks into the database"
+    static description = "Background job to load tasks into the database"
 
     def taskLoadService
 

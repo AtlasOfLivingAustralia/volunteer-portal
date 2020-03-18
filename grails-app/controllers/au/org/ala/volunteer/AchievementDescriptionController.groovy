@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
 class AchievementDescriptionController {

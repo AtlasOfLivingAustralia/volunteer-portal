@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 import com.google.common.io.Resources
 import grails.core.GrailsApplication
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Environment
 
 import java.util.regex.Pattern

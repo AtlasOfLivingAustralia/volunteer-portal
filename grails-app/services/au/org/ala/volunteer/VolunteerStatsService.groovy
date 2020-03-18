@@ -2,9 +2,10 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.plugin.cache.Cacheable
-import javax.annotation.PostConstruct
+import groovy.transform.CompileDynamic
+
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import grails.web.mapping.LinkGenerator
 
@@ -19,7 +20,11 @@ class VolunteerStatsService {
 
     LinkGenerator grailsLinkGenerator
 
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+//    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+    @CompileDynamic
+    // TODO is key necessary in latest version?  It should take all method params into account
+    @Cacheable(value = 'MainVolunteerContribution', key = { (institutionId?.toString()?:'-1') + (projectId?.toString()?:'-1') + (projectType?:'') + (tags?:'[]') + (disableStats.toString()) + (disableHonourBoard.toString()) })
+    @Transactional(readOnly = true)
     def generateStats(long institutionId, long projectId, String projectType, String tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -68,8 +73,8 @@ class VolunteerStatsService {
             completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
             transcriberCount = User.countByTranscribedCountGreaterThan(0)
         }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate volunteer-stats section")
+        sw.stop()
+        log.debug("Took {}ms to generate volunteer-stats section", sw.elapsed(MILLISECONDS))
 
         sw.start()
 
@@ -91,14 +96,16 @@ class VolunteerStatsService {
         // the client having access to the user's email address info
         [daily, weekly, monthly, alltime].each { it.email = it.email?.toLowerCase()?.encodeAsMD5() }
 
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
+        sw.stop()
+        log.debug("Took {}ms to generate honour board section", sw.elapsed(MILLISECONDS))
 
         sw.start()
 
         List<LinkedHashMap<String, Serializable>> contributors = generateContributors(institution, projectInstance, projectsInLabels, maxContributors)
         //generateContributors(institution, projectInstance, pt, maxContributors)
 
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
+        sw.stop()
+        log.debug("Took {}ms to generate contributors section", sw.elapsed(MILLISECONDS))
 
         ['totalTasks':totalTasks, 'completedTasks':completedTasks, 'transcriberCount':transcriberCount,
          daily: daily, weekly: weekly, monthly: monthly, alltime: alltime, contributors: contributors]

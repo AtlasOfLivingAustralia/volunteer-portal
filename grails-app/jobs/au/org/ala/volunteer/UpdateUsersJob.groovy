@@ -3,9 +3,9 @@ package au.org.ala.volunteer
 class UpdateUsersJob {
 
     def userService
-    def concurrent = false
+    static concurrent = false
 
-    def description = "Update all users database details from the user details service"
+    static description = "Update all users database details from the user details service"
 
     static triggers = {
         cron name: 'updateUsersTrigger', cronExpression: '0 17 3 * * ?' // 3:17am

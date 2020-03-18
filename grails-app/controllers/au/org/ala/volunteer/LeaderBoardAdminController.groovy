@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.AlaSecured
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @AlaSecured("ROLE_VP_ADMIN")
 class LeaderBoardAdminController {

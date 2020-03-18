@@ -2,9 +2,10 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+
 import grails.plugin.cache.Cacheable
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.StringUtils
 import org.hibernate.FetchMode
 import org.imgscalr.Scalr
@@ -331,8 +332,6 @@ class TaskService {
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
 
-        def sw = new Stopwatch()
-
         // First find a task that hasn't been viewed by the user and has been viewed by fewer users than are
         // required to transcribe the Task.
         task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
@@ -524,7 +523,8 @@ ${getNotificationWithClauses(projectQuery).join(',\n')}
 
         def lists = sql.rows(select, [userId: userId, projectId: project?.id]).collect { row ->  row.task_id }
 
-        log.debug("Returning validated tasks: " + sw.stop())
+        sw.stop()
+        log.debug("Returning validated tasks: {}", sw)
 
         return lists
     }
@@ -578,7 +578,8 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
 
         def count = sql.firstRow(select, [userId: userId, projectId: project?.id]).values()[0]
 
-        log.debug("Returning validated task count: " + sw.stop())
+        sw.stop()
+        log.debug("Returning validated task count: {}", sw)
 
         return count
     }
@@ -606,7 +607,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
 
          if (log.isInfoEnabled()) {
             sw.stop()
-            log.info("Returning validated tasks: " + sw.toString())
+            log.info("Returning validated tasks: {}", sw)
         }
 
         return tasks
@@ -683,7 +684,8 @@ ORDER BY record_idx, name;
 
         def validatorNotes = Field.findByTaskAndNameAndSuperceded(task, 'validatorNotes', false)?.value
 
-        log.debug("Returning validated task fields: ${sw.stop()}")
+        sw.stop()
+        log.debug("Returning validated task fields: {}", sw)
 
         return [recordValues: recordValues, validatorDisplayName: validatorDisplayName, validatorNotes: validatorNotes]
     }
@@ -884,7 +886,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
+    @Cacheable(value='getImageMetaData', key= { (multimedia?.id?:0) + '-' + (rotate?:0) })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
@@ -904,7 +906,7 @@ ORDER BY record_idx, name;
         return null
     }
 
-    @Cacheable(value='getImageMetaDataFromFile')
+    @Cacheable(value='getImageMetaDataFromFile', key = { (resource.URI ?: resource.filename) + '-' + (imageUrl ?: '') + '-' + Integer.toString(rotate) })
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
@@ -1245,7 +1247,8 @@ $pagingClause
 """
         log.debug("View list query:\n$rowsQuery")
         log.debug("Params: $params")
-        log.debug("Took ${sw.stop()} to generate queries")
+        sw.stop()
+        log.debug("Took {} to generate queries", sw)
         sw.reset().start()
 
         final sql = new Sql(dataSource)
@@ -1253,7 +1256,8 @@ $pagingClause
             countQuery = countQuery.replaceAll(/\s+/, ' ')
             log.debug("Minified count query: $countQuery")
             results.totalMatchingTasks = sql.firstRow(params, countQuery).values()[0]
-            log.debug("Took ${sw.stop()} to generate total count")
+            sw.stop()
+            log.debug("Took {} to generate total count", sw)
             sw.reset().start()
             rowsQuery = rowsQuery.replaceAll(/\s+/, ' ')
             log.debug("Minified view list query: $rowsQuery")
@@ -1273,7 +1277,8 @@ $pagingClause
                   status: row.status
                 ]
             }
-            log.debug("Took ${sw.stop()} to generate view list")
+            sw.stop()
+            log.debug("Took {} to generate view list", sw)
 
             // add additional info for notifications tab
             if (selectedTab == 0 && results.viewList) {

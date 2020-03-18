@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
 
 @Transactional

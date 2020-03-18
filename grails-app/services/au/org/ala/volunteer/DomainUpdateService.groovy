@@ -140,7 +140,7 @@ class DomainUpdateService {
                 }
             }
         }
-        log.trace("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to get tasks from queue")
+        log.trace("Took {}ms to get tasks from queue", sw.stop().elapsed(TimeUnit.MILLISECONDS))
 
         currentlyProcessing.set(indexes.size())
         log.debug("Took ${indexes.size()} jobs from queue, current queue length: $queueLength")
@@ -150,7 +150,7 @@ class DomainUpdateService {
         if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
         if (updates) postIndexTaskActions(updates)
         if (validations) validationService.autoValidate(validations)
-        if (deletes || indexes || updates) log.info("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates, ${validations.size()} task validations")
+        if (deletes || indexes || updates) log.info("Took {}ms to process {} deletes, {} indexes, {} post-index updates, {} task validations", sw.stop().elapsed(TimeUnit.MILLISECONDS), deletes.size(), indexes.size(), updates.size(), validations.size())
     }
 }
 

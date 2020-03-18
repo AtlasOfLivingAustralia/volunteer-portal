@@ -1,0 +1,58 @@
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107' xmlns:eg="http://www.ehcache.org/v3"
+        xsi:schemaLocation="
+        http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.2.xsd
+        http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.2.xsd">
+    <persistence directory="${java.io.tmpdir}"/>
+    <cache-template name="default">
+        <expiry>
+            <tti>120</tti>
+<!--            <ttl>120</ttl>-->
+        </expiry>
+        <resources>
+            <heap>10000</heap>
+<!--            <disk>100000</disk>-->
+        </resources>
+    </cache-template>
+    <cache alias="userDetailsCache">
+        <expiry>
+<!--            <tti unit="minutes">5</tti>-->
+            <ttl unit="minutes">30</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+<!--            <disk>10000</disk>-->
+        </resources>
+    </cache>
+    <cache alias="userDetailsByIdCache">
+        <expiry>
+<!--            <tti unit="minutes">5</tti>-->
+            <ttl unit="minutes">30</ttl>
+        </expiry>
+        <resources>
+            <heap>100</heap>
+<!--            <disk>1000</disk>-->
+        </resources>
+    </cache>
+    <cache alias="geoip">
+        <expiry>
+            <ttl unit="days">1</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+<!--            <disk>2000</disk>-->
+        </resources>
+    </cache>
+    <cache alias="MainVolunteerContribution">
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+<!--            <disk>2000</disk>-->
+        </resources>
+    </cache>
+</config>
+

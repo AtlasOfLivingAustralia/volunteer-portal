@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.transform.Immutable
 import groovy.transform.stc.ClosureParams

@@ -8,9 +8,9 @@ class NewUserDigestNotifierJob {
     def userService
     def mailService
     def dataSource
-    def concurrent = false
+    static concurrent = false
 
-    def description = "Notify admin users about new users who have completed their first five transcriptions"
+    static description = "Notify admin users about new users who have completed their first five transcriptions"
 
     static triggers = {
         if (Environment.current == Environment.DEVELOPMENT && Holders.config.getProperty('digest.debug', Boolean,false)) {

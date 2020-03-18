@@ -55,6 +55,7 @@ class Project implements Serializable {
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
+        autowire true // TODO move code that needs autowiring to a Service
         cache true
         tasks cache: true
         autoTimestamp true

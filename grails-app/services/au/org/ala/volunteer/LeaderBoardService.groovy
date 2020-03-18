@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.NotTransactional
+import grails.gorm.transactions.NotTransactional
 
 class LeaderBoardService {
 

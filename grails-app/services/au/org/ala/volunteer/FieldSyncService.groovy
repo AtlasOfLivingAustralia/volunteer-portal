@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.lang3.StringUtils
 
 @Transactional

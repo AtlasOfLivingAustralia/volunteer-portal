@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {

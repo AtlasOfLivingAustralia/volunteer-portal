@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 import au.com.bytecode.opencsv.CSVWriter
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
