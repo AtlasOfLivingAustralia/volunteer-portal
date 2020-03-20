@@ -229,7 +229,11 @@ class TranscribeController {
             render(view: 'noTasks', model: [complete: params.complete])
         } else if (taskInstance) {
             log.debug "2."
-            redirect(action: 'task', id: taskInstance.id, params: [complete: params.complete])
+            def redirectParams = [:]
+            if (params.complete) {
+                redirectParams.complete = params.complete
+            }
+            redirect(action: 'task', id: taskInstance.id, params: redirectParams)
         } else {
             log.debug "4."
             render(view: 'noTasks', model: [complete: params.complete])
