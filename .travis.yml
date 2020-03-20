@@ -7,7 +7,6 @@ branches:
   only:
   - master
   - develop
-  - release/5.3.3
 services:
   - postgresql
 addons:
@@ -25,6 +24,10 @@ cache:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
 before_install:
+  - sudo apt-get update
+  - sudo service postgresql stop
+  - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/11/main/postgresql.conf
+  - sudo service postgresql@11-main start
   - psql -c 'create database volunteerstest;' -U postgres
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
