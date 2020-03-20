@@ -7,6 +7,8 @@
         http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.2.xsd">
     <persistence directory="${java.io.tmpdir}"/>
     <cache-template name="default">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
         <expiry>
             <tti>120</tti>
 <!--            <ttl>120</ttl>-->
@@ -17,6 +19,8 @@
         </resources>
     </cache-template>
     <cache alias="userDetailsCache">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
         <expiry>
 <!--            <tti unit="minutes">5</tti>-->
             <ttl unit="minutes">30</ttl>
@@ -27,6 +31,8 @@
         </resources>
     </cache>
     <cache alias="userDetailsByIdCache">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
         <expiry>
 <!--            <tti unit="minutes">5</tti>-->
             <ttl unit="minutes">30</ttl>
@@ -37,6 +43,8 @@
         </resources>
     </cache>
     <cache alias="geoip">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="days">1</ttl>
         </expiry>
@@ -46,6 +54,8 @@
         </resources>
     </cache>
     <cache alias="MainVolunteerContribution">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">10</ttl>
         </expiry>
