@@ -397,7 +397,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
+            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
             return task
         }
 
@@ -415,7 +415,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}", project.id, task.id)
+            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
             return task
         }
 
