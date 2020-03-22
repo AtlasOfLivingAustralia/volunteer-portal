@@ -2,11 +2,14 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+import grails.plugin.cache.Cacheable
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 import org.hibernate.FetchMode
 import org.imgscalr.Scalr
+import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
@@ -17,6 +20,11 @@ import groovy.sql.Sql
 
 import java.sql.Connection
 import java.text.SimpleDateFormat
+
+import static au.org.ala.volunteer.jooq.tables.Field.FIELD
+import static au.org.ala.volunteer.jooq.tables.Task.TASK
+import static org.jooq.impl.DSL.name
+import static org.jooq.impl.DSL.select
 
 
 @Transactional
@@ -30,6 +38,7 @@ class TaskService {
     def fieldService
     def i18nService
     def userService
+    Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
 
@@ -406,7 +415,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            println "getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}"
+            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}", project.id, task.id)
             return task
         }
 
@@ -811,16 +820,49 @@ ORDER BY record_idx, name;
     }
 
 
+    /**
+     * Find all task ids in a project with the given field name equal to one of a set of field values.  This
+     * is currently only used for sequence numbers and will require updating to support record_idx, etc.
+     * @param projectId The project id the tasks will belong to
+     * @param fieldName The field name to search for
+     * @param fieldValues The field values to search for
+     * @return A map of field value to task id
+     */
+    Map<String, Long> findByProjectAndFieldValues(long projectId, String fieldName, Collection<String> fieldValues) {
+        if (fieldValues) {
+            DSLContext create = jooqContext()
 
+            def taskIds = name("task_ids").as(select(TASK.ID).from(TASK).where(TASK.PROJECT_ID.eq(projectId)))
+
+            def results =
+                    create.with(taskIds)
+                            .select(FIELD.TASK_ID, FIELD.VALUE)
+                            .from(FIELD)
+                            .where(FIELD.TASK_ID.in(select(taskIds.field('id')).from(taskIds)))
+                            .and(FIELD.SUPERCEDED.eq(false))
+                            .and(FIELD.NAME.eq(fieldName))
+                            .and(FIELD.VALUE.in(fieldValues))
+                            .fetchMaps()
+            return results.collectEntries { row ->
+                [(row.value): row.task_id]
+            }
+        } else {
+            return [:]
+        }
+    }
+
+    /**
+     * Currently only used for sequence numbers.  Requires updating for fields with a record_idx
+     * @param project The project the task belongs to
+     * @param fieldName The field name
+     * @param fieldValue The field value
+     * @return The task the corresponding field belongs to
+     */
     Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select = """
             WITH task_ids AS (SELECT id from task where project_id = :projectId)
-            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.name = :fieldName group by task_id having min(value) = :fieldValue;
+            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue;
         """
-        // Slower on PG 10, maybe faster on PG 11?
-//        def select = """
-//            SELECT f.task_id as id from field f join task t on t.id = f.task_id where t.project_id = :projectId and f.name = :fieldName group by task_id having min(value) = :fieldValue;
-//        """
 
         def sql = new Sql(dataSource: dataSource)
         int taskId = -1;
@@ -842,7 +884,8 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    public ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
+    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + (#rotate?:0)")
+    ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
             def imageUrl = multimediaService.getImageUrl(multimedia)
@@ -861,13 +904,14 @@ ORDER BY record_idx, name;
         return null
     }
 
-    def getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
+    @Cacheable(value='getImageMetaDataFromFile')
+    ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: $resource", ex)
+            log.error("Exception trying to read image path: {}, {}", resource, ex.message)  // don't print whoel stack trace
         }
 
         if (image) {
@@ -881,7 +925,7 @@ ORDER BY record_idx, name;
         } else {
             log.info("Could not read image file: $resource - could not get image metadata")
         }
-
+        return null
     }
 
 

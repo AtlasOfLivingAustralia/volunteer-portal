@@ -56,11 +56,10 @@ class ValidateController {
                 }
             }
 
-            Stopwatch sw = new Stopwatch()
-            sw.start()
+            Stopwatch sw = Stopwatch.createStarted()
             Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
             sw.stop()
-            println sw.elapsed(TimeUnit.SECONDS)
+            log.debug('retrieveValidationFieldsForTask: {}', sw.elapsed(TimeUnit.SECONDS))
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
             def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)

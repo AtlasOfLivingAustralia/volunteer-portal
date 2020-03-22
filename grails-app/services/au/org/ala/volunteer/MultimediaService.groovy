@@ -63,4 +63,20 @@ class MultimediaService {
     private String filenameFromFilePath(String filePath) {
         StringUtils.substringAfterLast(filePath, '/')
     }
+
+    Map<Long, Multimedia> findImagesForTasks(Collection<Long> taskIds) {
+        List<Multimedia> mm = []
+        if (taskIds) {
+            mm = Multimedia.withCriteria {
+                task {
+                    'in'('id', taskIds)
+                }
+            }
+        }
+        return mm.groupBy {
+            it.taskId
+        }.collectEntries { taskId, mms ->
+            [(taskId): mms?.find { it.mimeType.startsWith('image') }]
+        }
+    }
 }

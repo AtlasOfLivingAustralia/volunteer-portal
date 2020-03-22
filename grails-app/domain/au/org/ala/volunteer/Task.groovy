@@ -133,7 +133,7 @@ class Task implements Serializable {
 
         Set taskFields = fields.findAll{it.transcription == null}
 
-        println taskFields
+        log.debug('taskfields {}', taskFields)
         taskFields
 
 
