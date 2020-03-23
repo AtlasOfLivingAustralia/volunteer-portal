@@ -278,7 +278,7 @@ class ProjectService {
 
     }
 
-    public List<ProjectSummary> getFeaturedProjectList() {
+    public List<ProjectSummary>  getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
         def resultMaps = generateProjectSummariesQuery(jooqContextFactory(), [], null, null, 'transcribed', null, null, null, ProjectStatusFilterType.showIncompleteOnly, ProjectActiveFilterType.showActiveOnly, false).fetchMaps()

@@ -15,6 +15,7 @@
 
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import groovy.xml.MarkupBuilder
 
 /**
@@ -24,6 +25,7 @@ import groovy.xml.MarkupBuilder
 class TranscribeTagLib {
 
     def taskService
+    def multimediaService
     def picklistService
     def markdownService
     def imageServiceService
@@ -665,7 +667,7 @@ class TranscribeTagLib {
         fields.collect { [field: it, recordIdx: groupedFields[it.fieldType].findIndexOf { it2 -> it == it2 }] }
     }
 
-    def sequenceNumbers = { attrs, body ->
+    def sequenceNumbers(Map attrs) {
         def project = attrs.project
         def number = attrs.number ?: 0
         def count = attrs.count ?: 0
@@ -683,30 +685,37 @@ class TranscribeTagLib {
     }
 
     def taskSequence = { attrs, body ->
-        Task task = attrs.task
-        Project project = task.project
+        Stopwatch sw = Stopwatch.createStarted()
+        Task taskInstance = attrs.task
+        Project project = taskInstance.project
 
         Field field = null
 
         // The query for the field will throw an Exception if the task hasn't been saved to the database, as is the case
         // when a template is being previewed. (see TemplateController.preview)
-        if (task.id) {
-            field = fieldService.getFieldForTask(task, "sequenceGroupId")
+        if (taskInstance.id) {
+            field = fieldService.getFieldForTask(taskInstance, "sequenceGroupId")
         }
 
-        Map tasks = [previous:[], current: task, next:[]]
+        Map tasks = [previous:[], current: [:], next:[]]
         if (!field) {
 
             attrs.project = project
+            def sequenceNumber = attrs.number
 
-            Map sequenceNumbers = sequenceNumbers(attrs, body)
+            Map sequenceNumbers = sequenceNumbers(attrs)
+            List<String> allSeqNos = (sequenceNumbers.previous + sequenceNumbers.next)*.toString()
+            def seqToTaskId = taskService.findByProjectAndFieldValues(project.id, 'sequenceNumber', allSeqNos)
+            def taskIds = seqToTaskId.values() + taskInstance.id
+            Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(taskIds)
             sequenceNumbers.previous.each { seqNo ->
                 def seq = seqNo as String
-                tasks.previous << [sequenceNumber:seqNo, task:taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)]
+                tasks.previous << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
+            tasks.current = [sequenceNumber: sequenceNumber, multimedia: taskIdToMM[taskInstance.id]]
             sequenceNumbers.next.each { seqNo ->
                 def seq = seqNo as String
-                tasks.next << [sequenceNumber:seqNo, task:taskService.findByProjectAndFieldValue(project, "sequenceNumber", seq)]
+                tasks.next << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
         }
         else {
@@ -717,20 +726,23 @@ class TranscribeTagLib {
 
             // The results are sorted by sequence number
             List<Task> allTasks = results.list
-            int taskIndex = allTasks.indexOf(task)
+            Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(allTasks*.id)
+
+            int taskIndex = allTasks.indexOf(taskInstance)
             int minIndex = Math.max(0, taskIndex-attrs.count)
             int maxIndex = Math.min(allTasks.size()-1, taskIndex+attrs.count)
 
             for (int i=minIndex; i<taskIndex; i++) {
-                tasks.previous << [sequenceNumber:i, task:allTasks[i]]
+                tasks.previous << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
-            tasks.current = [sequenceNumber:taskIndex, task:task]
+            tasks.current = [sequenceNumber:taskIndex, multimedia: taskIdToMM[allTasks[taskIndex].id]]
             for (int i=taskIndex+1; i<=maxIndex; i++) {
-                tasks.next << [sequenceNumber:i, task:allTasks[i]]
+                tasks.next << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
 
 
         }
+        log.debug("taskSequence: {}", sw)
         return tasks
 
     }

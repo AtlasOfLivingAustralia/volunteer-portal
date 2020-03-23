@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.cas.util.AuthenticationCookieUtils
+import com.google.common.base.Stopwatch
 import com.google.gson.GsonBuilder
 import grails.converters.JSON
 import grails.util.Environment
@@ -607,8 +608,10 @@ class VolunteerTagLib {
     }
 
     def multimediaThumbnail = { attrs, body ->
+        Stopwatch sw = Stopwatch.createStarted()
         def url, fullUrl = ''
-        def mm = attrs.task.multimedia?.first()
+//        def mm = attrs.task.multimedia?.first()
+        def mm = attrs.multimedia
         if (mm) {
             url = multimediaService.getImageThumbnailUrl(mm)
             fullUrl = multimediaService.getImageUrl(mm)
@@ -626,9 +629,11 @@ class VolunteerTagLib {
             out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
             out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
         }
+        log.debug('multimediaThumbnail {}', sw)
     }
 
     def taskThumbnail = { attrs, body ->
+        Stopwatch sw = Stopwatch.createStarted()
         def task = attrs.task as Task
         def fixedHeight = attrs.fixedHeight
         def withHidden = attrs.withHidden
@@ -658,6 +663,7 @@ class VolunteerTagLib {
             }
 
         }
+        log.debug('taskThumbnail {}', sw)
     }
 
     /**

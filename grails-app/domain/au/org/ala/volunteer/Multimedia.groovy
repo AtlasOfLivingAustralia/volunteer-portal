@@ -14,6 +14,7 @@ class Multimedia implements Serializable {
   String creator
 
   static mapping = {
+    cache true
     version false
     task index: 'multimedia_task_idx'
   }
