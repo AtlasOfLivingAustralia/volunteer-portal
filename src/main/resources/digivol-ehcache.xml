@@ -339,4 +339,28 @@
             logging="true"
     >
     </cache>
+    <cache
+            name="getImageMetaData"
+            eternal="false"
+            timeToLiveSeconds="120"
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="2000"
+            memoryStoreEvictionPolicy="LRU"
+            overflowToDisk="true"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+    >
+    </cache>
+    <cache
+            name="getImageMetaDataFromFile"
+            eternal="false"
+            timeToLiveSeconds="300"
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="2000"
+            memoryStoreEvictionPolicy="LRU"
+            overflowToDisk="true"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+    >
+    </cache>
 </ehcache>

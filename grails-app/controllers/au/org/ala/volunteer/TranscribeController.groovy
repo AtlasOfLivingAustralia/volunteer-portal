@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
@@ -29,6 +30,8 @@ class TranscribeController {
     }
 
     def task() {
+
+        Stopwatch sw = Stopwatch.createStarted()
 
         def taskInstance = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
@@ -90,6 +93,7 @@ class TranscribeController {
                     complete: params.complete,
                     thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)
             ]
+            log.debug('task before render: {}', sw)
             render(view: 'templateViews/' + project.template.viewName, model: model)
         } else {
             redirect(view: 'list', controller: "task")
@@ -229,7 +233,11 @@ class TranscribeController {
             render(view: 'noTasks', model: [complete: params.complete])
         } else if (taskInstance) {
             log.debug "2."
-            redirect(action: 'task', id: taskInstance.id, params: [complete: params.complete])
+            def redirectParams = [:]
+            if (params.complete) {
+                redirectParams.complete = params.complete
+            }
+            redirect(action: 'task', id: taskInstance.id, params: redirectParams)
         } else {
             log.debug "4."
             render(view: 'noTasks', model: [complete: params.complete])

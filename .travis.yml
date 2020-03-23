@@ -1,5 +1,5 @@
 sudo: false
-dist: trusty
+dist: xenial
 language: groovy
 jdk:
   - openjdk8
@@ -10,7 +10,11 @@ branches:
 services:
   - postgresql
 addons:
-  postgresql: "9.6"
+  postgresql: "11"
+  apt:
+    packages:
+    - postgresql-11
+    - postgresql-client-11
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -20,6 +24,10 @@ cache:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
 before_install:
+  - sudo apt-get update
+  - sudo cp /etc/postgresql/{10,11}/main/pg_hba.conf
+  - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/11/main/postgresql.conf
+  - sudo service postgresql@11-main restart
   - psql -c 'create database volunteerstest;' -U postgres
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
