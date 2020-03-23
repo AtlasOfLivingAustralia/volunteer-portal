@@ -28,6 +28,8 @@ class Task implements Serializable {
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
 
     static mapping = {
+        cache true
+        multimedia cache: true
         version false
         multimedia cascade: 'all,delete-orphan'
         viewedTasks cascade: 'all,delete-orphan'

@@ -55,6 +55,8 @@ class Project implements Serializable {
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
+        cache true
+        tasks cache: true
         autoTimestamp true
         description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
