@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-public class ImageMetaData {
+class ImageMetaData implements Serializable {
     int height
     int width
     String url
