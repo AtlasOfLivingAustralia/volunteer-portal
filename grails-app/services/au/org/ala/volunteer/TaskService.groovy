@@ -884,7 +884,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + (#rotate?:0)")
+    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
