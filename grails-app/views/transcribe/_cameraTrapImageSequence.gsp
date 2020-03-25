@@ -1,5 +1,5 @@
 <div id="ct-image-sequence" class="film-strip">
-    <g:set var="tasks" value="${taskSequence(number: sequenceNumber, count: 3, task:taskInstance)}"/>
+    <g:set var="tasks" value="${taskSequence(number: sequenceNumber, count: 3, task:taskInstance, isPreview: isPreview)}"/>
     <g:each in="${tasks.previous}" var="task">
         <div class="film-cell" data-seq-no="${task.sequenceNumber}">
             <cl:multimediaThumbnail multimedia="${task.multimedia}" seqNo="${task.sequenceNumber}"/>

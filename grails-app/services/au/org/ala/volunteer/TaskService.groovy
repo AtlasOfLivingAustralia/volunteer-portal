@@ -828,7 +828,7 @@ ORDER BY record_idx, name;
      * @param fieldValues The field values to search for
      * @return A map of field value to task id
      */
-    Map<String, Long> findByProjectAndFieldValues(long projectId, String fieldName, Collection<String> fieldValues) {
+    Map<String, Long> findByProjectAndFieldValues(Long projectId, String fieldName, Collection<String> fieldValues) {
         if (fieldValues) {
             DSLContext create = jooqContext()
 
