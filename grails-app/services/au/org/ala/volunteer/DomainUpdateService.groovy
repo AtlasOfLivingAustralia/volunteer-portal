@@ -140,7 +140,8 @@ class DomainUpdateService {
                 }
             }
         }
-        log.trace("Took {}ms to get tasks from queue", sw.stop().elapsed(TimeUnit.MILLISECONDS))
+        sw.stop()
+        log.trace("Took {}ms to get tasks from queue", sw.elapsed(TimeUnit.MILLISECONDS))
 
         currentlyProcessing.set(indexes.size())
         log.debug("Took ${indexes.size()} jobs from queue, current queue length: $queueLength")
