@@ -687,6 +687,7 @@ class TranscribeTagLib {
     def taskSequence = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
         Task taskInstance = attrs.task
+        boolean isPreview = attrs.isPreview
         Project project = taskInstance.project
 
         Field field = null
@@ -704,7 +705,7 @@ class TranscribeTagLib {
             def sequenceNumber = attrs.number
 
             Map sequenceNumbers = sequenceNumbers(attrs)
-            List<String> allSeqNos = (sequenceNumbers.previous + sequenceNumbers.next)*.toString()
+            List<String> allSeqNos = !isPreview? (sequenceNumbers.previous + sequenceNumbers.next)*.toString() : []
             def seqToTaskId = taskService.findByProjectAndFieldValues(project.id, 'sequenceNumber', allSeqNos)
             def taskIds = seqToTaskId.values() + taskInstance.id
             Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(taskIds)
