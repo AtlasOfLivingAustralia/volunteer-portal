@@ -366,8 +366,9 @@
     <cache
         name="findMaxSequenceNumber"
         eternal="false"
-        timeToLiveSeconds="86400"
+        timeToIdleSeconds="86400"
         maxElementsInMemory="1000"
         overflowToDisk="false"
+        memoryStoreEvictionPolicy="LRU"
         />
 </ehcache>
