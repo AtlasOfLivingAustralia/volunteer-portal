@@ -6,6 +6,7 @@ import com.google.common.base.Stopwatch
 import grails.plugin.cache.Cacheable
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
+import groovy.transform.CompileDynamic
 import org.apache.commons.lang.StringUtils
 import org.hibernate.FetchMode
 import org.imgscalr.Scalr
@@ -886,6 +887,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
+    @CompileDynamic
     @Cacheable(value='getImageMetaData', key= { (multimedia?.id?:0) + '-' + (rotate?:0) })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
@@ -906,6 +908,7 @@ ORDER BY record_idx, name;
         return null
     }
 
+    @CompileDynamic
     @Cacheable(value='getImageMetaDataFromFile', key = { (resource.URI ?: resource.filename) + '-' + (imageUrl ?: '') + '-' + Integer.toString(rotate) })
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 

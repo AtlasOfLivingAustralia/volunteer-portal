@@ -64,5 +64,27 @@
 <!--            <disk>2000</disk>-->
         </resources>
     </cache>
+    <cache alias="getImageMetaData">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="minutes">2</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+            <!--            <disk>2000</disk>-->
+        </resources>
+    </cache>
+    <cache alias="getImageMetaDataFromFile">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="minutes">5</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+            <!--            <disk>2000</disk>-->
+        </resources>
+    </cache>
 </config>
 
