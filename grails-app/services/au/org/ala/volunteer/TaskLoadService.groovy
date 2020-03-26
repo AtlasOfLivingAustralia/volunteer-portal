@@ -491,6 +491,14 @@ class TaskLoadService {
                     }
                 }
 
+                (statuses*.projectId as Set).each {
+                    try {
+                        taskService.clearMaxSequenceNumber(it ?: -1)
+                    } catch (e) {
+                        log.error("Couldn't clear max sequence number cache for project id {}", it, e)
+                    }
+                }
+
             }
         }
 
