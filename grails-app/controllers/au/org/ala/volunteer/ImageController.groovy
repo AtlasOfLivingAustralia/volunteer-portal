@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import org.apache.catalina.connector.ClientAbortException
 
 import javax.imageio.ImageIO
 
@@ -82,14 +83,27 @@ class ImageController {
                 neverExpires: true
         ])
 
-        withCacheHeaders {
-            delegate.lastModified {
-                new Date(lm)
-            }
-            generate {
-                file.withInputStream { stream ->
-                    response.outputStream << stream
+        try {
+            withCacheHeaders {
+                delegate.lastModified {
+                    new Date(lm)
                 }
+                generate {
+                    file.withInputStream { stream ->
+                        response.outputStream << stream
+                    }
+                }
+            }
+        } catch (ClientAbortException e) {
+            // client hung up, can't do anything
+            log.debug('client hung up', e)
+        } catch (IOException e) {
+            if (e.message != 'Broken pipe') {
+                log.error("Exception sending image {}, {}", file, contentType, e)
+                render(status: 500, text: 'an error occured')
+            } else {
+                // client hung up, can't do anything
+                log.debug('client hung up', e)
             }
         }
     }

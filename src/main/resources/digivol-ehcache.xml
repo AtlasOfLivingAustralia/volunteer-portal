@@ -363,4 +363,12 @@
             diskExpiryThreadIntervalSeconds="120"
     >
     </cache>
+    <cache
+        name="findMaxSequenceNumber"
+        eternal="false"
+        timeToIdleSeconds="86400"
+        maxElementsInMemory="1000"
+        overflowToDisk="false"
+        memoryStoreEvictionPolicy="LRU"
+        />
 </ehcache>
