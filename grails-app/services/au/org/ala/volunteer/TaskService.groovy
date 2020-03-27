@@ -905,7 +905,7 @@ ORDER BY record_idx, name;
         return null
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key="(#resource?.URI ?: #resource?.filename) + '-' + (#imageUrl ?: '') + '-' + (#rotate)")
+    @Cacheable(value='getImageMetaDataFromFile', key="(#resource?.URI ?: #resource?.filename ?: '') + '-' + (#imageUrl ?: '') + '-' + (#rotate)")
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
