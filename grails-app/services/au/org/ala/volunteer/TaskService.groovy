@@ -997,8 +997,8 @@ ORDER BY record_idx, name;
         task.dateFullyValidated = null
     }
 
-    @CacheEvict(value = 'findMaxSequenceNumber', key='#projectId')
-    void clearMaxSequenceNumber(long projectId) {
+    @CacheEvict(value = 'findMaxSequenceNumber', key= { projectId?:-1 })
+    void clearMaxSequenceNumber(Long projectId) {
         log.debug('max sequence number cleared for project {}', projectId)
     }
 
