@@ -11,6 +11,7 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 import org.jooq.Configuration
 import org.jooq.DSLContext
 import org.jooq.TransactionalCallable
@@ -776,11 +777,11 @@ class TaskLoadService {
                         try {
                             def shadowValue = FileUtils.readFileToString(file, StandardCharsets.UTF_8)
                             def field = new FieldRecord().with {
-                                name = shadowDesc.name
+                                name = WebUtils.stripNonPrintableCharacters(shadowDesc.name ?: '')
                                 taskId = status.taskId
                                 recordIdx = shadowDesc.recordIdx
                                 superceded = false
-                                value = shadowValue
+                                value = WebUtils.stripNonPrintableCharacters(shadowValue?.toString() ?: '')
                                 transcribedByUserId = UserService.SYSTEM_USER
                                 it
                             }
@@ -819,9 +820,9 @@ class TaskLoadService {
                     def exifFields = exif.collect { exifTag, exifValue ->
                         new FieldRecord().with {
                             taskId = status.taskId
-                            name = exifTag
+                            name = WebUtils.stripNonPrintableCharacters(exifTag?.toString() ?: '')
                             recordIdx = 0
-                            value = exifValue
+                            value = WebUtils.stripNonPrintableCharacters(exifValue?.toString() ?: '')
                             superceded = false
                             transcribedByUserId = UserService.SYSTEM_USER
                             it
