@@ -164,4 +164,19 @@ class WebUtils {
         return sb.toString()
     }
 
+    private final static char SPACE = ' ' as char
+    private final static char NEW_LINE = '\n' as char
+    private final static char CARRIAGE_RETURN = '\r' as char
+
+    static String stripNonPrintableCharacters(String src) {
+
+        final int length = src.length()
+        src.codePoints()
+                .filter { it >= SPACE || it == NEW_LINE || it == CARRIAGE_RETURN }
+                .collect(
+                        { new StringBuilder(length) },
+                        { StringBuilder s, int value -> s.appendCodePoint(value) },
+                        { StringBuilder s1, StringBuilder s2 -> s1.append(s2) })
+                .toString()
+    }
 }
