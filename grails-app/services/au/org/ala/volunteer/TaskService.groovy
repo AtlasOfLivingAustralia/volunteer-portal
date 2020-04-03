@@ -7,11 +7,8 @@ import grails.plugin.cache.Cacheable
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.transform.CompileDynamic
-import org.apache.commons.lang.StringUtils
-import org.hibernate.FetchMode
 import org.imgscalr.Scalr
 import org.jooq.DSLContext
-import org.jooq.impl.DSL
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
@@ -997,6 +994,7 @@ ORDER BY record_idx, name;
         task.dateFullyValidated = null
     }
 
+    @CompileDynamic
     @CacheEvict(value = 'findMaxSequenceNumber', key= { projectId?:-1 })
     void clearMaxSequenceNumber(Long projectId) {
         log.debug('max sequence number cleared for project {}', projectId)
