@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import groovy.sql.Sql
 
@@ -90,22 +91,64 @@ class StatsService {
 
     def getNewUser(Date startDate, Date endDate) {
         String select ="""
-            SELECT  SUM( CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END ) as newVolunteers,
-                    COUNT(v.id) as totalVolunteers
-            FROM    vp_user v
-            WHERE   EXISTS ( SELECT 1 FROM task t WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id LIMIT 1)
+SELECT COUNT(user_id) FROM (
+   SELECT v.user_id
+   FROM vp_user v
+   WHERE v.created >= :startDate
+     AND v.created <= :endDate
+     AND EXISTS(SELECT 1
+                FROM task t
+                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
+                LIMIT 1)
+   UNION DISTINCT
+   SELECT v.user_id
+   FROM vp_user v
+   WHERE v.created >= :startDate
+     AND v.created <= :endDate
+     AND EXISTS(SELECT 1
+                FROM transcription t
+                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
+                LIMIT 1)
+) AS new_users;
         """.stripIndent()
 
-        def results = []
+        def selectAllUsers = """
+SELECT COUNT(user_id) FROM (
+   SELECT v.user_id
+   FROM vp_user v
+   WHERE EXISTS(SELECT 1
+                FROM task t
+                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
+                LIMIT 1)
+   UNION DISTINCT
+   SELECT v.user_id
+   FROM vp_user v
+   WHERE EXISTS(SELECT 1
+                FROM transcription t
+                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
+                LIMIT 1)
+) AS total_users;
+""".stripIndent()
+        def selectCached = """
+SELECT
+    SUM(CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END) as newVolunteers,
+    COUNT(v.id) as totalVolunteers
+FROM vp_user v
+WHERE v.transcribed_count + v.validated_count > 0;
+""".stripIndent()
 
-        def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
-            def volunteerStats = [row.newVolunteers, row.totalVolunteers]
-            results.add(volunteerStats)
-        }
+        Sql sql = new Sql(dataSource)
+        def sw = Stopwatch.createStarted()
+        def newVolunteers = sql.firstRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()])
+        log.debug("Took {} to count new volunteers for date range {} -> {}", sw, startDate, endDate)
+        sw.reset().start()
+        def totalVolunteers = sql.firstRow(selectAllUsers)
+        log.debug("Took {} to count all volunteers", sw)
+        sw.reset().start()
+        def volunteerScores = sql.firstRow(selectCached, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()])
+        log.debug("Took {} to get cached volunteer counts", sw)
 
-        return results
-
+        return [newVolunteers: newVolunteers['count'], totalVolunteers: totalVolunteers['count'], cachedNewVolunteers: volunteerScores['newVolunteers'], cachedTotalVolunteers: volunteerScores['totalVolunteers']]
     }
 
     def getActiveTasks(Date startDate, Date endDate) {

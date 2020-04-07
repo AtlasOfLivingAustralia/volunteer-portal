@@ -20,8 +20,7 @@ class StatsController {
     def volunteerStats() {
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
         def toDate = params?.date('endDate', dateFormats) ?: new Date()
-        def userList = statsService.getNewUser(fromDate, toDate)
-        def result = [newVolunteers: userList[0][0], totalVolunteers: userList[0][1]]
+        def result = statsService.getNewUser(fromDate, toDate)
         render result as JSON
     }
 
