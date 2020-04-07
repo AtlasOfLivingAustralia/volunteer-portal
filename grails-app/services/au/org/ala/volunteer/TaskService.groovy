@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
@@ -904,7 +905,7 @@ ORDER BY record_idx, name;
         return null
     }
 
-    @Cacheable(value='getImageMetaDataFromFile')
+    @Cacheable(value='getImageMetaDataFromFile', key="(#resource?.URI ?: #resource?.filename ?: '') + '-' + (#imageUrl ?: '') + '-' + (#rotate)")
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
@@ -992,9 +993,16 @@ ORDER BY record_idx, name;
         task.dateFullyValidated = null
     }
 
-    public Integer findMaxSequenceNumber(Project project) {
+    @CacheEvict(value = 'findMaxSequenceNumber', key='#projectId')
+    void clearMaxSequenceNumber(long projectId) {
+        log.debug('max sequence number cleared for project {}', projectId)
+    }
+
+    @Cacheable(value = 'findMaxSequenceNumber', key='#project?.id?:-1')
+    Integer findMaxSequenceNumber(Project project) {
         def select ="""
-            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f JOIN TASK t ON f.task_id = t.id WHERE f.name = 'sequenceNumber' and t.project_id = ${project.id};
+            WITH task_ids AS (SELECT id FROM task WHERE project_id = ${project.id})
+            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f WHERE f.task_id IN (SELECT id FROM task_ids) AND f.name = 'sequenceNumber';
         """
 
         def sql = new Sql(dataSource: dataSource)
