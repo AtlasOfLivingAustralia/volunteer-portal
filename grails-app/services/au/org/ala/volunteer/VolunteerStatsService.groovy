@@ -19,7 +19,7 @@ class VolunteerStatsService {
 
     LinkGenerator grailsLinkGenerator
 
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?.toString()?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString()) + (#disableStats.toString()) + (#disableHonourBoard.toString())")
     def generateStats(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -43,7 +43,7 @@ class VolunteerStatsService {
             }
         }
 
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectType, projectsInLabels: $projectsInLabels")
+        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectTypeName, projectsInLabels: $projectsInLabels")
 
         def sw = Stopwatch.createStarted()
 
@@ -105,7 +105,7 @@ class VolunteerStatsService {
 
     }
 
-    def generateContributors(Institution institution, Project projectInstance, def pt = null, maxContributors) {
+    def generateContributors(Institution institution, Project projectInstance, List<Long> projectIds, Integer maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
             if (institution) {
@@ -113,9 +113,9 @@ class VolunteerStatsService {
                     eq('institution', institution)
                     ne('inactive', true)
                 }
-            } else if (pt) {
+            } else if (projectIds) {
                 project {
-                    'in' 'id', pt
+                    'in' 'id', projectIds
                     ne('inactive', true)
                 }
             } else if (projectInstance) {
@@ -134,10 +134,10 @@ class VolunteerStatsService {
         if (institution) {
             latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
             latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
-        } else if (pt) {
+        } else if (projectIds) {
       //      latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
        //     latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.projectType = :pt ORDER BY date desc', [pt: pt], [max: maxContributors])
-            def projects = Project.findAllByIdInList(pt)
+            def projects = Project.findAllByIdInList(projectIds)
                     /*Project.createCriteria().list {
                 and {
                     if (pt) {
@@ -198,10 +198,11 @@ class VolunteerStatsService {
             }
         }
 
+        def userDetails = userService.detailsForUserIds(latestMessages*.user*.userId).collectEntries { [(it.userId): it] }
         def messages = latestMessages.collect {
             def topic = it.topic
             def topicId = topic.id
-            def details = userService.detailsForUserId(it.user.userId)
+            def details = userDetails[it.user.userId]
             def timestamp = it.date.time / 1000
             def topicUrl = grailsLinkGenerator.link(controller: 'forum', action: 'viewForumTopic', id: topic.id)
 
@@ -229,10 +230,11 @@ class VolunteerStatsService {
              thumbnailUrl: thumbnail, timestamp: timestamp]
         }
 
+        userDetails = userService.detailsForUserIds(latestTranscribers*.fullyTranscribedBy).collectEntries { [(it.userId): it] }
         def transcribers = latestTranscribers.collect {
             def proj = it.project
             def userId = it.fullyTranscribedBy
-            def details = userService.detailsForUserId(userId)
+            def details = userDetails[userId]
             
             def tasks = LatestTranscribersTask.withCriteria() {
                 eq('project', proj)
