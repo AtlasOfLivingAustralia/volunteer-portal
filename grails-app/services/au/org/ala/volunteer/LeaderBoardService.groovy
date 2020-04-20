@@ -171,11 +171,17 @@ class LeaderBoardService {
             scoreMap[kvp.key] += kvp.value
         }
 
+        scoreMap = scoreMap.sort { it.value }
+        if (scoreMap.size() > count) {
+            scoreMap = scoreMap.take(count)
+        }
+
         // Flatten the map into a list for easy sorting, so we can slice off the top N
         def list = []
+        def userDetails = userService.detailsForUserIds(scoreMap.keySet() as List<String>).collectEntries { [(it.userId): it] }
         scoreMap.each { kvp ->
             def user = User.findByUserId(kvp.key)
-            def details = userService.detailsForUserId(kvp.key)
+            def details = userDetails[kvp.key]
             if (user) {
                 list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
             } else {
@@ -183,10 +189,7 @@ class LeaderBoardService {
             }
         }
 
-        // Sort in descending order...
-        list?.sort { a, b -> b.score <=> a.score }
-        // and just return the top N items
-        return list.subList(0, Math.min(list.size(), count))
+        return list
     }
 
     Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, def projectsInLabels = null) {

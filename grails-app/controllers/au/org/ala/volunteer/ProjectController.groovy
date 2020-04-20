@@ -355,12 +355,12 @@ class ProjectController {
 
         ProjectType pt = landingPage.getProjectType()
         def labels = landingPage.label
-        def tag = null
+        def tags = null
         if (labels && labels.size() > 0) {
-            tag = labels*.value
+            tags = labels*.value
         }
 
-        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, tag, false)
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, tags, false)
 
         def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
 
@@ -369,7 +369,7 @@ class ProjectController {
         def model = [
                 landingPageInstance: landingPage,
                 projectType: pt.name,
-                tags: tag,
+                tags: tags,
                 projects: projectSummaryList.projectRenderList,
                 filteredProjectsCount: projectSummaryList.matchingProjectCount,
                 numberOfUncompletedProjects: numberOfUncompletedProjects,
