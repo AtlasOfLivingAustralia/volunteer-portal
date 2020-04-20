@@ -37,7 +37,7 @@ class IndexController {
         [:]
     }
 
-    def stats(long institutionId, long projectId, String projectType, String tags) {
+    def stats(long institutionId, long projectId, String projectType, List<String> tags) {
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)

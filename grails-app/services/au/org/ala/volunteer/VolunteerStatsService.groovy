@@ -19,29 +19,28 @@ class VolunteerStatsService {
 
     LinkGenerator grailsLinkGenerator
 
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
-    def generateStats(long institutionId, long projectId, String projectType, String tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
+    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectType?:'') + (#tags?.toString()?:'[]') + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+    def generateStats(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
 
-        List<Project> projectsInLabels = null
-        if (tags && tags != '[]') {
-            List<String> tagList = tags.tokenize(',[]')*.trim()
-            def labels = tags ? Label.findAllByValueInList(tagList) : null
-            if (labels && labels.size() > 0) {
-                //projectsInLabels = labels*.projects?.id[0]
-                projectsInLabels = labels*.projects[0].grep { project ->
-                    if (projectType) {
-                        project.projectType?.name == projectType
-                    } else {
-                        return true
+        List<Long> projectsInLabels = null
+        if (tags || projectTypeName) {
+            projectsInLabels = Project.withCriteria {
+                if (tags) {
+                    labels {
+                        'in'('value', tags)
                     }
-                }.id
+                }
+                if (projectTypeName) {
+                    projectType {
+                        eq('name', projectTypeName)
+                    }
+                }
+                projections {
+                    property('id')
+                }
             }
-        } else if (projectType) {
-            ProjectType pt = projectType ? ProjectType.findByName(projectType) : null
-            projectsInLabels = Project.findAllByProjectType(pt)?.id
-
         }
 
         log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectType, projectsInLabels: $projectsInLabels")
