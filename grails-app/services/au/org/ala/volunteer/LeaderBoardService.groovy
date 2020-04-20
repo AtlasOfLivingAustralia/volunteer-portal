@@ -171,7 +171,7 @@ class LeaderBoardService {
             scoreMap[kvp.key] += kvp.value
         }
 
-        scoreMap = scoreMap.sort { it.value }
+        scoreMap = scoreMap.sort { a, b -> b.value <=> a.value }
         if (scoreMap.size() > count) {
             scoreMap = scoreMap.take(count)
         }
