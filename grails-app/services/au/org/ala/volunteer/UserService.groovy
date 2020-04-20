@@ -372,6 +372,12 @@ class UserService {
             return []
         }
 
+        boolean addSystem = false
+        if (userIds.contains('system')) {
+            userIds = userIds.findAll { it != 'system' }
+            addSystem = true
+        }
+
         UserDetailsFromIdListResponse serviceResults
         try {
             serviceResults = authService.getUserDetailsById(userIds)
@@ -382,7 +388,11 @@ class UserService {
         def results
         def missingIds
 
-        if (serviceResults) {
+        if (serviceResults && !serviceResults.success) {
+            log.error("Error in user id list for getUserDetailsById call: {} with ids: {}", serviceResults.message, userIds)
+        }
+
+        if (serviceResults && serviceResults.success) {
             results = serviceResults.users*.value
             missingIds = serviceResults.invalidIds.collect { String.valueOf(it) }
         } else {
@@ -392,6 +402,9 @@ class UserService {
 
         if (missingIds) {
             results.addAll(getMissingUserIdsAsUserDetails(missingIds))
+        }
+        if (addSystem) {
+            results.add(new UserDetails(-1, 'system', '', 'system', 'system', false, [] as Set))
         }
 
         results.sort { it.userId }
