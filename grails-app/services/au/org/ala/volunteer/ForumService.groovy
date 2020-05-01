@@ -25,10 +25,10 @@ class ForumService {
             def hql = """
                 SELECT topic
                 FROM ProjectForumTopic topic
-                WHERE project_id = ${project.id}
+                WHERE project_id = :projectId
                 ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
             """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+            def topics = ForumTopic.executeQuery(hql, [projectId: project.id], [max: max, offset: offset])
 
 
             return [topics: topics, totalCount: ForumTopic.count() ]
