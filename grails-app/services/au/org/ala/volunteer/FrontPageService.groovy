@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.events.EventPublisher
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
 
@@ -7,7 +8,7 @@ import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
 @Consumer
-class FrontPageService {
+class FrontPageService implements EventPublisher {
 
     public static final String ALERT_MESSAGE = 'alertMessage'
 

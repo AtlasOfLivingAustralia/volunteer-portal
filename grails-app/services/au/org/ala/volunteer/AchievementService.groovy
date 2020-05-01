@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.io.Closer
+import grails.events.EventPublisher
 import grails.gorm.DetachedCriteria
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
@@ -26,7 +27,7 @@ import static org.hibernate.FetchMode.*
 
 @Consumer
 @Transactional
-class AchievementService {
+class AchievementService implements EventPublisher {
 
     public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
     public static final String ACHIEVEMENT_VIEWED = 'achievement.viewed'

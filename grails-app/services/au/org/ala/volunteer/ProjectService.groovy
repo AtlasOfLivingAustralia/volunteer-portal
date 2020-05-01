@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
+import grails.events.EventPublisher
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.transform.Immutable
@@ -47,7 +48,7 @@ import static org.jooq.impl.DSL.sum as jSum
 import static org.jooq.impl.DSL.when as jWhen
 
 @Transactional
-class ProjectService {
+class ProjectService implements EventPublisher {
 
     static final String TASK_COUNT_COLUMN = 'taskCount'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
