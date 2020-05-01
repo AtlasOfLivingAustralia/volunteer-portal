@@ -906,7 +906,7 @@ ORDER BY record_idx, name;
     }
 
     @CompileDynamic
-    @Cacheable(value='getImageMetaDataFromFile', key = { (resource?.URI ?: resource?.filename ?: '') + '-' + (imageUrl ?: '') + '-' + Integer.toString(rotate) })
+    @Cacheable(value='getImageMetaDataFromFile', key = { (resource?.URI?.toString() ?: resource?.filename ?: '') + '-' + (imageUrl ?: '') + '-' + Integer.toString(rotate) })
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
@@ -1012,7 +1012,7 @@ ORDER BY record_idx, name;
 
         def row = sql.firstRow(select)
 
-        row ? row[0] : null
+        return row?.get(0) ?: 0
     }
 
     public Map getAdjacentTasksBySequence(Task task) {

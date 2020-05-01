@@ -23,7 +23,7 @@ class VolunteerStatsService {
 //    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString()) + (#disableStats.toString()) + (#disableHonourBoard.toString())")
     @CompileDynamic
     // TODO is key necessary in latest version?  It should take all method params into account
-    @Cacheable(value = 'MainVolunteerContribution', key = { (institutionId?.toString()?:'-1') + (projectId?.toString()?:'-1') + (projectType?:'') + (tags?.toString()?:'[]') + (maxContributors.toString()) + (disableStats.toString()) + (disableHonourBoard.toString()) })
+    @Cacheable(value = 'MainVolunteerContribution', key = { (institutionId?.toString()?:'-1') + (projectId?.toString()?:'-1') + (projectTypeName?:'') + (tags?.toString()?:'[]') + (maxContributors.toString()) + (disableStats.toString()) + (disableHonourBoard.toString()) })
     @Transactional(readOnly = true)
     def generateStats(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
