@@ -347,6 +347,7 @@ class ProjectController {
         if (!landingPage) {
             if (shortUrl) {
                 // if we've accidentally captured an attempt a controller default action, forward that here.
+                log.info("custom landing page caught $shortUrl")
                 return forward(controller: shortUrl, params: params)
             } else {
                 return redirect(uri: '/')
