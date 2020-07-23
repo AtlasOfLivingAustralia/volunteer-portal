@@ -15,6 +15,10 @@ class UrlMappings {
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
         name landingPageAdmin: "/admin/landingPage/$action?/$id?" (controller: 'landingPageAdmin')
 
+        "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
+
+        "500"(view:'/error')
+
         name landingPage: "/$shortUrl"(controller: 'project', action: 'customLandingPage')
 
         "/$controller/$action?/$id?(.$format)?"{
@@ -23,23 +27,5 @@ class UrlMappings {
             }
         }
 
-        "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
-
-        "500"(view:'/error')
     }
 }
-
-//class UrlMappings {
-//
-//    static mappings = {
-//        "/$controller/$action?/$id?(.$format)?"{
-//            constraints {
-//                // apply constraints here
-//            }
-//        }
-//
-//        "/"(view:"/index")
-//        "500"(view:'/error')
-//        "404"(view:'/notFound')
-//    }
-//}

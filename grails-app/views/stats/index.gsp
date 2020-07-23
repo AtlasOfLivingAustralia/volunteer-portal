@@ -5,6 +5,9 @@
     <title><cl:pageTitle title="Admin Stats" /></title>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <asset:stylesheet src="admin-stats" />
+    %{-- TODO switch to new Google Charts loading code
+    https://developers.google.com/chart/interactive/docs/basic_load_libs#updateloader
+     --}%
     <gvisualization:apiImport/>
 </head>
 
@@ -220,10 +223,10 @@
 <g:render template="/common/angularBootstrapTabSet" />
 <asset:javascript src="livestamp" asset-defer=""/>
 <asset:script type="text/javascript">
-    // Load the Visualization API and the piechart package.
-    google.load('visualization', '1.0', {'packages': ['corechart']});
-    google.load('visualization', '1.0', {'packages': ['table']});
-    google.load('visualization', '1.0', {'packages':['bar']});
+    %{-- TODO switch to new Google Charts loading code
+    https://developers.google.com/chart/interactive/docs/basic_load_libs#updateloader
+     --}%
+    google.load('visualization', '1.0', {'packages': ['corechart', 'table', 'bar']});
 </asset:script>
 <asset:javascript src="admin-stats" asset-defer=""/>
 <asset:script type="text/javascript">

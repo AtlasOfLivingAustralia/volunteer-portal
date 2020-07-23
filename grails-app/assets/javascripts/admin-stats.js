@@ -329,79 +329,81 @@ function adminStats(config) {
   }]);
 
   function drawGoogleChart($scope, jsonString, $elm, type) {
-    var data = new google.visualization.DataTable(jsonString);
-    var chart;
+    google.setOnLoadCallback(function() {
+      var data = new google.visualization.DataTable(jsonString);
+      var chart;
 
-    if (type == 'table') {
-      //Setchartoptions
-      var options = {
-        title: $scope.title,
-        width: $scope.width,
-        height: $scope.height,
-        showRowNumber: true,
-        page: 'enable',
-        pageSize: 10,
-        pagingSymbols: {
-          prev: 'prev',
-          next: 'next'
-        }
-      };
+      if (type == 'table') {
+        //Setchartoptions
+        var options = {
+          title: $scope.title,
+          width: $scope.width,
+          height: $scope.height,
+          showRowNumber: true,
+          page: 'enable',
+          pageSize: 10,
+          pagingSymbols: {
+            prev: 'prev',
+            next: 'next'
+          }
+        };
 
-      chart = new google.visualization.Table($elm[0]);
+        chart = new google.visualization.Table($elm[0]);
 
-    } else if (type == "barchart") {
+      } else if (type == "barchart") {
 
-      var options = {
-        title: $scope.title,
-        vAxis: {
-          title: $scope.yaxis
-        },
-        hAxis: {title: $scope.xaxis, slantedText:true},
-        width: $scope.width,
-        height: $scope.height,
-        lineWidth: 1,
-        legend: {position: 'none'},
-        colors: ['#76A7FA'],
-        chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
-      };
+        var options = {
+          title: $scope.title,
+          vAxis: {
+            title: $scope.yaxis
+          },
+          hAxis: {title: $scope.xaxis, slantedText: true},
+          width: $scope.width,
+          height: $scope.height,
+          lineWidth: 1,
+          legend: {position: 'none'},
+          colors: ['#76A7FA'],
+          chartArea: {left: 60, top: 10, bottom: 60, height: "40%", width: "100%"}
+        };
 
-      chart = new google.visualization.ColumnChart($elm[0]);
+        chart = new google.visualization.ColumnChart($elm[0]);
 
-    } else  if (type == "piechart") {
+      } else if (type == "piechart") {
 
-      var options = {
-        title: $scope.title,
-        width: $scope.width,
-        height: $scope.height,
-        pieHole: $scope.pieHole,
-        pieSliceText: 'value',
-        pieSliceTextStyle: {
-          color: 'black'
-        }
+        var options = {
+          title: $scope.title,
+          width: $scope.width,
+          height: $scope.height,
+          pieHole: $scope.pieHole,
+          pieSliceText: 'value',
+          pieSliceTextStyle: {
+            color: 'black'
+          }
 
-      };
+        };
 
-      chart = new google.visualization.PieChart($elm[0]);
+        chart = new google.visualization.PieChart($elm[0]);
 
-    } else if (type == 'linechart') {
-      var options = {
-        hAxis: {title: $scope.xaxis},
-        vAxis: {
-          title: $scope.yaxis
-        },
-        width: $scope.width,
-        height: $scope.height,
-        colors: ['#a52714'],
-        legend: {position: 'none'},
-        lineWidth: 1,
-        chartArea:{left:60,top:10,bottom:60, height: "40%", width: "100%"}
+      } else if (type == 'linechart') {
+        var options = {
+          hAxis: {title: $scope.xaxis},
+          vAxis: {
+            title: $scope.yaxis
+          },
+          width: $scope.width,
+          height: $scope.height,
+          colors: ['#a52714'],
+          legend: {position: 'none'},
+          lineWidth: 1,
+          chartArea: {left: 60, top: 10, bottom: 60, height: "40%", width: "100%"}
 
-      };
+        };
 
-      chart = new google.visualization.LineChart($elm[0]);
-    }
+        chart = new google.visualization.LineChart($elm[0]);
+      }
 
-    chart.draw(data,options);
+      chart.draw(data, options);
+    });
   }
 
   function downloadCSV (csv_out, reportType) {
@@ -427,35 +429,37 @@ function adminStats(config) {
   }
 
   // Extend DataTable functionality to include toCSV
-  google.visualization.DataTable.prototype.toCSV = function () {
-    var dt_cols = this.getNumberOfColumns();
-    var dt_rows = this.getNumberOfRows();
+  google.setOnLoadCallback(function() {
+    google.visualization.DataTable.prototype.toCSV = function () {
+      var dt_cols = this.getNumberOfColumns();
+      var dt_rows = this.getNumberOfRows();
 
-    var csv_cols = [];
-    var csv_out;
+      var csv_cols = [];
+      var csv_out;
 
-    // Iterate columns
-    for (var i=0; i<dt_cols; i++) {
-      // Replace any commas in column labels
-      csv_cols.push(this.getColumnLabel(i).replace(/,/g,""));
-    }
-
-    // Create column row of CSV
-    csv_out = csv_cols.join(",")+"\r\n";
-
-    // Iterate rows
-    for (i=0; i<dt_rows; i++) {
-      var raw_col = [];
-      for (var j=0; j<dt_cols; j++) {
-        // Replace any commas in row values
-        raw_col.push(this.getFormattedValue(i, j, 'label').replace(/,/g,""));
+      // Iterate columns
+      for (var i = 0; i < dt_cols; i++) {
+        // Replace any commas in column labels
+        csv_cols.push(this.getColumnLabel(i).replace(/,/g, ""));
       }
-      // Add row to CSV text
-      csv_out += raw_col.join(",")+"\r\n";
-    }
 
-    return csv_out;
-  };
+      // Create column row of CSV
+      csv_out = csv_cols.join(",") + "\r\n";
+
+      // Iterate rows
+      for (i = 0; i < dt_rows; i++) {
+        var raw_col = [];
+        for (var j = 0; j < dt_cols; j++) {
+          // Replace any commas in row values
+          raw_col.push(this.getFormattedValue(i, j, 'label').replace(/,/g, ""));
+        }
+        // Add row to CSV text
+        csv_out += raw_col.join(",") + "\r\n";
+      }
+
+      return csv_out;
+    };
+  });
 
   function DateRangeController() {
     var ctrl = this;

@@ -53,7 +53,7 @@ class TaskLoadService {
     Closure<DSLContext> jooqContext
 
     @Value('${digivol.ingest.queue.size:200}')
-    Integer batchSize = 200
+    Integer batchSize = 100
 
     static class Status {
         int count
@@ -519,7 +519,7 @@ class TaskLoadService {
                                 select(TASK_DESCRIPTOR.ID)
                                         .from(TASK_DESCRIPTOR)
                                         .where(jobFilter)
-                                        .orderBy(TASK_DESCRIPTOR.TIME_CREATED)
+                                        .orderBy(TASK_DESCRIPTOR.ID)
                                         .limit(batchSize)
                                         .forUpdate().skipLocked() // <-- row locks to prevent duplicate processing
                         )
@@ -527,6 +527,8 @@ class TaskLoadService {
                 .returning()
                 .fetch()
 
+        // Just to be sure the list is in this order
+        jobs.sortAsc(TASK_DESCRIPTOR.ID)
         final dequeuedTasks = jobs.size()
         // handle duplicate tasks
 
