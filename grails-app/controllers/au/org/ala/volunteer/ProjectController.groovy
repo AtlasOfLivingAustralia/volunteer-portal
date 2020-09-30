@@ -650,7 +650,6 @@ class ProjectController {
     }
 
     private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
-        def notifyActivation = false
         if (projectInstance) {
             if (params.version) {
                 def version = params.version.toLong()
