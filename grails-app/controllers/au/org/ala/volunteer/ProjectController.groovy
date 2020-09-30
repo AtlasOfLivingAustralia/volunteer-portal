@@ -43,6 +43,7 @@ class ProjectController {
     def projectStagingService
     def projectTypeService
     def authService
+    def groovyPageRenderer
     Closure<DSLContext> jooqContext
 
     /**
@@ -649,7 +650,7 @@ class ProjectController {
     }
 
     private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
-
+        def notifyActivation = false
         if (projectInstance) {
             if (params.version) {
                 def version = params.version.toLong()
@@ -659,6 +660,10 @@ class ProjectController {
                 }
             }
 
+            // Issue #371 - Activation notification
+            def oldInactiveFlag = projectInstance.inactive
+            boolean newInactive = (params.inactive == "true")
+
             projectInstance.properties = params
 
             if (!projectInstance.template.supportMultipleTranscriptions) {
@@ -667,6 +672,11 @@ class ProjectController {
             }
 
             if (!projectInstance.hasErrors() && projectService.saveProject(projectInstance)) {
+                if (((oldInactiveFlag != newInactive) && (!newInactive))) {
+                    log.info("Project was activated; Sending project activation notification")
+                    def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: projectInstance.name])
+                    projectService.emailNotification(projectInstance, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
+                }
                 flash.message = "Expedition updated"
                 return true
             } else {

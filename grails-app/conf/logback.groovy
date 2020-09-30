@@ -126,7 +126,9 @@ final info  = [
 
 final debug = [
 //        'grails.app.services.au.org.ala.volunteer.ExportService',
-//        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
+        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
+        'grails.app.services.au.org.ala.volunteer.ProjectService',
+        'grails.app.controllers.au.org.ala.volunteer.TranscribeController'
 //        'grails.plugin.cache'
 //        'org.apache.http.headers',
 //        'org.apache.http.wire',

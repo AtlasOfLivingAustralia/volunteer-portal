@@ -18,6 +18,7 @@ import org.jooq.DSLContext
 import org.jooq.SortOrder
 import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
@@ -54,6 +55,8 @@ class ProjectService {
     static final String VALIDATED_COUNT_COLUMN = 'validatedCount'
     static final String TRANSCRIBER_COUNT_COLUMN = 'transcriberCount'
     static final String VALIDATOR_COUNT_COLUMN = 'validatorCount'
+    static final String NOTIFICATION_TYPE_ACTIVATION = 'activated'
+    static final String NOTIFICATION_TYPE_COMPLETION = 'completed'
 
     // make a static factory function because I'm not sure whether
     // these are thread safe
@@ -67,6 +70,8 @@ class ProjectService {
     def multimediaService
     def i18nService
     def grailsApplication
+    def emailService
+    def messageSource
     @Autowired
     Closure<DSLContext> jooqContextFactory
 
@@ -182,6 +187,20 @@ class ProjectService {
 
     def saveProject (Project projectInstance, boolean flush = true, boolean failOnError = null) {
         projectInstance.save(flush: flush, failOnError: failOnError)
+    }
+
+    /**
+     * Sends an email notification to the configured email with the included message. Project notifications are sent
+     * to the configured address (notifications.project.address).
+     * @param projectInstance the instance of the project affected
+     * @param message the message being sent.
+     */
+    def emailNotification(Project projectInstance, String message, String type = NOTIFICATION_TYPE_ACTIVATION) {
+        // Send email to grailsApplication.config.notifications.project.address
+        log.debug("Sending project notification")
+        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+        def projectLabel = messageSource.getMessage("project.name.label", null, "Project", LocaleContextHolder.locale)
+        emailService.sendMail(grailsApplication.config.notifications.project.address, "${appName} ${projectLabel} ${type}: ${projectInstance.name}", message)
     }
 
     @Immutable

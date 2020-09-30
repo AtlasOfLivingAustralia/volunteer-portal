@@ -15,6 +15,8 @@ class TranscribeController {
     def userService
     def logService
     def multimediaService
+    def groovyPageRenderer
+    def projectService
 
     static allowedMethods = [saveTranscription: "POST"]
 
@@ -227,11 +229,28 @@ class TranscribeController {
         def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId?:-1
         def taskInstance = taskService.getNextTask(currentUser, project, previousId)
+
         //retrieve the details of the template
-        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
-            log.debug "1."
-            render(view: 'noTasks', model: [complete: params.complete])
-        } else if (taskInstance) {
+//        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
+//            log.debug "1."
+//            render(view: 'noTasks', model: [complete: params.complete])
+//        } else if (taskInstance) {
+//            log.debug "2."
+//            def redirectParams = [:]
+//            if (params.complete) {
+//                redirectParams.complete = params.complete
+//            }
+//            redirect(action: 'task', id: taskInstance.id, params: redirectParams)
+//        } else {
+//            log.debug "4."
+//            render(view: 'noTasks', model: [complete: params.complete])
+//        }
+
+        // Issue #371 - Completion notification
+        // Refactored the above; flipped the logic:
+        // * If a task exists that is different to the previous task, display task
+        // * Else, check if completed. If so, send email notification, then render no tasks page.
+        if (taskInstance && taskInstance.id != previousId) {
             log.debug "2."
             def redirectParams = [:]
             if (params.complete) {
@@ -239,9 +258,28 @@ class TranscribeController {
             }
             redirect(action: 'task', id: taskInstance.id, params: redirectParams)
         } else {
-            log.debug "4."
+            log.debug("No tasks were found.")
+            if (isComplete(project)) {
+                log.info("Project was completed; Sending project completion notification")
+                def message = groovyPageRenderer.render(view: '/project/projectCompleteNotification', model: [projectName: project.name])
+                projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_COMPLETION)
+            }
             render(view: 'noTasks', model: [complete: params.complete])
         }
+    }
+
+    /**
+     * Checks to see if the Project has been completed. A project is complete when there is at least one task and the
+     * number of tasks equals the number of tasks transcribed.
+     * @param projectInstance the instance of the project to check.
+     * @return true if all tasks have been trascribed, false if not.
+     */
+    private boolean isComplete(Project projectInstance) {
+        log.debug("Checking for project completion.")
+        def taskCount = Task.countByProject(projectInstance)
+        def tasksTranscribed = Task.countByProjectAndIsFullyTranscribed(projectInstance, true)
+        log.debug("Task count: [${taskCount}], Tasks transcribed: [${tasksTranscribed}]")
+        return (taskCount > 0 && taskCount == tasksTranscribed)
     }
 
     def geolocationToolFragment() {
