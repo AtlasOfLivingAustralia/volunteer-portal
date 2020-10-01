@@ -80,7 +80,7 @@
                     development of a new task template.
                 </p>
                 <p>
-                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us (<a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a>)
+                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us (<a href="mailto:DigiVol@australian.museum">DigiVol@australian.museum</a>)
                 </p>
                 <h2 class="body-heading"><a name="useful-references">Useful references</a></h2>
                 <div class="embed-responsive embed-responsive-16by9">

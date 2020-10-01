@@ -67,7 +67,7 @@
 
 <p>
     If you encounter any problems, you can visit the discussion forums or contact us by <a
-        href="mailto:DigiVol@austmus.gov.au">email</a>.
+        href="mailto:DigiVol@australian.museum">email</a>.
 </p>
 
 <p>

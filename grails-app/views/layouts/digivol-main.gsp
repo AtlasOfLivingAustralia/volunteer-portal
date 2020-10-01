@@ -223,8 +223,7 @@
                     <p>Get help in using DIGIVOL and reporting issues</p>
 
                     <p class="address">
-                        <a href="mailto:DigiVol@austmus.gov.au">DigiVol@austmus.gov.au</a><br/>
-                        (02) 9320 6429<br/>
+                        <a href="mailto:DigiVol@australian.museum">DigiVol@australian.museum</a><br/>
                         Australian Museum<br/>
                         Sydney NSW 2010
                     </p>
