@@ -115,7 +115,9 @@ class TemplateController {
                 redirect(action: "list")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "edit", id: params.id)
             }
         }

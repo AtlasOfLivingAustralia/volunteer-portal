@@ -25,6 +25,7 @@ class FileUploadService {
                 try {
                     [k: k, of: mpf.originalFilename, file: uploadFile(imagesDir, mpf), error: null]
                 } catch(e) {
+                    log.error("Image upload failed: ${e.message}", e)
                     [k: k, of: mpf.originalFilename, file: null, error: e]
                 }
             }

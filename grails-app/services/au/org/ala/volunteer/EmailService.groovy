@@ -42,7 +42,7 @@ class EmailService {
      * @param message The message body
      */
     def pushMessageOnQueue(String emailAddress, String subject, String message) {
-        log.info("Queuing email message to ${emailAddress} - ${subject}")
+        log.debug("Queuing email message to ${emailAddress} - ${subject}")
         def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message)
         _queuedMessages.add(qmsg)
     }

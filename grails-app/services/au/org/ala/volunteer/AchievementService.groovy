@@ -103,7 +103,7 @@ class AchievementService {
         if (newAchievements) {
             final user = User.findByUserId(userId)
             newAchievements.each {
-                log.info("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.name}")
+                log.debug("${user?.id} (${user?.displayName} ${user?.email}) achieved ${it.name}")
                 def aa = new AchievementAward(achievement: it, user: user, awarded: new Date())
                 def aaSaved = aa.save(true)
 
@@ -245,7 +245,7 @@ class AchievementService {
         if (total) {
             ids.each { notify(ACHIEVEMENT_VIEWED, [id: it, userId: user.userId]) }
         }
-        log.info("Marked ${total} achievements as seen for ${user.userId}")
+        log.debug("Marked ${total} achievements as seen for ${user.userId}")
     }
 
     def awardAchievementsToEligibleUsers (AchievementDescription achievementDescriptionInstance) {
@@ -283,14 +283,14 @@ class AchievementService {
 
     def unawardAllUsers(AchievementDescription achievementDescriptionInstance) {
         def awards = AchievementAward.findAllByAchievement(achievementDescriptionInstance)
-        log.info("Removing awarded achievements: ${awards.join('\n')}")
+        log.debug("Removing awarded achievements: ${awards.join('\n')}")
 
         AchievementAward.deleteAll(awards)
     }
 
     def unaward(List<Long> awardIds, AchievementDescription achievementDescription) {
         def awards = AchievementAward.findAllByIdInListAndAchievement(awardIds, achievementDescriptionInstance)
-        log.info("Removing awarded achievements: ${awards.join('\n')}")
+        log.debug("Removing awarded achievements: ${awards.join('\n')}")
 
         AchievementAward.deleteAll(awards)
 

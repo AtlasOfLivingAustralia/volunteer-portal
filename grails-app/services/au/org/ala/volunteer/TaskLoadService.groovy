@@ -92,10 +92,10 @@ class TaskLoadService {
 
         MetaProperty importClosureProperty = this.metaClass.properties.find() { it.name == "import_" + project.template.name }
         if (importClosureProperty) {
-            log.info("Using 'import_${project.template.name} for import")
+            log.debug("Using 'import_${project.template.name} for import")
             importClosure = importClosureProperty.getProperty(this) as Closure
         } else {
-            log.info "Using default CSV import routine"
+            log.debug "Using default CSV import routine"
         }
 
         DSLContext create = jooqContext()
@@ -124,6 +124,7 @@ class TaskLoadService {
 
             TaskIngestJob.triggerNow([project: project.id])
         } catch (Exception ex) {
+            log.error("Creating CSV failed: ${ex.message}", ex)
             return [false, ex.message]
         }
 
@@ -736,6 +737,7 @@ class TaskLoadService {
                     }
                 }
             } catch (e) {
+                log.error("Copying image to store failed: ${e.message}", e)
                 status.success = false
                 status.message = e.message
             }

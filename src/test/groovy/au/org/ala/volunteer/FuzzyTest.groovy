@@ -8,8 +8,8 @@ class FuzzyTest {
     public void testLev() {
         String s = "nihwearaweraaaoa"
         String t = "bazxfgcfaaaingazsdgzdfg"
-        println(Fuzzy.levenshteinDistance(s,t))
-        println(Fuzzy.ldRatio(s,t))
+        //println(Fuzzy.levenshteinDistance(s,t))
+        //println(Fuzzy.ldRatio(s,t))
     }
 
 }

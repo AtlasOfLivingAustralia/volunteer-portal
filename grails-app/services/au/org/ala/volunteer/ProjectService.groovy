@@ -610,6 +610,7 @@ class ProjectService {
         try {
             [size: projectPath.directorySize(), error: null]
         } catch (e) {
+            log.error(e.message, e)
             [error: e, size: -1]
         }
     }

@@ -146,6 +146,7 @@ class CollectionEventService {
         } catch (Exception ex) {
             result.message = ex.message
             result.success = false;
+            log.error("Import failed: " + ex.message, ex)
         } finally {
             sessionFactory.currentSession.flush();
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)

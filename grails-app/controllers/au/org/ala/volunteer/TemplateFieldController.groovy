@@ -102,7 +102,9 @@ class TemplateFieldController {
                 redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }

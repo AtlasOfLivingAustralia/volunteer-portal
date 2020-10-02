@@ -348,7 +348,7 @@ class ProjectController {
         if (!landingPage) {
             if (shortUrl) {
                 // if we've accidentally captured an attempt a controller default action, forward that here.
-                log.info("custom landing page caught $shortUrl")
+                log.debug("custom landing page caught $shortUrl")
                 return forward(controller: shortUrl, params: params)
             } else {
                 return redirect(uri: '/')
@@ -710,7 +710,9 @@ class ProjectController {
                 redirect(action: "list")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }
@@ -742,7 +744,8 @@ class ProjectController {
                     f.transferTo(file);
                     projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload image: " + ex.message;
+                    flash.message = "Failed to upload image: " + ex.message
+                    log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
@@ -781,7 +784,8 @@ class ProjectController {
                         projectInstance.setBackgroundImage(it, f.contentType)
                     }
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload image: " + ex.message;
+                    flash.message = "Failed to upload image: " + ex.message
+                    log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
@@ -1158,7 +1162,7 @@ class ProjectController {
         try {
             projectService.archiveProject(project)
             project.archived = true
-            log.info("${project.name} (id=${project.id}) archived")
+            log.debug("${project.name} (id=${project.id}) archived")
             respond status: SC_NO_CONTENT
         } catch (e) {
             log.error("Couldn't archive project $project", e)

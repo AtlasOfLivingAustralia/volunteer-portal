@@ -257,7 +257,7 @@ class TaskService {
         if (results) {
             def taskResult = results.last()
             task = Task.get(taskResult[0])
-            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
         }
         task
     }
@@ -338,7 +338,7 @@ class TaskService {
         // required to transcribe the Task.
         task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
         if (task) {
-            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
@@ -348,13 +348,13 @@ class TaskService {
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
         task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
-            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
         task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout)
         if (task) {
-            log.info("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
             return task
         }
 
@@ -590,7 +590,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
 
         if (log.isInfoEnabled()) {
             sw.start()
-            log.info("Getting recently validated tasks. ")
+            log.debug("Getting recently validated tasks. ")
         }
 
         def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -607,7 +607,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
 
          if (log.isInfoEnabled()) {
             sw.stop()
-            log.info("Returning validated tasks: " + sw.toString())
+            log.debug("Returning validated tasks: " + sw.toString())
         }
 
         return tasks
@@ -924,7 +924,7 @@ ORDER BY record_idx, name;
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            log.info("Could not read image file: $resource - could not get image metadata")
+            log.warn("Could not read image file: $resource - could not get image metadata")
         }
         return null
     }
@@ -1243,7 +1243,7 @@ $withClause
 $countClause
 $queryClause
 """
-        log.info("Count query:\n$countQuery")
+        log.debug("Count query:\n$countQuery")
 
         final rowsQuery = """
 $withClause

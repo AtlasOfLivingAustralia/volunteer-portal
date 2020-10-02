@@ -62,7 +62,7 @@ class AjaxController {
     def stats() {
         setNoCache()
 
-        log.info("stats")
+        log.debug("stats")
 
         def stats = statsCache.get()
 
@@ -71,7 +71,7 @@ class AjaxController {
 
     private Map<String, ?> statsInternal() {
 
-        log.info("statsInternal")
+        log.debug("statsInternal")
 
         def stats = [:]
 
@@ -251,7 +251,7 @@ class AjaxController {
 
     def loadProgress(long id) {
         setNoCache()
-//        log.info("loadProgress($id)")
+//        log.debug("loadProgress($id)")
         respond taskLoadService.status(id)
     }
 
@@ -475,7 +475,7 @@ class AjaxController {
         final sortOrder = params.order ?: 'desc'
         rowStart = rowStart ?: 0
 
-        log.info("Transcription Feed Start")
+        log.debug("Transcription Feed Start")
 
         if (timestampStart) {
             startTs = toTimestamp(timestampStart)
@@ -607,8 +607,8 @@ class AjaxController {
 
         sw.stop()
 
-        log.info("Took $sw to get ${items.size()} results since $startTs.  ${sw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
-        log.info("Userdetails took $udsw for ${items.size()}.  ${udsw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
+        log.debug("Took $sw to get ${items.size()} results since $startTs.  ${sw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
+        log.debug("Userdetails took $udsw for ${items.size()}.  ${udsw.elapsed(TimeUnit.MILLISECONDS) / (items.size() ?: 1)}ms / result.")
 
         final results = [
             numFound: count,

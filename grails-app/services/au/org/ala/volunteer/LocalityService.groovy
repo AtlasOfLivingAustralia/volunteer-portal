@@ -109,7 +109,8 @@ class LocalityService {
                 result.message = "Invalid file, or file missing!"
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            log.error("Import Localities failed: ${ex.message}", ex)
             result.message = ex.message
             result.success = false;
         } finally {

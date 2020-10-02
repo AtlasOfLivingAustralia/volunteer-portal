@@ -102,7 +102,7 @@ class ValueConverterListener<T> extends AbstractPersistenceEventListener {
             if (value != null) {
                 T newValue = converter(value)
                 if (value != newValue) {
-                    log.info("Converted $value to $newValue for ${field.name} on $obj")
+                    log.debug("Converted $value to $newValue for ${field.name} on $obj")
                 }
                 return ConvertResult.success(newValue)
             } else {
