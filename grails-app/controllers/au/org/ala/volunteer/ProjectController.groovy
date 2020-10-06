@@ -661,7 +661,7 @@ class ProjectController {
 
             // Issue #371 - Activation notification
             def oldInactiveFlag = projectInstance.inactive
-            boolean newInactive = (params.inactive == "true")
+            boolean newInactive = (params.inactive != null ? params.inactive == "true" : projectInstance.inactive)
 
             projectInstance.properties = params
 
