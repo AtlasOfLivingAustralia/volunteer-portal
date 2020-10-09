@@ -243,7 +243,7 @@ WHERE
   AND
   EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
   AND
-  NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_transcribed_by IS NULL)
+  NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_validated_by IS NULL)
 '''
 
         // Create native SQL query.
