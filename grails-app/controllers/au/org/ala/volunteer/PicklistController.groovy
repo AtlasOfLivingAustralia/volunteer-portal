@@ -27,13 +27,19 @@ class PicklistController {
     
     def uploadCsvData () {
         picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist.toCsvReader(), params.institutionCode)
-        redirect(action: "manage")
+        updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
+        redirect(action: "manage", params: [picklistId: params.picklistId])
     }
 
     def uploadCsvFile() {
         def f = request.getFile('picklistFile')
         picklistService.replaceItems(Long.parseLong(params.picklistId), f.inputStream.toCsvReader(['charset':'UTF-8']), params.institutionCode)
-        redirect(action: "manage")
+        updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
+        redirect(action: "manage", params: [picklistId: params.picklistId])
+    }
+
+    def updatedCsvMessage(String msg) {
+        flash.message = "${message(code: 'default.updated.message', args: [message(code: 'picklist.label', default: 'Picklist'), msg])}"
     }
 
     def manage () {
