@@ -51,7 +51,8 @@ class AdminController {
     }
 
     def tutorialManagement() {
-        def tutorials = tutorialService.listTutorials()
+        def searchTerm = (params.q) ? params.q : null
+        def tutorials = tutorialService.listTutorials(searchTerm)
         [tutorials: tutorials]
     }
 

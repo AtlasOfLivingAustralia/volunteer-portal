@@ -38,7 +38,31 @@
                         </div>
                     </div>
 
-                    <h3>Tutorial Files</h3>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-sm-6">
+                            <h3>Tutorial Files</h3>
+                            <g:if test="${params.q}">
+                                <span class="tag currentFilter">
+                                    <span>${params.q}</span>
+                                    <a href="?"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                </span>
+                            </g:if>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="custom-search-input body">
+                                <div class="input-group">
+                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search files"/>
+                                    <span class="input-group-btn">
+                                        <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                            <i class="glyphicon glyphicon-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-hover table-striped">
                             <thead>
@@ -150,6 +174,23 @@
 
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();
+
+        $("#searchbox").keydown(function(e) {
+            if (e.keyCode ==13) {
+                doSearch();
+            }
+        });
+
+        $("#btnSearch").click(function(e) {
+            e.preventDefault();
+            doSearch();
+        });
+
+        function doSearch() {
+            var q = $("#searchbox").val();
+            var url = "${createLink(controller: 'admin', action: 'tutorialManagement')}?q=" + encodeURIComponent(q);
+                window.location = url;
+        }
 
     });
 
