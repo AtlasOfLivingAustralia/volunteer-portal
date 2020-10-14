@@ -126,17 +126,17 @@ final info  = [
 
 final debug = [
 //        'grails.app.services.au.org.ala.volunteer.ExportService',
-        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
-        'grails.app.services.au.org.ala.volunteer.ProjectService',
-        'grails.app.controllers.au.org.ala.volunteer.TranscribeController',
-        'grails.app.controllers.au.org.ala.volunteer.ErrorController',
+//        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
+//        'grails.app.services.au.org.ala.volunteer.ProjectService',
+//        'grails.app.controllers.au.org.ala.volunteer.TranscribeController',
+//        'grails.app.controllers.au.org.ala.volunteer.ErrorController',
 //        'grails.plugin.cache'
 //        'org.apache.http.headers',
 //        'org.apache.http.wire',
 //        'org.hibernate.SQL',
 //        'org.springframework.cache',
 //        'net.sf.ehcache',
-        'org.jooq.tools.LoggerListener'
+//        'org.jooq.tools.LoggerListener'
 //        'org.grails.web.mapping'
 ]
 
