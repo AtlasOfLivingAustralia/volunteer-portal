@@ -24,7 +24,7 @@ class TutorialService {
         def files = dir.listFiles()
         def tutorials = []
         files.each {
-            def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/tutorials/" + it.name
+            def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "tutorials/" + it.name
             tutorials << [file: it, name: it.name, url: url]
         }
 

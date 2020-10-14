@@ -43,15 +43,15 @@
                         <table class="table table-hover table-striped">
                             <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Link</th>
+                                <th>Tutorial</th>
                                 <th class="col-md-2 text-center">Actions</th>
                             </tr>
                             </thead>
                             <g:each in="${tutorials}" var="tute">
                                 <tr>
-                                    <td>${tute.name}</td>
-                                    <td><a href="${tute.url}">${tute.url}</a></td>
+                                    <td>${tute.name}<br />
+                                        <a href="${tute.url}">${tute.url}</a>
+                                    </td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}">Rename</button>
                                         <button class="btn btn-sm btn-danger btnDeleteTutorial"
