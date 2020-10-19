@@ -66,7 +66,29 @@ class ValidateController {
 /*            if (!recordValues && transcribersAnswers && transcribersAnswers.size() > 0) {
                 recordValues = transcribersAnswers[0].fields
             }*/
-            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, transcribersAnswers: transcribersAnswers, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
+
+//            log.info("View: " + '../transcribe/templateViews/' + template.viewName)
+//            log.info("taskInstance: ${taskInstance}")
+//            log.info("recordValues: ${recordValues}")
+//            log.info("isReadOnly: ${isReadonly}")
+//            log.info("nextTask: ${adjacentTasks.next}")
+//            log.info("prevTask: ${adjacentTasks.prev}")
+//            log.info("sequenceNumber: ${adjacentTasks.sequenceNumber}")
+//            log.info("template: ${template}")
+//            log.info("imageMetaData: ${imageMetaData}")
+//            log.info("transcribersAnswers: ${transcribersAnswers}")
+
+            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance,
+                                                                                     recordValues: recordValues,
+                                                                                     isReadonly: isReadonly,
+                                                                                     nextTask: adjacentTasks.next,
+                                                                                     prevTask: adjacentTasks.prev,
+                                                                                     sequenceNumber: adjacentTasks.sequenceNumber,
+                                                                                     template: template,
+                                                                                     validator: true,
+                                                                                     imageMetaData: imageMetaData,
+                                                                                     transcribersAnswers: transcribersAnswers,
+                                                                                     thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
