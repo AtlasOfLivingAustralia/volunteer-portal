@@ -162,7 +162,22 @@
                                                                 <g:set var="selectedAnimalInfos"
                                                                        value="${[wsParams.animals.find{t -> return ((selectedAnimalAns?.get('vernacularName') && t.vernacularName == selectedAnimalAns?.get('vernacularName')) || (selectedAnimalAns?.get('scientificName') && t.scientificName == selectedAnimalAns?.get('scientificName')))}]}"/>
 
-                                                                <g:if test="${selectedAnimalInfos?.size() > 0 && selectedAnimalInfos[0] != null}">
+                                                                <g:if test="${selectedAnimalInfos?.size() > 0 && selectedAnimalInfos[0] == null}">
+                                                                    <g:if test="${recordIdx > 0}"><tr></g:if>
+                                                                    <td>
+                                                                        <span style="color: red;">Invalid Transcription</span><br/>
+                                                                        Animal option no longer in template
+                                                                    </td>
+                                                                    <td colspan="2"></td>
+                                                                    <td>
+                                                                        <g:render template="/transcribe/wildlifeSpotterWidgetInvalid"
+                                                                                  model="${[invalidVernacularName: selectedAnimalAns?.get('vernacularName')]}"/>
+                                                                    </td>
+                                                                    <td>${selectedAnimalAns?.get('individualCount')}</td>
+                                                                    <td>${selectedAnimalAns?.get('comment')}</td>
+                                                                    <g:if test="${recordIdx > 0}"></tr></g:if>
+                                                                </g:if>
+                                                                <g:else>
                                                                     <g:if test="${recordIdx == 0}">
                                                                         <td>Yes</td>
                                                                         <td>
@@ -183,7 +198,7 @@
                                                                             <td>${selectedAnimalAns?.get('comment')}</td>
                                                                         </tr>
                                                                     </g:else>
-                                                                </g:if>
+                                                                </g:else>
 
 
                                                             </g:each>
