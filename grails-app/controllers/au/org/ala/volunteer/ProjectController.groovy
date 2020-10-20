@@ -23,7 +23,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST",
-                             archive: "POST",
+                             //archive: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
@@ -1111,16 +1111,39 @@ class ProjectController {
             params.order = 'asc'
         }
         if (!params.max) {
-            params.max = 10
+            params.max = 20
         }
 
-        def projects = Project.findAllByArchived(false, params)
+        def projects
+        def total
+        def institution
+        if (params.institution) {
+            institution = Institution.get(params.institution)
+        }
+
+        if (institution && !StringUtils.isEmpty(params.q)) {
+            if (institution) {
+                projects = Project.findAllByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%", params)
+                total = Project.countByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%")
+            }
+        } else if (institution) {
+            if (institution) {
+                projects = Project.findAllByArchivedAndInstitution(false, institution, params)
+                total = Project.countByArchivedAndInstitution(false, institution)
+            }
+        } else if (!StringUtils.isEmpty(params.q)) {
+            projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
+            total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
+        } else {
+            projects = Project.findAllByArchived(false, params)
+            total = Project.countByArchived(false)
+        }
         sw.stop()
         log.debug("archiveList: findAllByArchived = $sw")
-        sw.reset().start()
-        def total = Project.countByArchived(false)
-        sw.stop()
-        log.debug("archiveList: countByArchived = $sw")
+//        sw.reset().start()
+        //def total = Project.countByArchived(false)
+//        sw.stop()
+//        log.debug("archiveList: countByArchived = $sw")
 //        sw.reset().start()
 //        def sizes = projectService.projectSize(projects)
 //        sw.stop()
@@ -1145,7 +1168,8 @@ class ProjectController {
             new ArchiveProject(project: it, /*size: sizes[it.id].size,*/ percentTranscribed: transcribed, percentValidated: validated)
         }
 
-        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total, 'imageStoreStats': projectService.imageStoreStats()])
+        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total,
+                                          'imageStoreStats': projectService.imageStoreStats()])
     }
 
     def projectSize(Project project) {
@@ -1153,20 +1177,25 @@ class ProjectController {
         respond(size)
     }
 
+    /**
+     * Archive project controller action. Archives a project or returns an error if not allowed.
+     * @param project the project to archive.
+     */
     def archive(Project project) {
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
-            return
+            log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
+            redirect(uri: "/")
         }
 
         try {
             projectService.archiveProject(project)
-            project.archived = true
             log.debug("${project.name} (id=${project.id}) archived")
-            respond status: SC_NO_CONTENT
+            flash.message = "${message(code: 'project.label', default: 'Project')} ${project.name} archived."
+            redirect(action: 'archiveList', params: params)
         } catch (e) {
-            log.error("Couldn't archive project $project", e)
-            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.name}")
+            flash.message = "An error occured while archiving ${project.name}."
+            log.error("An error occured while archiving ${message(code: 'project.label', default: 'Project')} ${project}", e)
+            redirect(action: 'archiveList', params: params)
         }
     }
 

@@ -429,6 +429,9 @@ class ProjectService {
             case ProjectActiveFilterType.showInactiveOnly:
                 whereClauses += PROJECT.INACTIVE.eq(true)
                 break
+            case ProjectActiveFilterType.showArchivedOnly:
+                whereClauses += PROJECT.ARCHIVED.eq(true)
+                break
         }
 
         def taskCountClause = jCount(TASK).'as'(TASK_COUNT_COLUMN)
@@ -617,7 +620,7 @@ class ProjectService {
         try {
             [size: projectPath.directorySize(), error: null]
         } catch (e) {
-            log.error(e.message, e)
+            log.error("Unable to calculate project path directory size: ${e.message}", e)
             [error: e, size: -1]
         }
     }
@@ -628,16 +631,20 @@ class ProjectService {
     }
 
     def calculateCompletion(List<Project> projects) {
-        Task.withCriteria{
-            'in'('project', projects)
-            projections {
-                groupProperty('project')
-                count('id', 'total')
-                sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
-                count('fullyValidatedBy', 'validated')
+        if (projects?.size() > 0) {
+            Task.withCriteria {
+                'in'('project', projects)
+                projections {
+                    groupProperty('project')
+                    count('id', 'total')
+                    sqlProjection('(count(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fullyTranscribed', ['fullyTranscribed'], [INTEGER])
+                    count('fullyValidatedBy', 'validated')
+                }
+            }.collectEntries { row ->
+                [(row[0].id): [total: row[1], transcribed: row[2], validated: row[3]]]
             }
-        }.collectEntries { row ->
-            [(row[0].id): [ total: row[1], transcribed: row[2], validated: row[3] ] ]
+        } else {
+            [:]
         }
     }
 
@@ -655,12 +662,23 @@ class ProjectService {
         }
     }
 
+    /**
+     * Archives project by deleting all images stored under the project ID, sets the archive flag to true
+     * and the inactive flag to true.
+     * @param project the project to archive.
+     * @throws IOException if no images or directory found for the project.
+     */
     def archiveProject(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         def result = projectPath.deleteDir()
         if (!result) {
             log.warn("Couldn't delete images for $project")
             throw new IOException("Couldn't delete images for $project")
+        } else {
+            log.info("Archived project (from service): ${project.name} [${project.id}]")
+            project.archived = true
+            project.inactive = true
+            project.save(flush: true, failOnError: true)
         }
     }
 

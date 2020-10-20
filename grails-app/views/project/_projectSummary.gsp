@@ -4,11 +4,18 @@
 
     <div class="not-a-badge-row ellipsis primary-color">
         <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconLabel]"
-                class="not-a-badge"><span
-                class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link><g:link
-            controller="institution" action="index" id="${projectSummary.project?.institutionId}"
-            class="not-a-badge"><span
-                class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>
+                class="not-a-badge">
+            <span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link>
+        <g:link controller="institution" action="index" id="${projectSummary.project?.institutionId}"
+                class="not-a-badge">
+            <span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>
+        <cl:ifAdmin>
+            <g:if test="${projectSummary.project.archived == true}">
+                <br />
+                <g:link controller="project" action="list" params="[mode: params.mode, activeFilter: 'showArchivedOnly']"
+                        class="not-a-badge"><span class="glyphicon glyphicon glyphicon-eye-close icon-flipped"></span>Archived</g:link>
+            </g:if>
+        </cl:ifAdmin>
     </div>
 
     <g:if test="${includeDescription}">
