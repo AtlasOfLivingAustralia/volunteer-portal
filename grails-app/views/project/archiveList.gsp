@@ -123,7 +123,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${archiveProjectInstanceListSize ?: 0}" params="${params}"/>
+                        <g:paginate total="${archiveProjectInstanceListSize ?: 0}" action="archiveList" params="${params}"/>
                     </div>
                 </div>
             </div>
