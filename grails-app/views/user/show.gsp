@@ -85,10 +85,11 @@
             <div class="col-sm-4">
                 <div class="contribution-chart">
                     <h2>Contribution to Research</h2>
+                    <g:set var="selectedPronoun" value="${userInstance.userId == currentUser ? 'You have' : userInstance.firstName + ' has'}" />
                     <ul>
                         <g:if test="${totalSpeciesCount > 0}">
                             <li>
-                                <span>You have added ${totalSpeciesCount} species to the ALA:</span>
+                                <span>${selectedPronoun} added ${totalSpeciesCount} species to the ALA:</span>
 
                                 <div id="piechart"></div>
                                 <gvisualization:pieCoreChart
@@ -106,17 +107,17 @@
                         </g:if>
                         <g:if test="${fieldObservationCount > 0}">
                             <li>
-                                <span>You have contributed to ${fieldObservationCount} new field observations.</span>
+                                <span>${selectedPronoun} contributed to ${fieldObservationCount} new field observations.</span>
                             </li>
                         </g:if>
                         <g:if test="${expeditionCount > 0}">
                             <li>
-                                <span>You have participated in ${expeditionCount} expeditions.</span>
+                                <span>${selectedPronoun} participated in ${expeditionCount} expeditions.</span>
                             </li>
                         </g:if>
                         <g:if test="${userPercent != '0.00'}">
                             <li>
-                                <span>You have transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
+                                <span>${selectedPronoun} transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
                             </li>
                         </g:if>
                     </ul>
