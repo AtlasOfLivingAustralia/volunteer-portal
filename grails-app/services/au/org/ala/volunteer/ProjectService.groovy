@@ -476,7 +476,7 @@ class ProjectService {
             // #392 Add Project Type to the tag search (i.e. clicking on Project Type searches by 'tag')
             def tagSearch = []
             def labelJoinTable = context.select([PROJECT_LABELS.PROJECT_ID]).from(PROJECT_LABELS.leftJoin(LABEL).on(PROJECT_LABELS.LABEL_ID.eq(LABEL.ID))).where(LABEL.VALUE.in(tag))
-            def typeJoinTable = context.select([PROJECT.ID]).from(PROJECT.leftJoin(PROJECT_TYPE).on(PROJECT.PROJECT_TYPE_ID.eq(PROJECT_TYPE.ID))).where(PROJECT_TYPE.LABEL.eq(tag))
+            def typeJoinTable = context.select([PROJECT.ID]).from(PROJECT.leftJoin(PROJECT_TYPE).on(PROJECT.PROJECT_TYPE_ID.eq(PROJECT_TYPE.ID))).where(PROJECT_TYPE.LABEL.in(tag))
 
             tagSearch.add(PROJECT.ID.in(labelJoinTable))
             tagSearch.add(PROJECT.ID.in(typeJoinTable))
