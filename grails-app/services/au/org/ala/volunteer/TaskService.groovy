@@ -1103,7 +1103,8 @@ ORDER BY record_idx, name;
         String filter
         String additionalJoins = ''
         String dateTranscribed = 'tr.date_fully_transcribed'
-        List<String> withClauses = [
+        List<String> withClauses = []
+        /*
                 """catalog_numbers AS (
                       SELECT f.task_id, ARRAY_AGG(f.value) as catalog_number
                       FROM field f
@@ -1111,7 +1112,7 @@ ORDER BY record_idx, name;
                       AND superceded = false
                       GROUP BY f.task_id
                     )""".stripIndent()
-        ]
+        ]*/
         switch (selectedTab) {
             case 0:
                 // transcribed tasks that are recently validated
@@ -1123,15 +1124,20 @@ ORDER BY record_idx, name;
                 filter = 'tr.fully_transcribed_by = :userId'
                 break
             case 2:
-                withClauses += """saved_tasks AS (
+                /*withClauses += """saved_tasks AS (
                                       SELECT f.task_id, MAX(f.updated) as date_last_updated
                                       FROM field f
                                       WHERE f.superceded = false
                                       AND f.transcribed_by_user_id = :userId
                                       GROUP BY f.task_id
-                                    )""".stripIndent()
+                                    )""".stripIndent()*/
                 filter = 't.is_fully_transcribed = false'
-                additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
+                //additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
+                additionalJoins = """JOIN (SELECT f.task_id, MAX(f.updated) as date_last_updated
+                                      FROM field f
+                                      WHERE f.superceded = false
+                                      AND f.transcribed_by_user_id = :userId
+                                      GROUP BY f.task_id) as s ON s.task_id = t.id """.stripIndent()
                 dateTranscribed = "COALESCE($dateTranscribed, s.date_last_updated)"
                 break
             case 3:
@@ -1148,11 +1154,11 @@ ORDER BY record_idx, name;
         final validSorts = [
                 'id': 't.id',
                 'externalIdentfier': 't.external_identfier',
-                'catalogNumber': 'catalog_number',
+                //'catalogNumber': 'catalog_number',
                 'projectName': 'project_name',
                 'dateTranscribed': 'date_transcribed',
                 'dateValidated': 't.date_fully_validated',
-                'validator': 'validator',
+                //'validator': 'validator',
                 'status': 'status'
         ].withDefault { 'date_transcribed' }
         def sortColumn = validSorts[sort]
@@ -1173,84 +1179,94 @@ ORDER BY record_idx, name;
         final querySnippet
         if (query) {
             querySnippet = """AND (
-p.name ilike '%' || :query || '%'
-OR t.id::VARCHAR = :query
-OR c.catalog_number @> ARRAY[ :query ]::text[]
-OR p.name ilike '%' || :query || '%'
-OR t.external_identifier ilike '%' || :query || '%'
-OR (tu.first_name || ' ' || tu.last_name) ilike '%' || :query || '%'
-OR (vu.first_name || ' ' || vu.last_name) ilike '%' || :query || '%'
-OR ($statusSnippet) = :query
-)
-"""
+                p.name ilike '%' || :query || '%'
+                OR t.id::VARCHAR = :query
+                OR t.external_identifier ilike '%' || :query || '%'
+                OR ($statusSnippet) = :query
+                )""".stripIndent()
+            // OR c.catalog_number @> ARRAY[ :query ]::text[]
+            // OR (tu.first_name || ' ' || tu.last_name) ilike '%' || :query || '%'
+            // OR (vu.first_name || ' ' || vu.last_name) ilike '%' || :query || '%'
         } else {
             querySnippet = ''
         }
 
         def withClause = "WITH \n${withClauses.join(',\n')}"
-        def selectClause = """
-SELECT
-t.id,
-t.created,
-t.external_identifier,
-t.external_url,
-t.fully_validated_by,
-t.project_id,
-p.institution_id,
-t.viewed,
-t.is_valid,
-t.date_fully_validated,
-t.date_last_updated,
-t.last_viewed,
-t.last_viewed_by,
-t.validateduuid,
-t.time_to_validate,
-t.number_of_matching_transcriptions,
-t.is_fully_transcribed,
-tr.fully_transcribed_by,
-tr.date_fully_transcribed,
-tr.fully_transcribed_ip_address,
-tr.transcribeduuid,
-tr.time_to_transcribe,
-    (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
-    (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
-    c.catalog_number[1] AS "catalog_number",
-    p.name AS "project_name",
-    $statusSnippet AS "status",
-    $dateTranscribed AS "date_transcribed"
-"""
-        def countClause = "SELECT count(DISTINCT t.id)"
-        def queryClause = """
-FROM task t
-    JOIN project p ON t.project_id = p.id
-    LEFT OUTER JOIN (select DISTINCT ON (tr.task_id) * from transcription tr where tr.fully_transcribed_by = :userId ORDER BY tr.task_id) as tr on (t.id = tr.task_id)
-    LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
-    LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
-    LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
-    $additionalJoins
-WHERE
-$filter
-$querySnippet
-"""
-        def pagingClause = """
-ORDER BY $sortColumn $order;
-"""
-        def results = [:]
+        def selectClause = """SELECT
+            t.id,
+            t.created,
+            t.external_identifier,
+            t.external_url,
+            t.fully_validated_by,
+            t.project_id,
+            p.institution_id,
+            t.viewed,
+            t.is_valid,
+            t.date_fully_validated,
+            t.date_last_updated,
+            t.last_viewed,
+            t.last_viewed_by,
+            t.validateduuid,
+            t.time_to_validate,
+            t.number_of_matching_transcriptions,
+            t.is_fully_transcribed,
+            tr.fully_transcribed_by,
+            tr.date_fully_transcribed,
+            tr.fully_transcribed_ip_address,
+            tr.transcribeduuid,
+            tr.time_to_transcribe,
+            p.name AS "project_name",
+            $statusSnippet AS "status",
+            $dateTranscribed AS "date_transcribed" """.stripIndent()
+        // removed
+        // c.catalog_number[1] AS "catalog_number",
+        // (tu.first_name || ' ' || tu.last_name) AS "transcriber_display_name",
+        // (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
 
+        def countClause = "SELECT count(DISTINCT t.id)"
+        /*
+        def queryClause = """FROM task t
+            JOIN project p ON t.project_id = p.id
+            LEFT OUTER JOIN (select DISTINCT ON (tr.task_id) * from transcription tr where tr.fully_transcribed_by = :userId ORDER BY tr.task_id) as tr on (t.id = tr.task_id)
+            LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
+            LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
+            LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
+            $additionalJoins
+            WHERE
+            $filter
+            $querySnippet
+            """.stripIndent()
+         */
+        def queryClause = """FROM transcription tr
+            JOIN task t ON (t.id = tr.task_id)
+            JOIN project p ON t.project_id = p.id
+            $additionalJoins
+            WHERE
+            $filter
+            $querySnippet
+            """.stripIndent()
+
+        def pagingClause = """
+            ORDER BY $sortColumn $order;
+        """.stripIndent()
+
+        def results = [:]
         final params = [userId: user.userId, project: project?.id, query: query]
-        final countQuery = """
-$withClause
-$countClause
-$queryClause
-"""
+
+        // remove $withClause
+        final countQuery = """$countClause
+            $queryClause
+            """.stripIndent()
+
         log.debug("Count query:\n$countQuery")
 
         final rowsQuery = """
-$withClause
-$selectClause
-$queryClause
-$pagingClause
-"""
+            $selectClause
+            $queryClause
+            $pagingClause
+            """.stripIndent()
+        // removed $withClause
+
         log.debug("View list query:\n$rowsQuery")
         log.debug("Params: $params")
         log.debug("Took ${sw.stop()} to generate queries")
@@ -1262,25 +1278,28 @@ $pagingClause
             log.debug("Minified count query: $countQuery")
             results.totalMatchingTasks = sql.firstRow(params, countQuery).values()[0]
             log.debug("Took ${sw.stop()} to generate total count")
+
             sw.reset().start()
             rowsQuery = rowsQuery.replaceAll(/\s+/, ' ')
             log.debug("Minified view list query: $rowsQuery")
             log.debug("Max: $max, offset: $offset")
+
             // groovy sql requires offset to be different to SQL offset.
             results.viewList = sql.rows(rowsQuery, params, (offset ?: 0) + 1, max).collect { row ->
                 [ id: row.id,
                   externalIdentifier: row.external_identifier,
                   isFullyTranscribed: row.is_fully_transcribed,
-                  fullyValidatedBy: row.validator_display_name,
+                  //fullyValidatedBy: row.validator_display_name,
                   projectId: row.project_id,
                   institutionId: row.institution_id,
                   projectName: row.project_name,
                   dateTranscribed: row.date_transcribed,
                   dateValidated: row.date_fully_validated,
-                  catalogNumber: row.catalog_number,
+                  //catalogNumber: row.catalog_number,
                   status: row.status
                 ]
             }
+
             log.debug("Took ${sw.stop()} to generate view list")
 
             // add additional info for notifications tab

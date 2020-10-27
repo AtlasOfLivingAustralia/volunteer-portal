@@ -244,7 +244,7 @@
         <thead>
             <tr class="sorting-header">
 
-                <th ng-if="$ctrl.tabIndex == 0"></th>
+%{--                <th ng-if="$ctrl.tabIndex == 0"></th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
@@ -254,9 +254,9 @@
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'externalIdentifier', sorting: true})" class="btn"><g:message code="task.externalIdentifier.label" /></a>
                 </th>
 
-                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">
-                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>
-                </th>
+%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">--}%
+%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>--}%
+%{--                </th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('projectName')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'projectName', sorting: true})" class="btn"><g:message code="project.name.label" /></a>
@@ -270,10 +270,10 @@
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'dateValidated', sorting: true})" class="btn"><g:message code="task.dateFullyValidated.label" /></a>
                 </th>
 
-                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"
-                    ng-show="$ctrl.selectedTab == 0">
-                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>
-                </th>
+%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"--}%
+%{--                    ng-show="$ctrl.selectedTab == 0">--}%
+%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>--}%
+%{--                </th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('status')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'status', sorting: true})" class="btn"><g:message code="task.isValid.label" /></a>
@@ -286,10 +286,10 @@
         <tbody>
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
-                <td ng-if="$ctrl.tabIndex == 0">
-                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>
-                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>
-                </td>
+%{--                <td ng-if="$ctrl.tabIndex == 0">--}%
+%{--                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>--}%
+%{--                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>--}%
+%{--                </td>--}%
 
                 <td>
                     <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
@@ -299,7 +299,7 @@
                     {{taskInstance.externalIdentifier}}
                 </td>
 
-                <td>{{taskInstance.catalogNumber}}</td>
+%{--                <td>{{taskInstance.catalogNumber}}</td>--}%
 
                 <td>
                     <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ taskInstance.projectId }}" class="listLink">{{ taskInstance.projectName }}</a>
@@ -313,10 +313,9 @@
                     {{ taskInstance.dateValidated | date : 'medium' }}
                 </td>
 
-                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">
-                    {{ taskInstance.fullyValidatedBy }}
-                </td>
-
+%{--                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">--}%
+%{--                    {{ taskInstance.fullyValidatedBy }}--}%
+%{--                </td>--}%
 
                 <td style="text-align: center;">
                     {{ taskInstance.status }}

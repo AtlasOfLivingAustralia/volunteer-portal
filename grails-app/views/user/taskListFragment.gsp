@@ -59,9 +59,9 @@
                           title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}"
                           params="${pageParams}" action="show" controller="user"/>
 
-        <g:sortableColumn style="text-align: left" property="catalogNumber"
-                          title="${message(code: 'task.catalogNumber.label', default: 'Catalog&nbsp;Number')}"
-                          params="${pageParams}" action="show" controller="user"/>
+%{--        <g:sortableColumn style="text-align: left" property="catalogNumber"--}%
+%{--                          title="${message(code: 'task.catalogNumber.label', default: 'Catalog&nbsp;Number')}"--}%
+%{--                          params="${pageParams}" action="show" controller="user"/>--}%
 
         <g:sortableColumn style="text-align: left" property="projectName"
                           title="${message(code: 'task.project.name', default: 'Expedition')}"
@@ -74,13 +74,12 @@
         <g:sortableColumn property="dateValidated"
                           title="${message(code: 'task.validated.label', default: 'Validated')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
-
-        <g:if test="${taskListResultInstance.selectedTab == 0}">
-            <g:sortableColumn property="validator"
-                              title="${message(code: 'task.validator.label', default: 'Validator')}"
-                              params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
-        </g:if>
-
+%{-- Tab 0 was removed --}%
+%{--        <g:if test="${taskListResultInstance.selectedTab == 0}">--}%
+%{--            <g:sortableColumn property="validator"--}%
+%{--                              title="${message(code: 'task.validator.label', default: 'Validator')}"--}%
+%{--                              params="${pageParams}" action="show" controller="user" style="text-align: left;"/>--}%
+%{--        </g:if>--}%
 
         <g:sortableColumn property="status" title="${message(code: 'task.isValid.label', default: 'Status')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: center;"/>
@@ -93,11 +92,11 @@
     <g:each in="${taskListResultInstance.viewList}" status="i" var="taskInstance">
         <tr>
 
-            <g:if test="${(taskListResultInstance.selectedTab == 0)}">
-                <td>
-                    <cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>
-                </td>
-            </g:if>
+%{--            <g:if test="${(taskListResultInstance.selectedTab == 0)}">--}%
+%{--                <td>--}%
+%{--                    <cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>--}%
+%{--                </td>--}%
+%{--            </g:if>--}%
 
             <td>
                <g:link class="listLink" controller="task" action="show"
@@ -106,7 +105,7 @@
 
             <td>${taskInstance.externalIdentifier}</td>
 
-            <td>${taskInstance.catalogNumber}</td>
+%{--            <td>${taskInstance.catalogNumber}</td>--}%
 
             <td><g:link class="listLink" controller="project" action="index"
                         id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
@@ -119,15 +118,13 @@
                 <g:formatDate date="${taskInstance.dateValidated}" format="dd MMM, yyyy HH:mm:ss"/>
             </td>
 
-            <td style="text-align: center;">
-                ${taskInstance.fullyValidatedBy}
-            </td>
-
+%{--            <td style="text-align: center;">--}%
+%{--                ${taskInstance.fullyValidatedBy}--}%
+%{--            </td>--}%
 
             <td style="text-align: center;">
                 ${taskInstance.status}
             </td>
-
 
             <td style="text-align: center; width: 120px;">
                 <span>
