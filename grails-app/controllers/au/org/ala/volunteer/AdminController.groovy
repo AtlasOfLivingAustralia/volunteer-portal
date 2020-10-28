@@ -58,7 +58,13 @@ class AdminController {
 
     def uploadTutorial() {
 
-        if(request instanceof MultipartHttpServletRequest) {
+        if (request instanceof MultipartHttpServletRequest) {
+            if (StringUtils.isEmpty(params.tutorialName)) {
+                flash.message = "The tutorial must be given a name."
+                redirect(action:'tutorialManagement')
+                return;
+            }
+
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
             if (f != null) {
                 def allowedMimeTypes = ['application/pdf']
@@ -69,13 +75,21 @@ class AdminController {
                 }
 
                 try {
-                    tutorialService.uploadTutorialFile(f)
+                    StringBuffer fileName = new StringBuffer()
+                    if (Integer.valueOf(params.institution) > -1) {
+                        fileName.append(Institution.get(params.institution).name)
+                                .append("_")
+                    }
+                    fileName.append(params.tutorialName.trim())
+                        .append(".pdf")
+                    log.info("Filename: ${fileName}")
+                    tutorialService.uploadTutorialFile(f, fileName.toString())
+//                    tutorialService.uploadTutorialFile(f)
                     flash.message = "Tutorial uploaded successfully";
                 } catch (Exception ex) {
                     flash.message = "Failed to upload tutorial file: " + ex.message;
                     log.error("Failed to upload tutorial file: " + ex.message, ex)
                 }
-
             }
         }
 

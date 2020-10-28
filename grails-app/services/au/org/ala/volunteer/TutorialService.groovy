@@ -12,6 +12,7 @@ class TutorialService {
     }
 
     private String createFilePath(String name) {
+        log.info("Creating filepath: ${tutorialDirectory + "/" + name}")
         return tutorialDirectory + "/" + name
     }
 
@@ -38,9 +39,16 @@ class TutorialService {
     }
 
     def uploadTutorialFile(MultipartFile file) {
+        log.info("File: ${file.originalFilename}")
         def filePath = createFilePath(file.originalFilename)
         def newFile = new File(filePath);
         file.transferTo(newFile);
+        return newFile.name
+    }
+
+    def uploadTutorialFile(MultipartFile file, String newFilename) {
+        String originalFilename = uploadTutorialFile(file)
+        renameTutorial(originalFilename, newFilename)
     }
 
     def deleteTutorial(String name) {

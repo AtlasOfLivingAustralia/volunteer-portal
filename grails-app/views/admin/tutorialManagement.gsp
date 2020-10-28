@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Project" %>
+<%@ page import="au.org.ala.volunteer.Institution" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -22,10 +23,35 @@
                 <div class="col-md-12">
 
                     <div id="buttonBar">
-                        <g:form action="uploadTutorial" controller="admin" method="post" enctype="multipart/form-data">
-                            <label for="tutorialFile"><strong>Upload new tutorial:</strong></label>
-                            <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile"/>
-                            <g:submitButton class="btn btn-success" name="Upload"/>
+                        <g:form action="uploadTutorial" controller="admin" method="post" class="form-horizontal" enctype="multipart/form-data">
+                            <h3>Upload New Tutorial</h3>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="institution"><strong>Select your institution*:</strong></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <g:select class="form-control" name="institution" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                                              optionKey="id"
+                                              noSelection="['-1':'None']" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="tutorialName"><strong>Tutorial Name*:</strong></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="tutorialName" id="tutorialName" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="tutorialFile"><strong>Tutorial File*:</strong></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile"/>
+                                </div>
+                            </div>
+                            <g:submitButton class="btn btn-success" name="Upload"/> * denotes Required fields
                         </g:form>
                         <div>
                             <br/>
