@@ -76,7 +76,7 @@ class TutorialService {
 
         def regex = Pattern.compile("^(.*)_(.*)\$")
         files.each {
-            def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/tutorials/" + it.name
+            def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "tutorials/" + it.name
             def group = "-" // no group
             def title = it.name
             def matcher = regex.matcher(it.name)
