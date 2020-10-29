@@ -51,6 +51,13 @@ class ProjectController {
      */
     def index() {
         def projectInstance = Project.get(params.id)
+        def showTutorial = (params.showTutorial == "true")
+
+        // If the tutorial has been requested but the field is empty, redirect to tutorial index.
+        if (showTutorial && StringUtils.isEmpty(projectInstance.tutorialLinks)) {
+            redirect(controller: "tutorials", action: "index")
+            return
+        }
 
         String currentUserId = null
 
@@ -132,7 +139,8 @@ class ProjectController {
                     percentComplete: percentComplete,
                     newsItems: newsItems,
                     projectSummary: projectSummary,
-                    transcriberCount: userIds.size()
+                    transcriberCount: userIds.size(),
+                    showTutorial: showTutorial
             ])
         }
     }
@@ -446,7 +454,7 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            redirect(action:'index', id: projectInstance.id)
+            redirect(action: 'index', id: projectInstance.id, params: params)
         }
     }
 
