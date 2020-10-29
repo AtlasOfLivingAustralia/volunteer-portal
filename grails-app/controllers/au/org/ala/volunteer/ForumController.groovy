@@ -270,6 +270,11 @@ class ForumController {
             topic.lock()
             topic.views++
             topic.save()
+        } else {
+            // No longer exists.
+            flash.message = "Topic not found, either deleted or incorrect ID."
+            redirect(controller: 'forum', action:'index')
+            return
         }
 
         Project projectInstance = null
