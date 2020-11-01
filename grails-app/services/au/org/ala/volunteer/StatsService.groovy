@@ -286,7 +286,7 @@ WHERE v.transcribed_count + v.validated_count > 0;
         String select = """
             SELECT
                 p.featured_owner featured_owner,
-                extract(year from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') || '-' || extract(month from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') as month,
+                extract(year from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC') || '-' || LPAD(extract(month from date_fully_transcribed::timestamptz AT TIME ZONE 'UTC')::text, 2, '0') as month,
                 count(t.id) as task_count
             FROM transcription t JOIN project p on t.project_id = p.id
             WHERE t.fully_transcribed_by is NOT NULL
