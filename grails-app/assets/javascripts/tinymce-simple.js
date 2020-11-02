@@ -11,5 +11,9 @@ tinymce.init({
     'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
     'styleselect | undo redo | link unlink anchor hr charmap | paste'
   ],
-  statusbar: false
+  statusbar: false,
+  target_list: [
+    {title: 'None', value: ''},
+    {title: 'New page', value: '_blank'}
+  ]
 });
