@@ -13,7 +13,8 @@ import org.owasp.html.PolicyFactory
 import java.util.regex.Pattern
 
 /**
- * 
+ * HTML Sanitizer Policy, based on {@link org.owasp.html.examples.EbayPolicyExample EbayPolicyExample}
+ * that defines the allowed HTML tags and attributes to be saved with the @SanitizedHtml annotation.
  */
 class HtmlSanitizerPolicy {
 
@@ -142,39 +143,6 @@ class HtmlSanitizerPolicy {
                     "ul", "ol", "li", "dd", "dt", "dl", "tbody", "thead", "tfoot",
                     "table", "td", "th", "tr", "colgroup", "fieldset", "legend")
             .toFactory()
-
-    /**
-     * A test-bed that reads HTML from stdin and writes sanitized content to
-     * stdout.
-     */
-    public static void main(String[] args) throws IOException {
-        if (args.length != 0) {
-            System.err.println("Reads from STDIN and writes to STDOUT")
-            System.exit(-1)
-        }
-        System.err.println("[Reading from STDIN]")
-        // Fetch the HTML to sanitize.
-        String html = CharStreams.toString(
-                new InputStreamReader(System.in, Charsets.UTF_8))
-        // Set up an output channel to receive the sanitized HTML.
-        HtmlStreamRenderer renderer = HtmlStreamRenderer.create(
-                System.out,
-                // Receives notifications on a failure to write to the output.
-                new Handler<IOException>() {
-                    public void handle(IOException ex) {
-                        Throwables.propagate(ex)  // System.out suppresses IOExceptions
-                    }
-                },
-                // Our HTML parser is very lenient, but this receives notifications on
-                // truly bizarre inputs.
-                new Handler<String>() {
-                    public void handle(String x) {
-                        throw new AssertionError(x)
-                    }
-                })
-        // Use the policy defined above to sanitize the HTML.
-        HtmlSanitizer.sanitize(html, POLICY_DEFINITION.apply(renderer))
-    }
 
     private static Predicate<String> matchesEither(
             final Pattern a, final Pattern b) {
