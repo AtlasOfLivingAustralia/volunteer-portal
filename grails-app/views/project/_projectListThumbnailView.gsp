@@ -23,7 +23,7 @@
                 <g:link controller="project" action="index" class="thumbImg" id="${projectSummary.project?.id}">
                     <img class="img-responsive cropme" src="" realsrc="${projectSummary.project?.featuredImage}" style="width: 100%; height: 236px;" data-error-url="${resource(file: '/banners/default-expedition-large.jpg')}"/>
                 </g:link>
-                <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: false]" />
+                <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: false, extraParams: extraParams]" />
             </div>
         </div>
     </div>
