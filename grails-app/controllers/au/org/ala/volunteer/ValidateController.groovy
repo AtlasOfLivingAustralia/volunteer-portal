@@ -178,6 +178,15 @@ class ValidateController {
 
         def taskInstance = taskService.getNextTaskForValidationForProject(currentUser, project)
 
+        // If Skipped, remove viewed task flag to prevent it getting locked.
+        if (!org.apache.commons.lang.StringUtils.isEmpty(params.skip) && params.skip == "true") {
+            log.debug("Skipped task, remove viewed task flag to prevent locking.")
+            // clear last viewed.
+            if (previousId > -1) {
+                taskService.resetTaskView(previousId, currentUser, true)
+            }
+        }
+
         //retrieve the details of the template
         if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
             log.debug "1."

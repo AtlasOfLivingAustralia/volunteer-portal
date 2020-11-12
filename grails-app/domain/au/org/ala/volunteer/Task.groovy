@@ -145,17 +145,19 @@ class Task implements Serializable {
 
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
         Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}.toSet()
-
+        log.debug("Task; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
         boolean locked = false
         if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
             // Only views made by users that have not completed their transcription are relevant.
             Set currentViews = viewedTasks.findAll { view ->
-                return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId)
+                return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)
             }.collect{it.userId}.toSet()
 
+            log.debug("locked = usersWhoCompletedTranscriptions.size() [${usersWhoCompletedTheirTranscriptions.size()}] + currentViews.size() [${currentViews.size()}] > project.getRequiredNumberOfTranscriptions() [${project.getRequiredNumberOfTranscriptions()}]")
             locked = (usersWhoCompletedTheirTranscriptions.size() + currentViews.size()) >= project.getRequiredNumberOfTranscriptions()
         }
 
+        log.debug("locked: ${locked}")
         return locked
     }
 
@@ -178,6 +180,11 @@ class Task implements Serializable {
         if (isValid) {
             this.isValid = true
         }
+    }
+
+    String toString() {
+        return "Task: [id: ${id}, projectId: ${project.id}, externalIdentifier: ${externalIdentifier}, lastViewed: ${lastViewed}, " +
+                "lastViewedBy: ${lastViewedBy}, isFullyTranscribed: ${isFullyTranscribed}]"
     }
 
     // These events use a static method rather than an injected service

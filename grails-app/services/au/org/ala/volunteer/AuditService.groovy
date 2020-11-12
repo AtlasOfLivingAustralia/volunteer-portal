@@ -41,7 +41,7 @@ class AuditService {
         log.debug "Audit service: " + taskInstance.id
 
         def lastViewMillis = System.currentTimeMillis()
-        def viewedTask = new ViewedTask(task: taskInstance, numberOfViews: 1, lastUpdated: new Date(), userId: userId, lastView: lastViewMillis)
+        def viewedTask = new ViewedTask(task: taskInstance, numberOfViews: 1, lastUpdated: new Date(), userId: userId, lastView: lastViewMillis, skipped: false)
         viewedTask.save(flush: true, failOnError: true)
         // Also keep track of the last view on the task directly. This makes it much easier when
         // selecting the next task for a user.

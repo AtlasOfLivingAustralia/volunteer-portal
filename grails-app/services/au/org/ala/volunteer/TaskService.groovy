@@ -231,7 +231,6 @@ class TaskService {
      * The jump means they will be allocated a new image they haven't seen before.
     */
     private Task findUnviewedTask(String userId, Project project, Long transcriptionsPerTask = 1, Long lastId = -1, int jump = 1) {
-
         Task task = null
         Map queryParams = [userId: userId, project:project, transcriptionsPerTask:transcriptionsPerTask, max:jump]
         if (jump > 1 && lastId >= 0) {
@@ -244,20 +243,24 @@ class TaskService {
             whereClause += "and task.id > :lastId "
             orderBy = "task.id"
         }
-        List results = Task.executeQuery(
-                "select task.id, count(distinct views.userId) from Task as task "+
-                        "left join task.viewedTasks as views " +
-                        "where " + whereClause +
-                        "group by task.id " +
-                        "having count(distinct views.userId) < :transcriptionsPerTask "+
-                        "order by "+orderBy,
-                queryParams
-        )
+
+        String query = """select task.id, count(distinct views.userId) from Task as task
+            left join task.viewedTasks as views 
+            where $whereClause
+            group by task.id 
+            having count(distinct views.userId) < :transcriptionsPerTask 
+            order by $orderBy
+            """.stripIndent()
+
+        log.debug("Unviewed task Query: ${query}")
+
+        List results = Task.executeQuery(query,queryParams)
+        log.debug("Results: ${results}")
 
         if (results) {
             def taskResult = results.last()
             task = Task.get(taskResult[0])
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
         }
         task
     }
@@ -327,7 +330,9 @@ class TaskService {
 
         Task task = null
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
+        log.debug("Task jump set to: [${jump}]")
         int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
+        log.debug("Transcriptions per task: [${transcriptionsPerTask}]")
 
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
@@ -338,7 +343,7 @@ class TaskService {
         // required to transcribe the Task.
         task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
             return task
         }
 
@@ -348,13 +353,13 @@ class TaskService {
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
         task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unfinished task not viewed by user to jump to: ${task.id}")
             return task
         }
 
         task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
+            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
             return task
         }
 
@@ -383,7 +388,6 @@ class TaskService {
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
         def tasks
-
 
         tasks = Task.createCriteria().list([max:1]) {
             eq("project", project)
@@ -438,7 +442,36 @@ class TaskService {
         }
     }
 
+    /**
+     * Resets the current views for a task. Utilised when skipping a task, so that it doesn't remain locked for someone
+     * else to transcribe the task.
+     * @param taskId the skipped task ID
+     * @param userId the user who skipped the task.
+     * @param isValidating true/false. If false, sets the skipped flag on the ViewedTask record to true as well.
+     */
+    def resetTaskView(Long taskId, String userId, boolean isValidating = false) {
+        def skippedTask = Task.get(taskId)
+        log.debug("Skipped Task: ${skippedTask}")
+        if (skippedTask != null) {
+            skippedTask.lastViewedBy = null
+            skippedTask.lastViewed = null
+            skippedTask.save(flush: true, failOnError: true)
 
+            // Reset viewed task record
+            if (!isValidating) {
+                def currentViews = skippedTask.viewedTasks.findAll { view ->
+                    return (view.userId == userId)
+                }
+                log.debug("Current Views: ${currentViews}")
+                currentViews.each { view ->
+                    view.skipped = true
+                    view.save(flush: true, failOnError: true)
+                }
+            }
+        }
+
+        log.debug("Task last viewed: ${skippedTask.lastViewed}, by ${skippedTask.lastViewedBy}")
+    }
 
 
     private final static List<String> getNotificationWithClauses(projectQuery, boolean unseenOnly = true) { [

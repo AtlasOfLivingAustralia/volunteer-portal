@@ -228,7 +228,17 @@ class TranscribeController {
         }
         def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId?:-1
+
         def taskInstance = taskService.getNextTask(currentUser, project, previousId)
+
+        // If Skipped, remove viewed task flag to prevent it getting locked.
+        if (!StringUtils.isEmpty(params.skip) && params.skip == "true") {
+            log.debug("Skipped task, remove viewed task flag to prevent locking.")
+            // clear last viewed.
+            if (previousId > -1) {
+                taskService.resetTaskView(previousId, currentUser)
+            }
+        }
 
         //retrieve the details of the template
 //        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
@@ -251,14 +261,14 @@ class TranscribeController {
         // * If a task exists that is different to the previous task, display task
         // * Else, check if completed. If so, send email notification, then render no tasks page.
         if (taskInstance && taskInstance.id != previousId) {
-            log.debug "2."
+            log.debug "Found task: ${taskInstance}"
             def redirectParams = [:]
             if (params.complete) {
                 redirectParams.complete = params.complete
             }
             redirect(action: 'task', id: taskInstance.id, params: redirectParams)
         } else {
-            log.debug("No tasks were found.")
+            log.debug("No available tasks were found.")
             if (isComplete(project)) {
                 log.info("Project was completed; Sending project completion notification")
                 def message = groovyPageRenderer.render(view: '/project/projectCompleteNotification', model: [projectName: project.name])

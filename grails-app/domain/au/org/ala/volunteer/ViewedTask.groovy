@@ -7,6 +7,7 @@ class ViewedTask implements Serializable {
   Date dateCreated
   Date lastUpdated
   Long lastView
+  Boolean skipped
 
   static belongsTo = [task: Task]
 
@@ -22,5 +23,10 @@ class ViewedTask implements Serializable {
     dateCreated nullable: true
     lastUpdated nullable: true
     lastView nullable: true
+    skipped nullable: false
+  }
+
+  String toString() {
+    return "ViewedTask: [id: ${id}, userId: ${userId}, dateCreated: ${dateCreated}, lastView: ${lastView}, skipped: ${skipped}]"
   }
 }
