@@ -11,7 +11,7 @@
                                 </a>
                                 <div class="text-center">
                                     <cl:ifAdmin>
-                                    <div class="btn-group" style="margin-bottom: 20px;">
+                                    <div class="btn-group ">
                                         <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
                                             <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
                                         </button>

@@ -166,7 +166,7 @@ bvp:
 
 
 images:
-    home: D:/data/volunteer-portal
+    home: /data/volunteer-portal
     urlPrefix: /data/volunteer/
 
 elasticsearch:
@@ -288,7 +288,7 @@ environments:
     development:
         dataSource:
             dbCreate: validate
-            url: jdbc:postgresql://localhost/volprod
+            url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
             password: "password"
             logSql: false
