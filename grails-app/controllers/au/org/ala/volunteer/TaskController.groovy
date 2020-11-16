@@ -150,10 +150,10 @@ class TaskController {
             }
 
             def lockedMap = [:]
-            views?.values().each { List viewList ->
+            views?.values()?.each { List viewList ->
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
-                    if (new Date(max.lastView) > 2.hours.ago) {
+                    if (new Date(max.lastView) > 2.hours.ago && !max.skipped) {
                         lockedMap[max.task?.id] = max
                     }
                 }
