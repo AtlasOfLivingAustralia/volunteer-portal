@@ -1,6 +1,9 @@
 <div class="caption">
     <h4 class="ellipsis"><g:link controller="project" action="index"
                                  id="${projectSummary.project?.id}">${projectSummary.project?.featuredLabel}</g:link></h4>
+    <g:if test="${projectSummary.percentTranscribed == 100}">
+        <span class="glyphicon glyphicon-ok transcriptionComplete" title="${g.message(code:"project.name.label", args:['Expedition'])} Complete"></span>
+    </g:if>
 
     <div class="not-a-badge-row ellipsis primary-color">
         <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconLabel, statusFilter: statusFilterMode, activeFilter: activeFilterMode]"
@@ -8,7 +11,7 @@
             <span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link>
         <g:link controller="institution" action="index" id="${projectSummary.project?.institutionId}"
                 class="not-a-badge">
-            <span class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>
+            <span class="glyphicon glyphicon-bookmark icon-flipped"></span>${projectSummary.project?.institutionName}</g:link>
         <cl:ifAdmin>
             <g:if test="${projectSummary.project.archived == true}">
                 <br />
