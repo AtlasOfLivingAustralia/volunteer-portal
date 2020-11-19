@@ -27,6 +27,6 @@ class ViewedTask implements Serializable {
   }
 
   String toString() {
-    return "ViewedTask: [id: ${id}, userId: ${userId}, dateCreated: ${dateCreated}, lastView: ${lastView}, skipped: ${skipped}]"
+    return "ViewedTask: [task ID: ${task.id}, userId: ${userId}, dateCreated: ${dateCreated}, lastView: ${lastView}, skipped: ${skipped}]"
   }
 }

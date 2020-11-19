@@ -229,8 +229,6 @@ class TranscribeController {
         def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId?:-1
 
-        def taskInstance = taskService.getNextTask(currentUser, project, previousId)
-
         // If Skipped, remove viewed task flag to prevent it getting locked.
         if (!StringUtils.isEmpty(params.skip) && params.skip == "true") {
             log.debug("Skipped task, remove viewed task flag to prevent locking.")
@@ -239,6 +237,8 @@ class TranscribeController {
                 taskService.resetTaskView(previousId, currentUser)
             }
         }
+
+        def taskInstance = taskService.getNextTask(currentUser, project, previousId)
 
         //retrieve the details of the template
 //        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {

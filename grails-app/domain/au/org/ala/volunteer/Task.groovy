@@ -141,11 +141,22 @@ class Task implements Serializable {
 
     }
 
+    /**
+     * Determines if the task is locked for transcribing. If the task has been viewed by a user or the number of users
+     * equal to the required number of transcriptions for a task in the associated project, within a given timeout
+     * and it was not skipped, it is determined to be locked and not accessible to other users for the duration of the
+     * timeout.
+     * @param userId the user requesting the task
+     * @param timeoutInSeconds the timeout for locking a task.
+     * @return true if the task has been determined as locked/false if not.
+     */
     boolean isLockedForTranscription(String userId, long timeoutInSeconds) {
 
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
-        Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}.collect{it.fullyTranscribedBy}.toSet()
+        Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}
+                .collect{it.fullyTranscribedBy}.toSet()
         log.debug("Task; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
+
         boolean locked = false
         if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
             // Only views made by users that have not completed their transcription are relevant.
@@ -159,6 +170,36 @@ class Task implements Serializable {
 
         log.debug("locked: ${locked}")
         return locked
+    }
+
+    /**
+     * Determines if the task was most recently skipped by the provided user.
+     * The Skip window is set to 15 minutes. After this time, the user can access that task again.
+     *
+     * @param userId the user who is requesting the task.
+     * @return true if the user has skipped the task in the last 15mins/false if user has not skipped or not skipped
+     * the task in the last 15mins.
+     */
+    boolean wasSkippedByUser(String userId) {
+        long skipWindow = System.currentTimeMillis() - (15 * 60 * 1000) // 15 minutes in milliseconds
+        log.debug("Skip timeout: ${(15 * 60 * 1000)}")
+        log.debug("Skip Window: ${skipWindow}")
+
+        // Find all views for this user and sort in descending order.
+        def currentViews = viewedTasks.findAll{
+            return (it.userId == userId)
+        }.sort{a, b ->
+            a.lastView == b.lastView ? 0 : a.lastView > b.lastView ? -1 : 1
+        }
+
+        if (currentViews.size() > 0) {
+            def mostRecent = currentViews.first()
+            log.debug("Checking if skipped; view: ${mostRecent}")
+            log.debug("Was skipped? ${(mostRecent.skipped && skipWindow < mostRecent.lastView)}")
+            return (mostRecent.skipped && skipWindow < mostRecent.lastView)
+        }
+
+        return false
     }
 
     /**

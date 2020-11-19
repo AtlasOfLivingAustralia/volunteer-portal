@@ -6,19 +6,15 @@ import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
-import org.apache.commons.lang.StringUtils
-import org.hibernate.FetchMode
+import groovy.sql.Sql
 import org.imgscalr.Scalr
 import org.jooq.DSLContext
-import org.jooq.impl.DSL
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
 import javax.imageio.ImageIO
 import javax.sql.DataSource
 import java.awt.image.BufferedImage
-import groovy.sql.Sql
-
 import java.sql.Connection
 import java.text.SimpleDateFormat
 
@@ -27,12 +23,10 @@ import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.select
 
-
 @Transactional
 class TaskService {
 
     DataSource dataSource
-    def logService
     def grailsApplication
     def multimediaService
     def grailsLinkGenerator
@@ -200,18 +194,25 @@ class TaskService {
     // The results above select all Tasks have have less than the required number of transcriptions that the
     // user hasn't yet viewed.  We now have to check the views to see if there are any views of that Task
     // that didn't result in a Transcription and occurred before our timeout window (ie. 2 hours ago)
-    private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1) {
+    private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1, long lastId = -1) {
         Task transcribableTask = null
         int matches = 0
+        log.debug("Processing results for user ${userId}, jump ${jump}, and lastId ${lastId}")
         results?.find { result ->
             Task task = Task.get(result[0])
+            log.debug("Checking task ${result[0]}")
+            log.debug("Task: ${task}")
 
-            if (!task.isLockedForTranscription(userId, timeoutWindow)) {
+            // If locked or skipped, move onto next task.
+            if (!task.isLockedForTranscription(userId, timeoutWindow) && !task.wasSkippedByUser(userId)) {
                 // We can allocate this Task as all recent views have resulted in a completed transcription
                 // (i.e. views that didn't end up completing the transcription have timed out).
+                log.debug("Not locked and available;")
+                log.debug("task.wasSkippedByUser(userId): ${task.wasSkippedByUser(userId)}")
                 transcribableTask = task
                 matches++
                 if (matches >= jump) {
+                    log.debug("Allocating task ${task.id}.")
                     return true
                 }
             }
@@ -260,7 +261,6 @@ class TaskService {
         if (results) {
             def taskResult = results.last()
             task = Task.get(taskResult[0])
-            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed task to jump to: ${task.id}")
         }
         task
     }
@@ -293,13 +293,14 @@ class TaskService {
                         "order by count(transcriptions) desc, task.id",
                     params
                 )
+        log.debug("Unfinished task not viewed results: ${results}")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
         processResults(results, timeoutWindow,  userId, jump)
     }
 
-    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow) {
+    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1) {
         // Finally, the only Tasks left are ones that the user has viewed but not transcribed
         List results = Task.executeQuery(
                 "select task.id, count(transcriptions) from Task as task "+
@@ -310,10 +311,11 @@ class TaskService {
                         "having count(transcriptions) < :transcriptionsPerTask "+
                         "order by count(transcriptions) desc, task.id",
                 [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
+        log.debug("Viewed but not transcribed results: ${results}")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
-        processResults(results, timeoutWindow, userId)
+        processResults(results, timeoutWindow, userId, 1, lastId)
     }
 
     /**
@@ -328,7 +330,7 @@ class TaskService {
             return null;
         }
 
-        Task task = null
+//        Task task = null
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
         log.debug("Task jump set to: [${jump}]")
         int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
@@ -337,11 +339,11 @@ class TaskService {
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
 
-        def sw = new Stopwatch()
+        //def sw = new Stopwatch()
 
         // First find a task that hasn't been viewed by the user and has been viewed by fewer users than are
         // required to transcribe the Task.
-        task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
+        Task task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
         if (task) {
             log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
             return task
@@ -357,7 +359,7 @@ class TaskService {
             return task
         }
 
-        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout)
+        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout, lastId)
         if (task) {
             log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
             return task
