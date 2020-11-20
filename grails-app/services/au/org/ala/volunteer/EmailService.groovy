@@ -23,11 +23,16 @@ class EmailService {
      */
     def sendMail(String emailAddress, String subj, String message) {
         log.info("Sending email to ${emailAddress} - ${subj}")
-        def fromAddress = grailsApplication.config.getProperty('mail.fromAddress', "noreply@volunteer.ala.org.au")
+        def fromAddress = grailsApplication.config.getProperty('grails.mail.default.from', "noreply@volunteer.ala.org.au")
+        def subjPrefix = grailsApplication.config.getProperty('grails.mail.subjectPrefix', '') as String
+        log.debug("from address: ${fromAddress}")
+        log.debug("subjPrefix: ${subjPrefix}")
+        def subjectToSend = (!StringUtils.isEmpty(subjPrefix)) ? "[${subjPrefix}] ${subj}" : subj
+
         mailService.sendMail {
             to emailAddress
             from fromAddress
-            subject subj
+            subject subjectToSend
             body message
         }
     }
