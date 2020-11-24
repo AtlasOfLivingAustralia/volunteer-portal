@@ -28,7 +28,7 @@ class Project implements Serializable {
     Integer mapInitZoomLevel
     Double mapInitLatitude
     Double mapInitLongitude
-    Boolean harvestableByAla = true
+    Boolean harvestableByAla = false
     Boolean imageSharingEnabled = false
     Boolean archived = false
     /** If true, the EXIF data from uploaded images will be attempted to be extracted and stored in Task Fields */
@@ -63,12 +63,12 @@ class Project implements Serializable {
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
-        harvestableByAla defaultValue: true
+        harvestableByAla defaultValue: false
         version defaultValue: '0'
         imageSharingEnabled defaultValue: 'false'
         archived defaultValue: 'false'
-        transcriptionsPerTask defaultValue: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
-        thresholdMatchingTranscriptions defaultValue: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+        transcriptionsPerTask defaultValue: DEFAULT_TRANSCRIPTIONS_PER_TASK
+        thresholdMatchingTranscriptions defaultValue: DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
     }
 
     static constraints = {
@@ -112,15 +112,15 @@ class Project implements Serializable {
         return transcriptionsPerTask?: DEFAULT_TRANSCRIPTIONS_PER_TASK
     }
 
-    public String toString() {
+    String toString() {
         return name
     }
 
-    public String getInstitutionName() {
+    String getInstitutionName() {
         institution ? institution.name : featuredOwner
     }
 
-    public String getFeaturedImage() {
+    String getFeaturedImage() {
         // Check to see if there is a feature image for this expedition by looking in its project directory.
         // If one exists, use it, otherwise use a default image...
         def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
@@ -141,16 +141,19 @@ class Project implements Serializable {
      */
     String getBackgroundImage() {
 
-        String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
-        String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
+        String localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image"
+        //String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
+        //String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
+        String localPathJpg = "${localPath}.jpg"
+        String localPathPng = "${localPath}.png"
         File fileJpg = new File(localPathJpg)
         File filePng = new File(localPathPng)
         if (fileJpg.exists()) {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.jpg"
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.jpg"
         } else if (filePng.exists()) {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.png"
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.png"
         } else {
-            return null;
+            return null
         }
     }
 
@@ -164,8 +167,8 @@ class Project implements Serializable {
             // Save image
             String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
             def filePath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.${fileExtension}"
-            def file = new File(filePath);
-            file.getParentFile().mkdirs();
+            def file = new File(filePath)
+            file.getParentFile().mkdirs()
             file.withOutputStream {
               it << inputStream
             }
@@ -176,14 +179,15 @@ class Project implements Serializable {
             File fileJpg = new File(localPathJpg)
             File filePng = new File(localPathPng)
             if (fileJpg.exists()) {
-                fileJpg.delete();
+                fileJpg.delete()
             } else if (filePng.exists()) {
-                filePng.delete();
+                filePng.delete()
             }
         }
     }
 
-    public void setFeaturedImage(String image) {
+    @SuppressWarnings('unused')
+    void setFeaturedImage(String image) {
         // do nothing
     }
 
@@ -192,7 +196,7 @@ class Project implements Serializable {
         GormEventDebouncer.debounceProject(this.id)
     }
 
-    public String getKey() {
+    String getKey() {
         name ?: ''
     }
 
