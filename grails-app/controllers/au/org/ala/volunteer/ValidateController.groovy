@@ -59,7 +59,7 @@ class ValidateController {
             Stopwatch sw = Stopwatch.createStarted()
             Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
             sw.stop()
-            log.debug('retrieveValidationFieldsForTask: {}', sw.elapsed(TimeUnit.SECONDS))
+            log.debug("retrieveValidationFieldsForTask: ${sw.elapsed(TimeUnit.SECONDS)}")
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
             def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)
@@ -179,7 +179,7 @@ class ValidateController {
         def taskInstance = taskService.getNextTaskForValidationForProject(currentUser, project)
 
         // If Skipped, remove viewed task flag to prevent it getting locked.
-        if (!org.apache.commons.lang.StringUtils.isEmpty(params.skip) && params.skip == "true") {
+        if (params.boolean('skip', false)) {
             log.debug("Skipped task, remove viewed task flag to prevent locking.")
             // clear last viewed.
             if (previousId > -1) {

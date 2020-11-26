@@ -230,7 +230,7 @@ class TranscribeController {
         def prevUserId = params.prevUserId?:-1
 
         // If Skipped, remove viewed task flag to prevent it getting locked.
-        if (!StringUtils.isEmpty(params.skip) && params.skip == "true") {
+        if (params.boolean('skip', false)) {
             log.debug("Skipped task, remove viewed task flag to prevent locking.")
             // clear last viewed.
             if (previousId > -1) {
