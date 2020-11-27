@@ -223,7 +223,7 @@
                     <p>Get help in using DIGIVOL and reporting issues</p>
 
                     <p class="address">
-                        <a href="mailto:DigiVol@australian.museum">DigiVol@australian.museum</a><br/>
+                        <a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a><br/>
                         Australian Museum<br/>
                         Sydney NSW 2010
                     </p>

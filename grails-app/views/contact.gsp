@@ -15,7 +15,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>Help in using <g:message code="default.application.name"/> and reporting issues</h3>
-                    <b>E</b> <a href="mailto:DigiVol@australian.museum">DigiVol@australian.museum</a><br/>
+                    <b>E</b> <a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a><br/>
                     Australian Museum<br/>
                     Sydney NSW 2010
                     <p/>
