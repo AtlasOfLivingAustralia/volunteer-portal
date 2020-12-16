@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
-import au.org.ala.volunteer.jooq.tables.TaskDescriptor
 import com.google.common.base.Stopwatch
+import com.google.common.base.Strings
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -23,7 +23,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST",
-                             //archive: "POST",
+                             archive: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
@@ -54,7 +54,7 @@ class ProjectController {
         def showTutorial = (params.showTutorial == "true")
 
         // If the tutorial has been requested but the field is empty, redirect to tutorial index.
-        if (showTutorial && StringUtils.isEmpty(projectInstance.tutorialLinks)) {
+        if (showTutorial && Strings.isNullOrEmpty(projectInstance.tutorialLinks)) {
             redirect(controller: "tutorials", action: "index")
             return
         }
@@ -1126,10 +1126,10 @@ class ProjectController {
         def total
         def institution
         if (params.institution) {
-            institution = Institution.get(params.institution)
+            institution = Institution.get(params.long('institution'))
         }
 
-        if (institution && !StringUtils.isEmpty(params.q)) {
+        if (institution && !Strings.isNullOrEmpty(params.q)) {
             if (institution) {
                 projects = Project.findAllByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%", params)
                 total = Project.countByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%")
@@ -1139,7 +1139,7 @@ class ProjectController {
                 projects = Project.findAllByArchivedAndInstitution(false, institution, params)
                 total = Project.countByArchivedAndInstitution(false, institution)
             }
-        } else if (!StringUtils.isEmpty(params.q)) {
+        } else if (!Strings.isNullOrEmpty(params.q)) {
             projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
             total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
         } else {

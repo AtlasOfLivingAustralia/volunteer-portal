@@ -17,10 +17,9 @@
 
     %>
 
-%{--    <h2><g:message code="project.archived.description" /></h2>--}%
-    <p>This page shows all expeditions that are active or inactive and not yet archived. Once an expedition is archived, the task images are removed and the expedition set to archived.</p>
-    <p>Please ensure you backup your expedition by downloading the task images BEFORE you archive it as there may not be any system backup available.</p>
-    <p>To download your expedition's task images, select the download button for that expedition.</p>
+    <p><g:message code="admin.archive.info" /></p>
+    <p><g:message code="admin.archive.backup" /></p>
+    <p><g:message code="admin.archive.download" /></p>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="panel panel-default">
@@ -115,7 +114,10 @@
 
                                 <td>
                                     <g:link action="downloadImageArchive" id="${projectInstance.project.id}" class="btn btn-default btn-sm" title="Download Image Archive"><i class="fa fa-download"></i></g:link>
-                                    <button role="button" class="btn btn-danger btn-sm archive-project" data-project-name="${projectInstance.project.name}" data-href="${createLink(action:"archive", id:projectInstance.project.id, params: params)}" title="Archive Project Images"><i class="fa fa-trash"></i></button>
+                                    <button role="button" class="btn btn-danger btn-sm archive-project"
+                                            data-project-name="${projectInstance.project.name}"
+                                            data-href="${createLink(controller: "project", action: "archive", id: projectInstance.project.id, params: params)}"
+                                            title="Archive Project Images"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </g:each>
@@ -132,16 +134,29 @@
 </div>
 <asset:script>
 jQuery(function($) {
+    $.extend({
+        postGo: function(url, params) {
+            var $form = $("<form>")
+                .attr("method", "post")
+                .attr("action", url);
+            $.each(params, function(name, value) {
+                $("<input type='hidden'>")
+                    .attr("name", name)
+                    .attr("value", value)
+                    .appendTo($form);
+            });
+            $form.appendTo("body");
+            $form.submit();
+        }
+    });
+
     $('.archive-project').click(function(e) {
         var $this = $(this);
         var href = $this.data('href');
         var name = $this.data('projectName');
         bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
             if (result) {
-                //$.post(href).then(function() {
-                //window.location.reload();
-                //});
-                window.location = href;
+                $.postGo(href);
             }
         });
     });

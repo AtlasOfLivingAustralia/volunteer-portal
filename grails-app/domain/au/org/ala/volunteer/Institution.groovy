@@ -1,7 +1,6 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.sanitizer.SanitizedHtml
-import groovy.transform.EqualsAndHashCode
 
 class Institution implements Serializable {
 
@@ -47,7 +46,7 @@ class Institution implements Serializable {
         return name
     }
 
-    public String getKey () {
+    String getKey () {
         return id?.toString()?:''
     }
 }
