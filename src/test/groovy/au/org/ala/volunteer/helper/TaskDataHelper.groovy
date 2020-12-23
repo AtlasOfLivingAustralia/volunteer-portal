@@ -51,7 +51,7 @@ class TaskDataHelper {
             task.save(failOnError:true)
         }
 
-        println "Updating transcription with id=${transcription.id}"
+        log.debug("Updating transcription with id=${transcription.id}")
         transcription.fullyTranscribedBy = userId
         transcription.dateFullyTranscribed = new Date()
 
@@ -84,7 +84,7 @@ class TaskDataHelper {
         if (!recent) {
             lastView  -= 1000*60*60*3 // 3 hours ago
         }
-        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1, lastView: lastView)
+        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1, lastView: lastView, skipped: false)
         task.viewedTasks.add(viewedTask)
         viewedTask.save(failOnError:true, flush:true)
         task.save(failOnError:true, flush:true)

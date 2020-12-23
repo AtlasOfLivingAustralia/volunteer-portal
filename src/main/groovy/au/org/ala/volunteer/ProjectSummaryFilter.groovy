@@ -26,7 +26,7 @@ enum ProjectStatusFilterType {
 
 enum ProjectActiveFilterType {
 
-    showAll("All"), showActiveOnly("Active"), showInactiveOnly("Deactivated")
+    showAll("All"), showActiveOnly("Active"), showInactiveOnly("Deactivated"), showArchivedOnly("Archived")
 
     String description
 

@@ -53,7 +53,7 @@ class StagingService {
 
     def stageImage(Project project, MultipartFile file) {
         def filePath = createStagedPath(project, file.originalFilename)
-        println "copying stagedFile to " + filePath
+        log.debug("copying stagedFile to " + filePath)
         def newFile = new File(filePath);
         file.transferTo(newFile);
     }
@@ -82,6 +82,7 @@ class StagingService {
         try {
             md5s.get(new HashKey(length: file.length(), filename: file.absolutePath))
         } catch (CompletionException e) {
+            log.error("md5 hash failed: ${e.message}", e)
             throw e.cause
         }
     }
@@ -284,14 +285,14 @@ class StagingService {
                     try {
                         pattern = Pattern.compile(field.format)
                     } catch (Exception ex) {
-                        println ex.message
+                        log.error(ex.message, ex)
                     }
                     break
                 case FieldDefinitionType.NamePattern:
                     try {
                         pattern = SimplifiedPatternParser.compile(field.format)
                     } catch (Exception ex) {
-                        println ex.message
+                        log.error(ex.message, ex)
                     }
                     break
             }

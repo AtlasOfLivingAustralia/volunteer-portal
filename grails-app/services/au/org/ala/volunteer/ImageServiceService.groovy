@@ -63,7 +63,7 @@ class ImageServiceService {
             }
             return map
         } else {
-            println results
+            log.warn(results)
         }
         return null
     }

@@ -38,13 +38,13 @@ class TemplateService {
         def views = []
 
         if (Environment.isDevelopmentEnvironmentAvailable()) {
-            log.info("Checking for dev templates")
+            log.debug("Checking for dev templates")
             findDevGsps 'grails-app/views/transcribe/templateViews', views
         } else {
-            log.info("Checking for WAR deployed templates")
+            log.debug("Checking for WAR deployed templates")
             findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
         }
-        log.info("Got views: {}", views)
+        log.debug("Got views: {}", views)
 
         def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
 

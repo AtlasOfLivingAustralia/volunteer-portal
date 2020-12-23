@@ -30,7 +30,7 @@ class ValidationService {
             }
             if (shouldAutoValidate(task)) {
 
-                log.info("Auto-validating Task ${task.id}")
+                log.debug("Auto-validating Task ${task.id}")
 
                 int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions
 
@@ -39,11 +39,11 @@ class ValidationService {
                 int numberOfMatchingTranscriptions = bestTranscription.matchCount
 
                 if (numberOfMatchingTranscriptions >= numberOfMatchingTranscriptionsConsideredValid) {
-                    log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions -> auto-validating!")
+                    log.debug("Task has ${numberOfMatchingTranscriptions} matching transcriptions -> auto-validating!")
                     markAsValid(task, bestTranscription.bestTranscription)
                 }
                 else {
-                    log.info("Task has ${numberOfMatchingTranscriptions} matching transcriptions - not auto-validating")
+                    log.debug("Task has ${numberOfMatchingTranscriptions} matching transcriptions - not auto-validating")
                 }
                 if (task.isFullyTranscribed) {
                     task.setNumberOfMatchingTranscriptions(numberOfMatchingTranscriptions)

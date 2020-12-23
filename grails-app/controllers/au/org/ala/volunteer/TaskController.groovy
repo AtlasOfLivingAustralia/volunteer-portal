@@ -150,10 +150,10 @@ class TaskController {
             }
 
             def lockedMap = [:]
-            views?.values().each { List viewList ->
+            views?.values()?.each { List viewList ->
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
-                    if (new Date(max.lastView) > 2.hours.ago) {
+                    if (new Date(max.lastView) > 2.hours.ago && !max.skipped) {
                         lockedMap[max.task?.id] = max
                     }
                 }
@@ -340,7 +340,7 @@ class TaskController {
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
                 def isValidator = userService.isValidator(project)
-                log.info currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
+                log.debug currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
 //                def imageMetaData = taskService.getImageMetaData(taskInstance)
 
@@ -430,7 +430,9 @@ class TaskController {
                 redirect(action: "list")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }
@@ -753,9 +755,11 @@ class TaskController {
             try {
                 if (!stagingService.unstageImage(projectInstance, imageName)) {
                     flash.message = "Failed to delete image. Possibly file permissions?"
+                    log.error("Failed to delete image. Possibly file permissions?")
                 }
             } catch (Exception ex) {
                 flash.message = "Failed to delete image: " + ex.message
+                log.error("Failed to delete image: " + ex.message, ex)
             }
         }
         redirect(action:'staging', params:[projectId:projectInstance?.id])

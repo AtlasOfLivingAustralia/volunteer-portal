@@ -103,7 +103,7 @@
                         </div>
                     </div>
 
-                    <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
+                    <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString(), shortUrl: landingPageInstance.shortUrl]]}" />
                     <g:if test="${params.mode == 'grid'}">
                         <g:render template="projectListThumbnailView" model="${model}"/>
                     </g:if>

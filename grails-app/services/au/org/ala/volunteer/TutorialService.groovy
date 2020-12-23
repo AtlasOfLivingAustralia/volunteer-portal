@@ -15,7 +15,7 @@ class TutorialService {
         return tutorialDirectory + "/" + name
     }
 
-    def listTutorials() {
+    def listTutorials(def searchTerm) {
         def dir = new File(tutorialDirectory)
         if (!dir.exists()) {
             dir.mkdirs();
@@ -24,11 +24,17 @@ class TutorialService {
         def files = dir.listFiles()
         def tutorials = []
         files.each {
-            def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/tutorials/" + it.name
+            def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "tutorials/" + it.name
             tutorials << [file: it, name: it.name, url: url]
         }
 
-        return tutorials.sort { it.name }
+        if (searchTerm) {
+            def filteredList = tutorials.findAll { it.name.toLowerCase().contains(searchTerm.toLowerCase()) }
+            return filteredList.sort { it.name }
+        } else {
+            return tutorials.sort { it.name }
+        }
+        //return tutorials.sort { it.name }
     }
 
     def uploadTutorialFile(MultipartFile file) {
@@ -70,7 +76,7 @@ class TutorialService {
 
         def regex = Pattern.compile("^(.*)_(.*)\$")
         files.each {
-            def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/tutorials/" + it.name
+            def url = grailsApplication.config.server.url + grailsApplication.config.images.urlPrefix + "tutorials/" + it.name
             def group = "-" // no group
             def title = it.name
             def matcher = regex.matcher(it.name)

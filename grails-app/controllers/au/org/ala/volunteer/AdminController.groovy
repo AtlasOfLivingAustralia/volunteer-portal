@@ -51,7 +51,8 @@ class AdminController {
     }
 
     def tutorialManagement() {
-        def tutorials = tutorialService.listTutorials()
+        def searchTerm = (params.q) ? params.q : null
+        def tutorials = tutorialService.listTutorials(searchTerm)
         [tutorials: tutorials]
     }
 
@@ -72,6 +73,7 @@ class AdminController {
                     flash.message = "Tutorial uploaded successfully";
                 } catch (Exception ex) {
                     flash.message = "Failed to upload tutorial file: " + ex.message;
+                    log.error("Failed to upload tutorial file: " + ex.message, ex)
                 }
 
             }
@@ -87,7 +89,8 @@ class AdminController {
                 tutorialService.deleteTutorial(filename)
                 flash.message = "Tutorial deleted successfully"
             } catch (Exception ex) {
-               flash.message ="Failed to delete tutorial file: " + ex.message
+                flash.message = "Failed to delete tutorial file: " + ex.message
+                log.error("Failed to delete tutorial file: " + ex.message, ex)
             }
         }
         redirect(action:'tutorialManagement')
@@ -101,7 +104,8 @@ class AdminController {
             try {
                 tutorialService.renameTutorial(filename, newName)
             } catch (Exception ex) {
-               flash.message ="Failed to rename tutorial file: " + ex.message
+                flash.message = "Failed to rename tutorial file: " + ex.message
+                log.error("Failed to rename tutorial file: " + ex.message)
             }
         }
 
@@ -147,12 +151,12 @@ class AdminController {
 
                         if (items.size() == 1 && items[0].key) {
                             newValue = items[0].key
-                            println "1st chance. Found one collector number for ${collectorName}: ${newValue}"
+                            log.debug("1st chance. Found one collector number for ${collectorName}: ${newValue}")
                         } else {
                             for (int i = 0; i < items.size(); ++i) {
                                 def item = items[i]
                                 if (item.key) {
-                                    println "2nd chance. Found a collector number for ${collectorName}: ${newValue}"
+                                    log.debug("2nd chance. Found a collector number for ${collectorName}: ${newValue}")
                                     newValue = item.key
                                     break;
                                 }
@@ -161,7 +165,7 @@ class AdminController {
                     }
                 }
 
-                println "Updating field ${field.id} value from '${field.value}' to '${newValue}'."
+                log.debug("Updating field ${field.id} value from '${field.value}' to '${newValue}'.")
                 field.value = newValue;
 
                 if (newValue) {
@@ -172,7 +176,7 @@ class AdminController {
                 if (count % 1000 == 0) {
                     // Doing this significantly speeds up imports...
                     sessionFactory.currentSession.flush()
-                    println "${count} rows flushed."
+                    log.debug("${count} rows flushed.")
                 }
             }
             // flush the last lot
@@ -183,7 +187,7 @@ class AdminController {
 
         def message = "${count} fields updated, $collectorsFound of which were set to a collector number."
         flash.message = message
-        println message
+        log.debug(message)
 
         redirect(action:'index')
     }
@@ -203,13 +207,13 @@ class AdminController {
 
             if (user.transcribedCount < transcribedCount) {
                 // Don't hit network to get email address here as it's only logging
-                println "Updating transcribed count for ${user.userId} (${user.email}) from ${user.transcribedCount} to ${transcribedCount}"
+                log.debug("Updating transcribed count for ${user.userId} (${user.email}) from ${user.transcribedCount} to ${transcribedCount}")
                 user.transcribedCount = transcribedCount
             }
 
             if (user.validatedCount < validatedCount) {
                 // Don't hit network to get email address here as it's only logging
-                println "Updating validated count for ${user.userId} (${user.email}) from ${user.validatedCount} to ${validatedCount}"
+                log.debug("Updating validated count for ${user.userId} (${user.email}) from ${user.validatedCount} to ${validatedCount}")
                 user.validatedCount = validatedCount
             }
             count++

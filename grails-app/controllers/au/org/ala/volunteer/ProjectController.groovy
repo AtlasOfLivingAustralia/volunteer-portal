@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
-import au.org.ala.volunteer.jooq.tables.TaskDescriptor
 import com.google.common.base.Stopwatch
+import com.google.common.base.Strings
 import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -43,6 +43,7 @@ class ProjectController {
     def projectStagingService
     def projectTypeService
     def authService
+    def groovyPageRenderer
     Closure<DSLContext> jooqContext
 
     /**
@@ -50,6 +51,13 @@ class ProjectController {
      */
     def index() {
         def projectInstance = Project.get(params.id)
+        def showTutorial = (params.showTutorial == "true")
+
+        // If the tutorial has been requested but the field is empty, redirect to tutorial index.
+        if (showTutorial && Strings.isNullOrEmpty(projectInstance.tutorialLinks)) {
+            redirect(controller: "tutorials", action: "index")
+            return
+        }
 
         String currentUserId = null
 
@@ -131,7 +139,8 @@ class ProjectController {
                     percentComplete: percentComplete,
                     newsItems: newsItems,
                     projectSummary: projectSummary,
-                    transcriberCount: userIds.size()
+                    transcriberCount: userIds.size(),
+                    showTutorial: showTutorial
             ])
         }
     }
@@ -347,7 +356,7 @@ class ProjectController {
         if (!landingPage) {
             if (shortUrl) {
                 // if we've accidentally captured an attempt a controller default action, forward that here.
-                log.info("custom landing page caught $shortUrl")
+                log.debug("custom landing page caught $shortUrl")
                 return forward(controller: shortUrl, params: params)
             } else {
                 return redirect(uri: '/')
@@ -445,7 +454,7 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            redirect(action:'index', id: projectInstance.id)
+            redirect(action: 'index', id: projectInstance.id, params: params)
         }
     }
 
@@ -649,7 +658,6 @@ class ProjectController {
     }
 
     private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
-
         if (projectInstance) {
             if (params.version) {
                 def version = params.version.toLong()
@@ -659,6 +667,10 @@ class ProjectController {
                 }
             }
 
+            // Issue #371 - Activation notification
+            def oldInactiveFlag = projectInstance.inactive
+            boolean newInactive = (params.inactive != null ? params.inactive == "true" : projectInstance.inactive)
+
             projectInstance.properties = params
 
             if (!projectInstance.template.supportMultipleTranscriptions) {
@@ -667,6 +679,11 @@ class ProjectController {
             }
 
             if (!projectInstance.hasErrors() && projectService.saveProject(projectInstance)) {
+                if (((oldInactiveFlag != newInactive) && (!newInactive))) {
+                    log.info("Project was activated; Sending project activation notification")
+                    def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: projectInstance.name])
+                    projectService.emailNotification(projectInstance, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
+                }
                 flash.message = "Expedition updated"
                 return true
             } else {
@@ -701,7 +718,9 @@ class ProjectController {
                 redirect(action: "list")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }
@@ -733,7 +752,8 @@ class ProjectController {
                     f.transferTo(file);
                     projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload image: " + ex.message;
+                    flash.message = "Failed to upload image: " + ex.message
+                    log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
@@ -772,7 +792,8 @@ class ProjectController {
                         projectInstance.setBackgroundImage(it, f.contentType)
                     }
                 } catch (Exception ex) {
-                    flash.message = "Failed to upload image: " + ex.message;
+                    flash.message = "Failed to upload image: " + ex.message
+                    log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
                     return;
                 }
@@ -1098,16 +1119,39 @@ class ProjectController {
             params.order = 'asc'
         }
         if (!params.max) {
-            params.max = 10
+            params.max = 20
         }
 
-        def projects = Project.findAllByArchived(false, params)
+        def projects
+        def total
+        def institution
+        if (params.institution) {
+            institution = Institution.get(params.long('institution'))
+        }
+
+        if (institution && !Strings.isNullOrEmpty(params.q)) {
+            if (institution) {
+                projects = Project.findAllByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%", params)
+                total = Project.countByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%")
+            }
+        } else if (institution) {
+            if (institution) {
+                projects = Project.findAllByArchivedAndInstitution(false, institution, params)
+                total = Project.countByArchivedAndInstitution(false, institution)
+            }
+        } else if (!Strings.isNullOrEmpty(params.q)) {
+            projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
+            total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
+        } else {
+            projects = Project.findAllByArchived(false, params)
+            total = Project.countByArchived(false)
+        }
         sw.stop()
         log.debug("archiveList: findAllByArchived = $sw")
-        sw.reset().start()
-        def total = Project.countByArchived(false)
-        sw.stop()
-        log.debug("archiveList: countByArchived = $sw")
+//        sw.reset().start()
+        //def total = Project.countByArchived(false)
+//        sw.stop()
+//        log.debug("archiveList: countByArchived = $sw")
 //        sw.reset().start()
 //        def sizes = projectService.projectSize(projects)
 //        sw.stop()
@@ -1132,7 +1176,8 @@ class ProjectController {
             new ArchiveProject(project: it, /*size: sizes[it.id].size,*/ percentTranscribed: transcribed, percentValidated: validated)
         }
 
-        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total, 'imageStoreStats': projectService.imageStoreStats()])
+        respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total,
+                                          'imageStoreStats': projectService.imageStoreStats()])
     }
 
     def projectSize(Project project) {
@@ -1140,20 +1185,25 @@ class ProjectController {
         respond(size)
     }
 
+    /**
+     * Archive project controller action. Archives a project or returns an error if not allowed.
+     * @param project the project to archive.
+     */
     def archive(Project project) {
         if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
-            return
+            log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
+            redirect(uri: "/")
         }
 
         try {
             projectService.archiveProject(project)
-            project.archived = true
-            log.info("${project.name} (id=${project.id}) archived")
-            respond status: SC_NO_CONTENT
+            log.debug("${project.name} (id=${project.id}) archived")
+            flash.message = "${message(code: 'project.label', default: 'Project')} ${project.name} archived."
+            redirect(action: 'archiveList', params: params)
         } catch (e) {
-            log.error("Couldn't archive project $project", e)
-            response.sendError(SC_INTERNAL_SERVER_ERROR, "An error occured while archiving ${project.name}")
+            flash.message = "An error occured while archiving ${project.name}."
+            log.error("An error occured while archiving ${message(code: 'project.label', default: 'Project')} ${project}", e)
+            redirect(action: 'archiveList', params: params)
         }
     }
 

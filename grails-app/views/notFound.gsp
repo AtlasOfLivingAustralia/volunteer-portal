@@ -31,11 +31,11 @@
 <div class="container">
 <div class="row">
     <div class="col-sm-12">
-        <h1><g:message code="error.title" default="Oh no!  An error has occured" /></h1>
+        <h1><g:message code="error.title" default="Sorry! That page doesn't seem to exist..." /></h1>
 
         <div>
-            Unfortunately, an error has occured when loading this page. Please try again later.<br /><br />
-            If the error persists, please contact the <a href="mailto:digivol@australian.museum?subject=DigiVol%20Website%20Error">DigiVol team</a>
+            Unfortunately, the page you have requested doesn't seem to exist.<br /><br />
+            If you have followed a bookmark and/or this is unexpected, please contact the <a href="mailto:digivol@australian.museum?subject=DigiVol%20Website%20Error">DigiVol team</a>
             and provide the below information.
         </div>
 
@@ -43,13 +43,12 @@
         <div class="message" style="margin-bottom: 100px;">
             <strong>Error Status Code:</strong> ${request.'javax.servlet.error.status_code'} ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>
             <strong>URL:</strong> ${grailsApplication.config.server.url}${request.'javax.servlet.error.request_uri'}<br/>
-            <g:if test="${exception}">
 
+            <g:if test="${exception}">
                 <strong>Exception Message:</strong> <g:if test="${exception.message}">${exception.message?.encodeAsHTML()}</g:if> <g:else>None, see cause below.</g:else><br/>
                 <strong>Caused by:</strong> ${exception.cause?.encodeAsHTML()} <br/>
                 <strong>Class:</strong> ${content.className} <br/>
                 <strong>At Line:</strong> [${content.lineNumber}] <br/>
-
             </g:if>
 
         </div>

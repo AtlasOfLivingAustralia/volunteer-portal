@@ -150,7 +150,7 @@ class DomainUpdateService {
         if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
         if (updates) postIndexTaskActions(updates)
         if (validations) validationService.autoValidate(validations)
-        if (deletes || indexes || updates) log.info("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates, ${validations.size()} task validations")
+        if (deletes || indexes || updates) log.debug("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates, ${validations.size()} task validations")
     }
 }
 

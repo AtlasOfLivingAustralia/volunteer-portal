@@ -91,10 +91,16 @@
         <div class="col-sm-7 col-xs-12 transcription-controls">
 
             <div class="btn-group" role="group" aria-label="Transcription controls">
-                <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body"
+                <button type="button" class="btn btn-default" id="showNextFromProject" data-container="body" data-skip="true"
                         title="Skip to the next image">Skip</button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
+                <g:if test="${taskInstance?.project?.id}">
+                    <g:link class="btn btn-default" controller="project" action="index" id="${taskInstance?.project?.id}"
+                            target="_blank" params="${[showTutorial: true]}">View Tutorial</g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
+                </g:else>
             </div>
 
         </div>
@@ -224,7 +230,7 @@
                                     <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
                                             class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
                                     </button>
-                                    <button type="button" class="btn btn-default bvp-submit-button"
+                                    <button type="button" class="btn btn-default bvp-submit-button" data-skip="true"
                                             id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                     <g:if test="${validator}">
@@ -236,7 +242,7 @@
                                             class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
                                     <button type="button" id="btnSavePartial"
                                             class="btn btn-default bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button type="button" class="btn btn-default bvp-submit-button"
+                                    <button type="button" class="btn btn-default bvp-submit-button" data-skip="true"
                                             id="showNextFromProject">Skip</button>
                                     <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
                                 </g:else>

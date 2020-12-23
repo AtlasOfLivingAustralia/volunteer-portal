@@ -85,10 +85,11 @@
             <div class="col-sm-4">
                 <div class="contribution-chart">
                     <h2>Contribution to Research</h2>
+                    <g:set var="selectedPronoun" value="${userInstance.userId == currentUser ? 'You have' : userInstance.firstName + ' has'}" />
                     <ul>
                         <g:if test="${totalSpeciesCount > 0}">
                             <li>
-                                <span>You have added ${totalSpeciesCount} species to the ALA:</span>
+                                <span>${selectedPronoun} added ${totalSpeciesCount} species to the ALA:</span>
 
                                 <div id="piechart"></div>
                                 <gvisualization:pieCoreChart
@@ -106,17 +107,17 @@
                         </g:if>
                         <g:if test="${fieldObservationCount > 0}">
                             <li>
-                                <span>You have contributed to ${fieldObservationCount} new field observations.</span>
+                                <span>${selectedPronoun} contributed to ${fieldObservationCount} new field observations.</span>
                             </li>
                         </g:if>
                         <g:if test="${expeditionCount > 0}">
                             <li>
-                                <span>You have participated in ${expeditionCount} expeditions.</span>
+                                <span>${selectedPronoun} participated in ${expeditionCount} expeditions.</span>
                             </li>
                         </g:if>
                         <g:if test="${userPercent != '0.00'}">
                             <li>
-                                <span>You have transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
+                                <span>${selectedPronoun} transcribed ${userPercent}% of the total transcriptions on DigiVol.</span>
                             </li>
                         </g:if>
                     </ul>
@@ -243,7 +244,7 @@
         <thead>
             <tr class="sorting-header">
 
-                <th ng-if="$ctrl.tabIndex == 0"></th>
+%{--                <th ng-if="$ctrl.tabIndex == 0"></th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
@@ -253,9 +254,9 @@
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'externalIdentifier', sorting: true})" class="btn"><g:message code="task.externalIdentifier.label" /></a>
                 </th>
 
-                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">
-                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>
-                </th>
+%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">--}%
+%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>--}%
+%{--                </th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('projectName')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'projectName', sorting: true})" class="btn"><g:message code="project.name.label" /></a>
@@ -269,10 +270,10 @@
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'dateValidated', sorting: true})" class="btn"><g:message code="task.dateFullyValidated.label" /></a>
                 </th>
 
-                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"
-                    ng-show="$ctrl.selectedTab == 0">
-                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>
-                </th>
+%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"--}%
+%{--                    ng-show="$ctrl.selectedTab == 0">--}%
+%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>--}%
+%{--                </th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('status')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'status', sorting: true})" class="btn"><g:message code="task.isValid.label" /></a>
@@ -285,10 +286,10 @@
         <tbody>
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
-                <td ng-if="$ctrl.tabIndex == 0">
-                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>
-                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>
-                </td>
+%{--                <td ng-if="$ctrl.tabIndex == 0">--}%
+%{--                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>--}%
+%{--                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>--}%
+%{--                </td>--}%
 
                 <td>
                     <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
@@ -298,7 +299,7 @@
                     {{taskInstance.externalIdentifier}}
                 </td>
 
-                <td>{{taskInstance.catalogNumber}}</td>
+%{--                <td>{{taskInstance.catalogNumber}}</td>--}%
 
                 <td>
                     <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ taskInstance.projectId }}" class="listLink">{{ taskInstance.projectName }}</a>
@@ -312,10 +313,9 @@
                     {{ taskInstance.dateValidated | date : 'medium' }}
                 </td>
 
-                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">
-                    {{ taskInstance.fullyValidatedBy }}
-                </td>
-
+%{--                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">--}%
+%{--                    {{ taskInstance.fullyValidatedBy }}--}%
+%{--                </td>--}%
 
                 <td style="text-align: center;">
                     {{ taskInstance.status }}

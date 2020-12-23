@@ -185,7 +185,7 @@ class LeaderBoardService {
             if (user) {
                 list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
             } else {
-                println "Failed to find user with key: ${kvp.key}"
+                log.warn("Failed to find user with key: ${kvp.key}")
             }
         }
 

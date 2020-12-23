@@ -66,6 +66,7 @@
                         <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
                         <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
                     </g:else>
+
                 </div>
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
@@ -318,16 +319,24 @@ $(document).ready(function () {
     $(".tutorial").click(function(e) {
         if ($(this).attr('href') == "#tutorial") {
             e.preventDefault();
-            var content = $("#tutorialContent").html();
-            bootbox.dialog({
-                message: content,
-                onEscape: true,
-                backdrop: true
-            });
+            showTutorialModal();
         }
 
     });
+
+    <g:if test="${showTutorial}">
+        showTutorialModal();
+    </g:if>
 });
+
+function showTutorialModal() {
+    var content = $("#tutorialContent").html();
+    bootbox.dialog({
+        message: content,
+        onEscape: true,
+        backdrop: true
+    });
+}
 
 function showIconSelector() {
     bvp.showModal({

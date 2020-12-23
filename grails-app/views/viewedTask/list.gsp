@@ -39,6 +39,9 @@
                 <g:sortableColumn property="lastUpdated"
                                   title="${message(code: 'viewedTask.lastUpdated.label', default: 'Last Updated')}"/>
 
+                <g:sortableColumn property="skipped"
+                                  title="${message(code: 'viewedTask.skipped.label', default: 'Skipped')}"/>
+
             </tr>
             </thead>
             <tbody>
@@ -57,6 +60,8 @@
                     <td><g:formatDate date="${viewedTaskInstance.dateCreated}"/></td>
 
                     <td><g:formatDate date="${viewedTaskInstance.lastUpdated}"/></td>
+
+                    <td>${fieldValue(bean: viewedTaskInstance, field: "skipped")}</td>
 
                 </tr>
             </g:each>

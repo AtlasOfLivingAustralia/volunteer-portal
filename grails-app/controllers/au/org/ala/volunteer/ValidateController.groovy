@@ -40,7 +40,7 @@ class ValidateController {
             def template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            log.info(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
+            log.debug(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
 
             if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
                 isReadonly = "readonly"
@@ -59,14 +59,26 @@ class ValidateController {
             Stopwatch sw = Stopwatch.createStarted()
             Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
             sw.stop()
-            log.debug('retrieveValidationFieldsForTask: {}', sw.elapsed(TimeUnit.SECONDS))
+            log.debug("retrieveValidationFieldsForTask: ${sw.elapsed(TimeUnit.SECONDS)}")
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
             def imageMetaData = taskService.getImageMetaData(taskInstance)
             def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)
 /*            if (!recordValues && transcribersAnswers && transcribersAnswers.size() > 0) {
                 recordValues = transcribersAnswers[0].fields
             }*/
-            render(view: '../transcribe/templateViews/' + template.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: isReadonly, nextTask: adjacentTasks.next, prevTask: adjacentTasks.prev, sequenceNumber: adjacentTasks.sequenceNumber, template: template, validator: true, imageMetaData: imageMetaData, transcribersAnswers: transcribersAnswers, thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
+
+            render(view: '../transcribe/templateViews/' + template.viewName,
+                    model: [taskInstance       : taskInstance,
+                            recordValues       : recordValues,
+                            isReadonly         : isReadonly,
+                            nextTask           : adjacentTasks.next,
+                            prevTask           : adjacentTasks.prev,
+                            sequenceNumber     : adjacentTasks.sequenceNumber,
+                            template           : template,
+                            validator          : true,
+                            imageMetaData      : imageMetaData,
+                            transcribersAnswers: transcribersAnswers,
+                            thumbnail          : multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -155,6 +167,15 @@ class ValidateController {
         def prevUserId = params.prevUserId?:-1
 
         def taskInstance = taskService.getNextTaskForValidationForProject(currentUser, project)
+
+        // If Skipped, remove viewed task flag to prevent it getting locked.
+        if (params.boolean('skip', false)) {
+            log.debug("Skipped task, remove viewed task flag to prevent locking.")
+            // clear last viewed.
+            if (previousId > -1) {
+                taskService.resetTaskView(previousId, currentUser, true)
+            }
+        }
 
         //retrieve the details of the template
         if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {

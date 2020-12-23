@@ -71,7 +71,7 @@
                         <div class="col-sm-12">
                             <g:set var="statusFilterMode" value="${ params.statusFilter ?: ProjectStatusFilterType.showAll}" />
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
-                            <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
+                            <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", tag: params.tag ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
                             <div class="btn-group pull-right hide" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
@@ -91,7 +91,7 @@
                         </div>
                     </div>
 
-                    <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString()]]}" />
+                    <g:set var="model" value="${[extraParams:[statusFilter: statusFilterMode?.toString(), activeFilter: activeFilterMode?.toString(), tag: params.tag ?: ""]]}" />
                     <g:if test="${params.mode == 'grid'}">
                         <g:render template="projectListThumbnailView" model="${model}"/>
                     </g:if>

@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.core.GrailsApplication
 
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -23,11 +24,16 @@ class EmailService {
      */
     def sendMail(String emailAddress, String subj, String message) {
         log.info("Sending email to ${emailAddress} - ${subj}")
-        def fromAddress = grailsApplication.config.getProperty('mail.fromAddress', "noreply@volunteer.ala.org.au")
+        def fromAddress = grailsApplication.config.getProperty('grails.mail.default.from', "noreply@volunteer.ala.org.au")
+        def subjPrefix = grailsApplication.config.getProperty('grails.mail.subjectPrefix', String, '')
+        log.debug("from address: ${fromAddress}")
+        log.debug("subjPrefix: ${subjPrefix}")
+        def subjectToSend = (!Strings.isNullOrEmpty(subjPrefix)) ? "[${subjPrefix}] ${subj}" : subj
+
         mailService.sendMail {
             to emailAddress
             from fromAddress
-            subject subj
+            subject subjectToSend
             body message
         }
     }
@@ -42,7 +48,7 @@ class EmailService {
      * @param message The message body
      */
     def pushMessageOnQueue(String emailAddress, String subject, String message) {
-        log.info("Queuing email message to ${emailAddress} - ${subject}")
+        log.debug("Queuing email message to ${emailAddress} - ${subject}")
         def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message)
         _queuedMessages.add(qmsg)
     }

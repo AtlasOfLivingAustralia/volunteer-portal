@@ -10,7 +10,11 @@
 
 <content tag="adminButtonBar">
 </content>
-
+<div style="margin-bottom: 3em;">
+    Use this content area to give your volunteers helpful information on how to transcribe the expedition tasks. This
+    might include Tutorial files you can upload. To link to a tutorial file, use the link button to create a link to the
+    file, which can be found in the Tutorial admin.
+</div>
 <g:form method="post" class="form-horizontal">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>

@@ -162,26 +162,44 @@
                                                                 <g:set var="selectedAnimalInfos"
                                                                        value="${[wsParams.animals.find{t -> return ((selectedAnimalAns?.get('vernacularName') && t.vernacularName == selectedAnimalAns?.get('vernacularName')) || (selectedAnimalAns?.get('scientificName') && t.scientificName == selectedAnimalAns?.get('scientificName')))}]}"/>
 
-                                                                <g:if test="${recordIdx == 0}">
-                                                                    <td>Yes</td>
+                                                                <g:if test="${selectedAnimalInfos?.size() > 0 && selectedAnimalInfos[0] == null}">
+                                                                    <g:if test="${recordIdx > 0}"><tr></g:if>
                                                                     <td>
-                                                                        <g:render template="/transcribe/wildlifeSpotterWidget"
-                                                                                  model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+                                                                        <span style="color: red;">Invalid Transcription</span><br/>
+                                                                        Animal option no longer in template
+                                                                    </td>
+                                                                    <td colspan="2"></td>
+                                                                    <td>
+                                                                        <g:render template="/transcribe/wildlifeSpotterWidgetInvalid"
+                                                                                  model="${[invalidVernacularName: selectedAnimalAns?.get('vernacularName')]}"/>
                                                                     </td>
                                                                     <td>${selectedAnimalAns?.get('individualCount')}</td>
                                                                     <td>${selectedAnimalAns?.get('comment')}</td>
+                                                                    <g:if test="${recordIdx > 0}"></tr></g:if>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <tr>
-                                                                        <th colspan="3"></th>
+                                                                    <g:if test="${recordIdx == 0}">
+                                                                        <td>Yes</td>
                                                                         <td>
                                                                             <g:render template="/transcribe/wildlifeSpotterWidget"
                                                                                       model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
                                                                         </td>
                                                                         <td>${selectedAnimalAns?.get('individualCount')}</td>
                                                                         <td>${selectedAnimalAns?.get('comment')}</td>
-                                                                    </tr>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <tr>
+                                                                            <th colspan="3"></th>
+                                                                            <td>
+                                                                                <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                                                          model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
+                                                                            </td>
+                                                                            <td>${selectedAnimalAns?.get('individualCount')}</td>
+                                                                            <td>${selectedAnimalAns?.get('comment')}</td>
+                                                                        </tr>
+                                                                    </g:else>
                                                                 </g:else>
+
 
                                                             </g:each>
                                                         </g:elseif>

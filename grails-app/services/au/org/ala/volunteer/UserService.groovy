@@ -43,10 +43,10 @@ class UserService {
         def displayName = authService.displayName
         def firstName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_FIRST_NAME)
         def lastName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_LAST_NAME)
-        log.info("Checking user is registered: ${displayName} (UserId=${userId})")
+        log.debug("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
-                log.info("Registering new user: ${displayName} (UserId=${userId})")
+                log.debug("Registering new user: ${displayName} (UserId=${userId})")
                 User user = new User()
                 user.userId = userId
                 user.email = currentUserEmail

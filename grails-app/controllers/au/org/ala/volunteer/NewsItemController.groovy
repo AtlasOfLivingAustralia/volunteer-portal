@@ -164,7 +164,9 @@ class NewsItemController {
                 }
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }

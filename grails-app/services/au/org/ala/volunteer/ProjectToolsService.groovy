@@ -10,14 +10,14 @@ class ProjectToolsService {
     def updateKeyFieldFromPicklistField(Project projectInstance, String lookupField, String keyField) {
 
         if (!projectInstance.picklistInstitutionCode) {
-            println "Project does not have a picklist institution code set. Aborting."
+            log.error("Project does not have a picklist institution code set. Aborting.")
             return
         }
 
 
         def picklist = Picklist.findByName(lookupField)
         if (!picklist) {
-            println "No picklist for for ${lookupField}. Aborting."
+            log.error("No picklist for for ${lookupField}. Aborting.")
             return
         }
 
@@ -78,7 +78,7 @@ class ProjectToolsService {
                             }
 
                             if (keyValue) {
-                                println "Saving value for task ${task.id} (${lookupField}=${field.value}) field=${keyField}[${field.recordIdx}] value=${keyValue}"
+                                log.debug("Saving value for task ${task.id} (${lookupField}=${field.value}) field=${keyField}[${field.recordIdx}] value=${keyValue}")
                                 if (targetField) {
                                     targetField.value = keyValue
                                     targetField.transcribedByUserId = UserService.SYSTEM_USER
@@ -88,7 +88,7 @@ class ProjectToolsService {
                                 }
                                 fieldsUpdated++
                             } else {
-                                println "No item found for ${field.value}"
+                                log.debug("No item found for ${field.value}")
                             }
                         }
                     }
@@ -96,10 +96,10 @@ class ProjectToolsService {
                 tasksProcessed++
                 if (fieldsUpdated > 0 && fieldsUpdated % 200 == 0) {
                     sessionFactory.currentSession.flush()
-                    println "${fieldsUpdated} rows flushed (${tasksProcessed} tasks processed)."
+                    log.debug("${fieldsUpdated} rows flushed (${tasksProcessed} tasks processed).")
                 }
             }
-            println "Finished. ${tasksProcessed} tasks processed. ${fieldsUpdated} fields modified or inserted."
+            log.debug("Finished. ${tasksProcessed} tasks processed. ${fieldsUpdated} fields modified or inserted.")
             return fieldsUpdated
         } finally {
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)

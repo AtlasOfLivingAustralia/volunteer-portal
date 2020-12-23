@@ -17,7 +17,8 @@ class UrlMappings {
 
         "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
 
-        "500"(view:'/error')
+        "500"(controller: 'error', action: 'index')
+        "404"(view:'/notFound')
 
         name landingPage: "/$shortUrl"(controller: 'project', action: 'customLandingPage')
 

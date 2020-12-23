@@ -81,7 +81,7 @@ class UserController {
     }
 
     def logout() {
-        log.info "Invalidating Session (UserController.logout): ${session.id}"
+        log.debug "Invalidating Session (UserController.logout): ${session.id}"
         session.invalidate()
         redirect(url:"${params.casUrl}?url=${params.appUrl}")
     }
@@ -455,7 +455,9 @@ class UserController {
                 redirect(action: "list")
             }
             catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
+                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
+                flash.message = message
+                log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         }

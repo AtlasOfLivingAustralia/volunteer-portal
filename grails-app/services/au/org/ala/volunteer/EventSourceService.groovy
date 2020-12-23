@@ -129,7 +129,7 @@ class EventSourceService {
                 .concatWith(subject)
                 .mergeWith(keepAlive)
                 .doOnComplete {
-                    log.info("Observable complete for $userId")
+                    log.debug("Observable complete for $userId")
                     removeSubject(userId, subject)
                 }
                 .doOnError { t ->

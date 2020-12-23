@@ -69,6 +69,7 @@ class CameraTrapTagLib {
 
             } catch (ConverterException e) {
                 warnings.add("Couldn't parse entry for ${it.value}")
+                log.error("Couldn't parse entry for ${it.value}: ${e.message}", e)
                 results = [:]
             }
             results

@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.AchievementDescription" %>
+<%@ page import="au.org.ala.volunteer.Institution" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,7 +17,9 @@
 
     %>
 
-    <h2><g:message code="project.archived.description" /></h2>
+    <p><g:message code="admin.archive.info" /></p>
+    <p><g:message code="admin.archive.backup" /></p>
+    <p><g:message code="admin.archive.download" /></p>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="panel panel-default">
@@ -38,6 +41,33 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
+                <div class="col-md-6">
+                    <g:form controller="project" action="archiveList" method="GET">
+                        <g:select class="form-control" name="institution" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                                  optionKey="id"
+                                  value="${params?.institution}" noSelection="['':'- Filter by Institution -']" onchange="submit()" />
+                    </g:form>
+                </div>
+                <div class="col-md-6">
+                    <div class="custom-search-input body">
+                        <div class="input-group">
+                            <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Project Name..."/>
+                            <span class="input-group-btn">
+                                <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                    <i class="glyphicon glyphicon-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
+                    ${archiveProjectInstanceListSize ?: 0} open Projects found.
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
@@ -53,7 +83,7 @@
 
                             <th><span><g:message code="project.archive.percentValidated.label" default="Validated %" /></span></th>
 
-                            <g:sortableColumn property="created"
+                            <g:sortableColumn property="dateCreated" params="${params}"
                                               title="${message(code: 'project.dateCreated.label', default: 'Date Created')}"/>
 
 
@@ -83,8 +113,11 @@
                                 <td style="vertical-align: middle;"><span class="archive-list-file-size" data-id="${projectInstance.project.id}"><i class="fa fa-2x fa-cog fa-spin"></i></span></td>
 
                                 <td>
-                                    <g:link action="downloadImageArchive" id="${projectInstance.project.id}" class="btn btn-default btn-sm"><i class="fa fa-download"></i></g:link>
-                                    <button role="button" class="btn btn-danger btn-sm archive-project" data-project-name="${projectInstance.project.name}" data-href="${createLink(action:"archive", id:projectInstance.project.id)}"><i class="fa fa-trash"></i></button>
+                                    <g:link action="downloadImageArchive" id="${projectInstance.project.id}" class="btn btn-default btn-sm" title="Download Image Archive"><i class="fa fa-download"></i></g:link>
+                                    <button role="button" class="btn btn-danger btn-sm archive-project"
+                                            data-project-name="${projectInstance.project.name}"
+                                            data-href="${createLink(controller: "project", action: "archive", id: projectInstance.project.id, params: params)}"
+                                            title="Archive Project Images"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </g:each>
@@ -92,7 +125,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${archiveProjectInstanceListSize ?: 0}"/>
+                        <g:paginate total="${archiveProjectInstanceListSize ?: 0}" action="archiveList" params="${params}"/>
                     </div>
                 </div>
             </div>
@@ -101,25 +134,58 @@
 </div>
 <asset:script>
 jQuery(function($) {
-  $('.archive-project').click(function(e) {
-    var $this = $(this);
-    var href = $this.data('href');
-    var name = $this.data('projectName');
-    bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
-      if (result) {
-        $.post(href).then(function() {
-        window.location.reload();
+    $.extend({
+        postGo: function(url, params) {
+            var $form = $("<form>")
+                .attr("method", "post")
+                .attr("action", url);
+            $.each(params, function(name, value) {
+                $("<input type='hidden'>")
+                    .attr("name", name)
+                    .attr("value", value)
+                    .appendTo($form);
+            });
+            $form.appendTo("body");
+            $form.submit();
+        }
+    });
+
+    $('.archive-project').click(function(e) {
+        var $this = $(this);
+        var href = $this.data('href');
+        var name = $this.data('projectName');
+        bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
+            if (result) {
+                $.postGo(href);
+            }
         });
-      }
     });
-  });
-  $('.archive-list-file-size').each(function() {
-    var $this = $(this);
-    var id = $this.data('id');
-    $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {
-      $this.text(data.size);
+
+    $('.archive-list-file-size').each(function() {
+        var $this = $(this);
+        var id = $this.data('id');
+        $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {
+            $this.text(data.size);
+        });
+    })
+
+    $("#searchbox").keydown(function(e) {
+        if (e.keyCode ==13) {
+            doSearch();
+        }
     });
-  })
+
+    $("#btnSearch").click(function(e) {
+        e.preventDefault();
+        doSearch();
+    });
+
+    function doSearch() {
+        var q = $("#searchbox").val();
+        var url = "${createLink(controller: 'project', action: 'archiveList')}?institution=${params.institution}&q=" + encodeURIComponent(q);
+        window.location = url;
+    }
+
 });
 </asset:script>
 </body>

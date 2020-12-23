@@ -17,7 +17,7 @@ class EnvironmentDumper implements CommandLineRunner {
 
     @Override
     void run(final String... args) throws Exception {
-        println "Running in ${Environment.current.name}"
+        log.debug("Running in ${Environment.current.name}")
 
         // Get configuration from GrailsApplication.
         final Config configuration = grailsApplication.config
@@ -42,7 +42,7 @@ class EnvironmentDumper implements CommandLineRunner {
         props.forEach {
             try {
                 final String sampleConfigValue = configuration.getProperty(it.prop, it.type)
-                log.info "Value for ${it.prop} configuration property = $sampleConfigValue"
+                log.debug "Value for ${it.prop} configuration property = $sampleConfigValue"
             } catch (e) {
                 log.warn("Couldn't parse ${it.prop} value: ${configuration.getProperty(it.prop)} as ${it.type}")
             }
@@ -51,7 +51,7 @@ class EnvironmentDumper implements CommandLineRunner {
         def dataSourceProps = configuration.get('dataSource.properties')
         if (dataSourceProps instanceof Map) {
             dataSourceProps.each { k,v ->
-                if (!k.toString().equalsIgnoreCase('password')) log.info("DataSource property $k: $v")
+                if (!k.toString().equalsIgnoreCase('password')) log.debug("DataSource property $k: $v")
             }
         }
     }

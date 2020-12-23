@@ -14,10 +14,10 @@ class NewUserDigestNotifierJob {
 
     static triggers = {
         if (Environment.current == Environment.DEVELOPMENT && Holders.config.getProperty('digest.debug', Boolean,false)) {
-            log.info("Enabling 30s trigger")
+            log.debug("Enabling 30s trigger")
             cron name: 'newUsersDigestTrigger', cronExpression: '/30 * * * * ?' // every 30s
         } else {
-            log.info("Enabling 6am trigger")
+            log.debug("Enabling 6am trigger")
             cron name: 'newUsersDigestTrigger', cronExpression: '0 0 6 * * ?' // 6:00am
         }
     }
@@ -51,7 +51,7 @@ HAVING
 
                     if (users) {
 
-                        log.info("Emailling $recipient with new transcribers: $users")
+                        log.debug("Emailling $recipient with new transcribers: $users")
                         mailService.sendMail {
                             to recipient
                             subject "DigiVol: New Transcribers"

@@ -28,7 +28,7 @@ class EventSourceController implements RxController {
     def index() {
         final user = authService.userId
         if (!user) {
-            log.info("Attempt to get EventSource connection without a user id")
+            log.error("Attempt to get EventSource connection without a user id")
             response.sendError(400)
             return
         }

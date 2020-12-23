@@ -79,7 +79,7 @@ class TaskServiceSpec extends HibernateSpec {
 
             Task task = service.getNextTask(userId, p)
 
-            println "Found task: "+task?.id
+            log.debug("Found task: "+task?.id)
             assert task != null
             assert !transcribedTasks.contains(task.id)
 

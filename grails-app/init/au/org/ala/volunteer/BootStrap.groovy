@@ -89,7 +89,7 @@ class BootStrap {
                     }
                     count++
                     if (count % 1000 == 0) {
-                        println "${count} tasks processed."
+                        log.info("${count} tasks processed.")
                         sessionFactory.currentSession.flush()
                         sessionFactory.currentSession.clear()
                     }
