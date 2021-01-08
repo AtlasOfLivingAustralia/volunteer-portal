@@ -52,7 +52,7 @@ class BootStrap {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
         }
 
-        def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN]
+        def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN, BVPRole.INSTITUTION_ADMIN]
 
         internalRoles.each { role ->
             ensureRoleExists(role)

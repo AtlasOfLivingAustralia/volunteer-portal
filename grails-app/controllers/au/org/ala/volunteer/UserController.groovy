@@ -503,6 +503,7 @@ class UserController {
     }
 
     def addRoles() {
+        def currentUser = userService.getCurrentUser()
         def userInstance = User.get(params.long("id"))
         if (!userInstance) {
             flash.message = "User not found!"
@@ -518,7 +519,7 @@ class UserController {
             selectedInstitution = Institution.get(selectedValue)
         }
         def role = Role.get(params.long("role")) //Role.list()[0]
-        def userRole = new UserRole(user: userInstance, role: role, project: selectedProject, institution: selectedInstitution)
+        def userRole = new UserRole(user: userInstance, role: role, project: selectedProject, institution: selectedInstitution, createdBy: currentUser)
         userRole.save(flush: true, failOnError: true)
         userInstance.addToUserRoles(userRole)
         userInstance.userRoles = sortUserRoles (userInstance)

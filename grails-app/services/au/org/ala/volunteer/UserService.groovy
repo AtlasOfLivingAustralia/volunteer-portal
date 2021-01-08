@@ -111,11 +111,21 @@ class UserService {
             return false;
         }
 
+        // If User is a Site Admin, return true for any institution.
         if (isSiteAdmin()) {
             return true
         }
 
-        // to do - check the institution admin roles for this user
+        def user = User.findByUserId(userId)
+        if (user) {
+            def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+            def userRole = user.userRoles.find {
+                it.role.id == institutionAdminRole.id && it.institution.id == institution.id
+            }
+            if (userRole) {
+                return true
+            }
+        }
 
         return false
     }
@@ -133,6 +143,7 @@ class UserService {
             return true
         }
 
+        // TODO This role has been deprecated?
         def user = User.findByUserId(userId)
         if (user) {
             def siteAdminRole = Role.findByNameIlike(BVPRole.SITE_ADMIN)

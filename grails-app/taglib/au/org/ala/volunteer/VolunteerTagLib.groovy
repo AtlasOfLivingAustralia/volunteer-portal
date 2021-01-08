@@ -143,7 +143,8 @@ class VolunteerTagLib {
     }
 
     private boolean isInstitutionAdmin(Institution institution) {
-        return isAdmin() || userService.isInstitutionAdmin(institution)
+        //return isAdmin() || userService.isInstitutionAdmin(institution)
+        return userService.isInstitutionAdmin(institution)
     }
 
     private boolean isAdmin() {
