@@ -29,6 +29,7 @@
                         </tr>
                         </thead>
                         <tbody>
+
                         <tr>
                             <td>
                                 <a class="btn btn-default bs3"
@@ -49,6 +50,13 @@
                             </td>
                             <td>Allows modification to the values held in various picklists</td>
                         </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'project', action: 'archiveList')}">Archive expeditions</a>
+                            </td>
+                            <td>Download expedition images and remove from server.</td>
+                        </tr>
+                        <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'validationRule', action: 'list')}">Validation Rules</a>
@@ -97,6 +105,12 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'admin', action: 'manageInstitutionAdmins')}">Manage Institution Admins</a>
+                            </td>
+                            <td>Manage Institution Admins</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'achievementDescription', action: 'index')}">Manage Badges</a>
                             </td>
                             <td>Manage Achievements</td>
@@ -127,6 +141,7 @@
                                    href="${createLink(controller: 'admin', action: 'projectSummaryReport')}">Expedition Summary Report</a>
                             </td>
                         </tr>
+                        </cl:ifSiteAdmin>
                         </tbody>
                     </table>
 
