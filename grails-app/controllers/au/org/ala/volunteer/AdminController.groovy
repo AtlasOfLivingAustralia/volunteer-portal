@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
 import grails.plugins.csv.CSVWriter
@@ -18,17 +19,16 @@ class AdminController {
     def userService
     def projectService
     def fullTextIndexService
-    def domainUpdateService
-    def taskLoadService
+    //def domainUpdateService
     def eventSourceService
 
     def index() {
-        checkAdmin()
-        return
+        checkAdminAccess(true)
+        render(view: 'index')
     }
 
     def mailingList() {
-        if (checkAdmin()) {
+        if (checkAdminAccess()) {
             def userIds = User.withCriteria {
                 projections {
                     property('userId', 'userId')
@@ -40,14 +40,97 @@ class AdminController {
         }
     }
 
-    boolean checkAdmin() {
+    /**
+     * Checks if the current logged in user has the access privilleges to access the admin page.
+     *
+     * @return true if access allowed. Redirects to home page with flash message if no access.
+     */
+    boolean checkAdminAccess(Boolean includeInstitutionAdmin) {
+        if (userService.isAdmin() || (includeInstitutionAdmin && userService.isInstitutionAdmin())) {
+            log.info("Admin access allowed.")
+            return true
+        } else {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(uri: grailsApplication.config.grails.serverURL)
+        }
+    }
 
-        if (userService.isAdmin()) {
-            return true;
+    /**
+     * Main page request for managing Institution Admins.
+     */
+    def manageInstitutionAdmins() {
+        checkAdminAccess(false)
+        def institutionId = params.long('institution')
+        def institution = Institution.get(institutionId)
+        List institutionAdminRoles
+
+        if (institution) {
+            def c = UserRole.createCriteria()
+            institutionAdminRoles = c.list() {
+                and {
+                    eq('role', Role.findByName(BVPRole.INSTITUTION_ADMIN))
+                    eq('institution', institution)
+                }
+            }
+        } else {
+            institutionAdminRoles = UserRole.findAllByRole(Role.findByName(BVPRole.INSTITUTION_ADMIN))
+        }
+        institutionAdminRoles.sort {UserRole a, UserRole b ->
+            a.role.name <=> b.role.name ?: a.institution?.name <=> b.institution?.name ?: a.user.lastName <=> b.user.lastName
+        }
+        render(view: 'manageInstitutionAdmins', model: [institutionAdminRoles: institutionAdminRoles])
+    }
+
+    /**
+     * Adds a new {@link UserRole} for an Institution Admin.
+     */
+    def addInstituionAdmin() {
+        checkAdminAccess(false)
+        def currentUser = userService.getCurrentUser()
+        def userId = params.userId
+        def user = User.findByUserId(userId)
+
+        if (!user) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), userId])
+            redirect(action: 'manageInstitutionAdmins')
+            return
         }
 
-        flash.message = "You do not have permission to view this page"
-        redirect(uri:"/")
+        def institutionId = params.long('institution')
+        def institution = Institution.get(institutionId)
+        if (!institution) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), institutionId])
+            redirect(action: 'manageInstitutionAdmins')
+            return
+        }
+
+        def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
+        def userRole = new UserRole(user: user, role: role, institution: institution, createdBy: currentUser)
+        userRole.save(flush: true, failOnError: true)
+        flash.message = "Successfully added Institution Admin role to ${user.displayName}".toString()
+        redirect(action: 'manageInstitutionAdmins')
+    }
+
+    /**
+     * Deletes the selected Institution Admin {@link UserRole}.
+     */
+    def deleteInstitutionAdmin() {
+        checkAdminAccess(false)
+        def currentUser = userService.getCurrentUser()
+        def userRoleId = params.long('userRoleId')
+        def userRole = UserRole.get(userRoleId)
+
+        if (!userRole) {
+            render ([status: "error",
+                     message: message(code: 'default.not.found.message', args: [message(code: 'user.role.label', default: 'User Role'), userRoleId])] as JSON)
+            return
+        }
+
+        // TODO Do we log this somewhere for auditing?
+        userRole.delete(flush: true)
+        log.warn("Institution Admin role held by ${userRole.user} was deleted by ${currentUser}")
+        render ([status: "success"] as JSON)
     }
 
     def tutorialManagement() {
@@ -119,7 +202,7 @@ class AdminController {
      * It is entirely possible that not collector id can be found, in which case the field value is cleared
      */
     def fixRecordedByID() {
-        if (!checkAdmin()) {
+        if (!checkAdminAccess()) {
              throw new RuntimeException("Not authorised!")
         }
 
@@ -195,7 +278,7 @@ class AdminController {
 
     def fixUserCounts() {
 
-        if (!checkAdmin()) {
+        if (!checkAdminAccess()) {
              throw new RuntimeException("Not authorised!")
         }
 
@@ -280,7 +363,7 @@ class AdminController {
     }
 
     def projectSummaryReport() {
-        if (checkAdmin()) {
+        if (checkAdminAccess()) {
             def projects = Project.list([sort:'id'])
 
             def dates = taskService.getProjectDates()
@@ -344,7 +427,7 @@ class AdminController {
     }
 
     def reindexAllTasks() {
-        if (checkAdmin()) {
+        if (checkAdminAccess()) {
 
             def c = Task.createCriteria()
             def results = c.list() {
@@ -363,7 +446,7 @@ class AdminController {
     }
 
     def rebuildIndex() {
-        if (checkAdmin()) {
+        if (checkAdminAccess()) {
             fullTextIndexService.reinitialiseIndex()
         }
 
@@ -385,7 +468,7 @@ class AdminController {
 
     // clear the grails gsp caches
     def clearPageCaches() {
-        if (!checkAdmin()) {
+        if (!checkAdminAccess()) {
             render status: 403
             return
         }
@@ -396,7 +479,7 @@ class AdminController {
     }
 
     def clearAllCaches() {
-        if (!checkAdmin()) {
+        if (!checkAdminAccess()) {
             render status: 403
             return
         }
@@ -406,7 +489,7 @@ class AdminController {
     }
 
     def updateUsers() {
-        if (!checkAdmin()) {
+        if (!checkAdminAccess()) {
             render status: 403
             return
         }

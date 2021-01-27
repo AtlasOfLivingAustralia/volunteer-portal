@@ -6,7 +6,6 @@ import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
-import groovy.sql.Sql
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
@@ -14,17 +13,14 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpServletRequest
-import java.sql.Connection
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Transactional
 class UserService {
 
     def authService
-    def logService
     def grailsApplication
     def emailService
-    //def CustomPageRenderer customPageRenderer
     def groovyPageRenderer
     def messageSource
     def freemarkerService
@@ -92,7 +88,7 @@ class UserService {
                 it['email'] = deet.userName // this is actually the email address
             }
         }
-        return users;
+        return users
     }
 
     int countActiveUsers() {
@@ -103,20 +99,16 @@ class UserService {
         return (user.transcribedCount ?: 0) + (user.validatedCount ?: 0)
     }
 
-    public boolean isInstitutionAdmin(Institution institution) {
-
-        def userId = currentUserId
-
-        if (!userId) {
-            return false;
-        }
-
-        // If User is a Site Admin, return true for any institution.
-        if (isSiteAdmin()) {
-            return true
-        }
-
-        def user = User.findByUserId(userId)
+    /**
+     * Determines if the current user holds the institution admin role for a specific institution.
+     * To find if a user holds the institution admin role for any institution, call
+     * {@link UserService#isInstitutionAdmin()}
+     *
+     * @param institution the specific institution to check against the user.
+     * @return true if user has the institution admin role. False returned if not.
+     */
+    boolean isInstitutionAdmin(Institution institution) {
+        def user = User.findByUserId(currentUserId)
         if (user) {
             def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
             def userRole = user.userRoles.find {
@@ -130,12 +122,45 @@ class UserService {
         return false
     }
 
-    public boolean isSiteAdmin() {
+    /**
+     * Determines if the current user holds the institution admin role for any institution.
+     * To find if a user holds the institution admin role for a specific institution, call
+     * {@link UserService#isInstitutionAdmin(Institution)}
+     *
+     * @return true if user has the institution admin role. False returned if not.
+     */
+    boolean isInstitutionAdmin() {
+
+        def userId = currentUserId
+        if (!userId) {
+            return false
+        }
+
+        // If User is a Site Admin, return true for any institution.
+        if (isSiteAdmin()) {
+            return true
+        }
+
+        def user = User.findByUserId(userId)
+        if (user) {
+            def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+            def userRole = user.userRoles.find {
+                it.role.id == institutionAdminRole.id
+            }
+            if (userRole) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    boolean isSiteAdmin() {
 
         def userId = currentUserId
 
         if (!userId) {
-            return false;
+            return false
         }
 
         // If  the user has been granted the ALA-AUTH ROLE_BVP_ADMIN....
@@ -161,7 +186,7 @@ class UserService {
      * @param project
      * @return
      */
-    public boolean isValidator(Project project) {
+    boolean isValidator(Project project) {
         isValidatorForProjectId(project?.id, project?.institution?.id)
     }
 
@@ -173,12 +198,12 @@ class UserService {
      *        true if user has validator access
      *        false if user
      */
-    public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
+    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
 
         def userId = currentUserId
 
         if (!userId) {
-            return false;
+            return false
         }
 
         // Site administrator can validate anything
@@ -206,22 +231,22 @@ class UserService {
             if (role) {
                 // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
                 // indicating that they can validate tasks from any project and or institution)
-                return true;
+                return true
             }
         }
 
-        return false;
+        return false
     }
 
-    public String getCurrentUserId() {
+    String getCurrentUserId() {
         return authService.userId
     }
 
-    public String getCurrentUserEmail() {
+    String getCurrentUserEmail() {
         return authService.email
     }
 
-    public User getCurrentUser() {
+    User getCurrentUser() {
         def userId = currentUserId
         if (userId) {
             return User.findByUserId(userId)
@@ -328,7 +353,7 @@ class UserService {
         }
 
         int activityCount = 0
-        UserActivity activity;
+        UserActivity activity
 
         while (activityCount < 100 && (activity = _userActivityQueue.poll()) != null) {
             if (activity) {
@@ -357,7 +382,7 @@ class UserService {
             return
         }
 
-        long millis = new Date().getTime() - (seconds * 1000);
+        long millis = new Date().getTime() - (seconds * 1000)
 
         def targetDate = new Date(millis)
         // find all user activity records whose timeLastActivity is older than this time...
@@ -526,7 +551,7 @@ class UserService {
 
     // Retrieves all the data required for the notebook functionality
     Map appendNotebookFunctionalityToModel(Map model) {
-        Stopwatch sw = Stopwatch.createStarted();
+        Stopwatch sw = Stopwatch.createStarted()
         final query = freemarkerService.runTemplate(UserController.ALA_HARVESTABLE, [userId: model.userInstance.userId])
         final agg = UserController.SPECIES_AGG_TEMPLATE
 

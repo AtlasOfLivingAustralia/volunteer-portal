@@ -121,6 +121,21 @@ class UserController {
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
     }
 
+    def listUsersForJson() {
+        def term = params.term
+        def search = "%${term}%"
+        def users = User.withCriteria {
+            or {
+                ilike 'displayName', search
+                ilike 'email', search
+            }
+            maxResults 20
+            order "displayName", "desc"
+        }
+
+        render users as JSON
+    }
+
     def project() {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
