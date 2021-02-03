@@ -107,7 +107,7 @@ $(function($) {
         var id = $(this).attr("userRoleId");
 
         $.ajax({
-            url: "${createLink(controller: 'admin', action: 'deleteInstitutionAdmin').encodeAsJavaScript()}" + "?userRoleId=" + id,
+            url: "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id,
             success: function (data) {
                 if (data.status == "success") {
                     $("#userRole_" + id).remove();

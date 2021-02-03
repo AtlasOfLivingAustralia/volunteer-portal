@@ -109,6 +109,14 @@
                             </td>
                             <td>Manage Institution Admins</td>
                         </tr>
+                        </cl:ifSiteAdmin>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'admin', action: 'manageUserRoles')}">Manage User Roles</a>
+                            </td>
+                            <td>Manage User Roles, such as validators and forum moderators.</td>
+                        </tr>
+                        <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'achievementDescription', action: 'index')}">Manage Badges</a>

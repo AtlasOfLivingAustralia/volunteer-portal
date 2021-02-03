@@ -499,7 +499,10 @@ class UserController {
             redirect(action: "show")
         }
 
-        [userInstance: userInstance, currentUser: currentUser, roles: Role.findAllByNameNotEqual('site_admin'), institutions: Institution.list (sort: 'name', order: 'asc'), projects: Project.list(sort: 'name', order: 'asc')]
+        [userInstance: userInstance, currentUser: currentUser,
+         roles: Role.findAllByNameInList([BVPRole.FORUM_MODERATOR, BVPRole.VALIDATOR]),
+         institutions: Institution.list (sort: 'name', order: 'asc'),
+         projects: Project.list(sort: 'name', order: 'asc')]
     }
 
     private def sortUserRoles (def userInstance) {

@@ -140,7 +140,13 @@ class VolunteerTagLib {
      * Prints the contents if the user is a Site Admin
      */
     def ifSiteAdmin = {attrs, body ->
-        if (grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()) {
+        if (isSiteAdmin()) {
+            out << body()
+        }
+    }
+
+    def ifNotSiteAdmin = {attrs, body ->
+        if (!isSiteAdmin()) {
             out << body()
         }
     }
@@ -157,6 +163,10 @@ class VolunteerTagLib {
     private boolean isInstitutionAdmin(Institution institution) {
         //return isAdmin() || userService.isInstitutionAdmin(institution)
         return userService.isInstitutionAdmin(institution)
+    }
+
+    private boolean isSiteAdmin() {
+        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {

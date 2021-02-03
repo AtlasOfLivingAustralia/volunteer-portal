@@ -4,9 +4,11 @@ import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+import com.google.common.base.Strings
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
@@ -18,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 @Transactional
 class UserService {
 
+    def dataSource
     def authService
     def grailsApplication
     def emailService
@@ -109,7 +112,7 @@ class UserService {
      */
     boolean isInstitutionAdmin(Institution institution) {
         def user = User.findByUserId(currentUserId)
-        if (user) {
+        if (user && institution) {
             def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
             def userRole = user.userRoles.find {
                 it.role.id == institutionAdminRole.id && it.institution.id == institution.id
@@ -126,6 +129,8 @@ class UserService {
      * Determines if the current user holds the institution admin role for any institution.
      * To find if a user holds the institution admin role for a specific institution, call
      * {@link UserService#isInstitutionAdmin(Institution)}
+     * <br />
+     * <b>Note:</b> Will also return true if user is a site admin.
      *
      * @return true if user has the institution admin role. False returned if not.
      */
@@ -153,6 +158,31 @@ class UserService {
         }
 
         return false
+    }
+
+    /**
+     * Returns a list of institutions the current user holds the Institution Admin for.
+     */
+    def getAdminInstitutionList() {
+        def user = currentUser
+        if (!user) {
+            return []
+        }
+
+        def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+        def userRoleList = user.userRoles.findAll { UserRole userRole ->
+            userRole.role.id == institutionAdminRole.id
+        }
+        def institutionList = []
+        userRoleList.each { UserRole userRole ->
+            def institution = userRole.getLinkedInstitution()
+            if (institution) institutionList.add(institution)
+        }
+        institutionList.sort { Institution a, Institution b ->
+            a?.name <=> b?.name
+        }
+
+        return institutionList
     }
 
     boolean isSiteAdmin() {
@@ -272,6 +302,88 @@ class UserService {
         if (!user) return false
         def moderators = getUsersWithRole("forum_moderator", projectInstance, user)
         return moderators.find { it?.userId == user?.userId }
+    }
+
+    /**
+     * Retrieves a list of all users who have non-admin roles. Only accessible by admins.
+     * @param params A map of query parameters
+     * @return a map containing the list of user roles and the total number of records for pagination.
+     */
+    def listUserRoles(Map parameters) {
+        if (!isInstitutionAdmin()) {
+            return [:]
+        }
+        def results = new ArrayList<UserRole>();
+        def clause = []
+        def pValues = [:]
+        String institutionClause
+        String projectClause
+
+        if (!parameters.max) {
+            parameters.max = 25
+        }
+
+        if (!parameters.offset) {
+            parameters.offset = 0
+        }
+
+        if (parameters.institution) {
+            clause.add("and i.id = :institutionId ")
+            pValues.institutionId = parameters.institution
+        }
+
+        if (parameters.institutionList && parameters.projectList) {
+            institutionClause = " i.id in (" + parameters.institutionList.collect { it.id }.join(",") + ") "
+            projectClause = " p.id in (" + parameters.projectList.collect { it.id }.join(",") + ") "
+            clause.add(" and (" + institutionClause + " OR " + projectClause + ")")
+        }
+
+        if (!Strings.isNullOrEmpty(parameters.q)) {
+            clause.add(" and p.name ilike '%${parameters.q}%' ")
+        }
+
+        if (!Strings.isNullOrEmpty(parameters.userid)) {
+            clause.add(" and u.user_id = ${parameters.userid} ")
+        }
+
+        def query = """\
+            select u.id as user_role_id, 
+                u.project_id, 
+                u.institution_id, 
+                u.user_id, 
+                role.name, 
+                i.name as institution_name, 
+                p.name as project_name,
+                vp_user.last_name
+            from user_role u
+                join role on (role.id = u.role_id)
+                join vp_user on (vp_user.id = u.user_id)
+                left outer join institution i on (i.id = u.institution_id)
+                left outer join project p on (p.id = u.project_id)
+            where role.name in ('${BVPRole.VALIDATOR}', '${BVPRole.FORUM_MODERATOR}') 
+            """.stripIndent()
+
+        clause.each {
+            query += it
+        }
+
+        query += "order by i.name, role.name, last_name"
+
+        log.debug("Role query: ${query}")
+
+        def sql = new Sql(dataSource)
+        sql.eachRow(query, pValues, parameters.offset, parameters.max) { row ->
+            UserRole userRole = UserRole.get(row.user_role_id)
+            results.add(userRole)
+        }
+
+        def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
+        def countRows = sql.firstRow(countQuery, pValues)
+
+        def returnMap = [userRoleList: results, totalCount: countRows.row_count_total]
+
+        sql.close()
+        return returnMap
     }
 
     /**

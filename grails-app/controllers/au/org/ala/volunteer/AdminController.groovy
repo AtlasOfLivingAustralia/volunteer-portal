@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.converters.JSON
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
@@ -115,8 +116,8 @@ class AdminController {
     /**
      * Deletes the selected Institution Admin {@link UserRole}.
      */
-    def deleteInstitutionAdmin() {
-        checkAdminAccess(false)
+    def deleteUserRole() {
+        checkAdminAccess(true)
         def currentUser = userService.getCurrentUser()
         def userRoleId = params.long('userRoleId')
         def userRole = UserRole.get(userRoleId)
@@ -127,10 +128,135 @@ class AdminController {
             return
         }
 
+        // Because this action is run by both Site admins (for IA's) and IA's (for user roles), check that that user
+        // has permission to delete the selected role
+        // Also check, in the case of IA's, that they are not deleting another institution's role.
+        if (userRole.role.name == BVPRole.INSTITUTION_ADMIN && !userService.isAdmin()) {
+            log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of Institution Admin role " +
+                    "${userRole} without permission: ${userRole}")
+            flash.message = "You do not have permission to delete role ${userRole.role.name} (held by ${userRole.user.displayName})."
+            redirect(action: 'manageInstitutionAdmins')
+            return
+        } else if (!userService.isAdmin() && !userService.isInstitutionAdmin(userRole.getInstitution())) {
+            log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of user role ${userRole} " +
+                    "without permission: ${userRole}")
+            flash.message = "You do not have permission to delete role ${userRole.role.name} (held by ${userRole.user.displayName})."
+            redirect(action: 'manageUserRoles')
+            return
+        }
+
         // TODO Do we log this somewhere for auditing?
         userRole.delete(flush: true)
-        log.warn("Institution Admin role held by ${userRole.user} was deleted by ${currentUser}")
+        log.info("Institution Admin role held by ${userRole.user} was deleted by ${currentUser}")
         render ([status: "success"] as JSON)
+    }
+
+    def addUserRole() {
+        checkAdminAccess(true)
+        def currentUser = userService.getCurrentUser()
+        def userId = params.userId
+        def user = User.findByUserId(userId)
+
+        if (!user) {
+            log.error("Add user role: No user found for ${params.userId}")
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), userId])
+            redirect(action: 'manageUserRoles')
+            return
+        }
+
+        def levelOption = params.opt
+        def institutionId = params.long('institution')
+        def institution = Institution.get(institutionId)
+        def projectId = params.long('project')
+        def project = Project.get(projectId)
+
+        def level
+        if (levelOption == "byinst") {
+            level = 1
+        } else if (levelOption == "byproj") {
+            level = 2
+        } else {
+            log.error("Add user role: No project or institution found: project ID: ${params.projectId}, institution ID: ${params.institutionId}")
+            flash.message = message(code: 'admin.user.role.not.created', args: [message(code: 'user.role.label', default: 'User Role'), 'missing Institution or Project ID'])
+            redirect(action: 'manageUserRoles')
+            return
+        }
+
+        def role = Role.get(params.userRole_role)
+        if (!role) {
+            log.error("Add user role: No role found: ${params.userRole_role}")
+            flash.message = message(code: 'admin.user.role.not.created', args: [message(code: 'user.role.label', default: 'User Role'), 'missing role type'])
+            redirect(action: 'manageUserRoles')
+            return
+        }
+
+        log.debug("Adding new user role: ${params.userRole_role}, projectId: ${projectId}, institutionId: ${institutionId}, user: ${user}")
+
+        def userRole
+        if (level == 1) {
+            userRole = new UserRole(user: user, role: role, institution: institution, createdBy: currentUser)
+        } else {
+            userRole = new UserRole(user: user, role: role, project: project, createdBy: currentUser)
+        }
+
+        if (userRole) {
+            userRole.save(flush: true, failOnError: true)
+            log.debug("Saved User Role: ${userRole}")
+            flash.message = "Successfully added User role to ${user.displayName}".toString()
+        }
+
+        def reloadParams = [:]
+        if (params.institution)  reloadParams.institution = params.institution
+
+        redirect(action: 'manageUserRoles', params: reloadParams)
+    }
+
+    def manageUserRoles() {
+        checkAdminAccess(true)
+        def parameters = [:]
+
+        def institutionId = params.long('institution')
+        def institution = Institution.get(institutionId)
+        if (institution) parameters.institution = institution.id
+
+        if (params.max) parameters.max = params.int('max')
+        else params.max = parameters.max = 25
+
+        if (params.offset) parameters.offset = params.int('offset')
+
+        // Obtain the available institutions/projects (i.e. if Institution Admin, only allow access to that
+        // institution's roles).
+        // If an IA, add that to the userRole query parameters.
+        def institutionList = (!userService.isSiteAdmin() ? userService.getAdminInstitutionList() : Institution.list(sort: 'name', order: 'asc'))
+        if (!userService.isSiteAdmin()) parameters.institutionList = institutionList
+
+        def projectList
+        if (!userService.isSiteAdmin()) {
+            def query = Project.where {
+                institution in institutionList
+            }
+            projectList = query.list(sort: "name")
+            parameters.projectList = projectList
+        } else {
+            projectList = Project.list(sort: 'name', order: 'asc')
+        }
+
+        if (!Strings.isNullOrEmpty(params.q)) {
+            parameters.q = params.q
+        }
+
+        if (!Strings.isNullOrEmpty(params.userid)) {
+            parameters.userid = params.userid
+        }
+
+        Map userRoles = userService.listUserRoles(parameters)
+        List userRoleList = userRoles.userRoleList
+        log.debug("userRoleList.size(): ${userRoleList.size()}")
+
+        render(view: 'manageUserRoles', model: [institutionList: institutionList,
+                                                projectList: projectList,
+                                                userRoleList: userRoleList,
+                                                userRoleTotalCount: userRoles.totalCount])
     }
 
     def tutorialManagement() {
