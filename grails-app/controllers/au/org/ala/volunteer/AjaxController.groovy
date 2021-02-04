@@ -134,7 +134,10 @@ class AjaxController {
                 'projects_count' { it[8] }
                 'volunteer_since' { it[9] }
                 'is_admin' { it[10] }
-                'is_validator' { it[11] }
+                'is_institution_admin' { it[11] }
+                'is_ala_validator' { it[12] }
+                'is_validator' { it[13] }
+                'is_forum_mod' { it[14] }
             })
             writer.writeHeadings()
             response.flushBuffer()
@@ -224,9 +227,26 @@ class AjaxController {
             def roleObjs = userRoles*.role
             def roles = (roleObjs*.name + serviceResult?.roles).toSet()
             def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
-            def isValidator = !roles.intersect([validatorRole]).isEmpty()
+            def isAlaValidator = !roles.intersect([validatorRole]).isEmpty()
+            def isValidator = !roles.intersect([BVPRole.VALIDATOR]).isEmpty()
+            def isForumModerator = !roles.intersect([BVPRole.FORUM_MODERATOR]).isEmpty()
+            def isInstitutionAdmin = !roles.intersect([BVPRole.INSTITUTION_ADMIN]).isEmpty()
 
-            report.add([serviceResult?.userId ?: id, serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
+            report.add([serviceResult?.userId ?: id,
+                        serviceResult?.userName ?: user.email,
+                        serviceResult?.displayName ?: user.displayName,
+                        serviceResult?.organisation ?: user.organisation ?: '',
+                        location,
+                        transcribedCount,
+                        validatedCount,
+                        lastActivity,
+                        projectCount,
+                        user.created,
+                        isAdmin,
+                        isInstitutionAdmin,
+                        isAlaValidator,
+                        isValidator,
+                        isForumModerator])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
