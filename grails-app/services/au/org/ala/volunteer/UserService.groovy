@@ -237,7 +237,7 @@ class UserService {
         }
 
         // Site administrator can validate anything
-        if (isSiteAdmin()) {
+        if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId).institution)) {
             return true
         }
 
@@ -255,7 +255,7 @@ class UserService {
             def role = user.userRoles.find {
                 it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
                                                     projectId == null ||
-                                                    it.institution?.id == projectInstitutionId ||
+                                                   (it.institution != null && it.institution?.id == projectInstitutionId) ||
                                                     it.project?.id == projectId)
             }
             if (role) {
