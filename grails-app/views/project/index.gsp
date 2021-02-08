@@ -76,13 +76,13 @@
                 </g:if>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
-                        <cl:ifAdmin>
+                        <cl:ifInstitutionAdmin project="${projectInstance}">
                             <g:link class="btn btn-warning " controller="task"
                                     action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
                             <g:link class="btn btn-warning " controller="project"
                                     action="edit" id="${projectInstance.id}"><i
                                     class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
-                        </cl:ifAdmin>
+                        </cl:ifInstitutionAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
                         <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"

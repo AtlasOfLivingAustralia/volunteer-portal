@@ -41,7 +41,9 @@ class NewsItemController {
 
     def create() {
         def currentUserId = userService.currentUserId
-        if (currentUserId != null && userService.isAdmin()) {
+        Project p = Project.get(params.long('project.id'))
+        def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(p?.institution))
+        if (currentUserId != null && isAdmin) {
             def newsItemInstance = new NewsItem()
             newsItemInstance.properties = params
             return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
@@ -93,13 +95,14 @@ class NewsItemController {
 
     def edit = {
         def currentUserId = userService.currentUserId
-        if (currentUserId != null && userService.isAdmin()) {
-            def newsItemInstance = NewsItem.get(params.id)
+        def newsItemInstance = NewsItem.get(params.id)
+        def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(newsItemInstance?.project?.institution))
+        if (currentUserId != null && isAdmin) {
+            //def newsItemInstance = NewsItem.get(params.id)
             if (!newsItemInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), params.id])}"
                 redirect(action: "list")
-            }
-            else {
+            } else {
                 return [newsItemInstance: newsItemInstance, currentUser: currentUserId]
             }
         } else {
@@ -110,18 +113,19 @@ class NewsItemController {
 
     def update() {
         def currentUserId = userService.currentUserId
-        if (currentUserId != null && userService.isAdmin()) {
-            def newsItemInstance = NewsItem.get(params.id)
+        def newsItemInstance = NewsItem.get(params.id)
+        def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(newsItemInstance?.project?.institution))
+        if (currentUserId != null && isAdmin) {
             if (newsItemInstance) {
                 if (params.version) {
                     def version = params.version.toLong()
                     if (newsItemInstance.version > version) {
-
                         newsItemInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'newsItem.label', default: 'NewsItem')] as Object[], "Another user has updated this NewsItem while you were editing")
                         render(view: "edit", model: [newsItemInstance: newsItemInstance])
                         return
                     }
                 }
+
                 newsItemInstance.properties = params
                 if (!newsItemInstance.hasErrors() && newsItemInstance.save(flush: true)) {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItemInstance.id])}"

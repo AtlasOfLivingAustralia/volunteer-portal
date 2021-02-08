@@ -105,7 +105,8 @@ class UserService {
     /**
      * Determines if the current user holds the institution admin role for a specific institution.
      * To find if a user holds the institution admin role for any institution, call
-     * {@link UserService#isInstitutionAdmin()}
+     * {@link UserService#isInstitutionAdmin()}.
+     * <b>Note:</b> Will return FALSE if user is a site admin, unless they hold the institution admin role.
      *
      * @param institution the specific institution to check against the user.
      * @return true if user has the institution admin role. False returned if not.
@@ -236,8 +237,8 @@ class UserService {
             return false
         }
 
-        // Site administrator can validate anything
-        if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId).institution)) {
+        // Site administrator/institution admin can validate anything
+        if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId)?.institution)) {
             return true
         }
 
@@ -291,7 +292,7 @@ class UserService {
 
     def isForumModerator(Project project = null) {
 
-        if (isAdmin()) {
+        if (isAdmin() || isInstitutionAdmin(project?.institution)) {
             return true
         }
 

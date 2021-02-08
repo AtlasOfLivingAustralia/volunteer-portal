@@ -420,7 +420,7 @@ class ProjectService {
         )
     }
 
-    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
+    private def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
 
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
@@ -430,7 +430,17 @@ class ProjectService {
                 whereClauses += PROJECT.INACTIVE.eq(true)
                 break
             case ProjectActiveFilterType.showArchivedOnly:
-                whereClauses += PROJECT.ARCHIVED.eq(true)
+                // Note CD: removed static declaration off method to do this. I couldn't find any reason
+                // for it to remain static...
+                // This option is only given to Admins and IA's. IA's should only see their institutions archived projects.
+                if (!userService.isAdmin()) {
+                    log.debug("Project summary, Not an admin but has institution admin...")
+                    def institutionAdminList = userService.getAdminInstitutionList()
+                    def institutionAdminClause = [PROJECT.ARCHIVED.eq(true), PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                    whereClauses += institutionAdminClause
+                } else {
+                    whereClauses += PROJECT.ARCHIVED.eq(true)
+                }
                 break
         }
 
@@ -553,7 +563,15 @@ class ProjectService {
         if (userService.isAdmin()) {
             conditions = []
         } else {
-            conditions = [ACTIVE_ONLY]
+            //conditions = [ACTIVE_ONLY]
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions = [jOr(institutionAdminClause)]
+            } else {
+                conditions = [ACTIVE_ONLY]
+            }
         }
 
         //params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order
@@ -574,7 +592,14 @@ class ProjectService {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
         }
         if (!userService.isAdmin()) {
-            conditions += ACTIVE_ONLY
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions += jOr(institutionAdminClause)
+            } else {
+                conditions += ACTIVE_ONLY
+            }
         }
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)

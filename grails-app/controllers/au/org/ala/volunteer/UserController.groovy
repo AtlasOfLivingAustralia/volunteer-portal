@@ -482,6 +482,10 @@ class UserController {
         }
     }
 
+    /**
+     * @deprecated
+     * @return
+     */
     def editRoles() {
 
         def userInstance = User.get(params.id)

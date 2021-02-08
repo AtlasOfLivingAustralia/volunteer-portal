@@ -155,8 +155,13 @@ class VolunteerTagLib {
      * @attr institution The institution to test against
      */
     def ifInstitutionAdmin = { attrs, body ->
-        if (isInstitutionAdmin(attrs.institution)) {
+        if (attrs.institution && isInstitutionAdmin(attrs.institution)) {
             out << body()
+        } else if (attrs.project) {
+            Project p = attrs.project as Project
+            if (isInstitutionAdmin(p.institution)) {
+                out << body()
+            }
         }
     }
 

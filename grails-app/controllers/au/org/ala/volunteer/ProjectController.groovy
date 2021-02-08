@@ -460,7 +460,8 @@ class ProjectController {
 
     def edit() {
         def currentUser = userService.currentUserId
-        if (currentUser != null && userService.isAdmin()) {
+        Project p = Project.get(params.long('id'))
+        if (currentUser != null && userService.isInstitutionAdmin(p?.institution)) {
             redirect(action:"editGeneralSettings", params: params)
             return
         } else {
@@ -1084,7 +1085,7 @@ class ProjectController {
     }
 
     def wizardCreate(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
         }
         try {
@@ -1107,9 +1108,10 @@ class ProjectController {
         }
     }
 
-    def archiveList() {
+    def
+    archiveList() {
         final sw = Stopwatch.createStarted()
-        if (!userService.isAdmin()) {
+        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
         }
@@ -1190,7 +1192,7 @@ class ProjectController {
      * @param project the project to archive.
      */
     def archive(Project project) {
-        if (!userService.isAdmin()) {
+        if (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution)) {
             log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
             redirect(uri: "/")
         }
@@ -1208,7 +1210,7 @@ class ProjectController {
     }
 
     def downloadImageArchive(Project project) {
-        if (!userService.isAdmin()) {
+        if (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution)) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
         }
