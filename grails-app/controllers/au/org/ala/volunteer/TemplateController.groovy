@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
 class TemplateController {
@@ -17,8 +19,27 @@ class TemplateController {
     }
 
     def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
+        params.max = Math.min(params.max ? params.int('max') : 20, 100)
+        params.offset = (params.offset ? params.int('offset') : 0)
+        def allTemplates
+
+        // If no parameters and is an institution admin, default to that user's institution filter.
+        if ((Strings.isNullOrEmpty(params.institution)
+                && Strings.isNullOrEmpty(params.sort)
+                && Strings.isNullOrEmpty(params.q)
+                && Strings.isNullOrEmpty(params.viewName)) && (userService.isInstitutionAdmin() && !userService.isSiteAdmin())) {
+            params.institution = "${userService.getAdminInstitutionList().first().id}"
+        }
+
+        allTemplates = templateService.getTemplatesWithFilter(params)
+
+        def templateList = []
+        allTemplates.templateList.each { Template template ->
+            templateList.add(templateService.getTemplatePermissions(template))
+        }
+
+        [templateInstanceList: templateList, templateInstanceTotal: allTemplates.totalCount,
+         params: params, viewFilter: templateService.getTemplateViews()]
     }
 
     def create() {
@@ -114,7 +135,7 @@ class TemplateController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -223,7 +244,7 @@ class TemplateController {
     @Transactional
     def addField() {
         def templateInstance = Template.get(params.int("id"))
-        def fieldType = params.fieldType
+        String fieldType = params.fieldType
         def classifier = params.fieldTypeClassifier
 
         if (templateInstance && fieldType) {

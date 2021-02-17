@@ -12,7 +12,7 @@ class Template implements Serializable {
     Map viewParams2 // Like view params but can store hierarchical data
     Boolean supportMultipleTranscriptions = false
 
-    static hasMany = [project: Project]
+    static hasMany = [projects: Project]
 
     static mapping = {
         version false

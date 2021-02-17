@@ -88,7 +88,7 @@
                                                                                   default="Projects that use this template:"/></label>
 
                             <div class="col-md-6">
-                                <g:each in="${templateInstance?.project ?}" var="p">
+                                <g:each in="${templateInstance?.projects ?}" var="p">
                                     <li class="form-control-static"><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
                                 </g:each>
                             </div>

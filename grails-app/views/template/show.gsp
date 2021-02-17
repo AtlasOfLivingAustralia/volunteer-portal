@@ -56,7 +56,7 @@
                             <label for="project" class="col-md-3 control-label"><g:message code="template.project.label" default="Projects"/></label>
                             <div class="col-md-6">
                                 <ul class="form-control-static" id="project">
-                                    <g:each in="${templateInstance.project}" var="p">
+                                    <g:each in="${templateInstance.projects}" var="p">
                                         <li><g:link controller="project" action="show"
                                                     id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
                                     </g:each>
