@@ -461,7 +461,7 @@ class ProjectController {
     def edit() {
         def currentUser = userService.currentUserId
         Project p = Project.get(params.long('id'))
-        if (currentUser != null && userService.isInstitutionAdmin(p?.institution)) {
+        if (currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(p?.institution))) {
             redirect(action:"editGeneralSettings", params: params)
             return
         } else {
