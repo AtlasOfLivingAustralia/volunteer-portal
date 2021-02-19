@@ -68,7 +68,7 @@
 
                             <div class="col-md-6">
                                 <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control"
-                                            value="${templateInstance.viewParams as grails.converters.JSON}"></g:textArea>
+                                            value="${templateInstance.viewParams as grails.converters.JSON}" />
                             </div>
                         </div>
 
@@ -88,10 +88,19 @@
                                                                                   default="Projects that use this template:"/></label>
 
                             <div class="col-md-6">
-                                <g:each in="${templateInstance?.projects ?}" var="p">
-                                    <li class="form-control-static"><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                <g:each in="${projectUsageList}" var="project">
+                                    <ul>
+                                        <li class="form-control-static">${(project.key ? project.key : "No institution")}</li>
+                                        <ul>
+                                            <g:each in="${project.value}" var="proj">
+                                                <li><g:link controller="project" action="show" id="${proj.id}">${proj.name}</g:link></li>
+                                            </g:each>
+                                        </ul>
+                                    </ul>
                                 </g:each>
                             </div>
+                        </div>
+
                         </div>
 
                         <div class="form-group">

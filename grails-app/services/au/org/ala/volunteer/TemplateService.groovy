@@ -89,10 +89,15 @@ class TemplateService {
             // List of Institutions user is Institution Admin for
             def institutionAdminList = userService.getAdminInstitutionList()*.id
             log.debug("template permissions: institution ID list: ${institutionAdminList}")
-            def projectInstitutionList = template.projects*.institution?.id
+            def projectInstitutionList = template.projects*.institution?.id.unique()
             log.debug("template permissions: project institution ID list: ${projectInstitutionList}")
-            templatePermissions.canEdit = !institutionAdminList.intersect(projectInstitutionList).isEmpty()
-            log.debug("Can edit: ${templatePermissions.canEdit}")
+
+            // If an existing template is used by multiple institutions, it can no longer be edited.
+            if (projectInstitutionList.size() == 1) {
+                templatePermissions.canEdit = !institutionAdminList.intersect(projectInstitutionList).isEmpty()
+            } else {
+                templatePermissions.canEdit = false
+            }
         }
         log.debug("Can edit: ${templatePermissions.canEdit}")
         return templatePermissions

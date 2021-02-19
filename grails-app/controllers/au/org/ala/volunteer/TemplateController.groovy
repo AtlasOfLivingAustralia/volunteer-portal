@@ -80,7 +80,20 @@ class TemplateController {
         }
         else {
             def availableViews = templateService.getAvailableTemplateViews()
-            return [templateInstance: templateInstance, availableViews: availableViews]
+            def projectUsageList = [:]
+            def projectList = templateInstance.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
+            def institutionName = ""
+
+            for (Project project in projectList) {
+                log.debug("Sorted project list: ${project}")
+
+                if (project.institution?.name != institutionName) {
+                    institutionName = project.institution?.name
+                    projectUsageList[institutionName] = []
+                }
+                projectUsageList[institutionName].add(project)
+            }
+            return [templateInstance: templateInstance, availableViews: availableViews, projectUsageList: projectUsageList]
         }
     }
 
