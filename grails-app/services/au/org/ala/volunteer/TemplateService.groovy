@@ -55,23 +55,26 @@ class TemplateService {
 
     def getAvailableTemplateViews() {
         def views = []
+        def pattern
 
         if (Environment.isDevelopmentEnvironmentAvailable()) {
             log.debug("Checking for dev templates")
             findDevGsps 'grails-app/views/transcribe/templateViews', views
+            // This is a pattern for windows... linux developer would have to modify?
+            pattern = Pattern.compile("^grails-app\\\\views\\\\transcribe\\\\templateViews\\\\(.*Transcribe)[.]gsp\$")
         } else {
             log.debug("Checking for WAR deployed templates")
             findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
+            pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
         }
         log.debug("Got views: {}", views)
-
-        def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
 
         def results = views.collectMany { String viewName ->
             def m = pattern.matcher(viewName)
             m.matches() ? [m.group(1)] : []
         }.sort()
 
+        log.debug("Views after collect/sort: {}", results)
         return results
     }
 
@@ -89,7 +92,7 @@ class TemplateService {
             // List of Institutions user is Institution Admin for
             def institutionAdminList = userService.getAdminInstitutionList()*.id
             log.debug("template permissions: institution ID list: ${institutionAdminList}")
-            def projectInstitutionList = template.projects*.institution?.id.unique()
+            def projectInstitutionList = template.projects*.institution?.id?.unique()
             log.debug("template permissions: project institution ID list: ${projectInstitutionList}")
 
             // If an existing template is used by multiple institutions, it can no longer be edited.
@@ -101,6 +104,84 @@ class TemplateService {
         }
         log.debug("Can edit: ${templatePermissions.canEdit}")
         return templatePermissions
+    }
+
+    /**
+     * Returns a list of templates available for the currently logged in user.
+     * If that user is an Institution Admin, the list includes templates used by their projects and global templates but
+     * not hidden templates.
+     * @return a list of available templates.
+     */
+    def getTemplatesForUser() {
+        if (userService.isSiteAdmin()) {
+            return Template.listOrderByName()
+        } else {
+            def institutionAdminList = userService.getAdminInstitutionList()*.id.unique()
+            def institutionIdList = institutionAdminList.join(",")
+            def results = []
+
+            def query = """\
+                select t.id, t.name
+                from template t
+                where (t.id in (
+                    select distinct p.template_id
+                    from project p
+                    where p.institution_id in (${institutionIdList}))
+                 or t.is_global = true)
+                and t.is_hidden = false 
+                order by t.name """.stripIndent()
+
+            def sql = new Sql(dataSource)
+            sql.eachRow(query) { row ->
+                Template template = Template.get(row.id)
+                results.add(template)
+            }
+
+            sql.close()
+            return results
+        }
+    }
+
+    /**
+     * Returns a list of templates available for an institution. Includes templates previously used by the institution
+     * and any global templates.
+     * @param institution the institution
+     * @param includeHidden determines if the query excludes hidden templates.
+     * @return a list of available templates
+     */
+    def getTemplatesForInstitution(Institution institution, boolean includeHidden = false) {
+        def results = []
+        def includeHiddenClause = (!includeHidden ? " and template.is_hidden = false " : "")
+
+//        def query = """\
+//                select t.id, t.name
+//                from template t
+//                where (t.id in (
+//                    select distinct p.template_id
+//                    from project p
+//                    where p.institution_id = (:institutionId))
+//                 or t.is_global = true)
+//                ${includeHiddenClause}
+//                order by t.name """.stripIndent()
+        def query = """\
+            select distinct template.id, template.name, template.is_global, template.is_hidden
+            from template 
+            left outer join project on (project.template_id = template.id)
+            left outer join institution on (institution.id = project.institution_id)
+            where (institution.id = :institutionId
+                or template.is_global = true
+                or institution.id is null)
+                ${includeHiddenClause}
+            order by template.name """.stripIndent()
+
+        def sql = new Sql(dataSource)
+        sql.eachRow(query, [institutionId: institution?.id]) { row ->
+            Template template = Template.get(row.id)
+            results.add(template)
+        }
+
+        sql.close()
+        return results
     }
 
     /**
@@ -151,6 +232,10 @@ class TemplateService {
         if (!Strings.isNullOrEmpty(params.viewName)) {
             clause.add(" t.view_name = :viewName ")
             parameters.viewName = params.viewName
+        }
+
+        if (!userService.isSiteAdmin()) {
+            clause.add(" t.is_hidden = false ")
         }
 
         clause.eachWithIndex { line, idx ->

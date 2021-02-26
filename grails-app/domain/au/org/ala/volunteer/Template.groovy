@@ -11,6 +11,8 @@ class Template implements Serializable {
     Map<String, String> viewParams
     Map viewParams2 // Like view params but can store hierarchical data
     Boolean supportMultipleTranscriptions = false
+    Boolean isGlobal = false
+    Boolean isHidden = false
 
     static hasMany = [projects: Project]
 
@@ -27,9 +29,12 @@ class Template implements Serializable {
         viewParams2 nullable: true
         fieldOrder nullable: true
         supportMultipleTranscriptions defaultValue: 'false'
+        isGlobal defaultValue: 'false'
+        isHidden defaultValue: 'false'
     }
 
-    public String toString() {
-        return name
+    String toString() {
+        //return "Template: ${name}, [view: ${viewName}, isGlobal: ${isGlobal}, isHidden: ${isHidden}, Project Count: ${projects.size()}]"
+        return "${name}" + (isGlobal ? " (Global)" : "") + (isHidden ? " (Hidden)" : "") + (projects.size() == 0 ? " (Unassigned)" : "")
     }
 }

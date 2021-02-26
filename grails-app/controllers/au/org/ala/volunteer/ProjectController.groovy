@@ -6,6 +6,7 @@ import grails.converters.*
 import org.apache.commons.io.FileUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.jooq.DSLContext
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 import au.org.ala.cas.util.AuthenticationCookieUtils
@@ -33,7 +34,6 @@ class ProjectController {
 
     def taskService
     def fieldService
-    def logService
     def userService
     def exportService
     def collectionEventService
@@ -41,9 +41,9 @@ class ProjectController {
     def projectService
     def picklistService
     def projectStagingService
-    def projectTypeService
     def authService
     def groovyPageRenderer
+    def templateService
     Closure<DSLContext> jooqContext
 
     /**
@@ -102,7 +102,7 @@ class ProjectController {
             }
             log.debug "roles = ${roles as JSON}"
 
-            def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
+            def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
 
             def newsItem = null
@@ -125,7 +125,7 @@ class ProjectController {
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {
                 // Avoid reporting 100% unless the transcribed count actually equals the task count
-                percentComplete = 99;
+                percentComplete = 99
             }
 
             render(view: "index", model: [
@@ -154,14 +154,14 @@ class ProjectController {
         def taskListFields = []
 
         if (projectInstance) {
-            long startQ  = System.currentTimeMillis();
+            long startQ  = System.currentTimeMillis()
             def taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:999])
 
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
                 def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
                 def cats = fieldListToMap(fieldService.getLatestFieldsWithTasks("catalogNumber", taskList, params))
-                long endQ  = System.currentTimeMillis();
+                long endQ  = System.currentTimeMillis()
                 log.debug("DB query took " + (endQ - startQ) + " ms")
                 log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
                 taskList.eachWithIndex { tsk, i ->
@@ -177,7 +177,7 @@ class ProjectController {
                     }
                 }
 
-                long endJ  = System.currentTimeMillis();
+                long endJ  = System.currentTimeMillis()
                 log.debug("JSON loop took " + (endJ - endQ) + " ms")
                 log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
             }
@@ -267,8 +267,8 @@ class ProjectController {
 //            }
 
             if (export_func) {
-                response.setHeader("Cache-Control", "must-revalidate");
-                response.setHeader("Pragma", "must-revalidate");
+                response.setHeader("Cache-Control", "must-revalidate")
+                response.setHeader("Pragma", "must-revalidate")
                 export_func(projectInstance, taskList, fieldNames, fieldList, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
@@ -295,9 +295,9 @@ class ProjectController {
 
         def projectSummaryList = projectService.getProjectSummaryList(params, false)
 
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
-        session.expeditionSort = params.sort;
+        session.expeditionSort = params.sort
 
         [
             projects: projectSummaryList.projectRenderList,
@@ -319,7 +319,7 @@ class ProjectController {
 
         def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, false)
 
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         def wsi = WildlifeSpotter.instance()
 
@@ -372,7 +372,7 @@ class ProjectController {
 
         def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, tags, false)
 
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
 
@@ -443,7 +443,7 @@ class ProjectController {
             params.max = 1
             def task = Task.findByProject(projectInstance, params)
             if (task?.multimedia?.filePathToThumbnail) {
-                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
+                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail?.get(0))
             }
         }
     }
@@ -463,7 +463,6 @@ class ProjectController {
         Project p = Project.get(params.long('id'))
         if (currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(p?.institution))) {
             redirect(action:"editGeneralSettings", params: params)
-            return
         } else {
             flash.message = "You do not have permission to view this page"
             redirect(controller: "project", action: "index", id: params.id)
@@ -476,15 +475,25 @@ class ProjectController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         } else {
-            final insts = Institution.list()
+            final insts = (userService.isSiteAdmin() ? Institution.list() : userService.getAdminInstitutionList())
             final names = insts*.name
-            final nameToId = insts.collectEntries { ["${it.name}": it.id] }
+            final nameToId = insts.collectEntries { [(it.name): it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
+            final templates = templateService.getTemplatesForInstitution(projectInstance.institution, true) //Template.listOrderByName()
 
-            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
+            final sortedLabels = projectInstance.labels.sort { a,b ->
+                def x = a.category?.compareTo(b.category)
+                return x == 0 ? a.value <=> b.value : x
+            }
             def counter = 0
             final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
-            return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
+            return [projectInstance: projectInstance,
+                    templates      : templates,
+                    projectTypes   : ProjectType.listOrderByName(),
+                    institutions   : names,
+                    institutionsMap: nameToId,
+                    labelColourMap : catColourMap,
+                    sortedLabels   : sortedLabels]
         }
     }
 
@@ -663,7 +672,9 @@ class ProjectController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (projectInstance.version > version) {
-                    projectInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'project.label', default: 'Project')] as Object[], "Another user has updated this Project while you were editing")
+                    projectInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: 'project.label', default: 'Project')] as Object[],
+                            "Another user has updated this Project while you were editing")
                     return false
                 }
             }
@@ -671,6 +682,14 @@ class ProjectController {
             // Issue #371 - Activation notification
             def oldInactiveFlag = projectInstance.inactive
             boolean newInactive = (params.inactive != null ? params.inactive == "true" : projectInstance.inactive)
+
+            Template newTemplate = Template.get(params.long('template'))
+            if ((projectInstance.template.id != newTemplate.id) && newTemplate.isHidden) {
+                projectInstance.errors.rejectValue("template", "project.template.notavailable",
+                        [newTemplate.name] as Object[],
+                        "Template is no longer available.")
+                return false
+            }
 
             projectInstance.properties = params
 
@@ -681,11 +700,15 @@ class ProjectController {
 
             if (!projectInstance.hasErrors() && projectService.saveProject(projectInstance)) {
                 if (((oldInactiveFlag != newInactive) && (!newInactive))) {
-                    log.info("Project was activated; Sending project activation notification")
+                    log.info("Project was activated Sending project activation notification")
                     def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: projectInstance.name])
                     projectService.emailNotification(projectInstance, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
                 }
-                flash.message = "Expedition updated"
+                if (projectInstance.template.isHidden) {
+                    flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
+                } else {
+                    flash.message = "Expedition updated"
+                }
                 return true
             } else {
                 flash.message = "Expedition update failed"
@@ -699,7 +722,6 @@ class ProjectController {
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
                 render(view: "editPicklistSettings", model: [projectInstance: projectInstance])
-                return
             } else {
                 redirect(action:'editPicklistSettings', id: projectInstance.id)
             }
@@ -718,7 +740,7 @@ class ProjectController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -743,20 +765,20 @@ class ProjectController {
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
 
                 try {
                     def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-                    def file = new File(filePath);
-                    file.getParentFile().mkdirs();
-                    f.transferTo(file);
+                    def file = new File(filePath)
+                    file.getParentFile().mkdirs()
+                    f.transferTo(file)
                     projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
             }
         }
@@ -779,13 +801,13 @@ class ProjectController {
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
 
                 if (f.size >= MAX_BACKGROUND_SIZE) {
                     flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
 
                 try {
@@ -796,7 +818,7 @@ class ProjectController {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
             }
         }
@@ -989,7 +1011,7 @@ class ProjectController {
         def labels = Label.list()
         def autosave = projectStagingService.getTempProjectDescriptor(id)
 
-        def c = PicklistItem.createCriteria();
+        def c = PicklistItem.createCriteria()
         def picklistInstitutionCodes = c {
             isNotNull("institutionCode")
             projections {
@@ -1060,7 +1082,7 @@ class ProjectController {
             response.status = errorStatus
             render(errors as JSON)
         } else {
-            render([imageUrl: result] as JSON)
+            render([imageUrl: !result ? "" : result] as JSON)
         }
     }
 
@@ -1108,12 +1130,18 @@ class ProjectController {
         }
     }
 
-    def
-    archiveList() {
+    def archiveList() {
         final sw = Stopwatch.createStarted()
         if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
+        }
+
+        def institutionList
+        if (userService.isSiteAdmin()) {
+            institutionList = Institution.list([sort: 'name', order: 'asc'])
+        } else {
+            institutionList = userService.getAdminInstitutionList()
         }
 
         if (!params.sort) {
@@ -1141,12 +1169,40 @@ class ProjectController {
                 projects = Project.findAllByArchivedAndInstitution(false, institution, params)
                 total = Project.countByArchivedAndInstitution(false, institution)
             }
-        } else if (!Strings.isNullOrEmpty(params.q)) {
+        } else {
+            // No institution parameter, if Institution Admin, only show projects for their institutions.
+            if (!userService.isSiteAdmin()) {
+                //def institutionList = userService.getAdminInstitutionList()
+                if (!Strings.isNullOrEmpty(params.q)) {
+                    projects = Project.findAllByArchivedAndNameIlikeAndInstitutionInList(false, "%${params.q}%", institutionList, params)
+                    total = Project.countByArchivedAndNameIlikeAndInstitutionInList(false, "%${params.q}%", institutionList)
+                } else {
+                    projects = Project.findAllByArchivedAndInstitutionInList(false, institutionList, params)
+                    total = Project.countByArchivedAndInstitutionInList(false, institutionList)
+                }
+            } else {
+                if (!Strings.isNullOrEmpty(params.q)) {
+                    projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
+                    total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
+                } else {
+                    projects = Project.findAllByArchived(false, params)
+                    total = Project.countByArchived(false)
+                }
+            }
+
+        }
+        /*else if (!Strings.isNullOrEmpty(params.q)) {
             projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
             total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
         } else {
             projects = Project.findAllByArchived(false, params)
             total = Project.countByArchived(false)
+        }*/
+        if (!projects) {
+            projects = []
+        }
+        if (!total) {
+            total = 0
         }
         sw.stop()
         log.debug("archiveList: findAllByArchived = $sw")
@@ -1179,7 +1235,8 @@ class ProjectController {
         }
 
         respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total,
-                                          'imageStoreStats': projectService.imageStoreStats()])
+                                          'imageStoreStats'               : projectService.imageStoreStats(),
+                                          'institutionList'               : institutionList])
     }
 
     def projectSize(Project project) {

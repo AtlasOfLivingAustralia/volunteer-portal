@@ -43,7 +43,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <g:form controller="project" action="archiveList" method="GET">
-                        <g:select class="form-control" name="institution" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                        <g:select class="form-control" name="institution" from="${institutionList}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Filter by Institution -']" onchange="submit()" />
                     </g:form>

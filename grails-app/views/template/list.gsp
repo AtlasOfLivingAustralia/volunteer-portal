@@ -59,6 +59,7 @@
                             <g:sortableColumn property="name"
                                               title="${message(code: 'template.name.label', default: 'Name')}"
                                               params="${params}"/>
+                            <th>Status</th>
                             <g:sortableColumn property="author"
                                               title="${message(code: 'template.author.label', default: 'Author')}"
                                               params="${params}"/>
@@ -75,6 +76,14 @@
                                 templateName="${templateInstance.name}">
 
                                 <td>${fieldValue(bean: templateInstance, field: "name")}</td>
+                                <td style="text-align: center"><span>
+                                <g:if test="${templateInstance.isGlobal}">
+                                    <i class="fa fa-globe" title="Global Template"></i></span>
+                                </g:if>
+                                <g:if test="${templateInstance.isHidden}">
+                                    <i class="fa fa-eye-slash" title="Hidden; only visible to Site Admins"></i></span>
+                                </g:if>
+                                </td>
                                 <td>${cl.displayNameForUserId(id: templateInstance.author)}</td>
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
@@ -93,33 +102,13 @@
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
                                         <i class="fa fa-tv"></i>
                                     </a>
-                            <g:if test="${templateListItem.canEdit}">
-                                    <a class="btn btn-xs btn-danger btnDeleteTemplate" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                            <g:if test="${templateListItem.canEdit && templateInstance.projects?.size() == 0}">
+                                    <a class="btn btn-xs btn-danger btnDeleteTemplate" data-link-count="${templateInstance.projects?.size()}" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                             </g:if>
                             <g:else>
                                     <button class="btn btn-xs btn-danger" alt="Delete" title="Delete" disabled><i class="fa fa-times"></i></button>
                             </g:else>
                                 </td>
-
-%{--                                <td>--}%
-%{--                                    <a class="btn btn-default btnCloneTemplate" href="#" style="margin-top: 6px">Clone</a>--}%
-%{--                                <g:if test="${templateListItem.canEdit}">--}%
-%{--                                    <a class="btn btn-default" style="margin-top: 6px"--}%
-%{--                                       href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">Edit</a>--}%
-%{--                                </g:if>--}%
-%{--                                <g:else>--}%
-%{--                                    <button class="btn btn-default" style="margin-top: 6px" disabled>Edit</button>--}%
-%{--                                </g:else>--}%
-%{--                                    <a class="btn btn-default" style="margin-top: 6px"--}%
-%{--                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">Preview</a>--}%
-%{--                                <g:if test="${templateListItem.canEdit}">--}%
-%{--                                    <a class="btn btn-danger btnDeleteTemplate" href="#" style="margin-top: 6px">Delete</a>--}%
-%{--                                </g:if>--}%
-%{--                                <g:else>--}%
-%{--                                    <button class="btn btn-danger" style="margin-top: 6px" disabled>Delete</button>--}%
-%{--                                </g:else>--}%
-
-%{--                                </td>--}%
                             </tr>
                         </g:each>
                         </tbody>
@@ -142,9 +131,14 @@
             e.preventDefault();
             var templateId = $(this).parents("[templateId]").attr("templateId");
             var templateName = $(this).parents("[templateName]").attr("templateName");
+            var linkCount = $(this).data('link-count');
+            if (linkCount === null || linkCount === undefined) linkCount = 0;
             if (templateId && templateName) {
-                bootbox.confirm("Are you sure you wish to delete template " + templateName + "?", function(result) {
-                    window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                let linkMsg = "";
+                if (linkCount > 0) linkMsg = "<br />There are <b>" + linkCount + "</b> expeditions linked to this template.";
+                let confirmMsg = "Are you sure you wish to delete template " + templateName + "? " + linkMsg
+                bootbox.confirm(confirmMsg, function(result) {
+                    if (result) window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
                 });
             }
         });

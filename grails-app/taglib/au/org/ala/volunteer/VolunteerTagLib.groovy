@@ -28,6 +28,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
     def adminService
+    def templateService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -164,6 +165,34 @@ class VolunteerTagLib {
             if (isInstitutionAdmin(p.institution)) {
                 out << body()
             }
+        }
+    }
+
+    /**
+     * Displays a button for use with templates. It checks if the user has access to edit the template passed in
+     * the parameters and displays an active or disabled button depending on the permission returned.
+     * Required attributes:
+     * @attr template the template instance
+     * @attr styleClass the CSS class to add to the button
+     * @attr id the HTML ID of the element
+     * @attr label the button label
+     */
+    def templateEditableButton = {attrs, body ->
+        def editAllowed = false
+        if (isSiteAdmin()) {
+            editAllowed = true
+        } else if (attrs.template) {
+            def templatePermissions = templateService.getTemplatePermissions(attrs.template)
+            if (templatePermissions.canEdit) {
+                editAllowed = true
+            }
+        }
+
+        if (editAllowed) {
+            out << "<button class=\"${attrs.styleClass}\" id=\"${attrs.id}\">${attrs.label}</button>"
+        } else {
+            out << "<button class=\"${attrs.styleClass}\" style=\\\"pointer-events: auto;\\\" id=\"${attrs.id}\" " +
+                    "title=\"${message(code:'template.edit.button.nopermission', default:'Not allowed')}\" disabled>${attrs.label}</button>"
         }
     }
 
