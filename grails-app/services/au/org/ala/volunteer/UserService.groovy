@@ -120,7 +120,7 @@ class UserService {
         return false
     }
 
-    public boolean isSiteAdmin() {
+    boolean isSiteAdmin() {
 
         def userId = currentUserId
 
