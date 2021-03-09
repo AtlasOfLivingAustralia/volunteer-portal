@@ -1,14 +1,12 @@
 package au.org.ala.volunteer
 
-import org.hibernate.FlushMode
-import java.util.regex.Pattern
-import org.springframework.web.multipart.MultipartFile
 import grails.converters.JSON
+import org.springframework.web.multipart.MultipartFile
 
 class CollectionEventController {
 
     def collectionEventService
-    def logService
+    def userService
 
     def searchFragment() {
         def taskInstance = Task.get(params.int("taskId"))
@@ -82,20 +80,28 @@ class CollectionEventController {
     }
 
     def load() {
-        def collectionCodes = collectionEventService.getCollectionCodes()?.join(", ");
+        if (userService.isAdmin()) {
+            def collectionCodes = collectionEventService.getCollectionCodes()?.join(", ");
 
-        [collectionCodes: collectionCodes]
+            render(view: 'load', model: [collectionCodes: collectionCodes])
+        } else {
+            redirect(uri: "/")
+        }
     }
 
     def loadCSV() {
-        def collectionCode = params.collectionCode;
-        MultipartFile f = request.getFile('csvfile')
+        if (userService.isAdmin()) {
+            def collectionCode = params.collectionCode;
+            MultipartFile f = request.getFile('csvfile')
 
-        def results = collectionEventService.importEvents(collectionCode, f)
+            def results = collectionEventService.importEvents(collectionCode, f)
 
-        flash.message = results.message
+            flash.message = results.message
 
-        render(view: 'load')
+            render(view: 'load')
+        } else {
+            redirect(uri: "/")
+        }
     }
 
     def getCollectionEventJSON() {
