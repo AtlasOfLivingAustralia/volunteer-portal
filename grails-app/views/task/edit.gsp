@@ -102,8 +102,7 @@
 
                         <ul>
                             <g:each in="${taskInstance?.fields ?}" var="f">
-                                <li><g:link controller="field" action="show"
-                                            id="${f.id}">${f?.encodeAsHTML()}</g:link></li>
+                                <li>${f?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
                         <g:link controller="field" action="create"
