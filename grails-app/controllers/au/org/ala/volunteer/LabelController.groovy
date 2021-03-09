@@ -1,8 +1,6 @@
 package au.org.ala.volunteer
 
-
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 class LabelController {
 
@@ -10,7 +8,7 @@ class LabelController {
 
     def userService
 
-    boolean checkAdmin() {
+    private boolean checkAdmin() {
         if (userService.isAdmin()) {
             return true;
         }
@@ -28,14 +26,6 @@ class LabelController {
         respond Label.list(params), model: [labelInstanceCount: Label.count()]
     }
 
-//    def show(Label labelInstance) {
-//        respond labelInstance
-//    }
-//
-//    def create() {
-//        respond new Label(params)
-//    }
-
     def save(Label labelInstance) {
         if (!checkAdmin()) {
             redirect(controller: 'frontPage')
@@ -48,7 +38,7 @@ class LabelController {
         }
 
         if (labelInstance.hasErrors()) {
-            respond labelInstance.errors, view: 'create'
+            respond labelInstance.errors, view: 'index'
             return
         }
 
@@ -63,10 +53,6 @@ class LabelController {
         }
     }
 
-//    def edit(Label labelInstance) {
-//        respond labelInstance
-//    }
-
     def update(Label labelInstance) {
         if (!checkAdmin()) {
             redirect(controller: 'frontPage')
@@ -79,7 +65,7 @@ class LabelController {
         }
 
         if (labelInstance.hasErrors()) {
-            respond labelInstance.errors, view: 'edit'
+            respond labelInstance.errors, view: 'index'
             return
         }
 
