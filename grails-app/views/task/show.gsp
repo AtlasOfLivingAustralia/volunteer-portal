@@ -97,8 +97,7 @@
                 <td valign="top" style="text-align: left;" class="value">
                     <ul>
                         <g:each in="${taskInstance.multimedia}" var="m">
-                            <li><g:link controller="multimedia" action="show"
-                                        id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
+                            <li>${m?.encodeAsHTML()}</li>
                         </g:each>
                     </ul>
                 </td>

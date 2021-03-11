@@ -119,12 +119,11 @@
 
                         <ul>
                             <g:each in="${taskInstance?.multimedia ?}" var="m">
-                                <li><g:link controller="multimedia" action="show"
-                                            id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
+                                <li>${m?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
-                        <g:link controller="multimedia" action="create"
-                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'multimedia.label', default: 'Multimedia')])}</g:link>
+%{--                        <g:link controller="multimedia" action="create"--}%
+%{--                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'multimedia.label', default: 'Multimedia')])}</g:link>--}%
 
                     </td>
                 </tr>

@@ -10,6 +10,9 @@ import groovy.transform.ToString
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
@@ -975,6 +978,40 @@ class TaskController {
         log.debug("Adding task view for $userId with task $task")
         auditService.auditTaskViewing(task, userService.currentUser.userId)
         respond status: SC_NO_CONTENT
+    }
+
+    /**
+     * Moved from deprecated MultimediaController.
+     * @return
+     */
+    def imageDownload() {
+        def mm = Multimedia.get(params.int("id"))
+        if (mm) {
+            def path = mm?.filePath
+            String urlPrefix = grailsApplication.config.images.urlPrefix
+            String imagesHome = grailsApplication.config.images.home
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            BufferedImage image = null
+            image = ImageIO.read(new File(path))
+            def rotate = params.int("rotate") ?: 0
+            if (rotate) {
+                image = ImageUtils.rotateImage(image, rotate)
+            }
+
+            if (params.maxDimension) {
+                def size = params.int("maxDimension")
+                image = ImageUtils.scale(image, size, size)
+            } else if (params.maxWidth) {
+                def width = params.int("maxWidth")
+                image = ImageUtils.scaleWidth(image, width)
+            }
+
+            def outputBytes = ImageUtils.imageToBytes(image)
+            response.setContentType(mm.mimeType ?: "image/jpeg")
+            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}.jpg")
+            response.outputStream.write(outputBytes)
+            response.flushBuffer()
+        }
     }
 
 }
