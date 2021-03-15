@@ -51,7 +51,7 @@ class Project implements Serializable {
     static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
 
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
+    static hasMany = [tasks: Task, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
