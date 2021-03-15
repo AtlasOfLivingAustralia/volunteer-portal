@@ -36,7 +36,9 @@
             </select>
 
             <p>
-                Please choose an uncertainty value from the list that best represents the area described by a circle with radius of that value from the given location. This can be seen as the circle around the point on the map.
+                Please choose an uncertainty value from the list that best represents the area described by a circle
+                with radius of that value from the given location. This can be seen as the circle around the point on
+                the map.
             </p>
 
             <h5>Location Data</h5>
@@ -337,7 +339,7 @@
         };
         $.getJSON(url, params, function (data) {
           // only interested in return text for debugging problems
-          //alert(url + " returned: " + data);
+          // alert(url + " returned: " + data);
         });
       }
 
