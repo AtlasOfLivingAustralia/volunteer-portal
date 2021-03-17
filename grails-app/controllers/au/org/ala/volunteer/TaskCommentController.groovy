@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import au.org.ala.cas.util.AuthenticationCookieUtils
 
@@ -8,11 +9,7 @@ class TaskCommentController {
 
     def authService, userService
 
-    def index() {
-    }
-
     def saveComment() {
-
         if (params.taskId && params.comment) {
             def username = AuthenticationCookieUtils.getUserName(request)
             if (username) {
@@ -31,9 +28,9 @@ class TaskCommentController {
     def deleteComment() {
         if (params.commentId) {
             def commentId = params.int("commentId")
-            def comment = TaskComment.get(commentId);
+            def comment = TaskComment.get(commentId)
             if (comment) {
-                comment.delete(flush: true);
+                comment.delete(flush: true)
                 render([message: 'ok'] as JSON)
             } else {
                 render([message: 'Failed to load comment!'] as JSON)
@@ -56,7 +53,6 @@ class TaskCommentController {
         }
 
         mb.div {
-
             if (!comments) {
                 span("There are no comments for this task.") {
 
@@ -64,11 +60,11 @@ class TaskCommentController {
             }
 
             for (TaskComment comment : comments) {
-                def showDelete = false;
-                use (groovy.time.TimeCategory) {
+                def showDelete = false
+                use (TimeCategory) {
                     def userid = authService.userId ?: "unknown"
                     if ( comment.user.userId == userid && comment.date >= 15.minutes.ago) {
-                        showDelete = true;
+                        showDelete = true
                     }
                 }
 
@@ -85,7 +81,7 @@ class TaskCommentController {
                         hr {}
                     }
                     div(class:"task-comment-text") {
-                        mkp.yieldUnescaped(comment.comment?.encodeAsHTML().replace('\n', '<br/>\n'))
+                        mkp.yieldUnescaped(comment.comment?.encodeAsHTML()?.replace('\n', '<br/>\n'))
                     }
                     if (showDelete) {
                         div(class:"task-comment-delete") {
@@ -93,12 +89,9 @@ class TaskCommentController {
                         }
                     }
                 }
-
             }
-
         }
 
-
-        render w.toString();
+        render w.toString()
     }
 }
