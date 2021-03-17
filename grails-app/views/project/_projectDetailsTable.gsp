@@ -197,8 +197,7 @@
                     <g:actionSubmit class="delete btn btn-danger" action="deleteTasks" value="Delete all tasks"
                                     onclick="return confirmDeleteAllTasks()"/>
                 </span>
-                &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages"
-                                                          value="true"></g:checkBox>
+                &nbsp;Delete task images&nbsp;<g:checkBox style="width:20px" name="deleteImages" value="true" />
             </span>
         </td>
     </tr>

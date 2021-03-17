@@ -1,24 +1,15 @@
 package au.org.ala.volunteer
 
-import com.google.common.hash.Hashing
-import com.google.common.hash.HashingInputStream
-import com.google.common.io.Files
 import grails.converters.JSON
-import groovy.time.TimeCategory
 import grails.web.servlet.mvc.GrailsParameterMap
-import groovy.transform.ToString
+import groovy.time.TimeCategory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
-
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-
-import static javax.servlet.http.HttpServletResponse.SC_CREATED
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_PRECONDITION_FAILED
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 
 class TaskController {
 
@@ -30,15 +21,10 @@ class TaskController {
     def fieldSyncService
     def fieldService
     def taskLoadService
-    def logService
     def userService
     def stagingService
     def auditService
     def multimediaService
-
-    def load() {
-        [projectList: Project.list()]
-    }
 
     def project() {
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
@@ -65,10 +51,6 @@ class TaskController {
 
     def extra_fields_default = ["catalogNumber","scientificName"]
 
-    def extra_fields_FieldNoteBook = []
-
-    def extra_fields_FieldNoteBookDoublePage = []
-
     private def renderProjectListWithSearch(GrailsParameterMap params, String view) {
 
         def projectInstance = Project.get(params.id)
@@ -76,7 +58,7 @@ class TaskController {
         def currentUser = userService.currentUserId
         def userInstance = User.findByUserId(currentUser)
 
-        String[] fieldNames = null;
+        String[] fieldNames = null
 
         def extraFieldProperty = this.metaClass.properties.find() { it.name == "extra_fields_" + projectInstance.template.name }
 
@@ -176,8 +158,8 @@ class TaskController {
      * Webservice for Google Maps to display task details in infowindow
      */
     def details() {
-        def id = params.int('id')
-        def sid = params.id
+//        def id = params.int('id')
+//        def sid = params.id
         def taskInstance = Task.get(params.int('id'))
         Map recordValues = [:]
         if (taskInstance.fullyValidatedBy) {
@@ -203,21 +185,6 @@ class TaskController {
         render jsonObj as JSON
     }
 
-    def loadCSVAsync() {
-        def projectId = params.int('projectId')
-        def replaceDuplicates = params.duplicateMode == 'replace'
-        if (projectId && params.csv) {
-            def project = Project.get(projectId)
-            if (project) {
-                def (success, message) = taskLoadService.loadTaskFromCSV(project, params.csv, replaceDuplicates)
-                if (!success) {
-                    flash.message = message + " - Try again when current load is complete."
-                }
-                redirect( controller:'project', action:'loadProgress', id: projectId)
-            }
-        }
-    }
-
     def index() {
         redirect(action: "list", params: params)
     }
@@ -241,30 +208,6 @@ class TaskController {
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
-    }
-
-    def create() {
-        def currentUser = userService.currentUserId
-
-        if (currentUser != null && userService.isAdmin()) {
-            def taskInstance = new Task()
-            taskInstance.properties = params
-            return [taskInstance: taskInstance]
-        } else {
-            flash.message = "You do not have permission to view this page"
-            redirect(view: '/index')
-        }
-    }
-
-    def save() {
-        def taskInstance = new Task(params)
-        if (taskInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.id])}"
-            redirect(action: "show", id: taskInstance.id)
-        }
-        else {
-            render(view: "create", model: [taskInstance: taskInstance])
-        }
     }
 
     def showDetails() {
@@ -313,7 +256,7 @@ class TaskController {
                     }
 
                     log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
-                    def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
+//                    def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
                     boolean isTaskLockedForTranscription = auditService.isTaskLockedForTranscription(taskInstance, currentUser)
                     //if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
@@ -432,7 +375,7 @@ class TaskController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -501,7 +444,7 @@ class TaskController {
 
     def taskBrowserFragment() {
         if (params.projectId) {
-            Task task = null;
+            Task task = null
             if (params.taskId) {
                 task = Task.get(params.int("taskId"))
             }
@@ -531,9 +474,9 @@ class TaskController {
         def task = Task.get(params.int("taskId"))
         if (task) {
 
-            def userId = userService.currentUserId
+            // def userId = userService.currentUserId
 
-            def c = Field.createCriteria();
+            def c = Field.createCriteria()
 
             def fields = c {
                 and {
@@ -545,8 +488,8 @@ class TaskController {
 
             def lastEdit = fields.max({ it.updated })?.updated
 
-            def projectInstance = task.project;
-            def template = projectInstance.template;
+            def projectInstance = task.project
+            def template = projectInstance.template
             def templateFields = TemplateField.findAllByTemplate(template)
 
             def fieldMap = [:]
@@ -557,7 +500,7 @@ class TaskController {
                     it.fieldType.toString() == field.name
                 }
                 if (templateField && field.value && templateField.type != FieldType.hidden) {
-                    def category = templateField.category;
+                    def category = templateField.category
                     if (templateField.fieldType == DarwinCoreField.occurrenceRemarks) {
                         category = FieldCategory.labelText
                     } else if (templateField.fieldType == DarwinCoreField.verbatimLocality) {
@@ -569,7 +512,7 @@ class TaskController {
                         fieldList = []
                         fieldMap[category] = fieldList
                     }
-                    fieldList << field;
+                    fieldList << field
                     fieldLabels[field.name] = templateField.label ?: templateField.fieldType.label
                 }
             }
@@ -605,8 +548,8 @@ class TaskController {
                 }
             }
 
-            def projectInstance = task.project;
-            def template = projectInstance.template;
+            def projectInstance = task.project
+            def template = projectInstance.template
             def templateFields = TemplateField.findAllByTemplate(template, )
             def results = [:]
             for (Field field : fields) {
@@ -626,6 +569,10 @@ class TaskController {
     }
 
     def staging() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectId = params.int("projectId")
         def projectInstance = Project.get(projectId)
 
@@ -645,6 +592,10 @@ class TaskController {
     }
 
     def stagedImages() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def profile = ProjectStagingProfile.findByProject(projectInstance)
         if (!profile) {
@@ -661,12 +612,11 @@ class TaskController {
         render template:'stagedImages', model: [images: images, profile:profile]
     }
 
-    def selectImagesForStagingFragment() {
-        def projectInstance = Project.get(params.int("projectId"))
-        [projectInstance: projectInstance]
-    }
-
     def editStagingFieldFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         def hasDataFile = stagingService.projectHasDataFile(projectInstance)
@@ -679,11 +629,19 @@ class TaskController {
     }
 
     def uploadDataFileFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         [projectInstance: projectInstance]
     }
 
     def uploadStagingDataFile() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             if(request instanceof MultipartHttpServletRequest) {
@@ -709,6 +667,10 @@ class TaskController {
     }
 
     def uploadTaskDataFile() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             if(request instanceof MultipartHttpServletRequest) {
@@ -736,6 +698,10 @@ class TaskController {
     }
 
     def clearStagedDataFile() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             stagingService.clearDataFile(projectInstance)
@@ -744,6 +710,10 @@ class TaskController {
     }
 
     def deleteAllStagedImages() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             stagingService.deleteStagedImages(projectInstance)
@@ -752,6 +722,10 @@ class TaskController {
     }
 
     def unstageImage() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def imageName = params.imageName
         if (projectInstance && imageName) {
@@ -769,6 +743,10 @@ class TaskController {
     }
 
     def saveFieldDefinition() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def fieldName = params.fieldName
         if (projectInstance && fieldName) {
@@ -799,6 +777,10 @@ class TaskController {
     }
 
     def updateFieldDefinitionType() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         String newFieldType = params.newFieldType
@@ -810,6 +792,10 @@ class TaskController {
     }
 
     def updateFieldDefinitionFormat() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         String newFieldFormat = params.newFieldFormat
@@ -821,6 +807,10 @@ class TaskController {
     }
 
     def deleteFieldDefinition() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         if (projectInstance && fieldDefinition) {
@@ -830,7 +820,10 @@ class TaskController {
     }
 
     def loadStagedTasks() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             def results = taskLoadService.loadTasksFromStaging(projectInstance)
@@ -844,6 +837,10 @@ class TaskController {
     }
 
     def exportStagedTasksCSV() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
 
         if (projectInstance) {
@@ -877,6 +874,10 @@ class TaskController {
     }
 
     def loadTaskData() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
 
         def projectInstance = Project.get(params.int("projectId"))
         if (!projectInstance) {
@@ -899,6 +900,10 @@ class TaskController {
     }
 
     def processTaskDataLoad() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
 
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
@@ -910,11 +915,21 @@ class TaskController {
     }
 
     def exportOptionsFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
         [exportCriteria: params.exportCriteria, projectId: params.projectId]
     }
 
     def viewedTaskFragment() {
-        def viewedTask = ViewedTask.get(params.int("viewedTaskId"));
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
         if (viewedTask) {
             def lastViewedDate = new Date(viewedTask?.lastView)
             def tc = TimeCategory.minus(new Date(), lastViewedDate)
@@ -990,9 +1005,11 @@ class TaskController {
             def path = mm?.filePath
             String urlPrefix = grailsApplication.config.images.urlPrefix
             String imagesHome = grailsApplication.config.images.home
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-            BufferedImage image = null
-            image = ImageIO.read(new File(path))
+
+            // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))
+
+            BufferedImage image = ImageIO.read(new File(path))
             def rotate = params.int("rotate") ?: 0
             if (rotate) {
                 image = ImageUtils.rotateImage(image, rotate)
