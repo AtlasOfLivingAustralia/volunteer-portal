@@ -1,24 +1,19 @@
 package au.org.ala.volunteer
 
+import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
-import grails.converters.*
-import org.apache.commons.io.FileUtils
+import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.commons.io.FileUtils
 import org.jooq.DSLContext
-import org.springframework.web.multipart.MultipartHttpServletRequest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
-import au.org.ala.cas.util.AuthenticationCookieUtils
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static au.org.ala.volunteer.jooq.tables.TaskDescriptor.TASK_DESCRIPTOR
 import static java.util.concurrent.TimeUnit.MILLISECONDS
-import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
-import static javax.servlet.http.HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE
-import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE
+import static javax.servlet.http.HttpServletResponse.*
 
 class ProjectController {
 
@@ -26,22 +21,20 @@ class ProjectController {
                              archive: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
-    static numbers = ["Zero","One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']
+    static numbers = ["Zero", "One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven',
+                      'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen',
+                      'Twenty']
 
     static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
     public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
     def taskService
     def fieldService
-    def logService
     def userService
     def exportService
-    def collectionEventService
-    def localityService
     def projectService
     def picklistService
     def projectStagingService
-    def projectTypeService
     def authService
     def groovyPageRenderer
     Closure<DSLContext> jooqContext
@@ -102,7 +95,7 @@ class ProjectController {
             }
             log.debug "roles = ${roles as JSON}"
 
-            def leader = roles.find { it.name == "Expedition Leader" } ?.members.getAt(0)
+            def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0)
             def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
 
             def newsItem = null
@@ -125,7 +118,7 @@ class ProjectController {
             def percentComplete = (taskCount > 0) ? ((tasksTranscribed / taskCount) * 100) : 0
             if (percentComplete > 99 && taskCount != tasksTranscribed) {
                 // Avoid reporting 100% unless the transcribed count actually equals the task count
-                percentComplete = 99;
+                percentComplete = 99
             }
 
             render(view: "index", model: [
@@ -154,14 +147,14 @@ class ProjectController {
         def taskListFields = []
 
         if (projectInstance) {
-            long startQ  = System.currentTimeMillis();
+            long startQ  = System.currentTimeMillis()
             def taskList = taskService.getFullyTranscribedTasks(projectInstance, [sort:"id", max:999])
 
             if (taskList.size() > 0) {
                 def lats = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLatitude", taskList, params))
                 def lngs = fieldListToMap(fieldService.getLatestFieldsWithTasks("decimalLongitude", taskList, params))
                 def cats = fieldListToMap(fieldService.getLatestFieldsWithTasks("catalogNumber", taskList, params))
-                long endQ  = System.currentTimeMillis();
+                long endQ  = System.currentTimeMillis()
                 log.debug("DB query took " + (endQ - startQ) + " ms")
                 log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
                 taskList.eachWithIndex { tsk, i ->
@@ -177,7 +170,7 @@ class ProjectController {
                     }
                 }
 
-                long endJ  = System.currentTimeMillis();
+                long endJ  = System.currentTimeMillis()
                 log.debug("JSON loop took " + (endJ - endQ) + " ms")
                 log.debug("Method took " + (endJ - startQ) + " ms for " + taskList.size() + " records")
             }
@@ -231,6 +224,11 @@ class ProjectController {
      * Produce an export file
      */
     def exportCSV() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
         def projectInstance = Project.get(params.id)
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
@@ -267,8 +265,8 @@ class ProjectController {
 //            }
 
             if (export_func) {
-                response.setHeader("Cache-Control", "must-revalidate");
-                response.setHeader("Pragma", "must-revalidate");
+                response.setHeader("Cache-Control", "must-revalidate")
+                response.setHeader("Pragma", "must-revalidate")
                 export_func(projectInstance, taskList, fieldNames, fieldList, response)
                 log.debug("Ran export func in {}ms", sw.elapsed(MILLISECONDS))
             } else {
@@ -282,6 +280,10 @@ class ProjectController {
     }
 
     def deleteTasks() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         projectService.deleteTasksForProject(projectInstance, true)
         //redirect(action: "edit", id: projectInstance?.id)
@@ -295,9 +297,9 @@ class ProjectController {
 
         def projectSummaryList = projectService.getProjectSummaryList(params, false)
 
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects;
+        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
-        session.expeditionSort = params.sort;
+        session.expeditionSort = params.sort
 
         [
             projects: projectSummaryList.projectRenderList,
@@ -388,52 +390,6 @@ class ProjectController {
         render(view: 'customLandingPage', model: model)
     }
 
-    def create() {
-        def currentUser = userService.currentUserId
-        if (currentUser != null && userService.isAdmin()) {
-            def projectInstance = new Project()
-            projectInstance.properties = params
-
-            def eventCollectionCodes = [""]
-            eventCollectionCodes.addAll(collectionEventService.getCollectionCodes())
-
-            def localityCollectionCodes = [""]
-            localityCollectionCodes.addAll(localityService.getCollectionCodes())
-
-            def picklistInstitutionCodes = [""]
-            picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
-
-            return [projectInstance: projectInstance, templateList: Template.list(), eventCollectionCodes: eventCollectionCodes, localityCollectionCodes: localityCollectionCodes, picklistInstitutionCodes: picklistInstitutionCodes]
-        } else {
-            flash.message = "You do not have permission to view this page"
-            redirect(controller: "project", action: "index", id: params.id)
-        }
-    }
-
-    def save() {
-        def projectInstance = new Project(params)
-
-        if (!projectInstance.template) {
-            flash.message = "Please select a template before continuing!"
-            render(view: "create", model: [projectInstance: projectInstance])
-            return
-        }
-
-        if (!projectInstance.featuredLabel) {
-            flash.message = "You must supply a featured label!"
-            render(view: "create", model: [projectInstance: projectInstance])
-            return
-        }
-
-        if (projectService.saveProject(projectInstance)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])}"
-            redirect(action: "index", id: projectInstance.id)
-        } else {
-            render(view: "create", model: [projectInstance: projectInstance])
-        }
-
-    }
-
     /**
      * Redirects a image for the supplied project
      */
@@ -443,7 +399,7 @@ class ProjectController {
             params.max = 1
             def task = Task.findByProject(projectInstance, params)
             if (task?.multimedia?.filePathToThumbnail) {
-                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail.get(0))
+                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail?.get(0))
             }
         }
     }
@@ -461,8 +417,7 @@ class ProjectController {
     def edit() {
         def currentUser = userService.currentUserId
         if (currentUser != null && userService.isAdmin()) {
-            redirect(action:"editGeneralSettings", params: params)
-            return
+            redirect(action: "editGeneralSettings", params: params)
         } else {
             flash.message = "You do not have permission to view this page"
             redirect(controller: "project", action: "index", id: params.id)
@@ -470,6 +425,10 @@ class ProjectController {
     }
 
     def editGeneralSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -477,10 +436,10 @@ class ProjectController {
         } else {
             final insts = Institution.list()
             final names = insts*.name
-            final nameToId = insts.collectEntries { ["${it.name}": it.id] }
+            final nameToId = insts.collectEntries { [(it.name): it.id] }
             final labelCats = Label.withCriteria { projections { distinct 'category' } }
 
-            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value.compareTo(b.value) : x }
+            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value <=> b.value : x }
             def counter = 0
             final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
             return [projectInstance: projectInstance, templates: Template.listOrderByName(), projectTypes: ProjectType.listOrderByName(), institutions: names, institutionsMap: nameToId, labelColourMap: catColourMap, sortedLabels: sortedLabels]
@@ -488,6 +447,10 @@ class ProjectController {
     }
 
     def checkTemplateSupportMultiTranscriptions() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.findById(params.int("templateId"))
         if (template) {
             render (["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
@@ -496,6 +459,10 @@ class ProjectController {
     }
 
     def editTutorialLinksSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -506,6 +473,10 @@ class ProjectController {
     }
 
     def editPicklistSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -518,7 +489,7 @@ class ProjectController {
         }
     }
 
-    def editMapSettings() {
+    private def getCommonEditSettings(def params) {
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -526,29 +497,58 @@ class ProjectController {
         } else {
             return [projectInstance: projectInstance ]
         }
+    }
+
+    def editMapSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+//        def projectInstance = Project.get(params.int("id"))
+//        if (!projectInstance) {
+//            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+//            redirect(action: "list")
+//        } else {
+//            return [projectInstance: projectInstance ]
+//        }
+        return getCommonEditSettings(params)
     }
 
     def editBannerImageSettings() {
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-            redirect(action: "list")
-        } else {
-            return [projectInstance: projectInstance ]
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
         }
+//        def projectInstance = Project.get(params.int("id"))
+//        if (!projectInstance) {
+//            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+//            redirect(action: "list")
+//        } else {
+//            return [projectInstance: projectInstance ]
+//        }
+        return getCommonEditSettings(params)
     }
 
     def editBackgroundImageSettings() {
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-            redirect(action: "list")
-        } else {
-            return [projectInstance: projectInstance ]
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
         }
+//        def projectInstance = Project.get(params.int("id"))
+//        if (!projectInstance) {
+//            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
+//            redirect(action: "list")
+//        } else {
+//            return [projectInstance: projectInstance ]
+//        }
+        return getCommonEditSettings(params)
     }
 
     def editTaskSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectId = params.long("id")
         def projectInstance = Project.get(projectId)
         if (!projectInstance) {
@@ -562,6 +562,10 @@ class ProjectController {
     }
 
     def editNewsItemsSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         if (!projectInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
@@ -573,7 +577,10 @@ class ProjectController {
     }
 
     def updateGeneralSettings() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
 
@@ -601,6 +608,10 @@ class ProjectController {
     }
 
     def update() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
@@ -615,6 +626,10 @@ class ProjectController {
     }
 
     def updateTutorialLinksSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
@@ -630,7 +645,10 @@ class ProjectController {
     }
 
     def updateNewsItemsSettings() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
@@ -644,14 +662,21 @@ class ProjectController {
         }
     }
 
-
     def deleteAllTasksFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         def taskCount = Task.countByProject(projectInstance)
         [projectInstance: projectInstance, taskCount: taskCount]
     }
 
     def deleteProjectFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         def taskCount = Task.countByProject(projectInstance)
         [projectInstance: projectInstance, taskCount: taskCount]
@@ -694,11 +719,14 @@ class ProjectController {
     }
 
     def updatePicklistSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
                 render(view: "editPicklistSettings", model: [projectInstance: projectInstance])
-                return
             } else {
                 redirect(action:'editPicklistSettings', id: projectInstance.id)
             }
@@ -708,8 +736,11 @@ class ProjectController {
         }
     }
 
-
     def delete() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             try {
@@ -717,7 +748,7 @@ class ProjectController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -731,6 +762,10 @@ class ProjectController {
     }
     
     def uploadFeaturedImage() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -742,20 +777,19 @@ class ProjectController {
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
-                    return;
                 }
 
                 try {
                     def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-                    def file = new File(filePath);
-                    file.getParentFile().mkdirs();
-                    f.transferTo(file);
+                    def file = new File(filePath)
+                    file.getParentFile().mkdirs()
+                    f.transferTo(file)
                     projectService.checkAndResizeExpeditionImage(projectInstance)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
-                    return;
+                    return
                 }
             }
         }
@@ -767,6 +801,10 @@ class ProjectController {
     }
 
     def uploadBackgroundImage() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
 
         if(request instanceof MultipartHttpServletRequest) {
@@ -778,13 +816,11 @@ class ProjectController {
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
                 }
 
                 if (f.size >= MAX_BACKGROUND_SIZE) {
                     flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
                 }
 
                 try {
@@ -795,7 +831,6 @@ class ProjectController {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
                     render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
-                    return;
                 }
             }
         }
@@ -807,8 +842,11 @@ class ProjectController {
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
 
-
     def clearBackgroundImageSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         Project projectInstance = Project.get(params.id)
         if (projectInstance) {
             projectInstance.backgroundImageAttribution = null
@@ -820,41 +858,11 @@ class ProjectController {
         redirect(action: "editBackgroundImageSettings", id: params.id)
     }
 
-    def resizeExpeditionImage() {
-        def projectInstance = Project.get(params.int("id"))
-        if (projectInstance) {
-            projectService.checkAndResizeExpeditionImage(projectInstance)
-        }
-        redirect(action:'edit', id:projectInstance?.id)
-    }
-
-    def setLeaderIconIndex() {
-        if (params.id) {
-            def project = Project.get(params.id)
-            if (project) {
-                def iconIndex = params.int("iconIndex")?:0
-                def role = grailsApplication.config.expedition[0]
-                def icons = role.icons
-                if (iconIndex >= 0 && iconIndex < icons.size()) {
-                    project.leaderIconIndex = iconIndex
-                    projectService.saveProject(project, false)
-                    //project.save()
-                }
-            }
-        }
-
-        redirect(action: "index", id: params.id)
-    }
-
-    def projectLeaderIconSelectorFragment() {
-        def projectInstance = Project.get(params.getInt("id"))
-        def expeditionConfig = grailsApplication.config.expedition
-        // find the leader role from the config map
-        def role = expeditionConfig.find { it.name == "Expedition Leader"}
-        [projectInstance: projectInstance, role: role]
-    }
-
     def updateMapSettings() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("id"))
         if (projectInstance) {
             def showMap = params.showMap == "on"
@@ -871,28 +879,24 @@ class ProjectController {
             }
             flash.message = "Map settings updated"
             projectService.saveProject(projectInstance, true, true)
-            //projectInstance.save(flush:true, failOnError:true)
         }
-        redirect(action:'editMapSettings', id:projectInstance?.id)
-    }
 
-    def ajaxFeaturedOwnerList() {
-        def c = Project.createCriteria()
-        def results = c {
-            ilike("featuredOwner", "%${params.q ?: ''}%")
-            projections {
-                distinct("featuredOwner")
-            }
-        }
-        render(results as JSON)
+        redirect(action: 'editMapSettings', id: projectInstance?.id)
     }
 
     def findProjectFragment() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        render(view: 'findProjectFragment')
     }
 
     def findProjectResultsFragment() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def q = params.q as String ?: ""
 
         def c = Project.createCriteria()
@@ -907,10 +911,14 @@ class ProjectController {
         }
 
         [projectList: projectList]
-
     }
 
     def addLabel(Project projectInstance) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         def labelId = params.labelId
         def label = Label.get(labelId)
         if (!label) {
@@ -927,6 +935,11 @@ class ProjectController {
     }
 
     def removeLabel(Project projectInstance) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         def labelId = params.labelId
         def label = Label.get(labelId)
         if (!label) {
@@ -941,6 +954,11 @@ class ProjectController {
     }
 
     def newLabels(Project projectInstance) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         def term = params.term ?: ''
         def ilikeTerm = "%${term.replace('%','')}%"
         def existing = projectInstance?.labels
@@ -965,6 +983,10 @@ class ProjectController {
     }
 
     def wizard(String id) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         if (!id) {
             def stagingId = UUID.randomUUID().toString()
             projectStagingService.ensureStagingDirectoryExists(stagingId)
@@ -988,7 +1010,7 @@ class ProjectController {
         def labels = Label.list()
         def autosave = projectStagingService.getTempProjectDescriptor(id)
 
-        def c = PicklistItem.createCriteria();
+        def c = PicklistItem.createCriteria()
         def picklistInstitutionCodes = c {
             isNotNull("institutionCode")
             projections {
@@ -1017,17 +1039,25 @@ class ProjectController {
     }
 
     def wizardAutosave(String id) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
         projectStagingService.saveTempProjectDescriptor(id, request.reader)
         render status: 204
     }
 
     def wizardImageUpload(String id) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
 
         def project = new NewProjectDescriptor(stagingId: id)
 
         def errors = []
         def errorStatus = SC_BAD_REQUEST
-        def result
+        def result = ""
 
         if (request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('image')
@@ -1064,6 +1094,11 @@ class ProjectController {
     }
 
     def wizardClearImage(String id) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         def project = new NewProjectDescriptor(stagingId: id)
         def type = request.getJSON()?.type ?: ''
         if (type == 'background') {
@@ -1075,15 +1110,30 @@ class ProjectController {
     }
 
     def wizardProjectNameValidator(String name) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         render([ count: Project.countByName(name) ] as JSON)
     }
 
     def wizardCancel(String id) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         projectStagingService.purgeProject(new NewProjectDescriptor(stagingId: id))
         redirect(controller:'admin', action:"index")
     }
 
     def wizardCreate(String id) {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
+
         if (!userService.isAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
         }
@@ -1133,11 +1183,17 @@ class ProjectController {
             if (institution) {
                 projects = Project.findAllByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%", params)
                 total = Project.countByArchivedAndInstitutionAndNameIlike(false, institution, "%${params.q}%")
+            } else {
+                projects = null
+                total = 0
             }
         } else if (institution) {
             if (institution) {
                 projects = Project.findAllByArchivedAndInstitution(false, institution, params)
                 total = Project.countByArchivedAndInstitution(false, institution)
+            } else {
+                projects = null
+                total = 0
             }
         } else if (!Strings.isNullOrEmpty(params.q)) {
             projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
@@ -1193,6 +1249,7 @@ class ProjectController {
         if (!userService.isAdmin()) {
             log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
             redirect(uri: "/")
+            return
         }
 
         try {
@@ -1252,7 +1309,7 @@ class ProjectController {
         def percentComplete = numberOfSubjects > 0 ? ((completions?.transcribed as Double) / ((numberOfSubjects ?: 1.0) as Double)) * 100.0 : 0.0
         def contributors = projectService.calculateNumberOfTranscribers(project)
         def dates = projectService.calculateStartAndEndTranscriptionDates(project)
-//        projectService.
+
         def result = [
                 project: project.name,
                 contributors: contributors,
@@ -1266,6 +1323,10 @@ class ProjectController {
     }
 
     def loadProgress(Project projectInstance) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         respond projectInstance
     }
 }
