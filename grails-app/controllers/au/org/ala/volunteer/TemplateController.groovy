@@ -17,11 +17,19 @@ class TemplateController {
     }
 
     def list() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
     }
 
     def create() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = new Template()
         templateInstance.author = userService.currentUserId
         templateInstance.properties = params
@@ -29,6 +37,10 @@ class TemplateController {
     }
 
     def save() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
@@ -40,18 +52,11 @@ class TemplateController {
         }
     }
 
-    def show() {
-        def templateInstance = Template.get(params.id)
-        if (!templateInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [templateInstance: templateInstance]
-        }
-    }
-
     def edit() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.id)
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -64,6 +69,10 @@ class TemplateController {
     }
 
     def update() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             if (params.version) {
@@ -100,6 +109,10 @@ class TemplateController {
     }
 
     def delete() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.id)
         if (templateInstance) {
             try {
@@ -128,6 +141,10 @@ class TemplateController {
     }
 
     def manageFields() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -137,6 +154,10 @@ class TemplateController {
     }
 
     def addTemplateFieldFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -146,6 +167,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldUp() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
             if (field.displayOrder > 1) {
@@ -165,6 +190,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldDown() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
             def max = getLastDisplayOrder(field.template)
@@ -185,6 +214,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldToPosition() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         def newOrder = params.int("newOrder")
@@ -207,6 +240,10 @@ class TemplateController {
 
     @Transactional
     def cleanUpOrdering() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -222,6 +259,10 @@ class TemplateController {
 
     @Transactional
     def addField() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         def fieldType = params.fieldType
         def classifier = params.fieldTypeClassifier
@@ -258,6 +299,10 @@ class TemplateController {
 
     @Transactional
     def deleteField() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         if (field && templateInstance) {
@@ -267,6 +312,10 @@ class TemplateController {
     }
 
     def preview() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
 
         def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
@@ -280,7 +329,10 @@ class TemplateController {
     }
 
     def exportFieldsAsCSV() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
 
         if (templateInstance) {
@@ -290,6 +342,10 @@ class TemplateController {
     }
 
     def importFieldsFromCSV() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
 
         MultipartFile f = request.getFile('uploadFile')
 
@@ -309,6 +365,10 @@ class TemplateController {
     }
 
     def cloneTemplate() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.get(params.int("templateId"))
         def newName = params.newName
 
@@ -329,27 +389,26 @@ class TemplateController {
     }
 
     def cloneTemplateFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.get(params.int("sourceTemplateId"))
         [templateInstance: template]
     }
 
     def viewParamsForm(Template template) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def view = (params?.view ?: '') + 'Params'
-        try { //if (resExists(view)) {
+        try {
             def model = [templateInstance: template]
             render template: view, model: model
-        } catch (e) { //} else {
+        } catch (e) {
             log.trace("Could not render template $view", e)
             render status: 404
         }
-    }
-
-    private def resExists(resName) {
-        //Not needed : def grailsAttributes = new DefaultGrailsApplicationAttributes(request.servletContext)
-        def engine = grailsAttributes.pagesTemplateEngine
-        def resUri = grailsAttributes.getTemplateUri(resName, request)
-        def resource = engine.getResourceForUri(resUri)
-        log.debug "resUri=${resUri}; resource=${resource}; exists=${resource?.exists()}; readable=${resource?.readable}"
-        return resource?.readable
     }
 }
