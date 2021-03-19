@@ -8,32 +8,6 @@ class LocalityController {
     def localityService;
     def userService
 
-    def index() { }
-
-    def load() {
-        if (userService.isAdmin()) {
-            def collectionCodes = localityService.getCollectionCodes()
-            [collectionCodes: collectionCodes]
-        } else {
-            redirect(uri: "/")
-        }
-    }
-
-    def loadCSV() {
-        if (userService.isAdmin()) {
-            def collectionCode = params.collectionCode
-            MultipartFile f = request.getFile('csvfile')
-
-            def results = localityService.importLocalities(collectionCode, f)
-
-            flash.message = results.message
-
-            render(view: 'load')
-        } else {
-            redirect(uri: "/")
-        }
-    }
-
     def searchFragment() {
         def taskInstance = Task.get(params.long("taskId"))
         def verbatimLocality = params["verbatimLocality"] as String
