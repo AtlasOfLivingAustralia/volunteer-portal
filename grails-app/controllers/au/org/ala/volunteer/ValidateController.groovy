@@ -10,7 +10,6 @@ class ValidateController {
     def auditService
     def taskService
     def userService
-    def logService
     def multimediaService
 
     def task() {
@@ -27,7 +26,7 @@ class ValidateController {
                 def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user."
                 flash.message = msg
                 // redirect to another task
-                redirect(controller: "task", action:  "projectAdmin", id: taskInstance.project.id, params: params + [projectId:taskInstance.project.id])
+                redirect(controller: "task", action: "projectAdmin", id: taskInstance.project.id, params: params + [projectId: taskInstance.project.id])
                 return
             } else {
                 // go ahead with this task
@@ -88,15 +87,20 @@ class ValidateController {
      * Mark a task as validated, hence removing it from the list of tasks to be validated.
      */
     def validate() {
+        def taskInstance = Task.get(params.id)
+        if (!userService.isValidatorForProjectId(taskInstance?.project?.id)) {
+            redirect(uri: "/")
+            return
+        }
+
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action:'task', id: params.failoverTaskId)
+            redirect(action: 'task', id: params.failoverTaskId)
             return
         }
 
         if (currentUser != null) {
-            def taskInstance = Task.get(params.id)
             def seconds = params.getInt('timeTaken', null)
             if (seconds) {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
@@ -110,9 +114,9 @@ class ValidateController {
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
 
             if (taskInstance.hasErrors()) {
-                log.warn("Validation of task ${taskInstance.id} produced errors: "+errors)
+                log.warn("Validation of task ${taskInstance.id} produced errors: " + errors)
             }
-            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
+            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
         }
@@ -122,15 +126,21 @@ class ValidateController {
      * To do determine actions if the validator chooses not to validate
      */
     def dontValidate() {
+        def taskInstance = Task.get(params.id)
+        if (!userService.isValidatorForProjectId(taskInstance?.project?.id)) {
+            redirect(uri: "/")
+            return
+        }
+
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action:'task', id: params.failoverTaskId)
+            redirect(action: 'task', id: params.failoverTaskId)
             return
         }
 
         if (currentUser != null) {
-            def taskInstance = Task.get(params.id)
+
             def seconds = params.getInt('timeTaken', null)
             if (seconds) {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
@@ -141,7 +151,7 @@ class ValidateController {
                 transcription = taskInstance.transcriptions[0]
             }
             fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
-            redirect(controller: 'task', action: 'projectAdmin', id:taskInstance.project.id, params:[lastTaskId: taskInstance.id])
+            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
         }
@@ -150,21 +160,27 @@ class ValidateController {
     def skip() {
         def taskInstance = Task.get(params.id)
         if (taskInstance != null) {
-            redirect(action: 'showNextFromProject', id:taskInstance.project.id)
+            redirect(action: 'showNextFromProject', id: taskInstance.project.id)
         } else {
             flash.message = "No task id supplied!"
-            redirect(uri:"/")
+            redirect(uri: "/")
         }
     }
 
     def showNextFromProject() {
+
         def currentUser = userService.currentUserId
         def project = Project.get(params.id)
 
+        if (!userService.isValidatorForProjectId(project?.id)) {
+            redirect(uri: "/")
+            return
+        }
+
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg
-        def previousId = params.prevId?:-1
-        def prevUserId = params.prevUserId?:-1
+        def previousId = params.prevId ?: -1
+        def prevUserId = params.prevUserId ?: -1
 
         def taskInstance = taskService.getNextTaskForValidationForProject(currentUser, project)
 
@@ -191,20 +207,5 @@ class ValidateController {
             log.debug "4."
             render(view: 'noTasks')
         }
-    }
-
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def tasks = Task.findAllByFullyTranscribedByIsNotNull(params)
-        def taskInstanceTotal = Task.countByFullyTranscribedByIsNotNull()
-        render(view: '../task/list', model: [tasks: tasks, taskInstanceTotal: taskInstanceTotal])
-    }
-
-    def listForProject() {
-        def projectInstance = Task.get(params.id)
-        def tasks = Task.executeQuery("""select t from Task t
-         where t.project = :project and t.fullyTranscribedBy is not null""",
-                project: projectInstance)
-        render(view: '../task/list', model: [tasks: tasks, project: projectInstance])
     }
 }
