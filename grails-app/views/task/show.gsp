@@ -118,8 +118,7 @@
                 <td valign="top" style="text-align: left;" class="value">
                     <ul>
                         <g:each in="${taskInstance.viewedTasks}" var="v">
-                            <li><g:link controller="viewedTask" action="show"
-                                        id="${v.id}">${v?.encodeAsHTML()}</g:link></li>
+                            <li>${v?.encodeAsHTML()}</li>
                         </g:each>
                     </ul>
                 </td>

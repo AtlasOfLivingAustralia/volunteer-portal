@@ -147,12 +147,10 @@
 
                         <ul>
                             <g:each in="${taskInstance?.viewedTasks ?}" var="v">
-                                <li><g:link controller="viewedTask" action="show"
-                                            id="${v.id}">${v?.encodeAsHTML()}</g:link></li>
+                                <li>${v?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
-                        <g:link controller="viewedTask" action="create"
-                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'viewedTask.label', default: 'ViewedTask')])}</g:link>
+                        ${message(code: 'default.add.label', args: [message(code: 'viewedTask.label', default: 'ViewedTask')])}
 
                     </td>
                 </tr>
