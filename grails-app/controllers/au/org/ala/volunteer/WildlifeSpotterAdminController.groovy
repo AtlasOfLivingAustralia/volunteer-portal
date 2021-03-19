@@ -6,16 +6,14 @@ import grails.transaction.Transactional
 import org.apache.commons.io.FilenameUtils
 import org.springframework.web.multipart.MultipartFile
 
-import javax.imageio.ImageIO
-import javax.servlet.http.HttpServletResponse
-
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static javax.servlet.http.HttpServletResponse.*
 
 class WildlifeSpotterAdminController {
 
-    def index() {
+    def userService
+    def fileUploadService
 
+    def index() {
         redirect(action: "edit", params: params)
     }
 
@@ -30,14 +28,10 @@ class WildlifeSpotterAdminController {
         frontPage.bodyCopy = params['bodyCopy']
         frontPage.numberOfContributors = params.int('numberOfContributors') ?: 10
         frontPage.heroImageAttribution = params['heroImageAttribution']
-
         frontPage.save()
 
         redirect(action: "edit", params: params)
     }
-
-    def fileUploadService
-    def settingsService
 
     @Transactional
     def uploadHeroImage() {
@@ -58,6 +52,10 @@ class WildlifeSpotterAdminController {
     }
 
     def templateConfig(long id) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.get(id)
         def viewParams2 = template.viewParams2 ?: [ categories: [], animals: [] ]
         [id: id, templateInstance: template, viewParams2: viewParams2]
@@ -65,14 +63,24 @@ class WildlifeSpotterAdminController {
 
     @Transactional
     def saveTemplateConfig(long id) {
+        if (!userService.isAdmin()) {
+            respond status: SC_UNAUTHORIZED
+            return
+        }
+
         def template = Template.get(id)
         template.viewParams2 = request.getJSON() as Map
-
         template.save()
+
         respond status: SC_NO_CONTENT
     }
 
     def uploadImage() {
+        if (!userService.isAdmin()) {
+            respond status: SC_UNAUTHORIZED
+            return
+        }
+
         MultipartFile upload = request.getFile('animal') ?: request.getFile('entry')
 
         if (upload) {
@@ -85,7 +93,5 @@ class WildlifeSpotterAdminController {
         } else {
             render([ error: "One of animal or entry must be provided" ] as JSON, status: SC_BAD_REQUEST)
         }
-
     }
-
 }
