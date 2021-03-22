@@ -191,23 +191,17 @@ class TaskController {
 
     /** list all tasks  */
     def list() {
+        def currentUser = userService.currentUserId
         params.max = Math.min(params.max ? params.int('max') : 20, 50)
         params.order = params.order ? params.order : "asc"
         params.sort = params.sort ? params.sort : "id"
-        //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
-        if (params.id) {
-            //redirect(action: "project", params: params)
+
+        def project = Project.get(params.int("id"))
+        if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "list")
         } else {
             redirect(controller: 'project', action:'list')
         }
-    }
-
-    def thumbs() {
-        params.max = Math.min(params.max ? params.int('max') : 8, 16)
-        params.order = params.order ? params.order : "asc"
-        params.sort = params.sort ? params.sort : "id"
-        [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
     def showDetails() {
@@ -231,13 +225,10 @@ class TaskController {
         } else {
 
             def currentUser = userService.currentUserId
-
             def readonly = false
             def msg = ""
 
-
             if (taskInstance) {
-
                 // first check is user is logged in...
                 if (!currentUser) {
                     readonly = true
