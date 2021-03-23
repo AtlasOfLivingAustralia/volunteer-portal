@@ -101,7 +101,6 @@ function digivolNotebooksTabs(config) {
 
   nb.value('taskListUrl', config.taskListUrl);
   nb.value('forumPostsUrl', config.forumPostsUrl);
-  nb.value('changedFieldsUrl', config.changedFieldsUrl);
   nb.value('projectId', projectId);
 
   var notebookTabsController =

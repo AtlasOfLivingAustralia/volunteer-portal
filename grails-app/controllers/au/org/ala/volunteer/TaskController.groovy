@@ -185,10 +185,6 @@ class TaskController {
         render jsonObj as JSON
     }
 
-    def index() {
-        redirect(action: "list", params: params)
-    }
-
     /** list all tasks  */
     def list() {
         def currentUser = userService.currentUserId
@@ -200,20 +196,24 @@ class TaskController {
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "list")
         } else {
-            redirect(controller: 'project', action:'list')
+            redirect(controller: 'project', action: 'list')
         }
     }
 
     def showDetails() {
         def taskInstance = Task.get(params.int('id'))
+        Project project = taskInstance.project
+        if (project && currentUser && userService.isValidator(project)) {
+            def c = Field.createCriteria()
+            def fields = c.list(params) {
+                eq('task', taskInstance)
+            }
 
-        def c = Field.createCriteria()
-        def fields = c.list(params) {
-            eq('task', taskInstance)
+            // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
+            [taskInstance: taskInstance, fields: fields]
+        } else {
+            redirect(controller: 'project', action: 'list')
         }
-
-        // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
-        [taskInstance: taskInstance, fields: fields]
     }
 
     def show() {
@@ -311,71 +311,6 @@ class TaskController {
                 ]
                 render(view: '/transcribe/templateViews/' + template.viewName, model: model)
             }
-        }
-    }
-
-    def edit() {
-        def currentUser = userService.currentUserId
-        if (currentUser != null && userService.isAdmin()) {
-            def taskInstance = Task.get(params.id)
-            if (!taskInstance) {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-                redirect(action: "list")
-            }
-            else {
-                return [taskInstance: taskInstance]
-            }
-        } else {
-            flash.message = "You do not have permission to view this page"
-            redirect(view: '/index')
-        }
-    }
-
-    def update() {
-        def taskInstance = Task.get(params.id)
-        if (taskInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (taskInstance.version > version) {
-
-                    taskInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'task.label', default: 'Task')] as Object[], "Another user has updated this Task while you were editing")
-                    render(view: "edit", model: [taskInstance: taskInstance])
-                    return
-                }
-            }
-            taskInstance.properties = params
-            if (!taskInstance.hasErrors() && taskInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'task.label', default: 'Task'), taskInstance.id])}"
-                redirect(action: "show", id: taskInstance.id)
-            }
-            else {
-                render(view: "edit", model: [taskInstance: taskInstance])
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-            redirect(action: "list")
-        }
-    }
-
-    def delete() {
-        def taskInstance = Task.get(params.id)
-        if (taskInstance) {
-            try {
-                taskInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (DataIntegrityViolationException e) {
-                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-                flash.message = message
-                log.error(message, e)
-                redirect(action: "show", id: params.id)
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
-            redirect(action: "list")
         }
     }
 
@@ -681,6 +616,10 @@ class TaskController {
     }
 
     def clearTaskDataFile() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.int("projectId"))
         if (projectInstance) {
             stagingService.clearDataFile(projectInstance)
@@ -964,15 +903,6 @@ class TaskController {
 
         taskService.resetValidationStatus(taskInstance)
         redirect(action:'showDetails', id: taskInstance.id)
-    }
-
-    def showChangedFields(Task task) {
-        if (!task || !task.id) {
-            response.sendError(SC_BAD_REQUEST, "must provide a task id")
-            return
-        }
-        def fields = taskService.getChangedFields(task)
-        respond(fields)
     }
 
     /**

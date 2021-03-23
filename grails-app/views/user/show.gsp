@@ -438,8 +438,7 @@
         order: params.order,
         query: params.q,
         taskListUrl: createLink(controller: 'user', action: 'taskListFragment', id: userInstance.id),
-        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id),
-        changedFieldsUrl: createLink(controller: 'task', action: 'showChangedFields')
+        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id)
 ]}" />
     digivolNotebooksTabs(json);
 </asset:script>
