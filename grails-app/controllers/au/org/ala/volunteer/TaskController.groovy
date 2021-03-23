@@ -975,17 +975,6 @@ class TaskController {
         respond(fields)
     }
 
-    def viewTask(Task task) {
-        if (!task || !task.id) {
-            response.sendError(SC_BAD_REQUEST, "must provide a task id")
-            return
-        }
-        def userId = userService.currentUser?.userId
-        log.debug("Adding task view for $userId with task $task")
-        auditService.auditTaskViewing(task, userService.currentUser.userId)
-        respond status: SC_NO_CONTENT
-    }
-
     /**
      * Moved from deprecated MultimediaController.
      * @return

@@ -102,7 +102,6 @@ function digivolNotebooksTabs(config) {
   nb.value('taskListUrl', config.taskListUrl);
   nb.value('forumPostsUrl', config.forumPostsUrl);
   nb.value('changedFieldsUrl', config.changedFieldsUrl);
-  nb.value('auditViewUrl', config.auditViewUrl);
   nb.value('projectId', projectId);
 
   var notebookTabsController =
@@ -112,7 +111,7 @@ function digivolNotebooksTabs(config) {
         angular.extend($ctrl, config);
         $ctrl.tabs = [];
         for (var i = 0; i < 5; ++i) {
-          if (i == config.selectedTab) {
+          if (i === config.selectedTab) {
             $ctrl.tabs.push({
               max: config.max || 10,
               sort: config.sort,
