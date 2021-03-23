@@ -140,12 +140,6 @@
 
 <section id="user-progress" class="in-body" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
-        %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
-            %{--<uib-tab-heading>--}%
-                %{--<g:message code="notebook.tabs.notifications.heading" /> <i ng-show="unreadCount > 0" class="fa fa-bell text-danger"></i>--}%
-            %{--</uib-tab-heading>--}%
-            %{--<task-list selected-tab="nbtCtrl.selectedTab" tab-index="0" max="nbtCtrl.tabs[0].max" offset="nbtCtrl.tabs[0].offset" sort="nbtCtrl.tabs[0].sort" order="nbtCtrl.tabs[0].order" query="nbtCtrl.tabs[0].query"></task-list>--}%
-        %{--</uib-tab>--}%
         <uib-tab heading="${message(code:"notebook.tabs.transcribed.heading")}" index="1" select="nbtCtrl.selectTab(1)">
             <task-list selected-tab="nbtCtrl.selectedTab" tab-index="1" max="nbtCtrl.tabs[1].max" offset="nbtCtrl.tabs[1].offset" sort="nbtCtrl.tabs[1].sort" order="nbtCtrl.tabs[1].order" query="nbtCtrl.tabs[1].query"></task-list>
         </uib-tab>
@@ -214,8 +208,6 @@
         <div class="col-sm-8 search-results-count">
             <p>
                 <span ng-show="$ctrl.tabIndex > 0"><strong>{{$ctrl.data.totalMatchingTasks }} <g:message code="notebook.taskList.heading" /></strong> <span ng-show="$ctrl.project"><g:message code="notebook.tasklist.heading.projectSuffix" /></span></span>
-                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount > 0"><strong><g:message code="notebook.taskList.reviewedHeading" /></strong> <g:message code="notebook.taskList.reviewHeading.suffix" /></span>
-                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount == 0"><strong><g:message code="notebook.taskList.emptyReviewedHeading" /></strong></span>
                 <span ng-show="$ctrl.cancelPromise"><i class="fa fa-cog fa-spin fa-2x"></i></span>
             </p>
         </div>
@@ -243,8 +235,6 @@
     <table class="table table-striped table-hover">
         <thead>
             <tr class="sorting-header">
-
-%{--                <th ng-if="$ctrl.tabIndex == 0"></th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
@@ -286,11 +276,6 @@
         <tbody>
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
-%{--                <td ng-if="$ctrl.tabIndex == 0">--}%
-%{--                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>--}%
-%{--                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>--}%
-%{--                </td>--}%
-
                 <td>
                     <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
                 </td>
@@ -313,10 +298,6 @@
                     {{ taskInstance.dateValidated | date : 'medium' }}
                 </td>
 
-%{--                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">--}%
-%{--                    {{ taskInstance.fullyValidatedBy }}--}%
-%{--                </td>--}%
-
                 <td style="text-align: center;">
                     {{ taskInstance.status }}
                 </td>
@@ -336,13 +317,6 @@
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
                             <g:message code="action.transcribe.label" />
                         </a>
-                    </span>
-                    <span ng-hide="$ctrl.tabIndex > 0">
-                        <button class="btn btn-default btn-xs btnViewNotificationTask"
-                                ng-click="$ctrl.viewNotifications(taskInstance)"
-                                data-taskId="{{taskInstance.id}}" data-externalIdentifier="{{taskInstance.externalIdentifier}}">
-                            <g:message code="action.view.label" />
-                        </button>
                     </span>
                 </td>
 
@@ -395,7 +369,6 @@
     </div>
 </script>
 
-<script id="viewNotifications.html" type="text/ng-template">
 <div class="modal-header">
     <button type="button" class="close" aria-label="Close" ng-click="$ctrl.close()"><span aria-hidden="true">&times;</span></button>
     <h3 class="modal-title">Changes for {{ $ctrl.taskInstance.externalIdentifier }}</h3>
