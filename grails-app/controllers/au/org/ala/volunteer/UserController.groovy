@@ -77,12 +77,6 @@ class UserController {
         redirect(action: "list", params: params)
     }
 
-    def logout() {
-        log.debug "Invalidating Session (UserController.logout): ${session.id}"
-        session.invalidate()
-        redirect(url:"${params.casUrl}?url=${params.appUrl}")
-    }
-
     def myStats() {
       userService.registerCurrentUser()
       def currentUser = userService.currentUserId
