@@ -142,22 +142,6 @@
 
     <tr class="prop">
         <td valign="top" class="name">
-            <label for="newsItems"><g:message code="project.newsItems.label" default="News Items"/></label>
-        </td>
-        <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'newsItems', 'errors')}">
-            <ul>
-                <g:each in="${projectInstance?.newsItems ?}" var="n">
-                    <li><g:link controller="newsItem" action="show"
-                                id="${n.id}">${n?.title?.encodeAsHTML()}</g:link></li>
-                </g:each>
-            </ul>
-            <g:link class="btn btn-small" controller="newsItem" action="create"
-                    params="['project.id': projectInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'newsItem.label', default: 'NewsItem')])}</g:link>
-        </td>
-    </tr>
-
-    <tr class="prop">
-        <td valign="top" class="name">
             <label for="showMap"><g:message code="project.showMap.label" default="Show Map"/></label>
         </td>
         <td valign="top" class="value ${hasErrors(bean: projectInstance, field: 'showMap', 'errors')}">

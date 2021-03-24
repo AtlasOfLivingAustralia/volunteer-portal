@@ -169,7 +169,6 @@ class ProjectService {
                 id: id,
                 name: name,
                 description: description,
-                newsItemsCount: 0, // No longer used
                 tasksCount: taskCount,
                 tasksTranscribedCount: fullyTranscribedCount,
                 tasksValidatedCount: fullyValidatedCount,

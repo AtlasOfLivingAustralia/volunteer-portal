@@ -28,9 +28,6 @@
                         <cl:settingsMenuItem
                                 href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"
                                 title="General Settings"/>
-                        <cl:settingsMenuItem
-                                href="${createLink(controller: 'institutionAdmin', action: 'editNewsItems', id: institutionInstance.id)}"
-                                title="News items"/>
                     </ul>
                 </div>
 

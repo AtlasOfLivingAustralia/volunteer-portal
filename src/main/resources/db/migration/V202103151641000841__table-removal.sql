@@ -4,3 +4,4 @@ See: http://www.jeremyjarrell.com/using-flyway-db-with-distributed-version-contr
 */
 
 DROP TABLE IF EXISTS project_association;
+DROP TABLE IF EXISTS news_item;

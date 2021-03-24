@@ -14,23 +14,12 @@ class IndexController {
         log.debug("Index Controller, Index action")
         def frontPage = FrontPage.instance()
 
-        // News item
-        NewsItem newsItem = null;
-
-        // Removed from calculations until news items add to front page or removed altogether
-//        if (frontPage.useGlobalNewsItem) {
-//            newsItem = new NewsItem(shortDescription: frontPage.newsBody, title: frontPage.newsTitle, created: frontPage.newsCreated);
-//        } else {
-//            // We need to find the latest news item from all projects, but we only include news items from projects whose news items have not been disabled
-//            newsItem = NewsItem.find("""from NewsItem n where (n.project is not null and (n.project.disableNewsItems is null or project.disableNewsItems != true)) or (n.institution is not null and (n.institution.disableNewsItems is null or n.institution.disableNewsItems != true)) order by n.created desc""")
-//        }
-
         def featuredProjects = projectService.getFeaturedProjectList()
         def potdSummary = null
         if (frontPage?.projectOfTheDay) {
             potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
         }
-        render(view: "/index", model: ['newsItem' : newsItem, 'frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+        render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
     def leaderBoardFragment() {

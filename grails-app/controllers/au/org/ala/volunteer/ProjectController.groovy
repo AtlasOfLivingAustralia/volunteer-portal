@@ -96,13 +96,6 @@ class ProjectController {
             log.debug "roles = ${roles as JSON}"
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0)
-            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc', max: 1])
-
-            def newsItem = null
-            if (newsItems) {
-                newsItem = newsItems?.first()
-            }
-
             def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null, false)?.projectRenderList?.get(0)
 
             def taskCount
@@ -126,11 +119,9 @@ class ProjectController {
                     taskCount: taskCount,
                     tasksTranscribed: tasksTranscribed,
                     roles:roles,
-                    newsItem: newsItem,
                     currentUserId: currentUserId,
                     leader: leader,
                     percentComplete: percentComplete,
-                    newsItems: newsItems,
                     projectSummary: projectSummary,
                     transcriberCount: userIds.size(),
                     showTutorial: showTutorial
@@ -561,21 +552,6 @@ class ProjectController {
         }
     }
 
-    def editNewsItemsSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
-            return
-        }
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-            redirect(action: "list")
-        } else {
-            def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc'])
-            return [projectInstance: projectInstance, newsItems: newsItems]
-        }
-    }
-
     def updateGeneralSettings() {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
@@ -633,28 +609,9 @@ class ProjectController {
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                def newsItems = NewsItem.findAllByProject(projectInstance, [sort:'created', order:'desc'])
-                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance, newsItems: newsItems])
+                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance])
             } else {
                 redirect(action:'editTutorialLinksSettings', id: projectInstance.id)
-            }
-        }  else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
-            redirect(action: "list")
-        }
-    }
-
-    def updateNewsItemsSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
-            return
-        }
-        def projectInstance = Project.get(params.id)
-        if (projectInstance) {
-            if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editNewsItemsSettings", model: [projectInstance: projectInstance])
-            } else {
-                redirect(action:'editNewsItemsSettings', id: projectInstance.id)
             }
         }  else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
