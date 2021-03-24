@@ -201,6 +201,7 @@ class TaskController {
     }
 
     def showDetails() {
+        def currentUser = userService.currentUserId
         def taskInstance = Task.get(params.int('id'))
         Project project = taskInstance.project
         if (project && currentUser && userService.isValidator(project)) {
