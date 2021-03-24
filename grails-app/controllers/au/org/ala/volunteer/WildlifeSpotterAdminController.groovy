@@ -13,44 +13,6 @@ class WildlifeSpotterAdminController {
     def userService
     def fileUploadService
 
-    def index() {
-        redirect(action: "edit", params: params)
-    }
-
-    def edit() {
-        ['wildlifeSpotter':WildlifeSpotter.instance()]
-    }
-
-    @Transactional
-    def save() {
-        def frontPage = WildlifeSpotter.instance()
-
-        frontPage.bodyCopy = params['bodyCopy']
-        frontPage.numberOfContributors = params.int('numberOfContributors') ?: 10
-        frontPage.heroImageAttribution = params['heroImageAttribution']
-        frontPage.save()
-
-        redirect(action: "edit", params: params)
-    }
-
-    @Transactional
-    def uploadHeroImage() {
-        if (params.containsKey('clear-hero')) {
-            def frontPage = WildlifeSpotter.instance()
-            frontPage.heroImage = null
-            frontPage.save()
-
-        } else if (params.containsKey('save-hero')) {
-            def heroImage = fileUploadService.uploadImage('wildlifespotter', request.getFile('heroImage'))
-
-            def frontPage = WildlifeSpotter.instance()
-
-            frontPage.heroImage = heroImage.name
-            frontPage.save()
-        }
-        redirect(action: 'edit')
-    }
-
     def templateConfig(long id) {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
