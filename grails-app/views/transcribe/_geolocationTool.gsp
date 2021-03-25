@@ -376,13 +376,6 @@
       updateMarkerPosition(marker.getPosition());
     });
 
-    $('#setLocationFields').click(function (e) {
-      e.preventDefault();
-      setLocationFields();
-
-    });
-
-
     function init() {
       var $modal = $('#mapWidgets').parents('.modal');
       if ($modal.length > 0) {
