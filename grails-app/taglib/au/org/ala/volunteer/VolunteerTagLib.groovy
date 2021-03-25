@@ -24,7 +24,6 @@ class VolunteerTagLib {
     def multimediaService
     def markdownService
     def institutionService
-    def authService
     def achievementService
     def taskService
     def adminService
@@ -74,7 +73,7 @@ class VolunteerTagLib {
         def numberOfCustomLinksAtTopPage = grailsApplication.config.numberOfCustomLinksAtTopPage ?: 1
 
         List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
-        def mb = new groovy.xml.MarkupBuilder(out)
+        def mb = new MarkupBuilder(out)
         def buildLandingPage = {
             landingPages.each {
                 if (it) {
@@ -159,7 +158,7 @@ class VolunteerTagLib {
      */
     def helpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
-        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
+        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
             helpText = markdownService.markdown(helpText)
             def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
@@ -178,7 +177,7 @@ class VolunteerTagLib {
             }
 
             if (attrs.customClass) {
-                attributes.customClass = attrs.customClass;
+                attributes.customClass = attrs.customClass
             }
 
             mb.a(attributes) {
@@ -199,7 +198,7 @@ class VolunteerTagLib {
      */
     def ngHelpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
-        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "");
+        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
             helpText = markdownService.markdown(helpText)
             def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
@@ -214,9 +213,9 @@ class VolunteerTagLib {
             }
 
             if (attrs.classes) {
-                attributes.'qtip-class' = attrs.classes;
+                attributes.'qtip-class' = attrs.classes
             } else {
-                attributes.'qtip-class' = 'qtip-bootstrap';
+                attributes.'qtip-class' = 'qtip-bootstrap'
             }
 
             if (attrs.width) {
@@ -251,10 +250,10 @@ class VolunteerTagLib {
     //TODO This is hideous and it should disappear after applying the new skin
     def navbar = { attrs, body ->
 
-        def selected = null;
+        def selected = null
 
         if (attrs.containsKey('selected')) {
-            selected = attrs.selected as String;
+            selected = attrs.selected as String
         }
 
         def items = [:]
@@ -330,93 +329,6 @@ class VolunteerTagLib {
     /**
      * @param task The task instance
      */
-    def taskComments = { attrs, body ->
-
-        if (!FrontPage.instance().enableTaskComments) {
-            return ;
-        }
-
-        Task task = attrs.task;
-
-        def mb = new MarkupBuilder(out)
-
-        mb.table(style: 'width: 100%', class: "comment-control") {
-            thead {
-                tr {
-                    th {
-                        h3('Comments', style: "padding-bottom: 0px;min-height: 0px")
-                    }
-                }
-            }
-            tbody {
-                tr {
-                    td {
-                        div(class:"comments-content", id:"comments-content") {
-
-                        }
-                    }
-                }
-                if (userService.currentUserId) {
-                    tr(class: 'prop', style: 'width: 100%; min-height: 0px') {
-                        td(style: 'padding-bottom: 0px; padding-top: 0px;') {
-                            span('Add a new comment by typing in the box below, and clicking "Save comment"') {}
-                        }
-                    }
-                    tr(class:'prop',style: 'width: 100%') {
-                        td(style: 'padding-top: 0px; padding-bottom: 0px;') {
-                            textarea("", name:'comment_textarea', id:'comment_textarea', cols: '80', rows: '3', style:'width: 600px')
-                        }
-                    }
-                    tr(class:'prop', style: 'width: 100%') {
-                        td(class: 'name',style: "text-align: left; vertical-align: bottom; padding-top: 0px") {
-                            button(id: 'addCommentButton', 'Save comment')
-                        }
-                    }
-                }
-            }
-        }
-
-        def script = """
-
-            loadComments();
-
-            \$('#addCommentButton').click(function(e) {
-                e.preventDefault();
-                saveComment();
-            });
-
-            function saveComment() {
-                var comment  = \$('#comment_textarea').val();
-                \$.ajax({url:"${createLink(action: 'saveComment', controller: 'taskComment', params: [taskId: task.id])}&comment=" + encodeURIComponent(comment), success: function(data) {
-                    loadComments();
-                    \$('#comment_textarea').val("");
-                }});
-            }
-
-            function loadComments() {
-                var urlbase = "${createLink(action: 'getCommentsAjax', controller: 'taskComment', params: [taskId: task.id])}"
-                \$.ajax({url:urlbase, success: function(data) {
-                    \$("#comments-content").html(data);
-                }});
-            }
-
-            function deleteTaskComment(e, taskCommentId) {
-                e.preventDefault();
-
-                \$.ajax({url:"${createLink(action: 'deleteComment', controller: 'taskComment')}?commentId=" + taskCommentId, success: function(data) {
-                    loadComments();
-                }});
-            }
-        """
-        mb.script() {
-            mkp.yieldUnescaped(script)
-        }
-
-    }
-
-    /**
-     * @param task The task instance
-     */
     def validationStatus = { attrs, body ->
 
         def taskInstance = attrs.task as Task
@@ -465,7 +377,7 @@ class VolunteerTagLib {
         def taskInstance = attrs.task as Task
 
         int transcribedCount = 0
-        taskInstance?.transcriptions.each { transcription ->
+        taskInstance?.transcriptions?.each { transcription ->
             if (transcription.dateFullyTranscribed) {
                 out << "<p>"
                 out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
@@ -968,7 +880,7 @@ class VolunteerTagLib {
         if (bd) {
             try {
                 df.format(new SimpleDateFormat('EEE MMM dd HH:mm:ss zzz yyyy').parse(bd))
-            } catch (e) {
+            } catch (Exception ignored) {
                 df.format(new Date())
             }
         } else {
