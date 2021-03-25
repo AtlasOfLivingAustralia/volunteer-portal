@@ -8,7 +8,6 @@ class ForumNotifierService {
     // This is useful if emails are being sent on the request thread rather than as background job
     static transactional = false
 
-    def logService
     def userService
     def settingsService
     //def CustomPageRenderer customPageRenderer

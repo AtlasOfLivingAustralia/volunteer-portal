@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class UserService {
 
     def authService
-    def logService
     def grailsApplication
     def emailService
     //def CustomPageRenderer customPageRenderer

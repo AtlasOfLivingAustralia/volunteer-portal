@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils
 @Transactional
 class FieldSyncService {
 
-    def logService
     ValidationService validationService
 
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {

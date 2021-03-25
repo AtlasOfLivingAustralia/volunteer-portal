@@ -12,7 +12,6 @@ class PicklistService {
 
     def sessionFactory
     def settingsService
-    def logService
 
     /**
      * Loads a CSV of external identifiers and external URLs

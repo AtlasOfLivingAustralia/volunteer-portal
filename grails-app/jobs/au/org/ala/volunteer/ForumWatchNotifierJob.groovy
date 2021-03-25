@@ -6,7 +6,6 @@ class ForumWatchNotifierJob {
     private static int MINUTES = 60 * SECONDS
     private static int HOURS = 60 * MINUTES
 
-    def logService
     def forumNotifierService
 
 

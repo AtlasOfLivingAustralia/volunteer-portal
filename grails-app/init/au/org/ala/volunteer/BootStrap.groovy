@@ -16,7 +16,6 @@ import org.springframework.web.context.support.ServletContextResource
 
 class BootStrap {
 
-    def logService
     def projectTypeService
     GrailsApplication grailsApplication
     def auditService
