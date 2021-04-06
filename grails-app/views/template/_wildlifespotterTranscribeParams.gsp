@@ -41,6 +41,6 @@
 </div>
 <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-        <g:link class="btn btn-primary" controller="wildlifeSpotterAdmin" action="templateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
+        <g:link class="btn btn-primary" controller="template" action="wildlifeTemplateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
     </div>
 </div>

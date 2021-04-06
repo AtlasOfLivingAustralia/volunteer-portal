@@ -36,23 +36,26 @@ class TemplateService {
 
     def getAvailableTemplateViews() {
         def views = []
+        def pattern
 
         if (Environment.isDevelopmentEnvironmentAvailable()) {
             log.debug("Checking for dev templates")
             findDevGsps 'grails-app/views/transcribe/templateViews', views
+            // This is a pattern for windows... linux developer would have to modify?
+            pattern = Pattern.compile("^grails-app\\\\views\\\\transcribe\\\\templateViews\\\\(.*Transcribe)[.]gsp\$")
         } else {
             log.debug("Checking for WAR deployed templates")
             findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
+            pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
         }
-        log.debug("Got views: {}", views)
-
-        def pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
+        log.debug("Got views: ${views}")
 
         def results = views.collectMany { String viewName ->
             def m = pattern.matcher(viewName)
             m.matches() ? [m.group(1)] : []
         }.sort()
 
+        log.debug("Views after collect/sort: {}", results)
         return results
     }
 

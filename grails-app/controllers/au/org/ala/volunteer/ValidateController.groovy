@@ -13,7 +13,7 @@ class ValidateController {
     def multimediaService
 
     def task() {
-        def taskInstance = Task.get(params.id)
+        def taskInstance = Task.get(params.long('id'))
         def currentUser = userService.currentUserId
         userService.registerCurrentUser()
 
@@ -36,7 +36,7 @@ class ValidateController {
             def isReadonly = false
 
             def project = Project.findById(taskInstance.project.id)
-            def template = Template.findById(project.template.id)
+            Template template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
             log.debug(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
