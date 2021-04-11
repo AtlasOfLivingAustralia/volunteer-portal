@@ -26,18 +26,6 @@ class TaskController {
     def auditService
     def multimediaService
 
-    def project() {
-        params.max = Math.min(params.max ? params.int('max') : 20, 50)
-        params.order = params.order ? params.order : "asc"
-        params.sort = params.sort ? params.sort : "id"
-        //render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
-        if (params.id) {
-            renderProjectListWithSearch(params, "list")
-        } else {
-            render(view: "list", model:[taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()])
-        }
-    }
-
     def projectAdmin() {
         def currentUser = userService.currentUserId
         def project = Project.get(params.int("id"))
