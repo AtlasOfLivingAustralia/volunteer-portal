@@ -439,9 +439,10 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render (["status": 401, "error": "unauthorized"] as JSON)
             return
         }
+        
         def template = Template.findById(params.int("templateId"))
         if (template) {
             render (["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
