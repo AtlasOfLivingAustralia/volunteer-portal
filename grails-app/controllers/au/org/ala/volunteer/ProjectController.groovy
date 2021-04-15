@@ -440,14 +440,14 @@ class ProjectController {
     def checkTemplateSupportMultiTranscriptions() {
         if (!userService.isAdmin()) {
             render (["status": 401, "error": "unauthorized"] as JSON)
-            return
+        } else {
+            def template = Template.findById(params.int("templateId"))
+            if (template) {
+                render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
+            } else {
+                render(["supportMultipleTranscriptions": "false"] as JSON)
+            }
         }
-        
-        def template = Template.findById(params.int("templateId"))
-        if (template) {
-            render (["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
-        }
-        render (["supportMultipleTranscriptions": "false"] as JSON)
     }
 
     def editTutorialLinksSettings() {
