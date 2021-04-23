@@ -170,7 +170,7 @@ class ValidateController {
     def showNextFromProject() {
 
         def currentUser = userService.currentUserId
-        def project = Project.get(params.id)
+        def project = Project.get(params.long('id'))
 
         if (!userService.isValidatorForProjectId(project?.id)) {
             redirect(uri: "/")
@@ -179,7 +179,8 @@ class ValidateController {
 
         log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
         flash.message = params.msg
-        def previousId = params.prevId ?: -1
+
+        def previousId = params.long('prevId',-1)
         def prevUserId = params.prevUserId ?: -1
 
         def taskInstance = taskService.getNextTaskForValidationForProject(currentUser, project)
@@ -193,15 +194,15 @@ class ValidateController {
             }
         }
 
-        //retrieve the details of the template
-        if (taskInstance && taskInstance.id == previousId.toInteger() && currentUser != prevUserId) {
+        // Retrieve the details of the template
+        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
             log.debug "1."
             render(view: 'noTasks')
         } else if (taskInstance && project) {
             log.debug "2."
             redirect(action: 'task', id: taskInstance.id)
         } else if (!project) {
-            log.error("Project not found for id: " + params.id)
+            log.error("Project not found for id: " + params.long('id'))
             redirect(view: '/index')
         } else {
             log.debug "4."

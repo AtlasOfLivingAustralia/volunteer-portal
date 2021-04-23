@@ -254,22 +254,6 @@ class TranscribeController {
 
         def taskInstance = taskService.getNextTask(currentUser, project, previousId)
 
-        //retrieve the details of the template
-//        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
-//            log.debug "1."
-//            render(view: 'noTasks', model: [complete: params.complete])
-//        } else if (taskInstance) {
-//            log.debug "2."
-//            def redirectParams = [:]
-//            if (params.complete) {
-//                redirectParams.complete = params.complete
-//            }
-//            redirect(action: 'task', id: taskInstance.id, params: redirectParams)
-//        } else {
-//            log.debug "4."
-//            render(view: 'noTasks', model: [complete: params.complete])
-//        }
-
         // Issue #371 - Completion notification
         // Refactored the above; flipped the logic:
         // * If a task exists that is different to the previous task, display task
