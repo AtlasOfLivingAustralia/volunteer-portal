@@ -24,7 +24,7 @@ class ValidationRuleController {
         }
         def rule = ValidationRule.get(params.int("id"));
         if (rule) {
-            rule.delete()
+            rule.delete(flush: true)
             flash.message = "Rule '${rule.name}' deleted."
         } else {
             flash.message = "No rule with id ${params.id} exists."
@@ -51,6 +51,7 @@ class ValidationRuleController {
     }
 
     def update() {
+        log.debug("This is the update action...")
         if (!userService.isAdmin()) {
             redirect(uri: "/")
             return
@@ -62,10 +63,15 @@ class ValidationRuleController {
             rule = new ValidationRule(params)
         }
 
-        if (!rule.save()) {
+        log.debug("rule: ${rule}")
+
+        if (!rule.save(flush: true, failOnError: true)) {
+            flash.message = rule.errors
             render(view: 'edit', model: [rule: rule])
             return
         }
+
+        log.debug("rule: ${rule}")
 
         redirect(action: 'list')
     }

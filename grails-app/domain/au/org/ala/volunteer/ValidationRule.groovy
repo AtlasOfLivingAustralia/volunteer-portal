@@ -18,4 +18,17 @@ class ValidationRule {
         validationType nullable: true
     }
 
+
+    @Override
+    public String toString() {
+        return "ValidationRule{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", message='" + message + '\'' +
+                ", regularExpression='" + regularExpression + '\'' +
+                ", testEmptyValues=" + testEmptyValues +
+                ", validationType=" + validationType +
+                '}';
+    }
 }
