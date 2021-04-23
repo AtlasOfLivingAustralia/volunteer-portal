@@ -59,10 +59,6 @@
                           title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}"
                           params="${pageParams}" action="show" controller="user"/>
 
-%{--        <g:sortableColumn style="text-align: left" property="catalogNumber"--}%
-%{--                          title="${message(code: 'task.catalogNumber.label', default: 'Catalog&nbsp;Number')}"--}%
-%{--                          params="${pageParams}" action="show" controller="user"/>--}%
-
         <g:sortableColumn style="text-align: left" property="projectName"
                           title="${message(code: 'task.project.name', default: 'Expedition')}"
                           params="${pageParams}" action="show" controller="user"/>
@@ -74,12 +70,6 @@
         <g:sortableColumn property="dateValidated"
                           title="${message(code: 'task.validated.label', default: 'Validated')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: left;"/>
-%{-- Tab 0 was removed --}%
-%{--        <g:if test="${taskListResultInstance.selectedTab == 0}">--}%
-%{--            <g:sortableColumn property="validator"--}%
-%{--                              title="${message(code: 'task.validator.label', default: 'Validator')}"--}%
-%{--                              params="${pageParams}" action="show" controller="user" style="text-align: left;"/>--}%
-%{--        </g:if>--}%
 
         <g:sortableColumn property="status" title="${message(code: 'task.isValid.label', default: 'Status')}"
                           params="${pageParams}" action="show" controller="user" style="text-align: center;"/>
@@ -92,20 +82,12 @@
     <g:each in="${taskListResultInstance.viewList}" status="i" var="taskInstance">
         <tr>
 
-%{--            <g:if test="${(taskListResultInstance.selectedTab == 0)}">--}%
-%{--                <td>--}%
-%{--                    <cl:readStatusIcon taskId="${taskInstance.id}"></cl:readStatusIcon>--}%
-%{--                </td>--}%
-%{--            </g:if>--}%
-
             <td>
                <g:link class="listLink" controller="task" action="show"
                        id="${taskInstance.id}">${taskInstance.id}</g:link>
             </td>
 
             <td>${taskInstance.externalIdentifier}</td>
-
-%{--            <td>${taskInstance.catalogNumber}</td>--}%
 
             <td><g:link class="listLink" controller="project" action="index"
                         id="${taskInstance.projectId}">${taskInstance.project}</g:link></td>
@@ -117,10 +99,6 @@
             <td>
                 <g:formatDate date="${taskInstance.dateValidated}" format="dd MMM, yyyy HH:mm:ss"/>
             </td>
-
-%{--            <td style="text-align: center;">--}%
-%{--                ${taskInstance.fullyValidatedBy}--}%
-%{--            </td>--}%
 
             <td style="text-align: center;">
                 ${taskInstance.status}
@@ -148,9 +126,6 @@
                                     onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
                         </g:else>
                     </g:if>
-                    <g:else>
-                        <button class="btn btn-default btn-xs btnViewNotificationTask" taskId="${taskInstance.id}" externalIdentifier="${taskInstance.externalIdentifier}">View</button>
-                    </g:else>
                 </span>
             </td>
 
@@ -183,39 +158,6 @@
         }
     });
 
-    $(".btnViewNotificationTask").click(function(e) {
-        e.preventDefault();
-        var taskId = $(this).attr("taskId");
-        var externalIdentifier = $(this).attr("externalIdentifier");
-        showChangedValues(taskId, externalIdentifier);
-    });
-
-    function showChangedValues(taskId, externalIdentifier) {
-
-        bvp.showModal({
-            url: "${createLink(controller: 'user', action: 'showChangedFields')}" + "?id=" + taskId,
-            size: 'large',
-            title: 'Task id: ' + taskId + ' Image ID: ' + externalIdentifier,
-            buttons: {
-                close: {
-                    label: "Close",
-                    className: 'btn-default',
-                    callback: function () {
-                        window.location.href = window.location.href;
-                        window.location.reload(true);
-                    }
-
-                }
-            },
-            onClose: function() {
-                setTimeout(function () {
-                    window.location.href = window.location.href;
-                    window.location.reload(true);
-                }, 0);
-            }
-        });
-    }
-
     $('[data-tooltip!=""]').qtip({ // Grab all elements with a non-blank data-tooltip attr.
         content: {
             attr: 'data-tooltip' // Tell qTip2 to look inside this attr for its content
@@ -226,9 +168,9 @@
         $(this).attr('href', $(this).attr('href') + '#profileTabs');
     });
 
-    if (${taskListResultInstance.recentValidatedTaskCount > 0}) {
-        $('#notificationsTab').html('Notifications <span class="glyphicon glyphicon-bell" style="color:red"></span>');
-    } else {
-        $('#notificationsTab').html('Notifications');
-    }
+    %{--if (${taskListResultInstance.recentValidatedTaskCount > 0}) {--}%
+    %{--    $('#notificationsTab').html('Notifications <span class="glyphicon glyphicon-bell" style="color:red"></span>');--}%
+    %{--} else {--}%
+    %{--    $('#notificationsTab').html('Notifications');--}%
+    %{--}--}%
 </script>
