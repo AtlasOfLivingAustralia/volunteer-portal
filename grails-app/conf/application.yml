@@ -162,11 +162,11 @@ bvp:
         migrateIds: false
     labels:
         ensureDefault: true
-    tmpdir: C:/data/volunteer-portal/config/
+    tmpdir: /data/volunteer-portal/config/
 
 
 images:
-    home: C:/data/volunteer-portal
+    home: /data/volunteer-portal
     urlPrefix: /data/volunteer/
 
 elasticsearch:
@@ -288,7 +288,7 @@ environments:
     development:
         dataSource:
             dbCreate: validate
-            url: jdbc:postgresql://localhost/volprod2
+            url: jdbc:postgresql://localhost/volunteers
             username: "postgres"
             password: "password"
             logSql: false

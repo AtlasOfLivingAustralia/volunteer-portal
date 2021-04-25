@@ -43,6 +43,10 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-12">
+                    %{--<cl:ifAdmin>--}%
+                        %{--<a href="${createLink(controller: 'picklistItem', action: 'list', id: picklistInstance.id)}"--}%
+                           %{--class="btn btn-default pull-left">Manage Picklist Items</a>--}%
+                    %{--</cl:ifAdmin>--}%
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="Search by Value" />
@@ -68,7 +72,8 @@
                         <tbody>
                         <g:each in="${picklistItemInstanceList}" status="i" var="picklistItemInstance">
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-                                <td>${picklistItemInstance.id}</td>
+                                <td><g:link controller="picklistItem" action="show"
+                                            id="${picklistItemInstance.id}">${picklistItemInstance.id}</g:link></td>
                                 <td>${picklistItemInstance.key}</td>
                                 <td>${picklistItemInstance.value}</td>
                                 <td>${picklistItemInstance.institutionCode}</td>
