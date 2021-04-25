@@ -48,17 +48,18 @@
 
 </div>
 
-<g:set var="columnCount" value="${template.viewParams?.columns ?: 2}"/>
+%{--<g:set var="columnCount" value="${template.viewParams?.columns ?: 2}"/>--}%
 <g:set var="visibleFields"
        value="${TemplateField.findAllByTemplateAndTypeNotEqual(template, FieldType.hidden, [sort: 'displayOrder', order: 'asc'])}"/>
 <%
+    int columnCount = template.viewParams?.columns ?: 2
     def columns = []
     for (int i = 0; i < columnCount; ++i) {
-        columns << [];
+        columns << []
     }
     for (int i = 0; i < visibleFields.size(); ++i) {
         def field = visibleFields[i]
-        columns[i % columnCount] << field;
+        columns[i % columnCount] << field
     }
 %>
 <div class="row">

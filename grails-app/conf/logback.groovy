@@ -122,21 +122,32 @@ final info  = [
         'org.quartz',
         'org.springframework',
         'org.flywaydb',
+        'grails.app.services.au.org.ala.volunteer.DomainUpdateService'
 ]
 
 final debug = [
 //        'grails.app.services.au.org.ala.volunteer.ExportService',
+//        'grails.app.services.au.org.ala.volunteer.TaskService',
 //        'grails.app.controllers.au.org.ala.volunteer.ProjectController',
 //        'grails.app.services.au.org.ala.volunteer.ProjectService',
+//        'grails.app.services.au.org.ala.volunteer.FieldSyncService',
+//        'grails.app.services.au.org.ala.volunteer.ExportService',
 //        'grails.app.controllers.au.org.ala.volunteer.TranscribeController',
-//        'grails.app.controllers.au.org.ala.volunteer.ErrorController',
+//        'grails.app.controllers.au.org.ala.volunteer.AdminController',
+//        'grails.app.domain.au.org.ala.volunteer.Task',
+//        'grails.app.services.au.org.ala.volunteer.EmailService',
+//        'grails.app.services.au.org.ala.volunteer.UserService',
+//        'grails.app.services.au.org.ala.volunteer.TemplateService',
+        'grails.app.services',
+        'grails.app.controllers',
+        'grails.app.domain',
 //        'grails.plugin.cache'
 //        'org.apache.http.headers',
 //        'org.apache.http.wire',
 //        'org.hibernate.SQL',
 //        'org.springframework.cache',
 //        'net.sf.ehcache',
-//        'org.jooq.tools.LoggerListener'
+        'org.jooq.tools.LoggerListener'
 //        'org.grails.web.mapping'
 ]
 
@@ -144,8 +155,8 @@ final trace = [
 //        'org.hibernate.type'
 ]
 
-for (def name : error) logger(name, ERROR)
-for (def name : warn) logger(name, WARN)
-for (def name: info) logger(name, INFO)
-for (def name: debug) logger(name, DEBUG)
-for (def name: trace) logger(name, TRACE)
+for (String name : error) logger(name, ERROR)
+for (String name : warn) logger(name, WARN)
+for (String name: info) logger(name, INFO)
+for (String name: debug) logger(name, DEBUG)
+for (String name: trace) logger(name, TRACE)

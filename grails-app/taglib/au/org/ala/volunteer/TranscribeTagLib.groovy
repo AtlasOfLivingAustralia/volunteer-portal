@@ -81,7 +81,7 @@ class TranscribeTagLib {
     def renderFieldBootstrap = { attrs, body ->
 
         Task task = attrs.task as Task
-        def recordValues = attrs.recordValues
+        def recordValues = attrs.recordValues // Field values from transcription
         def labelClass = attrs.labelClass ?: "col-md-2"
         def valueClass = attrs.valueClass ?: "col-md-12"
         def rowClass = attrs.rowClass ?: "row"
@@ -93,14 +93,14 @@ class TranscribeTagLib {
             return
         }
 
-        def field = attrs.field as TemplateField
-        if (!field) {
-            DarwinCoreField fieldType = attrs.fieldType
-            field = getTemplateFieldForTask(task, fieldType)
+        def templateField = attrs.field as TemplateField
+        if (!templateField) {
+            DarwinCoreField fieldType = attrs.fieldType as DarwinCoreField
+            templateField = getTemplateFieldForTask(task, fieldType)
         }
 
         def mb = new MarkupBuilder(out)
-        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass, helpTargetPosition, helpTooltipPosition)
+        renderFieldBootstrapImpl(mb, templateField, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass, helpTargetPosition, helpTooltipPosition)
     }
 
     private String getFieldLabel(TemplateField field) {
@@ -111,21 +111,21 @@ class TranscribeTagLib {
         }
     }
 
-    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row", String helpTargetPosition = null, String helpTooltipPosition = null) {
+    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField templateField, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row", String helpTargetPosition = null, String helpTooltipPosition = null) {
 
-        if (!task || !field) {
+        if (!task || !templateField) {
             return
         }
 
-        def name = field.fieldType?.name()
-        def label = getFieldLabel(field)
+        def name = templateField.fieldType?.name()
+        def label = getFieldLabel(templateField)
         def hideLabel = attrs.hideLabel as Boolean
 
-        def widgetHtml = getWidgetHtml(task, field, recordValues,recordIdx, attrs, "") // col-md-12
+        def widgetHtml = getWidgetHtml(task, templateField, recordValues, recordIdx, attrs, "") // col-md-12
 
-        if (field.type == FieldType.hidden) {
+        if (templateField.type == FieldType.hidden) {
             mb.mkp.yieldUnescaped(widgetHtml)
-        } else if (field.fieldType == DarwinCoreField.widgetPlaceholder) {
+        } else if (templateField.fieldType == DarwinCoreField.widgetPlaceholder) {
             mb.div() {
                 mb.mkp.yieldUnescaped(widgetHtml)
             }
@@ -134,7 +134,7 @@ class TranscribeTagLib {
                 if (!hideLabel) {
                     div(class:labelClass) {
                         span(class:"fieldLabel") {
-                            if (field.fieldType != DarwinCoreField.spacer) {
+                            if (templateField.fieldType != DarwinCoreField.spacer) {
                                 mkp.yield(g.message(code:'record.' + name +'.label', default:label))
                             } else {
                                 mkp.yieldUnescaped("&nbsp;")
@@ -148,7 +148,7 @@ class TranscribeTagLib {
                             mkp.yieldUnescaped(widgetHtml)
                         }
                         div(class:'col-md-2') {
-                            renderFieldHelp(mb, field, helpTargetPosition, helpTooltipPosition)
+                            renderFieldHelp(mb, templateField, helpTargetPosition, helpTooltipPosition)
                         }
                     }
                 }
@@ -188,30 +188,30 @@ class TranscribeTagLib {
         "recordValues.${recordIdx}.${name}"
     }
 
-    private String getWidgetHtml(Task taskInstance, TemplateField field, recordValues, recordIdx, attrs, String auxClass) {
+    private String getWidgetHtml(Task taskInstance, TemplateField templateField, recordValues, recordIdx, attrs, String auxClass) {
 
-        if (!field) {
+        if (!templateField) {
             return ""
         }
 
-        if (field.fieldType == DarwinCoreField.spacer) {
+        if (templateField.fieldType == DarwinCoreField.spacer) {
             return '<span class="${auxClass}">&nbsp;</span>'
         }
 
         def picklist
-        if (field.type.name() == 'autocomplete') {
-            if (field.fieldTypeClassifier) {
-                picklist = Picklist.findByNameAndFieldTypeClassifier(field.fieldType, field.fieldTypeClassifier)
+        if (templateField.type.name() == 'autocomplete') {
+            if (templateField.fieldTypeClassifier) {
+                picklist = Picklist.findByNameAndFieldTypeClassifier(templateField.fieldType, templateField.fieldTypeClassifier)
             } else {
-                picklist = Picklist.findByName(field.fieldType)
+                picklist = Picklist.findByName(templateField.fieldType)
             }
         }
 
-        def name = field.fieldType.name()
-        def widgetName = genWidgetName(field, recordIdx)
+        def name = templateField.fieldType.name()
+        def widgetName = genWidgetName(templateField, recordIdx)
         def cssClass = name
 
-        if (field.mandatory) {
+        if (templateField.mandatory) {
             cssClass = cssClass + " validate[required]"
         }
 
@@ -220,18 +220,18 @@ class TranscribeTagLib {
         }
 
         String w
-        def noAutoCompleteList = field.template.viewParams['noAutoComplete']?.split(",")?.toList()
+        def noAutoCompleteList = templateField.template.viewParams['noAutoComplete']?.split(",")?.toList()
         ValidationRule validationRule = null
-        if (field.validationRule) {
-            validationRule = ValidationRule.findByName(field.validationRule)
+        if (templateField.validationRule) {
+            validationRule = ValidationRule.findByName(templateField.validationRule)
         }
 
         def tabindex = attrs.tabindex ? attrs.tabindex * 10 : null
         def existingValue = recordValues?.get(recordIdx)?.get(name)
 
-        def widgetModel = [field:field, value: existingValue, cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex, recordIdx: recordIdx, widgetName: widgetName]
+        def widgetModel = [field:templateField, value: existingValue, cssClass: cssClass, validationRule: validationRule, taskInstance: taskInstance, tabindex: tabindex, recordIdx: recordIdx, widgetName: widgetName]
 
-        switch (field.type) {
+        switch (templateField.type) {
             case FieldType.imageSelect:
                 w = render(template: '/transcribe/imageSelectWidget', model: widgetModel + [isMultiSelect: false])
                 break
@@ -283,7 +283,7 @@ class TranscribeTagLib {
                 )
                 break;
             case FieldType.checkbox:
-                def checked = Boolean.parseBoolean(existingValue ?: field?.defaultValue)
+                def checked = Boolean.parseBoolean(existingValue ?: templateField?.defaultValue)
                 w = g.checkBox(
                     name: widgetName,
                     value: checked,
@@ -293,14 +293,14 @@ class TranscribeTagLib {
                 )
                 break;
             case FieldType.select:
-                def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
+                def options = picklistService.getPicklistItemsForProject(templateField.fieldType, taskInstance.project)
                 if (options) {
                     w = g.select(
                         name: widgetName,
                         from: options,
                         optionValue:'value',
                         optionKey:'value',
-                        value: existingValue ?: field?.defaultValue,
+                        value: existingValue ?: templateField?.defaultValue,
                         noSelection:['':''],
                         'class': "$cssClass form-control",
                         validationRule: validationRule?.name,
@@ -309,12 +309,12 @@ class TranscribeTagLib {
                     break
                 }
             case FieldType.radio:
-                def options = picklistService.getPicklistItemsForProject(field.fieldType, taskInstance.project)
+                def options = picklistService.getPicklistItemsForProject(templateField.fieldType, taskInstance.project)
                 def labels = options*.value
                 if (options) {
                     w = g.radioGroup(
                         name: widgetName,
-                        value: existingValue ?:field?.defaultValue,
+                        value: existingValue ?:templateField?.defaultValue,
                         values: labels,
                         labels: labels,
                         class: 'form-control',
