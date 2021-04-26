@@ -1,59 +1,33 @@
 package au.org.ala.volunteer
 
+import org.springframework.dao.DataIntegrityViolationException
+
 class TemplateFieldController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index() {
-        redirect(action: "list", params: params)
-    }
-
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def templateFieldInstanceList
-        def templateFieldInstanceTotal
-        def templateInstance = Template.get(params.id)
-
-        if (templateInstance) {
-            templateFieldInstanceList = TemplateField.findAllByTemplate(templateInstance, params)
-            templateFieldInstanceTotal = TemplateField.countByTemplate(templateInstance)
-        } else {
-            templateFieldInstanceList = TemplateField.list(params)
-            templateFieldInstanceTotal = TemplateField.count()
-        }
-
-        [templateFieldInstanceList: templateFieldInstanceList, templateFieldInstanceTotal: templateFieldInstanceTotal]
-    }
-
-    def create() {
-        def templateFieldInstance = new TemplateField()
-        templateFieldInstance.properties = params
-        return [templateFieldInstance: templateFieldInstance]
-    }
+    def userService
 
     def save() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateFieldInstance = new TemplateField(params)
         if (templateFieldInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'templateField.label', default: 'TemplateField'), templateFieldInstance.id])}"
             redirect(action: "show", id: templateFieldInstance.id)
         }
         else {
-            render(view: "create", model: [templateFieldInstance: templateFieldInstance])
-        }
-    }
-
-    def show() {
-        def templateFieldInstance = TemplateField.get(params.id)
-        if (!templateFieldInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [templateFieldInstance: templateFieldInstance]
+            render(controller: 'template', view: "manageFields", id: templateFieldInstance?.template?.id)
         }
     }
 
     def edit() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateFieldInstance = TemplateField.get(params.id)
         if (!templateFieldInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
@@ -68,6 +42,10 @@ class TemplateFieldController {
     }
 
     def update() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateFieldInstance = TemplateField.get(params.id)
         if (templateFieldInstance) {
             if (params.version) {
@@ -94,6 +72,10 @@ class TemplateFieldController {
     }
 
     def delete() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateFieldInstance = TemplateField.get(params.id)
         if (templateFieldInstance) {
             try {
@@ -101,7 +83,7 @@ class TemplateFieldController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
                 redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
                 flash.message = message
                 log.error(message, e)

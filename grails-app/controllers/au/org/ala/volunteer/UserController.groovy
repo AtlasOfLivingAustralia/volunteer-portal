@@ -3,10 +3,9 @@ package au.org.ala.volunteer
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
 import grails.transaction.Transactional
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
-import java.text.SimpleDateFormat
+import org.springframework.dao.DataIntegrityViolationException
 
 class UserController {
 
@@ -14,12 +13,10 @@ class UserController {
 
     def taskService
     def userService
-    def logService
     def forumService
     def authService
     def fullTextIndexService
     def freemarkerService
-    def auditService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -80,12 +77,6 @@ class UserController {
         redirect(action: "list", params: params)
     }
 
-    def logout() {
-        log.debug "Invalidating Session (UserController.logout): ${session.id}"
-        session.invalidate()
-        redirect(url:"${params.casUrl}?url=${params.appUrl}")
-    }
-
     def myStats() {
       userService.registerCurrentUser()
       def currentUser = userService.currentUserId
@@ -94,12 +85,15 @@ class UserController {
     }
 
     def list() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        if (!params.sort){
-          // set default sort and order
-          params.sort = params.sort ? params.sort : "transcribedCount"
-          params.order = "desc"
+        if (!params.sort) {
+            // set default sort and order
+            params.sort = params.sort ? params.sort : "transcribedCount"
+            params.order = "desc"
         }
 
         def userList
@@ -118,7 +112,7 @@ class UserController {
         }
 
         def currentUser = userService.currentUserId
-        [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser ]
+        [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser]
     }
 
     def listUsersForJson() {
@@ -137,12 +131,17 @@ class UserController {
     }
 
     def project() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             params.max = Math.min(params.max ? params.int('max') : 10, 100)
-            if(!params.sort){
-              params.sort = params.sort ? params.sort : "displayName"
-              params.order = "asc"
+            if (!params.sort) {
+                params.sort = params.sort ? params.sort : "displayName"
+                params.order = "asc"
             }
             //def userList = User.list(params)
             def userList = []
@@ -160,151 +159,11 @@ class UserController {
             }
 
             def currentUser = userService.currentUserId
-            render(view: "list", model:[userInstanceList: userList, userInstanceTotal: userCount, currentUser: currentUser, projectInstance: projectInstance])
+            render(view: "list", model: [userInstanceList: userList, userInstanceTotal: userCount, currentUser: currentUser, projectInstance: projectInstance])
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])}"
             redirect(action: "list")
         }
-    }
-
-    def create() {
-        def userInstance = new User()
-        userInstance.properties = params
-        return [userInstance: userInstance]
-    }
-
-    def save() {
-        def userInstance = new User(params)
-        if (userInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])}"
-            redirect(action: "show", id: userInstance.id)
-        }
-        else {
-            render(view: "create", model: [userInstance: userInstance])
-        }
-    }
-
-    /**
-     * Creates a list of task information (in the form of a list of maps) that is suitable for rendering in a view.
-     * Takes into account pagination and search request parameters to return a map containing the total number of
-     * matching tasks, as well as the list of currently visible tasks (paginated)
-     *
-     * @param tasks
-     * @param params
-     * @return
-     */
-    private createViewList(List<Task> tasks, GrailsParameterMap params) {
-
-        if (!tasks) {
-            return [totalMatchingTasks: 0, viewList: []]
-        }
-
-        params.max = Math.min(params.max ? params.int('max') : 10, 50)
-        params.offset = params.int('offset') ?: 0
-        params.order = params.order ?: ""
-
-        if (!params.sort) {
-            params.sort = "lastEdit"
-            params.order = "desc"
-        }
-
-        def c = Field.createCriteria();
-        def fields = c {
-            projections {
-                property("value")
-                property("task")
-                and {
-                    "in"( "task", tasks)
-                    eq("name", "catalogNumber")
-                }
-            }
-        }
-
-//        def cc = Field.createCriteria()
-//        def dates = cc {
-//            projections {
-//                max("updated")
-//                groupProperty("task")
-//            }
-//
-//        }
-
-        def fieldsByTask = fields.groupBy { it[1] }
-//        def datesByTask = dates.groupBy { it[1] }
-
-        def viewList = []
-
-        def sdf = new SimpleDateFormat("dd MMM, yyyy HH:mm:ss")
-
-        for (Task t : tasks) {
-            String validator = User.findByUserId(t.fullyValidatedBy)?.displayName
-
-            def taskRow = [id: t.id,
-                           externalIdentifier:t.externalIdentifier,
-                           fullyTranscribedBy: t.fullyTranscribedBy,
-                           fullyValidatedBy: validator,
-                           projectId: t.projectId,
-                           project: t.project,
-                           projectName: t.project.name,
-                           dateTranscribed: t.dateFullyTranscribed ?: t.dateLastUpdated,
-                           dateValidated: t.dateFullyValidated
-            ]
-
-            List<Field> taskFields = fieldsByTask[t]
-            def catalogNumber = taskFields?.get(0)?.getAt(0)
-
-            taskRow.catalogNumber = catalogNumber
-
-            def status = ""
-            if (t.isValid == true) {
-                status = "Validated"
-            } else if (t.isValid == false) {
-                status = "Invalidated"
-            } else if (t.fullyTranscribedBy?.length() > 0) {
-                status = "Transcribed"
-            } else {
-                status = "Saved"
-            }
-
-            taskRow.status = status
-
-            // This pseudo column concatenates all the searchable columns to make row filtering easier.
-
-            def dateStr = (t.dateFullyTranscribed ? sdf.format(t.dateFullyTranscribed) : "")
-            dateStr += ";" + (t.dateFullyValidated ? sdf.format(t.dateFullyValidated) : "")
-            dateStr += ";" + (t.dateLastUpdated ? sdf.format(t.dateLastUpdated) : "")
-
-            def sb = new StringBuilder(512)
-            sb.append(catalogNumber).append(";").append(status).append(";").append(t.project.name).append(";")
-            sb.append(t.externalIdentifier).append(";").append(dateStr).append(";").append(t.id).append(";").append(validator)
-            taskRow.searchColumn = sb.toString().toLowerCase()
-
-            viewList.add(taskRow)
-        }
-
-        // Filtering...
-        if (params.q) {
-            def q = params.q.toLowerCase()
-            viewList = viewList.findAll {
-                it.searchColumn?.find("\\Q${q}\\E")
-            }
-        }
-
-        def totalMatchingTasks = viewList.size()
-
-        // Sorting
-        if (params.sort) {
-            viewList = viewList.sort { it[params.sort] }
-            if (params.order == 'asc') {
-                viewList = viewList.reverse();
-            }
-        }
-
-        if (viewList && viewList.size() >= params.int("offset")) {
-            viewList = viewList[params.int("offset")..Math.min(viewList.size() - 1, params.int("offset") + params.int("max") - 1)]
-        }
-
-        [totalMatchingTasks: totalMatchingTasks, viewList: viewList]
     }
 
     def unreadValidatedTasks() {
@@ -349,12 +208,6 @@ class UserController {
 
         log.debug("$result")
         respond(result)
-    }
-
-    def notificationsFragment() {
-        def userInstance = User.get(params.int("id"))
-
-        [userInstance: userInstance]
     }
 
     def show(User userInstance) {
@@ -468,8 +321,7 @@ class UserController {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
                 redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            } catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -516,6 +368,10 @@ class UserController {
     }
 
     def deleteRoles() {
+        if (!userService.isAdmin()) {
+            render status: 401
+            return
+        }
         def userRoleId = params.selectedUserRoleId
         def userRole = UserRole.get(userRoleId)
         if (userRole) {
@@ -525,7 +381,14 @@ class UserController {
     }
 
     def addRoles() {
+
         def currentUser = userService.getCurrentUser()
+
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
         def userInstance = User.get(params.long("id"))
         if (!userInstance) {
             flash.message = "User not found!"

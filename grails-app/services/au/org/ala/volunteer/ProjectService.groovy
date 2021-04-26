@@ -169,7 +169,6 @@ class ProjectService {
                 id: id,
                 name: name,
                 description: description,
-                newsItemsCount: 0, // No longer used
                 tasksCount: taskCount,
                 tasksTranscribedCount: fullyTranscribedCount,
                 tasksValidatedCount: fullyValidatedCount,
@@ -272,11 +271,6 @@ class ProjectService {
         log.info("Project ${projectInstance.id}: Delete Viewed Tasks...")
         def viewedTaskCount = ViewedTask.executeUpdate("delete from ViewedTask vt where vt.id in (select vt2.id from ViewedTask vt2 where vt2.task.project = :project)", [project: projectInstance])
         log.info("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
-
-        // Viewed Tasks
-        log.info("Project ${projectInstance.id}: Delete Task comments...")
-        def commentCount = TaskComment.executeUpdate("delete from TaskComment tc where tc.id in (select tc2.id from TaskComment tc2 where tc2.task.project = :project)", [project: projectInstance])
-        log.info("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
 
         // Delete Tasks
         // Tasks are deleted automatically because they're owned by the project

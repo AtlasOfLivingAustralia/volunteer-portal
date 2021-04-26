@@ -67,7 +67,8 @@ class TemplateService {
             findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
             pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
         }
-        log.debug("Got views: {}", views)
+
+        log.debug("Got views: ${views}")
 
         def results = views.collectMany { String viewName ->
             def m = pattern.matcher(viewName)
@@ -181,6 +182,7 @@ class TemplateService {
         }
 
         sql.close()
+
         return results
     }
 

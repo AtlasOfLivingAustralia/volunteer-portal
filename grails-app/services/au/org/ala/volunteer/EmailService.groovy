@@ -12,7 +12,6 @@ class EmailService {
     private static Queue<QueuedEmailMessage> _queuedMessages = new ConcurrentLinkedQueue<QueuedEmailMessage>()
 
     def mailService
-    def logService
     GrailsApplication grailsApplication
 
     /**

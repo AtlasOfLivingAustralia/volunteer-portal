@@ -290,7 +290,7 @@
         var name = file.name;
 
         Upload.upload({
-          url: "<g:createLink controller="wildlifeSpotterAdmin" action="uploadImage" />",
+          url: "<g:createLink controller="template" action="uploadWildlifeImage" />",
           data: data
         }).then(function (resp) {
           $log.debug('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));
@@ -615,7 +615,7 @@
 
       self.save = function() {
         filterModel();
-        var p = $http.post("<g:createLink controller="wildlifeSpotterAdmin" action="saveTemplateConfig" id="${id}"/>", self.model);
+        var p = $http.post("<g:createLink controller="template" action="saveWildlifeTemplateConfig" id="${id}"/>", self.model);
         p.then(function(response) {
           bootbox.alert("Saved!");
         }, function(response) {

@@ -25,7 +25,7 @@ class Task implements Serializable {
     Boolean isFullyTranscribed = false
 
     static belongsTo = [project: Project]
-    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, comments: TaskComment, transcriptions: Transcription]
+    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, transcriptions: Transcription]
 
     static mapping = {
         cache true

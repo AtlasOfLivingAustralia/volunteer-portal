@@ -5,15 +5,14 @@ import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
 
-    private static final String HEADER_PRAGMA = "Pragma";
-    private static final String HEADER_EXPIRES = "Expires";
-    private static final String HEADER_CACHE_CONTROL = "Cache-Control";
+    private static final String HEADER_PRAGMA = "Pragma"
+    private static final String HEADER_EXPIRES = "Expires"
+    private static final String HEADER_CACHE_CONTROL = "Cache-Control"
 
     def fieldSyncService
     def auditService
     def taskService
     def userService
-    def logService
     def multimediaService
     def groovyPageRenderer
     def projectService
@@ -76,10 +75,10 @@ class TranscribeController {
             // JS on the page is not run and there may be no active session when the form is
             // submitted.  There is code to detect this condition and restore data from
             // the web brower's local storage but it may not work correctly with all templates.
-            response.setHeader(HEADER_PRAGMA, "no-cache");
-            response.setDateHeader(HEADER_EXPIRES, 1L);
-            response.setHeader(HEADER_CACHE_CONTROL, "no-cache");
-            response.addHeader(HEADER_CACHE_CONTROL, "no-store");
+            response.setHeader(HEADER_PRAGMA, "no-cache")
+            response.setDateHeader(HEADER_EXPIRES, 1L)
+            response.setHeader(HEADER_CACHE_CONTROL, "no-cache")
+            response.addHeader(HEADER_CACHE_CONTROL, "no-store")
 
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, currentUserId)
@@ -160,7 +159,8 @@ class TranscribeController {
     }
 
     /**
-     * CommonSave (cannot be used for validator's save fields. For multi transcriptions task, validators don't have their own transcription record, except for validator's fields
+     * CommonSave (cannot be used for validator's save fields. For multi transcriptions task, validators don't have
+     * their own transcription record, except for validator's fields
      */
     private def commonSave(params, markTranscribed) {
         def currentUser = userService.currentUserId
@@ -172,6 +172,17 @@ class TranscribeController {
 
         if (currentUser != null) {
             def taskInstance = Task.get(params.id)
+
+            // Check if the user has actually viewed this task (remote transcription spam protection)
+            def currentViews = taskInstance.viewedTasks.findAll {view ->
+                return (view.userId == currentUser)
+            }
+            if (!currentViews) {
+                def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: "
+                log.error(msg + "User ${currentUser} attempted to save a transcription not assigned to them.")
+                flash.message = msg + "You attempted to save a transcription for a task not assigned to you."
+                redirect(action:'task', id: params.id)
+            }
 
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
             if (!transcription) {
@@ -191,18 +202,21 @@ class TranscribeController {
             }
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed, false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
+            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed,
+                    false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project),
+                    request.remoteAddr, transcription)
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
-                if (skipNextAction) redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
-                else redirect(action: 'showNextAction', id: params.id)
+                if (skipNextAction) {
+                    redirect(action: 'showNextFromProject', id: taskInstance.project.id,
+                            params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
+                } else redirect(action: 'showNextAction', id: params.id)
             }
             else {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
                 redirect(action:'task', id: params.id)
-                //render(view: 'task', model: [taskInstance: taskInstance, recordValues: params.recordValues])
             }
         } else {
             redirect(view: '../index')
@@ -227,7 +241,7 @@ class TranscribeController {
             flash.message = params.msg
         }
         def previousId = params.long('prevId',-1)
-        def prevUserId = params.prevUserId?:-1
+        // def prevUserId = params.prevUserId?:-1
 
         // If Skipped, remove viewed task flag to prevent it getting locked.
         if (params.boolean('skip', false)) {
@@ -239,22 +253,6 @@ class TranscribeController {
         }
 
         def taskInstance = taskService.getNextTask(currentUser, project, previousId)
-
-        //retrieve the details of the template
-//        if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
-//            log.debug "1."
-//            render(view: 'noTasks', model: [complete: params.complete])
-//        } else if (taskInstance) {
-//            log.debug "2."
-//            def redirectParams = [:]
-//            if (params.complete) {
-//                redirectParams.complete = params.complete
-//            }
-//            redirect(action: 'task', id: taskInstance.id, params: redirectParams)
-//        } else {
-//            log.debug "4."
-//            render(view: 'noTasks', model: [complete: params.complete])
-//        }
 
         // Issue #371 - Completion notification
         // Refactored the above; flipped the logic:

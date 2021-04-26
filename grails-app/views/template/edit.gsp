@@ -193,7 +193,7 @@
                 var $this = $(this);
                 var name = $this.attr('name');
                 var p = params[name];
-                if (p == undefined) {
+                if (p === undefined) {
                     params[name] = $this.data('default');
                 }
             });

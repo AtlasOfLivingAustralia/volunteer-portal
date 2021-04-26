@@ -67,40 +67,6 @@ class InstitutionAdminController {
         respond institutionInstance
     }
 
-    def editNewsItems(Institution institutionInstance) {
-        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
-            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
-            flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
-            return
-        }
-        def newsItems = NewsItem.findAllByInstitution(institutionInstance)
-        respond institutionInstance, model: [newsItems: newsItems]
-    }
-
-    def updateNewsItems() {
-        def institutionInstance = Institution.get(params.id)
-
-        if (!institutionInstance) {
-            notFound()
-            return
-        }
-
-        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
-            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
-            flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
-            return
-        }
-
-        def pdni = params.getBoolean('disableNewsItems')
-        if (institutionInstance.disableNewsItems != pdni) {
-            institutionInstance.disableNewsItems = pdni
-            institutionInstance.save()
-        }
-        redirect(action: 'editNewsItems', id: institutionInstance.id)
-    }
-
     def update(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()

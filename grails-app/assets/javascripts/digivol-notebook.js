@@ -101,8 +101,6 @@ function digivolNotebooksTabs(config) {
 
   nb.value('taskListUrl', config.taskListUrl);
   nb.value('forumPostsUrl', config.forumPostsUrl);
-  nb.value('changedFieldsUrl', config.changedFieldsUrl);
-  nb.value('auditViewUrl', config.auditViewUrl);
   nb.value('projectId', projectId);
 
   var notebookTabsController =
@@ -112,7 +110,7 @@ function digivolNotebooksTabs(config) {
         angular.extend($ctrl, config);
         $ctrl.tabs = [];
         for (var i = 0; i < 5; ++i) {
-          if (i == config.selectedTab) {
+          if (i === config.selectedTab) {
             $ctrl.tabs.push({
               max: config.max || 10,
               sort: config.sort,
@@ -192,31 +190,6 @@ function digivolNotebooksTabs(config) {
         });
       };
 
-      $ctrl.viewNotifications = function (taskInstance) {
-        var modalInstance = $uibModal.open({
-          templateUrl: 'viewNotifications.html',
-          controller: 'viewNotificationsModalCtrl',
-          controllerAs: '$ctrl',
-          bindToController: true,
-          resolve: {
-            taskInstance: function () {
-              return taskInstance;
-            }
-          }
-        });
-      };
-
-      if ($ctrl.tabIndex == 0) {
-        $scope.$on('unreadValidationViewed', function (event, taskInstance) {
-          if ($ctrl.data) {
-            _.chain($ctrl.data.viewList).filter(function (t) {
-              return t.id == taskInstance.id;
-            }).each(function (t) {
-              t.unread = false;
-            });
-          }
-        });
-      }
       $ctrl.pageChanged = function () {
         $ctrl.offset = ($ctrl.page - 1) * $ctrl.max;
         $anchorScroll('tasklist-top-' + $ctrl.tabIndex);
@@ -297,41 +270,9 @@ function digivolNotebooksTabs(config) {
       );
     }];
 
-  var viewNotificationsModalCtrl =
-    ['$http', '$log', '$rootScope', '$scope', '$uibModalInstance', 'auditViewUrl', 'changedFieldsUrl', 'taskInstance',
-      function ViewNotificationsModalCtrl($http, $log, $rootScope, $scope, $uibModalInstance, auditViewUrl, changedFieldsUrl, taskInstance) {
-        var $ctrl = this;
-        $ctrl.taskInstance = taskInstance;
 
-        $ctrl.loading = true;
-        $ctrl.error = null;
-
-        $http.get(changedFieldsUrl + "/" + taskInstance.id).then(
-          function (response) {
-            $ctrl.loading = false;
-            $ctrl.error = false;
-            angular.extend($ctrl, response.data);
-          },
-          function (error) {
-            $ctrl.loading = false;
-            $ctrl.error = true;
-            $log.error("couldn't get changed fields", error);
-          }
-        ).then(function () {
-          if (taskInstance.unread) {
-            $http.post(auditViewUrl + '/' + taskInstance.id).then(function () {
-              $rootScope.$broadcast('unreadValidationViewed', taskInstance);
-            });
-          }
-        });
-
-        $ctrl.close = function () {
-          $uibModalInstance.close();
-        };
-      }];
 
   nb.controller('notebookTabsController', notebookTabsController)
-    .controller('viewNotificationsModalCtrl', viewNotificationsModalCtrl)
     .component('taskList', {
       templateUrl: 'taskList.html',
       controller: taskListController,

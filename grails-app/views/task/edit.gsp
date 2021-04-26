@@ -102,8 +102,7 @@
 
                         <ul>
                             <g:each in="${taskInstance?.fields ?}" var="f">
-                                <li><g:link controller="field" action="show"
-                                            id="${f.id}">${f?.encodeAsHTML()}</g:link></li>
+                                <li>${f?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
                         <g:link controller="field" action="create"
@@ -120,12 +119,11 @@
 
                         <ul>
                             <g:each in="${taskInstance?.multimedia ?}" var="m">
-                                <li><g:link controller="multimedia" action="show"
-                                            id="${m.id}">${m?.encodeAsHTML()}</g:link></li>
+                                <li>${m?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
-                        <g:link controller="multimedia" action="create"
-                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'multimedia.label', default: 'Multimedia')])}</g:link>
+%{--                        <g:link controller="multimedia" action="create"--}%
+%{--                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'multimedia.label', default: 'Multimedia')])}</g:link>--}%
 
                     </td>
                 </tr>
@@ -149,12 +147,10 @@
 
                         <ul>
                             <g:each in="${taskInstance?.viewedTasks ?}" var="v">
-                                <li><g:link controller="viewedTask" action="show"
-                                            id="${v.id}">${v?.encodeAsHTML()}</g:link></li>
+                                <li>${v?.encodeAsHTML()}</li>
                             </g:each>
                         </ul>
-                        <g:link controller="viewedTask" action="create"
-                                params="['task.id': taskInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'viewedTask.label', default: 'ViewedTask')])}</g:link>
+                        ${message(code: 'default.add.label', args: [message(code: 'viewedTask.label', default: 'ViewedTask')])}
 
                     </td>
                 </tr>

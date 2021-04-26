@@ -12,7 +12,6 @@ import javax.sql.DataSource
 class LocalityService {
 
     def sessionFactory
-    def logService
     DataSource dataSource
 
     private List<String> _allStates = null;

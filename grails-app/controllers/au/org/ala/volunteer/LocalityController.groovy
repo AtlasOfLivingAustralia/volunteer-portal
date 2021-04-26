@@ -6,25 +6,7 @@ import grails.converters.JSON
 class LocalityController {
 
     def localityService;
-    def logService;
-
-    def index() { }
-
-    def load() {
-        def collectionCodes = localityService.getCollectionCodes()
-        [collectionCodes: collectionCodes]
-    }
-
-    def loadCSV() {
-        def collectionCode = params.collectionCode;
-        MultipartFile f = request.getFile('csvfile')
-
-        def results = localityService.importLocalities(collectionCode, f)
-
-        flash.message = results.message
-
-        render(view: 'load')
-    }
+    def userService
 
     def searchFragment() {
         def taskInstance = Task.get(params.long("taskId"))
@@ -35,7 +17,7 @@ class LocalityController {
     def searchResultsFragment() {
         def taskInstance = Task.get(params.long("taskId"))
         if (taskInstance) {
-            def q = params.searchLocality;
+            def q = params.searchLocality
             def collectionCode = taskInstance.project?.localityLookupCollectionCode ?: taskInstance.project?.featuredOwner
             def localities = localityService.findLocalities(q, collectionCode, 500)
             return [taskInstance: taskInstance, localities: localities]
@@ -43,11 +25,11 @@ class LocalityController {
     }
 
     def getLocalityJSON() {
-        Locality locality = null;
+        Locality locality = null
         if (params.localityId) {
             locality = Locality.get(params.long("localityId"))
         } else if (params.externalLocalityId) {
-            locality = Locality.findByExternalLocalityId(params.long('externalLocalityId'));
+            locality = Locality.findByExternalLocalityId(params.long('externalLocalityId'))
         }
 
         if (locality) {

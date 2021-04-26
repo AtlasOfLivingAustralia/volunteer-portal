@@ -366,48 +366,8 @@ class ExportService {
         log.debug("Wrote associatedMedia.csv in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        // And finally the task comments, if any
-        zipStream.putNextEntry(new ZipEntry("taskComments.csv"))
-        exportTaskComments(taskList, writer, usersMap);
-        writer.flush();
-        zipStream.closeEntry()
-        log.debug("Wrote taskComments.csv in {}ms", sw.elapsed(MILLISECONDS))
-        sw.reset().start()
-
         zipStream.close();
 
-    }
-
-    def exportTaskComments(List<Task> taskList, CSVWriter writer, Map<String, UserDetails> usersMap = [:]) {
-        String[] columnNames = ['taskID', 'externalIdentifier','userId', 'userDisplayName', 'date', 'comment']
-
-        writer.writeNext(columnNames)
-        if (taskList && taskList.size() > 0) {
-            def sw = Stopwatch.createUnstarted()
-            def commentsTime = 0, userIdTime = 0, userPropsTime = 0, outputTime = 0
-            def c = TaskComment.createCriteria();
-            def comments = c {
-                inList("task", taskList)
-                order('task', 'asc')
-                order('date', 'asc')
-            }
-            log.debug("Got comments in {}ms", sw.elapsed(MILLISECONDS))
-            sw.reset().start()
-            for (TaskComment comment : comments) {
-                def userId = comment.user.userId
-                userIdTime += sw.elapsed(MILLISECONDS)
-                sw.reset().start()
-                def props = usersMap[userId] ?: userService.detailsForUserId(userId)
-                userPropsTime += sw.elapsed(MILLISECONDS)
-                sw.reset().start()
-                def task = comment.task
-                String[] outputValues = [task.id.toString(), task.externalIdentifier, props.email, props.displayName, comment.date.format("yyyy-MM-dd HH:mm:ss"), cleanseValue(comment.comment)]
-                writer.writeNext(outputValues)
-                outputTime += sw.elapsed(MILLISECONDS)
-                sw.reset().start()
-            }
-            log.debug("Wrote comments in userIds {}ms, userProps {}ms, output {}ms", commentsTime, userIdTime, userPropsTime, outputTime)
-        }
     }
 
     def exportMultimedia(List<Task> taskList, CSVWriter writer) {

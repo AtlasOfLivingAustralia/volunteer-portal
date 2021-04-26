@@ -16,7 +16,6 @@ import org.springframework.web.context.support.ServletContextResource
 
 class BootStrap {
 
-    def logService
     def projectTypeService
     GrailsApplication grailsApplication
     def auditService
@@ -32,8 +31,6 @@ class BootStrap {
         defineMetaMethods()
 
         prepareFrontPage()
-
-        prepareWildlifeSpotter()
 
         prepareCustomLandingPage()
 
@@ -175,22 +172,12 @@ class BootStrap {
         }
     }
 
-    private void prepareWildlifeSpotter() {
-        if (WildlifeSpotter.instance() == null) {
-            def ws = new WildlifeSpotter()
-            ws.bodyCopy = ''
-
-            ws.save(flush: true, failOnError: true)
-        }
-    }
-
     /*
       Must have at least 1 default custom landing page which is the wildlife spotter page
       This can be created or updated from existing wildlife spotter
      */
     private void prepareCustomLandingPage() {
         LandingPage wildLifeSpotter = LandingPage.findByShortUrl ('wildlife-spotter')
-        WildlifeSpotter existingWildLifeSpotterPage = WildlifeSpotter.instance()
         if (!wildLifeSpotter) {
             wildLifeSpotter = new LandingPage()
             wildLifeSpotter.title = 'Wildlife Spotter'
@@ -198,12 +185,10 @@ class BootStrap {
             wildLifeSpotter.enabled = true
             ProjectType cameraTraps = ProjectType.findByName('cameratraps')
             wildLifeSpotter.projectType = cameraTraps
-
-            // Copy from existing
-            wildLifeSpotter.bodyCopy = existingWildLifeSpotterPage.bodyCopy
-            wildLifeSpotter.numberOfContributors = existingWildLifeSpotterPage.numberOfContributors?: 10
-            wildLifeSpotter.landingPageImage = existingWildLifeSpotterPage.heroImage
-            wildLifeSpotter.imageAttribution = existingWildLifeSpotterPage.heroImageAttribution
+            wildLifeSpotter.bodyCopy = ''
+            wildLifeSpotter.numberOfContributors = 10
+            wildLifeSpotter.landingPageImage = null
+            wildLifeSpotter.imageAttribution = null
 
             wildLifeSpotter.save(flush: true, failOnError: true)
         }
@@ -221,7 +206,7 @@ class BootStrap {
     private void defineMetaMethods() {
 
         //add a utility method for creating a map from a arraylist
-        java.util.ArrayList.metaClass.toMap = {->
+        ArrayList.metaClass.toMap = {->
             def myMap = [:]
             delegate.each { keyCount ->
                 myMap.put keyCount[0], keyCount[1]

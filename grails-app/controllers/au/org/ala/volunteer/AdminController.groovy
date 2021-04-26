@@ -260,65 +260,71 @@ class AdminController {
     }
 
     def tutorialManagement() {
-        def searchTerm = (params.q) ? params.q : null
-        def tutorials = tutorialService.listTutorials(searchTerm)
-        [tutorials: tutorials]
+        if (checkAdmin()) {
+            def searchTerm = (params.q) ? params.q : null
+            def tutorials = tutorialService.listTutorials(searchTerm)
+            render (view: 'tutorialManagement', model: [tutorials: tutorials])
+        }
     }
 
     def uploadTutorial() {
+        if (checkAdmin()) {
+            if (request instanceof MultipartHttpServletRequest) {
+                MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
+                if (f != null) {
+                    def allowedMimeTypes = ['application/pdf']
+                    if (!allowedMimeTypes.contains(f.getContentType())) {
+                        flash.message = "The file must be one of: ${allowedMimeTypes}"
+                        redirect(action: 'tutorialManagement')
+                        return;
+                    }
 
-        if(request instanceof MultipartHttpServletRequest) {
-            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
-            if (f != null) {
-                def allowedMimeTypes = ['application/pdf']
-                if (!allowedMimeTypes.contains(f.getContentType())) {
-                    flash.message = "The file must be one of: ${allowedMimeTypes}"
-                    redirect(action:'tutorialManagement')
-                    return;
+                    try {
+                        tutorialService.uploadTutorialFile(f)
+                        flash.message = "Tutorial uploaded successfully";
+                    } catch (Exception ex) {
+                        flash.message = "Failed to upload tutorial file: " + ex.message;
+                        log.error("Failed to upload tutorial file: " + ex.message, ex)
+                    }
+
                 }
-
-                try {
-                    tutorialService.uploadTutorialFile(f)
-                    flash.message = "Tutorial uploaded successfully";
-                } catch (Exception ex) {
-                    flash.message = "Failed to upload tutorial file: " + ex.message;
-                    log.error("Failed to upload tutorial file: " + ex.message, ex)
-                }
-
             }
+            redirect(action:'tutorialManagement')
         }
-
-        redirect(action:'tutorialManagement')
     }
 
     def deleteTutorial() {
-        def filename = params.tutorialFile
-        if (filename) {
-            try {
-                tutorialService.deleteTutorial(filename)
-                flash.message = "Tutorial deleted successfully"
-            } catch (Exception ex) {
-                flash.message = "Failed to delete tutorial file: " + ex.message
-                log.error("Failed to delete tutorial file: " + ex.message, ex)
+        if (checkAdmin()) {
+            def filename = params.tutorialFile
+            if (filename) {
+                try {
+                    tutorialService.deleteTutorial(filename)
+                    flash.message = "Tutorial deleted successfully"
+                } catch (Exception ex) {
+                    flash.message = "Failed to delete tutorial file: " + ex.message
+                    log.error("Failed to delete tutorial file: " + ex.message, ex)
+                }
             }
+            redirect(action:'tutorialManagement')
         }
-        redirect(action:'tutorialManagement')
     }
 
     def renameTutorial() {
-        def filename = params.tutorialFile
-        def newName = params.newName
+        if (checkAdmin()) {
+            def filename = params.tutorialFile
+            def newName = params.newName
 
-        if (filename && newName) {
-            try {
-                tutorialService.renameTutorial(filename, newName)
-            } catch (Exception ex) {
-                flash.message = "Failed to rename tutorial file: " + ex.message
-                log.error("Failed to rename tutorial file: " + ex.message)
+            if (filename && newName) {
+                try {
+                    tutorialService.renameTutorial(filename, newName)
+                } catch (Exception ex) {
+                    flash.message = "Failed to rename tutorial file: " + ex.message
+                    log.error("Failed to rename tutorial file: " + ex.message)
+                }
+
             }
+            redirect(action:'tutorialManagement')
         }
-
-        redirect(action:'tutorialManagement')
     }
 
     /**
@@ -401,9 +407,7 @@ class AdminController {
         redirect(action:'index')
     }
 
-
     def fixUserCounts() {
-
         if (!checkAdminAccess()) {
              throw new RuntimeException("Not authorised!")
         }
@@ -434,58 +438,71 @@ class AdminController {
     }
 
     def currentUsers() {
+        checkAdmin()
+        render(view: 'currentUsers')
     }
 
     def userActivityInfo() {
-        def activities = UserActivity.list([sort:'timeLastActivity', order:'desc'])
-        def emailToIdMap
-        if (activities) {
-            emailToIdMap = User.withCriteria {
-                inList('email', activities*.userId)
-                projections {
-                    property('email')
-                    property('userId')
-                }
-            }.toMap()
-        } else {
-            emailToIdMap = [:]
-        }
+        if (checkAdmin()) {
+            def activities = UserActivity.list([sort: 'timeLastActivity', order: 'desc'])
+            def emailToIdMap
+            if (activities) {
+                emailToIdMap = User.withCriteria {
+                    inList('email', activities*.userId)
+                    projections {
+                        property('email')
+                        property('userId')
+                    }
+                }.toMap()
+            } else {
+                emailToIdMap = [:]
+            }
 
-        def actWithOpenEventSources = activities*.properties.collect { it + [ openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '') ] }
-        respond([activities: actWithOpenEventSources])
+            def actWithOpenEventSources = activities*.properties.collect { it + [openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '')] }
+            respond([activities: actWithOpenEventSources])
+        }
     }
 
     def tools() {
+        checkAdmin()
+        render(view: 'tools')
     }
 
     def mappingTool() {
-
+        checkAdmin()
+        render(view: 'mappingTool')
     }
 
     def migrateProjectsToInstitutions() {
-        final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
-        final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
+        if (checkAdmin()) {
+            final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
+            final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
 
-        final projectsWithScores = projectsWithOwners.collect { proj ->
-            final projOwner = proj.lowerFeaturedOwner ?: ''
-            final scores = insts.collect {
-                final name = it.lowerName ?: ''
-                [id: it.id, name: it.name, score: Fuzzy.ldRatio(projOwner, name)]
-            }.sort { it.score }.reverse()//.subList(0, 10)
-            [id: proj.id, name: proj.name, owner: proj.featuredOwner, scores: scores ]
+            final projectsWithScores = projectsWithOwners.collect { proj ->
+                final projOwner = proj.lowerFeaturedOwner ?: ''
+                final scores = insts.collect {
+                    final name = it.lowerName ?: ''
+                    [id: it.id, name: it.name, score: Fuzzy.ldRatio(projOwner, name)]
+                }.sort { it.score }.reverse()//.subList(0, 10)
+                [id: proj.id, name: proj.name, owner: proj.featuredOwner, scores: scores]
+            }
+
+            respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
         }
-
-        respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
     }
 
     def doMigrateProjectsToInstitutions() {
-        def cmd = request.JSON
-        cmd.each {
-            def proj = Project.get(it.id)
-            proj.institution = Institution.get(it.inst)
-            proj.save()
+        if (userService.isAdmin()) {
+            def cmd = request.JSON
+            cmd.each {
+                def proj = Project.get(it.id)
+                proj.institution = Institution.get(it.inst)
+                proj.save()
+            }
+            render status: 205
+        } else {
+            render status: 401
         }
-        render status: 205
     }
 
     def projectSummaryReport() {
@@ -554,7 +571,6 @@ class AdminController {
 
     def reindexAllTasks() {
         if (checkAdminAccess()) {
-
             def c = Task.createCriteria()
             def results = c.list() {
                 projections {
@@ -567,29 +583,27 @@ class AdminController {
                 DomainUpdateService.scheduleTaskIndex(taskId)
             }
 
+            redirect(action:'tools')
         }
-        redirect(action:'tools')
     }
 
     def rebuildIndex() {
         if (checkAdminAccess()) {
             fullTextIndexService.reinitialiseIndex()
+            redirect(action:'tools')
         }
-
-        redirect(action:'tools')
     }
     
     def testQuery(String query, String searchType, String aggregation) {
-        def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
-        log.debug("SearchType: $searchType, $searchTypeVal")
-
-//        def offset = params.offset
-//        def
-
-        def result = fullTextIndexService.rawSearch(query, searchTypeVal, aggregation, fullTextIndexService.elasticSearchToJsonString)
-        
-        response.setContentType("application/json")
-        render result
+        if (userService.isAdmin()) {
+            def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
+            log.debug("SearchType: $searchType, $searchTypeVal")
+            def result = fullTextIndexService.rawSearch(query, searchTypeVal, aggregation, fullTextIndexService.elasticSearchToJsonString)
+            response.setContentType("application/json")
+            render result
+        } else {
+            render status: 401
+        }
     }
 
     // clear the grails gsp caches
@@ -597,31 +611,30 @@ class AdminController {
         if (!checkAdminAccess()) {
             render status: 403
             return
-        }
-        grailsCacheAdminService.clearTemplatesCache()
-        grailsCacheAdminService.clearBlocksCache()
-        flash.message = "Template and blocks caches cleared"
-        redirect action: 'tools'
+		}
+		
+		grailsCacheAdminService.clearTemplatesCache()
+		grailsCacheAdminService.clearBlocksCache()
+		flash.message = "Template and blocks caches cleared"
+		redirect action: 'tools'
     }
 
     def clearAllCaches() {
         if (!checkAdminAccess()) {
             render status: 403
             return
-        }
-        grailsCacheAdminService.clearAllCaches()
-        flash.message = "All caches cleared"
-        redirect action: 'tools'
+		}
+		grailsCacheAdminService.clearAllCaches()
+		flash.message = "All caches cleared"
+		redirect action: 'tools'
     }
 
     def updateUsers() {
         if (!checkAdminAccess()) {
             render status: 403
             return
-        }
-
+		}
         userService.updateAllUsers()
-
         redirect(controller: 'user', action: 'list')
     }
 

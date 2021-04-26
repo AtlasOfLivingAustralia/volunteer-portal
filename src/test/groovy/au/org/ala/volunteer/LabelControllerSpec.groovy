@@ -41,9 +41,9 @@ class LabelControllerSpec extends Specification {
             label.validate()
             controller.save(label)
 
-        then:"The create view is rendered again with the correct model"
+        then:"The index view is rendered again with the correct model"
             model.labelInstance!= null
-            view == 'create'
+            view == 'index'
 
         when:"The save action is executed with a valid instance"
             response.reset()
@@ -76,7 +76,7 @@ class LabelControllerSpec extends Specification {
             controller.update(label)
 
         then:"The edit view is rendered again with the invalid instance"
-            view == 'edit'
+            view == 'index'
             model.labelInstance == label
 
         when:"A valid domain instance is passed to the update action"

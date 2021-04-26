@@ -7,7 +7,6 @@ import groovy.time.TimeDuration
 @Transactional
 class ForumService {
 
-    def logService
     def grailsApplication
     def userService
     def settingsService

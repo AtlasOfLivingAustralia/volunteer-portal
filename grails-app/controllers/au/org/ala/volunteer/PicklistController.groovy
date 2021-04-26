@@ -5,6 +5,7 @@ import grails.converters.JSON
 import groovy.json.JsonOutput
 import org.apache.commons.lang3.StringEscapeUtils
 import grails.plugins.csv.CSVWriter
+import org.springframework.dao.DataIntegrityViolationException
 
 class PicklistController {
 
@@ -13,39 +14,48 @@ class PicklistController {
     def picklistService
     def imagesWebService
     def imageServiceService
+    def userService
+
+    static final UUID_REGEX = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    static final LIST_SEPARATOR_REGEX = /; | & |, /
 
     def index () {
         redirect(action: "list", params: params)
     }
 
-    def load () {}
-
-    def upload () {
-        picklistService.load(params.name, params.picklist)
-        redirect(action: "list")
-    }
-    
     def uploadCsvData () {
-        picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist.toCsvReader(), params.institutionCode)
-        updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
-        redirect(action: "manage", params: [picklistId: params.picklistId])
+        if (userService.isAdmin()) {
+            picklistService.replaceItems(Long.parseLong(params.picklistId), params.picklist.toCsvReader(), params.institutionCode)
+            updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
+            redirect(action: "manage", params: [picklistId: params.picklistId])
+        } else {
+            redirect(uri: "/")
+        }
     }
 
     def uploadCsvFile() {
-        def f = request.getFile('picklistFile')
-        picklistService.replaceItems(Long.parseLong(params.picklistId), f.inputStream.toCsvReader(['charset':'UTF-8']), params.institutionCode)
-        updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
-        redirect(action: "manage", params: [picklistId: params.picklistId])
+        if (userService.isAdmin()) {
+            def f = request.getFile('picklistFile')
+            picklistService.replaceItems(Long.parseLong(params.picklistId), f.inputStream.toCsvReader(['charset': 'UTF-8']), params.institutionCode)
+            updatedCsvMessage("${Picklist.get(params.picklistId).name}/${params.institutionCode}")
+            redirect(action: "manage", params: [picklistId: params.picklistId])
+        } else {
+            redirect(uri: "/")
+        }
     }
 
-    def updatedCsvMessage(String msg) {
+    private void updatedCsvMessage(String msg) {
         flash.message = "${message(code: 'default.updated.message', args: [message(code: 'picklist.label', default: 'Picklist'), msg])}"
     }
 
     def manage () {
-        def picklistInstitutionCodes = [""]
-        picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
-        [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
+        if (userService.isAdmin()) {
+            def picklistInstitutionCodes = [""]
+            picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
+            [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
+        } else {
+            redirect(uri: "/")
+        }
     }
 
     private static writeItemsCsv(Writer writer, Picklist picklist, String institutionCode) {
@@ -63,36 +73,45 @@ class PicklistController {
     }
 
     def images(Picklist picklistInstance) {
-        def inst = params.institution
+        if (userService.isAdmin()) {
+            def inst = params.institution
 
-        def items
-        if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
-        else items = PicklistItem.findAllByPicklist(picklistInstance)
+            def items
+            if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
+            else items = PicklistItem.findAllByPicklist(picklistInstance)
 
-        respond picklistInstance, model: [picklistItems: items]
+            respond picklistInstance, model: [picklistItems: items]
+        } else {
+            redirect(uri: "/")
+        }
     }
 
     def wildcount(Picklist picklistInstance) {
-        def inst = params.institutionCode
+        if (userService.isAdmin()) {
+            def inst = params.institutionCode
 
-        def items
-        if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
-        else items = PicklistItem.findAllByPicklist(picklistInstance)
+            def items
+            if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
+            else items = PicklistItem.findAllByPicklist(picklistInstance)
 
-        def imageIds = items.collect {
-            def o = JSON.parse(it.key)
-            o.dayImages + o.nightImages
-        }.flatten()
+            def imageIds = items.collect {
+                def o = JSON.parse(it.key)
+                o.dayImages + o.nightImages
+            }.flatten()
 
-        def imageMap = imageServiceService.getImageInfoForIds(imageIds)
+            def imageMap = imageServiceService.getImageInfoForIds(imageIds)
 
-        respond picklistInstance, model: [picklistItems: items, institutionCode: inst, imageMap: imageMap]
+            respond picklistInstance, model: [picklistItems: items, institutionCode: inst, imageMap: imageMap]
+        } else {
+            redirect(uri: "/")
+        }
     }
 
-    static final UUID_REGEX = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-    static final LIST_SEPARATOR_REGEX = /; | & |, /
-
     def loadWildcount(Picklist picklistInstance) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         CSVReader reader = params.csv.toCsvReader()
         String instCode = params.instCode ?: null
         String type
@@ -132,7 +151,6 @@ class PicklistController {
 
         log.debug("Deleted $n picklist items for $picklistInstance ($instCode)")
 
-//        PicklistItem.saveAll(pis)
         pis*.save()
 
         if (warnings) flash.message = "Couldn't find images for ${warnings.join(', ')}"
@@ -173,6 +191,10 @@ class PicklistController {
     }
 
     def loadcsv () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklist = Picklist.get(params.picklistId)
         def institutionCode = params.institutionCode
         def csvdata = ''
@@ -187,6 +209,10 @@ class PicklistController {
     }
 
     def download () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklist = Picklist.get(params.picklistId)
         if (picklist) {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
@@ -199,17 +225,26 @@ class PicklistController {
     }
 
     def list () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
     }
 
     def create () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
         def picklistInstance = new Picklist()
         picklistInstance.properties = params
         return [picklistInstance: picklistInstance]
     }
 
     def save () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
         def picklistInstance = new Picklist(params)
 
         def existing
@@ -235,6 +270,10 @@ class PicklistController {
     }
 
     def show () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklistInstance = Picklist.get(params.id)
         if (!picklistInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
@@ -257,6 +296,10 @@ class PicklistController {
     }
 
     def edit () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklistInstance = Picklist.get(params.id)
         if (!picklistInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
@@ -268,6 +311,10 @@ class PicklistController {
     }
 
     def update () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklistInstance = Picklist.get(params.id)
         if (picklistInstance) {
             if (params.version) {
@@ -295,6 +342,10 @@ class PicklistController {
     }
 
     def delete () {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
+
         def picklistInstance = Picklist.get(params.id)
         if (picklistInstance) {
             try {
@@ -303,7 +354,7 @@ class PicklistController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -317,20 +368,27 @@ class PicklistController {
     }
 
     def addCollectionCodeFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+        }
     }
 
     def ajaxCreateNewCollectionCode() {
-        def code = params.code
-        boolean success = false
-        def message = ""
-        if (code) {
-            success = picklistService.addCollectionCode(code)
-            if (!success) {
-                message = "Collection code ${code} already exists."
-            }
+        if (!userService.isAdmin()) {
+            render([status: 401, message: "Not Authorised"] as JSON)
         } else {
-            message = "No code parameter supplied!"
+            def code = params.code
+            boolean success = false
+            def message = ""
+            if (code) {
+                success = picklistService.addCollectionCode(code)
+                if (!success) {
+                    message = "Collection code ${code} already exists."
+                }
+            } else {
+                message = "No code parameter supplied!"
+            }
+            render([success: success, message: message] as JSON)
         }
-        render([success: success, message: message] as JSON)
     }
 }
