@@ -885,8 +885,8 @@ class ProjectController {
         }
 
         projectInstance.addToLabels(label)
-
         projectService.saveProject(projectInstance, true)
+
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
         render status: 204
@@ -898,7 +898,7 @@ class ProjectController {
             return
         }
 
-        def labelId = params.labelId
+        def labelId = params.long('labelId')
         def label = Label.get(labelId)
         if (!label) {
             render status: 404
@@ -906,6 +906,8 @@ class ProjectController {
         }
 
         projectInstance.removeFromLabels(label)
+        projectService.saveProject(projectInstance, true)
+
         // Just adding a label won't trigger the GORM update event, so force a project update
         DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
         render status: 204
