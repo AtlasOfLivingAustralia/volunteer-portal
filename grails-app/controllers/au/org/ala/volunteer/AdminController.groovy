@@ -234,7 +234,7 @@ class AdminController {
     }
 
     def userActivityInfo() {
-        if (checkAdmin()) {
+        if (userService.isAdmin()) {
             def activities = UserActivity.list([sort: 'timeLastActivity', order: 'desc'])
             def emailToIdMap
             if (activities) {
@@ -251,6 +251,8 @@ class AdminController {
 
             def actWithOpenEventSources = activities*.properties.collect { it + [openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '')] }
             respond([activities: actWithOpenEventSources])
+        } else {
+            render status: 401
         }
     }
 

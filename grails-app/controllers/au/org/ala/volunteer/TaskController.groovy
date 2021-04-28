@@ -191,7 +191,7 @@ class TaskController {
     def showDetails() {
         def currentUser = userService.currentUserId
         def taskInstance = Task.get(params.int('id'))
-        Project project = taskInstance.project
+        Project project = taskInstance?.project
         if (project && currentUser && userService.isValidator(project)) {
             def c = Field.createCriteria()
             def fields = c.list(params) {

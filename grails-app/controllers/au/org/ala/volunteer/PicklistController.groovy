@@ -110,6 +110,7 @@ class PicklistController {
     def loadWildcount(Picklist picklistInstance) {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         CSVReader reader = params.csv.toCsvReader()
@@ -193,6 +194,7 @@ class PicklistController {
     def loadcsv () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklist = Picklist.get(params.picklistId)
@@ -211,6 +213,7 @@ class PicklistController {
     def download () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklist = Picklist.get(params.picklistId)
@@ -235,6 +238,7 @@ class PicklistController {
     def create () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
         def picklistInstance = new Picklist()
         picklistInstance.properties = params
@@ -244,6 +248,7 @@ class PicklistController {
     def save () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
         def picklistInstance = new Picklist(params)
 
@@ -272,6 +277,7 @@ class PicklistController {
     def show () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklistInstance = Picklist.get(params.id)
@@ -298,6 +304,7 @@ class PicklistController {
     def edit () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklistInstance = Picklist.get(params.id)
@@ -313,6 +320,7 @@ class PicklistController {
     def update () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklistInstance = Picklist.get(params.id)
@@ -344,6 +352,7 @@ class PicklistController {
     def delete () {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
 
         def picklistInstance = Picklist.get(params.id)
@@ -370,6 +379,7 @@ class PicklistController {
     def addCollectionCodeFragment() {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
+            return
         }
     }
 
