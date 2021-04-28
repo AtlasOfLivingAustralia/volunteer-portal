@@ -25,12 +25,14 @@
                 <span class="sr-only">0% Complete</span>
             </div>
         </div>
+
+        <p>
+            Tasks are now being removed.  If you leave this page tasks will continue to be removed but you
+            will no longer be able to view the progress bar.
+        </p>
     </div>
 
-    <p>
-        Tasks are now being removed.  If you leave this page tasks will continue to be removed but you
-        will no longer be able to view the progress bar.
-    </p>
+
 
 </div>
 
