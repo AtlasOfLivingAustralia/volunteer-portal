@@ -62,7 +62,7 @@
         </div>
         <div class="col-sm-8 col-sm-pull-4">
             <h1 class="">${institutionInstance.name}</h1>
-            <p style="margin-top: 20px;">${institutionInstance.shortDescription}</p>
+            <p style="margin-top: 20px;"><%=institutionInstance.description%></p>
             <div class="cta-primary ">
                 <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">See our expeditions
                     <span class="glyphicon glyphicon-arrow-down"></span></a>
