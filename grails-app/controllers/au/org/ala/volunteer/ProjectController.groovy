@@ -275,7 +275,7 @@ class ProjectController {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.id)
+        def projectInstance = Project.get(params.long('id'))
         projectService.deleteTasksForProject(projectInstance, true)
         //redirect(action: "edit", id: projectInstance?.id)
         render '', status: SC_ACCEPTED

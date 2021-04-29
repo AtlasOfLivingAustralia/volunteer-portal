@@ -79,7 +79,7 @@ class ProjectService {
         loop {
             react { DeleteTasksMessage msg ->
 
-                log.info("Deleting tasks {}", msg)
+                log.info("Deleting tasks ${msg}")
 
                 try {
                     Task.withNewSession { Session session ->
@@ -88,8 +88,9 @@ class ProjectService {
                         def lastId = Long.MIN_VALUE
                         def tasks = Task.findAllByProject(p, [sort: 'id', order: 'asc', max: 100])
                         while (tasks) {
+                            log.debug("Iterating, Deleting ${tasks.size()} tasks")
                             if (log.isDebugEnabled()) {
-                                log.debug("Deleting tasks {}", tasks*.id)
+                                log.debug("Deleting tasks ${tasks*.id}")
                             }
                             for (Task task : tasks) {
                                 lastId = task.id
@@ -103,13 +104,13 @@ class ProjectService {
                                 count++
                                 if (count % 25 == 0) {
                                     def msgData = [projectId: msg.projectId, count: count, complete: false]
-                                    log.debug("notifying message data {}", msgData)
+                                    log.debug("notifying progress message data ${msgData}")
                                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: msgData))
                                 }
                             }
                             tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
-                        log.info("Completed deleting all tasks for {}", msg.projectId)
+                        log.info("Completed deleting all tasks for ${msg.projectId}")
                         session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }

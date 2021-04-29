@@ -37,20 +37,20 @@
 </div>
 
 <script>
-    var url = "${createLink(controller: 'project', action: 'deleteTasks', id: projectInstance.id)}";
-    var taskCount = ${taskCount};
-    var id = ${projectInstance.id};
+    const url = "${createLink(controller: 'project', action: 'deleteTasks', id: projectInstance.id)}";
+    let taskCount = 0;
+    let id = 0;
 
     $("#btnCancelDeleteAllTasks").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });
 
-    var $progress = $('#progress');
-    var $confirm = $('#confirm');
+    let $progress = $('#progress');
+    let $confirm = $('#confirm');
 
     $("#btnSubmitDeleteAllTasks").click(function (e) {
-        var $this = $(this);
+        let $this = $(this);
         $this.disabled = true;
         $.post(url).done(function (data, status, xhr) {
             digivolNotifications.addMessageListener('deleteTasks', messageHandler);
@@ -62,24 +62,23 @@
         });
     });
 
-
     function messageHandler(e) {
         console.log("got message", e);
-        var data = JSON.parse(e.data);
-        if (id == data.projectId) {
+        const data = JSON.parse(e.data);
+        if (id === data.projectId) {
 
-            if (data.count == -1) {
+            if (data.count === -1) {
                 alert('There was an error deleting tasks.  The page will refresh, please try again and if the error persists contact the system administrators.');
                 digivolNotifications.removeMessageListener('deleteTasks', messageHandler);
                 window.location.reload(true);
             }
 
-            var count = data.count;
-            var pct = Math.round((count / taskCount) * 100);
+            let count = data.count;
+            let pct = Math.round((count / taskCount) * 100);
 
-            if (pct >= 100 && count != taskCount) pct = 99;
+            if (pct >= 100 && count !== taskCount) pct = 99;
 
-            var $bar = $progress.find('.progress-bar');
+            let $bar = $progress.find('.progress-bar');
             $bar.attr('aria-valuenow', pct);
             $bar.css('width', pct + '%');
             $bar.find('.sr-only').text(pct + '% Complete');
