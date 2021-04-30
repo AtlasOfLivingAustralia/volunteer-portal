@@ -39,7 +39,7 @@
 <script>
     const url = "${createLink(controller: 'project', action: 'deleteTasks', id: projectInstance.id)}";
     let taskCount = 0;
-    let id = 0;
+    let id = ${projectInstance.id};
 
     $("#btnCancelDeleteAllTasks").click(function (e) {
         e.preventDefault();
@@ -66,8 +66,10 @@
         console.log("got message", e);
         const data = JSON.parse(e.data);
         if (id === data.projectId) {
+            // console.log(data);
 
             if (data.count === -1) {
+                console.log("Error");
                 alert('There was an error deleting tasks.  The page will refresh, please try again and if the error persists contact the system administrators.');
                 digivolNotifications.removeMessageListener('deleteTasks', messageHandler);
                 window.location.reload(true);
@@ -79,6 +81,7 @@
             if (pct >= 100 && count !== taskCount) pct = 99;
 
             let $bar = $progress.find('.progress-bar');
+            // console.log("pct: " + pct);
             $bar.attr('aria-valuenow', pct);
             $bar.css('width', pct + '%');
             $bar.find('.sr-only').text(pct + '% Complete');

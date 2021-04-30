@@ -98,8 +98,8 @@ class ProjectService {
                                     if (msg.deleteImages) multimediaService.deleteAllMultimediaForTask(task)
                                     task.delete()
                                 } catch (e) {
-                                    log.error("Exception while deleting task ${task.id}", e)
-                                    continue
+                                    log.error("Exception while deleting task ${task.id}: ${e.getMessage()}", e)
+                                    throw e
                                 }
                                 count++
                                 if (count % 25 == 0) {
@@ -115,7 +115,7 @@ class ProjectService {
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
                 } catch (e) {
-                    log.error("Error deleting tasks", e)
+                    log.error("Error encountered deleting tasks and/or images: ${e.getMessage()}", e)
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: -1, error: e.message, complete: true]))
                 }
             }
