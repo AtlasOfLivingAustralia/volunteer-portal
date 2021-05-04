@@ -252,7 +252,7 @@ class AdminController {
             def actWithOpenEventSources = activities*.properties.collect { it + [openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '')] }
             respond([activities: actWithOpenEventSources])
         } else {
-            render status: 401
+            render status: 403
         }
     }
 
@@ -294,7 +294,7 @@ class AdminController {
             }
             render status: 205
         } else {
-            render status: 401
+            render status: 403
         }
     }
 
@@ -395,7 +395,7 @@ class AdminController {
             response.setContentType("application/json")
             render result
         } else {
-            render status: 401
+            render status: 403
         }
     }
 

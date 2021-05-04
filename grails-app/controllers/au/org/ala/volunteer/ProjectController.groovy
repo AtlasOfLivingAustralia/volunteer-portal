@@ -439,7 +439,7 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         if (!userService.isAdmin()) {
-            render (["status": 401, "error": "unauthorized"] as JSON)
+            render (["status": 403, "error": "Forbidden"] as JSON)
         } else {
             def template = Template.findById(params.int("templateId"))
             if (template) {
@@ -873,7 +873,7 @@ class ProjectController {
 
     def addLabel(Project projectInstance) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -894,7 +894,7 @@ class ProjectController {
 
     def removeLabel(Project projectInstance) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -915,7 +915,7 @@ class ProjectController {
 
     def newLabels(Project projectInstance) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -1000,7 +1000,7 @@ class ProjectController {
 
     def wizardAutosave(String id) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         projectStagingService.saveTempProjectDescriptor(id, request.reader)
@@ -1009,7 +1009,7 @@ class ProjectController {
 
     def wizardImageUpload(String id) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -1055,7 +1055,7 @@ class ProjectController {
 
     def wizardClearImage(String id) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -1071,7 +1071,7 @@ class ProjectController {
 
     def wizardProjectNameValidator(String name) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -1080,7 +1080,7 @@ class ProjectController {
 
     def wizardCancel(String id) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 
@@ -1090,7 +1090,7 @@ class ProjectController {
 
     def wizardCreate(String id) {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 

@@ -385,7 +385,7 @@ class PicklistController {
 
     def ajaxCreateNewCollectionCode() {
         if (!userService.isAdmin()) {
-            render([status: 401, message: "Not Authorised"] as JSON)
+            render([status: 403, message: "Forbidden"] as JSON)
         } else {
             def code = params.code
             boolean success = false
