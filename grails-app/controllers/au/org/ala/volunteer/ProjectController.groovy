@@ -74,8 +74,8 @@ class ProjectController {
             
             userIds.each { it
                 // iterate over each user and assign to a role.
-                def userId = it[0 as String] as String
-                def count = it[1 as String]
+                def userId = it[0] as String
+                def count = it[1]
                 def assigned = false
                 def user = User.findByUserId(userId)
                 if (user) {
@@ -95,7 +95,7 @@ class ProjectController {
             }
             log.debug "roles = ${roles as JSON}"
 
-            def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0 as String)
+            def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0)
             def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null, false)?.projectRenderList?.get(0)
 
             def taskCount
