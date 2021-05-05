@@ -184,7 +184,7 @@ class TaskController {
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "list")
         } else {
-            redirect("/")
+            redirect(uri: "/")
         }
     }
 
@@ -201,7 +201,7 @@ class TaskController {
             // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
             [taskInstance: taskInstance, fields: fields]
         } else {
-            redirect("/")
+            redirect(uri: "/")
         }
     }
 
