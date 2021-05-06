@@ -162,21 +162,6 @@
                                 </ul>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Comments</td>
-                            <td>
-                                <ul>
-                                    <g:each in="${taskInstance.comments}" var="comment">
-                                        <li>
-                                            <i><cl:userDetails id="${comment.user?.userId}"
-                                                               displayName="true"/></i> on ${comment.date?.format("yyyy-MM-dd HH:mm:ss")}
-                                            <br/>
-                                            ${comment.comment}
-                                        </li>
-                                    </g:each>
-                                </ul>
-                            </td>
-                        </tr>
                     </table>
                     <cl:validationStatus task="${taskInstance}"/>
                 </div>

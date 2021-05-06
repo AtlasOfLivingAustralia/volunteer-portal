@@ -79,7 +79,7 @@ class ProjectService {
         loop {
             react { DeleteTasksMessage msg ->
 
-                log.info("Deleting tasks {}", msg)
+                log.info("Deleting tasks ${msg}")
 
                 try {
                     Task.withNewSession { Session session ->
@@ -88,8 +88,9 @@ class ProjectService {
                         def lastId = Long.MIN_VALUE
                         def tasks = Task.findAllByProject(p, [sort: 'id', order: 'asc', max: 100])
                         while (tasks) {
+                            log.debug("Iterating, Deleting ${tasks.size()} tasks")
                             if (log.isDebugEnabled()) {
-                                log.debug("Deleting tasks {}", tasks*.id)
+                                log.debug("Deleting tasks ${tasks*.id}")
                             }
                             for (Task task : tasks) {
                                 lastId = task.id
@@ -97,24 +98,24 @@ class ProjectService {
                                     if (msg.deleteImages) multimediaService.deleteAllMultimediaForTask(task)
                                     task.delete()
                                 } catch (e) {
-                                    log.error("Exception while deleting task ${task.id}", e)
-                                    continue
+                                    log.error("Exception while deleting task ${task.id}: ${e.getMessage()}", e)
+                                    throw e
                                 }
                                 count++
                                 if (count % 25 == 0) {
                                     def msgData = [projectId: msg.projectId, count: count, complete: false]
-                                    log.debug("notifying message data {}", msgData)
+                                    log.debug("notifying progress message data ${msgData}")
                                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: msgData))
                                 }
                             }
                             tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
-                        log.info("Completed deleting all tasks for {}", msg.projectId)
+                        log.info("Completed deleting all tasks for ${msg.projectId}")
                         session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
                 } catch (e) {
-                    log.error("Error deleting tasks", e)
+                    log.error("Error encountered deleting tasks and/or images: ${e.getMessage()}", e)
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: -1, error: e.message, complete: true]))
                 }
             }
@@ -169,7 +170,6 @@ class ProjectService {
                 id: id,
                 name: name,
                 description: description,
-                newsItemsCount: 0, // No longer used
                 tasksCount: taskCount,
                 tasksTranscribedCount: fullyTranscribedCount,
                 tasksValidatedCount: fullyValidatedCount,
@@ -272,11 +272,6 @@ class ProjectService {
         log.info("Project ${projectInstance.id}: Delete Viewed Tasks...")
         def viewedTaskCount = ViewedTask.executeUpdate("delete from ViewedTask vt where vt.id in (select vt2.id from ViewedTask vt2 where vt2.task.project = :project)", [project: projectInstance])
         log.info("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
-
-        // Viewed Tasks
-        log.info("Project ${projectInstance.id}: Delete Task comments...")
-        def commentCount = TaskComment.executeUpdate("delete from TaskComment tc where tc.id in (select tc2.id from TaskComment tc2 where tc2.task.project = :project)", [project: projectInstance])
-        log.info("Delete Project ${projectInstance.id}: ${commentCount} task comments deleted")
 
         // Delete Tasks
         // Tasks are deleted automatically because they're owned by the project

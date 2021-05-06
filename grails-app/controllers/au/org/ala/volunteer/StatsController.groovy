@@ -14,10 +14,21 @@ class StatsController {
     def statsService
     def settingsService
     def leaderBoardService
+    def userService
 
-    def index() {}
+    def index() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        render(view: 'index')
+    }
 
     def volunteerStats() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
         def toDate = params?.date('endDate', dateFormats) ?: new Date()
         def result = statsService.getNewUser(fromDate, toDate)
@@ -25,60 +36,100 @@ class StatsController {
     }
 
     def activeTranscribers() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.activeTranscribers;
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def transcriptionsByVolunteerAndProject() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.transcriptionsByVolunteerAndProject
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def transcriptionsByDay() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.transcriptionsByDay
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def validationsByDay() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.validationsByDay
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def hourlyContributions() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.hourlyContributions
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def historicalHonourBoard() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.historicalHonourBoard
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def transcriptionsByInstitution() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.transcriptionsByInstitution
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def transcriptionsByInstitutionByMonth() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType = StatsType.transcriptionsByInstitutionByMonth
         def result = prepareJsonData(reportType)
         render result as JSON
     }
 
     def validationsByInstitution() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType =  StatsType.validationsByInstitution
         def result = prepareJsonData (reportType)
         render result as JSON
     }
 
     def transcriptionTimeByProjectType() {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
         def reportType = StatsType.transcriptionTimeByProjectType
         def result = prepareJsonData(reportType)
         render result as JSON
@@ -189,6 +240,10 @@ class StatsController {
     }
 
     def exportCSVReport () {
+        if (!userService.isAdmin()) {
+            render status: 403
+            return
+        }
 
         log.debug("Beginning CSV report export")
         def reportType = StatsType.valueOf(params?.reportType ?: "fileName")
@@ -219,7 +274,6 @@ class StatsController {
         } catch (Exception e) {
             log.error("Error while writing CSV data for {}", reportType, e)
         }
-
     }
 
 }

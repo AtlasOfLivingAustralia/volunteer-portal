@@ -68,7 +68,7 @@
 
                             <div class="col-md-6">
                                 <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control"
-                                            value="${templateInstance.viewParams as grails.converters.JSON}"></g:textArea>
+                                            value="${templateInstance.viewParams as grails.converters.JSON}" />
                             </div>
                         </div>
 
@@ -152,7 +152,7 @@
                 var $this = $(this);
                 var name = $this.attr('name');
                 var p = params[name];
-                if (p == undefined) {
+                if (p === undefined) {
                     params[name] = $this.data('default');
                 }
             });

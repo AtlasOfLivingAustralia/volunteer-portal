@@ -51,21 +51,23 @@ class AjaxController {
     def projectService
 
     static responseFormats = ['json', 'xml']
+    static final String UNAUTH_MSG = "Must be logged in as an administrator to use this service!"
 
     def index() {
-        def results = [ "${message(code:"default.application.name")}" : 'Version 1.0']
+        def results = [ (message(code:"default.application.name")) : 'Version 1.0']
         respond results
     }
 
     private def statsCache = Suppliers.memoizeWithExpiration(this.&statsInternal, 1, TimeUnit.MINUTES)
 
     def stats() {
+        if (!userService.isAdmin()) {
+            render ("${UNAUTH_MSG}")
+            return
+        }
         setNoCache()
-
         log.debug("stats")
-
         def stats = statsCache.get()
-
         respond stats
     }
 
@@ -110,7 +112,7 @@ class AjaxController {
         setNoCache()
 
         if (!userService.isAdmin()) {
-            render "Must be logged in as an administrator to use this service!"
+            render ("${UNAUTH_MSG}")
             return
         }
 
@@ -250,33 +252,12 @@ class AjaxController {
     }
 
     def loadProgress(long id) {
-        setNoCache()
-//        log.debug("loadProgress($id)")
-        respond taskLoadService.status(id)
-    }
-
-    def taskLoadReport() {
-        setNoCache()
-        response.addHeader("Content-type", "text/plain")
-
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd")
-
-        def writer = new CSVWriter(response.writer,  {
-            'time' { sdf.format(it.time) }
-            'project' { it.taskDescriptor?.project?.name }
-            'task_id' { it.taskDescriptor?.externalIdentifier }
-            'succeeded' { it.succeeded }
-            'error_message' { it.message }
-            'image_url' { it.taskDescriptor?.imageUrl  }
-        })
-
-        def errors = taskLoadService.lastReport
-        if (errors && errors.size() > 0) {
-            for (def error : errors) {
-                writer << error
-            }
+        if (!userService.isAdmin()) {
+            render ("${UNAUTH_MSG}")
+            return
         }
-        response.writer.flush()
+        setNoCache()
+        respond taskLoadService.status(id)
     }
 
     def expeditionInfo() {
@@ -453,16 +434,21 @@ class AjaxController {
     }
 
     def acceptAchievements() {
-        def ids = params.list('ids[]') ?: []
-        def longIds = ids*.toLong()
-        if (!longIds) {
-            render status: 204
-            return
-        }
         def cu = userService.currentUser
-        //def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
-        achievementService.markAchievementsViewed(cu, longIds)
-        render status: 204
+        if (cu) {
+            def ids = params.list('ids[]') ?: []
+            def longIds = ids*.toLong()
+            if (!longIds) {
+                render status: 204
+                return
+            }
+
+            //def validAwards = AchievementAward.findAllByIdInListAndUser(longIds, cu)
+            achievementService.markAchievementsViewed(cu, longIds)
+            render status: 204
+        } else {
+            render status: 500
+        }
     }
 
     def transcriptionFeed(String timestampStart, String timestampEnd, Integer rowStart, String sort) {

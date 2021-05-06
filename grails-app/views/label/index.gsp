@@ -52,6 +52,7 @@
             <div class="row">
                 <div class="col-md-offset-2 col-md-8">
                     <g:hasErrors bean="${labelInstance}">
+                        An error was encountered:
                         <ul class="errors" role="alert">
                             <g:eachError bean="${labelInstance}" var="error">
                                 <li <g:if test="${error in FieldError}">data-field-id="${error.field}"</g:if>><g:message

@@ -1,8 +1,6 @@
 package au.org.ala.volunteer
 
-
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
 
 class LabelController {
 
@@ -10,105 +8,87 @@ class LabelController {
 
     def userService
 
-    boolean checkAdmin() {
-        if (userService.isAdmin()) {
-            return true;
-        }
-
-        flash.message = "You do not have permission to view this page"
-        redirect(uri:"/")
-    }
-
     def index(Integer max) {
-        if (!checkAdmin()) {
-            render status: FORBIDDEN
-            return
+        if (userService.isAdmin()) {
+            params.max = Math.min(max ?: 25, 100)
+            respond Label.list(params), model: [labelInstanceCount: Label.count()]
+        } else {
+            redirect(uri: "/")
         }
-        params.max = Math.min(max ?: 25, 100)
-        respond Label.list(params), model: [labelInstanceCount: Label.count()]
     }
-
-//    def show(Label labelInstance) {
-//        respond labelInstance
-//    }
-//
-//    def create() {
-//        respond new Label(params)
-//    }
 
     def save(Label labelInstance) {
-        if (!checkAdmin()) {
-            redirect(controller: 'frontPage')
-            return
-        }
+        if (userService.isAdmin()) {
 
-        if (labelInstance == null) {
-            notFound()
-            return
-        }
-
-        if (labelInstance.hasErrors()) {
-            respond labelInstance.errors, view: 'create'
-            return
-        }
-
-        labelInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'label.label', default: 'Label'), labelInstance.value])
-                redirect action: 'index'
+            if (labelInstance == null) {
+                notFound()
+                return
             }
-            '*' { respond labelInstance, [status: CREATED] }
+
+            if (labelInstance.hasErrors()) {
+                respond labelInstance.errors, view: 'index'
+                return
+            }
+
+            labelInstance.save flush: true
+
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'label.label', default: 'Label'), labelInstance.value])
+                    redirect action: 'index'
+                }
+                '*' { respond labelInstance, [status: CREATED] }
+            }
+        } else {
+            render status: 403
         }
     }
 
-//    def edit(Label labelInstance) {
-//        respond labelInstance
-//    }
-
     def update(Label labelInstance) {
-        if (!checkAdmin()) {
-            redirect(controller: 'frontPage')
-            return
-        }
+        if (userService.isAdmin()) {
 
-        if (labelInstance == null) {
-            notFound()
-            return
-        }
-
-        if (labelInstance.hasErrors()) {
-            respond labelInstance.errors, view: 'edit'
-            return
-        }
-
-        labelInstance.save flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.value])
-                redirect action: 'index'
+            if (labelInstance == null) {
+                notFound()
+                return
             }
-            '*' { respond labelInstance, [status: OK] }
+
+            if (labelInstance.hasErrors()) {
+                respond labelInstance.errors, view: 'index'
+                return
+            }
+
+            labelInstance.save flush: true
+
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.value])
+                    redirect action: 'index'
+                }
+                '*' { respond labelInstance, [status: OK] }
+            }
+        } else {
+            render status: 403
         }
     }
 
     def delete(Label labelInstance) {
-
-        if (labelInstance == null) {
-            notFound()
-            return
-        }
-
-        labelInstance.delete flush: true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.id])
-                redirect action: "index", method: "GET"
+        if (userService.isAdmin()) {
+            if (labelInstance == null) {
+                notFound()
+                return
             }
-            '*' { render status: NO_CONTENT }
+
+            labelInstance.delete flush: true
+
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.id])
+                    redirect action: "index", method: "GET"
+                }
+                '*' { render status: NO_CONTENT }
+            }
+        } else {
+            render status: 403
         }
     }
 

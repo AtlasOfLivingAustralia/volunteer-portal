@@ -17,14 +17,6 @@ class InstitutionController {
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 
-//        def projects
-//
-//        if (userService.isInstitutionAdmin(institution)) {
-//            projects = Project.findAllByInstitution(institution)
-//        } else {
-//            projects = Project.findAllByInstitutionAndInactiveNotEqual(institution, true)
-//        }
-
         def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
         def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
 
@@ -37,13 +29,16 @@ class InstitutionController {
         def completedProjects = institutionService.getProjectCompletedCount(institution)
         def underwayProjects = institutionService.getProjectUnderwayCount(institution)
 
-        def newsItems = NewsItem.findAllByInstitution(institution, [sort:'created', order: 'desc'])
-        def newsItem = newsItems?.size() > 0 ? newsItems.get(0) : null
-
         [
-            institutionInstance: institution, projects: projectSummaries.projectRenderList, filteredProjectsCount: projectSummaries.matchingProjectCount,
-            transcriberCount: transcriberCount, completedProjects: completedProjects, underwayProjects: underwayProjects, taskCounts: taskCounts,
-            statusFilterMode: statusFilterMode, activeFilterMode: activeFilterMode, newsItem: newsItem, newsItems: newsItems
+                institutionInstance  : institution,
+                projects             : projectSummaries.projectRenderList,
+                filteredProjectsCount: projectSummaries.matchingProjectCount,
+                transcriberCount     : transcriberCount,
+                completedProjects    : completedProjects,
+                underwayProjects     : underwayProjects,
+                taskCounts           : taskCounts,
+                statusFilterMode     : statusFilterMode,
+                activeFilterMode     : activeFilterMode
         ]
     }
 

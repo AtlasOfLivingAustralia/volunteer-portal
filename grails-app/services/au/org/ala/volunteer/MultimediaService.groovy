@@ -7,7 +7,6 @@ import org.apache.commons.lang.StringUtils
 @Transactional
 class MultimediaService {
 
-    def logService
     def grailsApplication
     def grailsLinkGenerator
 

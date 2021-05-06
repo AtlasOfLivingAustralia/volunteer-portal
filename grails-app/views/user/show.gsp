@@ -140,12 +140,6 @@
 
 <section id="user-progress" class="in-body" ng-controller="notebookTabsController as nbtCtrl" ng-cloak>
     <uib-tabset active="nbtCtrl.selectedTab" template-url="notebookTabSet.html">
-        %{--<uib-tab ng-if="nbtCtrl.isCurrentUser" index="0" select="nbtCtrl.selectTab(0)">--}%
-            %{--<uib-tab-heading>--}%
-                %{--<g:message code="notebook.tabs.notifications.heading" /> <i ng-show="unreadCount > 0" class="fa fa-bell text-danger"></i>--}%
-            %{--</uib-tab-heading>--}%
-            %{--<task-list selected-tab="nbtCtrl.selectedTab" tab-index="0" max="nbtCtrl.tabs[0].max" offset="nbtCtrl.tabs[0].offset" sort="nbtCtrl.tabs[0].sort" order="nbtCtrl.tabs[0].order" query="nbtCtrl.tabs[0].query"></task-list>--}%
-        %{--</uib-tab>--}%
         <uib-tab heading="${message(code:"notebook.tabs.transcribed.heading")}" index="1" select="nbtCtrl.selectTab(1)">
             <task-list selected-tab="nbtCtrl.selectedTab" tab-index="1" max="nbtCtrl.tabs[1].max" offset="nbtCtrl.tabs[1].offset" sort="nbtCtrl.tabs[1].sort" order="nbtCtrl.tabs[1].order" query="nbtCtrl.tabs[1].query"></task-list>
         </uib-tab>
@@ -214,8 +208,6 @@
         <div class="col-sm-8 search-results-count">
             <p>
                 <span ng-show="$ctrl.tabIndex > 0"><strong>{{$ctrl.data.totalMatchingTasks }} <g:message code="notebook.taskList.heading" /></strong> <span ng-show="$ctrl.project"><g:message code="notebook.tasklist.heading.projectSuffix" /></span></span>
-                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount > 0"><strong><g:message code="notebook.taskList.reviewedHeading" /></strong> <g:message code="notebook.taskList.reviewHeading.suffix" /></span>
-                <span ng-show="$ctrl.tabIndex == 0 && $ctrl.data.recentValidatedCount == 0"><strong><g:message code="notebook.taskList.emptyReviewedHeading" /></strong></span>
                 <span ng-show="$ctrl.cancelPromise"><i class="fa fa-cog fa-spin fa-2x"></i></span>
             </p>
         </div>
@@ -244,8 +236,6 @@
         <thead>
             <tr class="sorting-header">
 
-%{--                <th ng-if="$ctrl.tabIndex == 0"></th>--}%
-
                 <th class="sortable" ng-class="$ctrl.sortedClasses('id')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'id', sorting: true})" class="btn"><g:message code="task.id.label" /></a>
                 </th>
@@ -253,10 +243,6 @@
                 <th class="sortable" ng-class="$ctrl.sortedClasses('externalIdentifier')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'externalIdentifier', sorting: true})" class="btn"><g:message code="task.externalIdentifier.label" /></a>
                 </th>
-
-%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('catalogNumber')">--}%
-%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'catalogNumber', sorting: true})" class="btn"><g:message code="task.catalogNumber.label" /></a>--}%
-%{--                </th>--}%
 
                 <th class="sortable" ng-class="$ctrl.sortedClasses('projectName')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'projectName', sorting: true})" class="btn"><g:message code="project.name.label" /></a>
@@ -270,11 +256,6 @@
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'dateValidated', sorting: true})" class="btn"><g:message code="task.dateFullyValidated.label" /></a>
                 </th>
 
-%{--                <th class="sortable" ng-class="$ctrl.sortedClasses('validator')"--}%
-%{--                    ng-show="$ctrl.selectedTab == 0">--}%
-%{--                    <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'validator', sorting: true})" class="btn"><g:message code="task.validator.label" /></a>--}%
-%{--                </th>--}%
-
                 <th class="sortable" ng-class="$ctrl.sortedClasses('status')">
                     <a href="javascript:void(0)" ng-click="$ctrl.load({max:10, offset:0, sort: 'status', sorting: true})" class="btn"><g:message code="task.isValid.label" /></a>
                 </th>
@@ -286,11 +267,6 @@
         <tbody>
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
-%{--                <td ng-if="$ctrl.tabIndex == 0">--}%
-%{--                    <span ng-show="taskInstance.unread" class="glyphicon glyphicon-envelope" style="color:#000192"></span>--}%
-%{--                    <span ng-hide="taskInstance.unread" class="glyphicon glyphicon-ok"></span>--}%
-%{--                </td>--}%
-
                 <td>
                     <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
                 </td>
@@ -298,8 +274,6 @@
                     <a ng-if="taskInstance.isValidator" ng-href="${createLink(controller: 'task', action: 'showDetails')}/{{ taskInstance.id }}" title="${g.message(code: 'task.details.button.label')}"><i class="glyphicon glyphicon-list-alt"></i></a>
                     {{taskInstance.externalIdentifier}}
                 </td>
-
-%{--                <td>{{taskInstance.catalogNumber}}</td>--}%
 
                 <td>
                     <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ taskInstance.projectId }}" class="listLink">{{ taskInstance.projectName }}</a>
@@ -312,10 +286,6 @@
                 <td>
                     {{ taskInstance.dateValidated | date : 'medium' }}
                 </td>
-
-%{--                <td style="text-align: center;" ng-show="$ctrl.tabIndex == 0">--}%
-%{--                    {{ taskInstance.fullyValidatedBy }}--}%
-%{--                </td>--}%
 
                 <td style="text-align: center;">
                     {{ taskInstance.status }}
@@ -336,13 +306,6 @@
                            ng-href="${createLink(controller:'transcribe', action:'task')}/{{taskInstance.id}}">
                             <g:message code="action.transcribe.label" />
                         </a>
-                    </span>
-                    <span ng-hide="$ctrl.tabIndex > 0">
-                        <button class="btn btn-default btn-xs btnViewNotificationTask"
-                                ng-click="$ctrl.viewNotifications(taskInstance)"
-                                data-taskId="{{taskInstance.id}}" data-externalIdentifier="{{taskInstance.externalIdentifier}}">
-                            <g:message code="action.view.label" />
-                        </button>
                     </span>
                 </td>
 
@@ -395,60 +358,6 @@
     </div>
 </script>
 
-<script id="viewNotifications.html" type="text/ng-template">
-<div class="modal-header">
-    <button type="button" class="close" aria-label="Close" ng-click="$ctrl.close()"><span aria-hidden="true">&times;</span></button>
-    <h3 class="modal-title">Changes for {{ $ctrl.taskInstance.externalIdentifier }}</h3>
-</div>
-<div ng-show="$ctrl.loading" class="modal-body">
-    <p>
-        <g:message code="loading.label" /> <i class="fa fa-2x fa-cog fa-spin"></i>
-    </p>
-</div>
-<div ng-show="$ctrl.error" class="modal-body">
-    <p>
-        <g:message code="error.generic.label" /> <i class="fa fa-2x fa-frown-o"></i>
-    </p>
-</div>
-<div ng-hide="$ctrl.loading || $ctrl.error" class="modal-body">
-    <div class="row" >
-        <div class="col-sm-12">
-            <p><i><g:message code="task.validatedBy.label" />: {{ $ctrl.validatorDisplayName }}</i> </p>
-        </div>
-    </div>
-
-    <div class="row" ng-show="$ctrl.validatorNotes">
-        <div class="col-sm-3">
-            <strong><g:message code="field.validatorNotes.label" /></strong>
-        </div>
-        <div class="col-sm-9" marked="$ctrl.validatorNotes">
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <td style="color:#307991"><g:message code="modal.notifications.changed" /></td>
-                <td style="color:#307991"><g:message code="modal.notifications.previous" /></td>
-                <td style="color:#307991"><g:message code="modal.notifications.changes" /></td>
-            </tr>
-            </thead>
-            <tbody ng-repeat="(recordIdx, recordValues) in $ctrl.recordValues">
-                <tr ng-repeat="recordValue in recordValues">
-                    <td>
-                        {{ recordValue.label }}
-                    </td>
-                    <td marked="recordValue.oldValue"></td>
-                    <td marked="recordValue.newValue"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">OK</button>
-</div>
 </script>
 <asset:javascript src="digivol-notebook" asset-defer=""/>
 <asset:script type="text/javascript">
@@ -465,9 +374,7 @@
         order: params.order,
         query: params.q,
         taskListUrl: createLink(controller: 'user', action: 'taskListFragment', id: userInstance.id),
-        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id),
-        changedFieldsUrl: createLink(controller: 'task', action: 'showChangedFields'),
-        auditViewUrl: createLink(controller: 'task', action: 'viewTask')
+        forumPostsUrl: createLink(controller: 'forum', action: 'userComments', id: userInstance.id)
 ]}" />
     digivolNotebooksTabs(json);
 </asset:script>

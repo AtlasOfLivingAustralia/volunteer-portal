@@ -1,8 +1,13 @@
 package au.org.ala.volunteer
 
+import com.google.common.hash.HashCode
 import grails.converters.JSON
 import grails.transaction.Transactional
+import org.apache.commons.io.FilenameUtils
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
+
+import static javax.servlet.http.HttpServletResponse.*
 
 class TemplateController {
 
@@ -11,24 +16,36 @@ class TemplateController {
     def userService
     def templateFieldService
     def templateService
+    def fileUploadService
 
     def index() {
         redirect(action: "list", params: params)
     }
 
     def list() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
     }
 
     def create() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = new Template()
         templateInstance.author = userService.currentUserId
-        templateInstance.properties = params
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
     def save() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
@@ -40,19 +57,12 @@ class TemplateController {
         }
     }
 
-    def show() {
-        def templateInstance = Template.get(params.id)
-        if (!templateInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [templateInstance: templateInstance]
-        }
-    }
-
     def edit() {
-        def templateInstance = Template.get(params.id)
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def templateInstance = Template.get(params.long('id'))
         if (!templateInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
             redirect(action: "list")
@@ -64,7 +74,11 @@ class TemplateController {
     }
 
     def update() {
-        def templateInstance = Template.get(params.id)
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def templateInstance = Template.get(params.long('id'))
         if (templateInstance) {
             if (params.version) {
                 def version = params.version.toLong()
@@ -75,9 +89,11 @@ class TemplateController {
                     return
                 }
             }
-            templateInstance.properties = params
 
-            def viewParams = JSON.parse(params.viewParamsJSON) as Map
+            // This is to stop an IDE warning about incompatible objects
+            bindData(templateInstance, params)
+
+            def viewParams = JSON.parse(params.viewParamsJSON as String) as Map
 
             def newViewParams = new HashMap<String, String>()
             if (viewParams) {
@@ -100,7 +116,11 @@ class TemplateController {
     }
 
     def delete() {
-        def templateInstance = Template.get(params.id)
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def templateInstance = Template.get(params.long('id'))
         if (templateInstance) {
             try {
                 // First got to delete all the template_fields...
@@ -114,7 +134,7 @@ class TemplateController {
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 redirect(action: "list")
             }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -128,6 +148,10 @@ class TemplateController {
     }
 
     def manageFields() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -137,6 +161,10 @@ class TemplateController {
     }
 
     def addTemplateFieldFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -146,6 +174,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldUp() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
             if (field.displayOrder > 1) {
@@ -165,6 +197,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldDown() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
             def max = getLastDisplayOrder(field.template)
@@ -185,6 +221,10 @@ class TemplateController {
 
     @Transactional
     def moveFieldToPosition() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         def newOrder = params.int("newOrder")
@@ -207,6 +247,10 @@ class TemplateController {
 
     @Transactional
     def cleanUpOrdering() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         if (templateInstance) {
             def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
@@ -222,13 +266,17 @@ class TemplateController {
 
     @Transactional
     def addField() {
-        def templateInstance = Template.get(params.int("id"))
-        def fieldType = params.fieldType
-        def classifier = params.fieldTypeClassifier
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        Template templateInstance = Template.get(params.int("id"))
+        String fieldType = params.fieldType
+        String classifier = params.fieldTypeClassifier
 
         if (templateInstance && fieldType) {
 
-            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(templateInstance, fieldType, classifier)
+            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(templateInstance, fieldType as DarwinCoreField, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
@@ -246,18 +294,23 @@ class TemplateController {
 
     private int getLastDisplayOrder(Template template) {
         def c = TemplateField.createCriteria()
-        def results = c({
+        def maxDisplayOrderCount = c.get({
             eq('template', template)
             projections {
                 max('displayOrder')
             }
         })
-        def max = results?.getAt(0) ?: 0
-        return max
+        log.debug("Max order count: ${maxDisplayOrderCount}")
+
+        return (maxDisplayOrderCount == null ? 0 : maxDisplayOrderCount as int)
     }
 
     @Transactional
     def deleteField() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
         def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
         if (field && templateInstance) {
@@ -267,6 +320,10 @@ class TemplateController {
     }
 
     def preview() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
 
         def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
@@ -280,7 +337,10 @@ class TemplateController {
     }
 
     def exportFieldsAsCSV() {
-
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def templateInstance = Template.get(params.int("id"))
 
         if (templateInstance) {
@@ -290,6 +350,10 @@ class TemplateController {
     }
 
     def importFieldsFromCSV() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
 
         MultipartFile f = request.getFile('uploadFile')
 
@@ -309,8 +373,12 @@ class TemplateController {
     }
 
     def cloneTemplate() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.get(params.int("templateId"))
-        def newName = params.newName
+        String newName = params.newName
 
         if (newName) {
             def existing = Template.findByName(newName)
@@ -329,27 +397,82 @@ class TemplateController {
     }
 
     def cloneTemplateFragment() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def template = Template.get(params.int("sourceTemplateId"))
         [templateInstance: template]
     }
 
     def viewParamsForm(Template template) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def view = (params?.view ?: '') + 'Params'
-        try { //if (resExists(view)) {
+        try {
             def model = [templateInstance: template]
             render template: view, model: model
-        } catch (e) { //} else {
+        } catch (e) {
             log.trace("Could not render template $view", e)
             render status: 404
         }
     }
 
-    private def resExists(resName) {
-        //Not needed : def grailsAttributes = new DefaultGrailsApplicationAttributes(request.servletContext)
-        def engine = grailsAttributes.pagesTemplateEngine
-        def resUri = grailsAttributes.getTemplateUri(resName, request)
-        def resource = engine.getResourceForUri(resUri)
-        log.debug "resUri=${resUri}; resource=${resource}; exists=${resource?.exists()}; readable=${resource?.readable}"
-        return resource?.readable
+    /**
+     * Config page for Wildlife Spotter template.
+     * @param id Template ID to load config for.
+     * @return
+     */
+    def wildlifeTemplateConfig(long id) {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def template = Template.get(id)
+        def viewParams2 = template.viewParams2 ?: [ categories: [], animals: [] ]
+        [id: id, templateInstance: template, viewParams2: viewParams2]
+    }
+
+    /**
+     * Save action for Wildlife Spotter template config
+     * @param id Template ID to save config to.
+     */
+    @Transactional
+    def saveWildlifeTemplateConfig(long id) {
+        if (!userService.isAdmin()) {
+            respond status: SC_UNAUTHORIZED
+            return
+        }
+
+        def template = Template.get(id)
+        template.viewParams2 = request.getJSON() as Map
+        template.save()
+
+        respond status: SC_NO_CONTENT
+    }
+
+    /**
+     * Upload image for Wildlife Spotter template picklists
+     */
+    def uploadWildlifeImage() {
+        if (!userService.isAdmin()) {
+            respond status: SC_UNAUTHORIZED
+            return
+        }
+
+        MultipartFile upload = request.getFile('animal') ?: request.getFile('entry')
+
+        if (upload) {
+            def file = fileUploadService.uploadImage('wildlifespotter', upload) { MultipartFile f, HashCode h ->
+                h.toString() + "." + fileUploadService.extension(f)
+            }
+            def hash = FilenameUtils.getBaseName(file.name)
+            def ext = FilenameUtils.getExtension(file.name)
+            render([ hash: hash, format: ext ] as JSON)
+        } else {
+            render([ error: "One of animal or entry must be provided" ] as JSON, status: SC_BAD_REQUEST)
+        }
     }
 }

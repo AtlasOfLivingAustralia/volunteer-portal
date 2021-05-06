@@ -3,8 +3,13 @@ package au.org.ala.volunteer
 class ProjectToolsController {
 
     def projectToolsService
+    def userService
 
     def matchRecordedByIdFromPicklist() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             def fieldsModified = projectToolsService.updateKeyFieldFromPicklistField(projectInstance, "recordedBy", "recordedByID")
@@ -14,6 +19,10 @@ class ProjectToolsController {
     }
 
     def reindexProjectTasks() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def projectInstance = Project.get(params.id)
         if (projectInstance) {
             def c = Task.createCriteria()

@@ -927,7 +927,7 @@ ORDER BY record_idx, name;
             def imageUrl = multimediaService.getImageUrl(multimedia)
 
             if ([90,180,270].contains(rotate)) {
-                imageUrl = grailsLinkGenerator.link(controller: 'multimedia', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
+                imageUrl = grailsLinkGenerator.link(controller: 'task', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
             }
 
             String urlPrefix = grailsApplication.config.images.urlPrefix

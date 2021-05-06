@@ -25,7 +25,7 @@ plugins {
     id "com.virgo47.ClasspathJar" version "1.0.0"
 }
 
-version "5.4.0"
+version "5.4.1"
 group "au.org.ala"
 description "Digivol application"
 
@@ -161,7 +161,7 @@ dependencies {
     compile 'org.grails.plugins:grails-google-visualization:2.2'
     compile 'org.grails.plugins:external-config:1.1.2'
     // TODO ALA Plugins: image service (is it used anywhere?)
-    compile 'org.grails.plugins:ala-auth:3.0.4'
+    compile 'org.grails.plugins:ala-auth:3.0.5'
     compile 'au.org.ala:userdetails-service-client:1.4.0' // override this to for external properties changes
     compile 'org.grails.plugins:cache-ehcache:2.0.0.BUILD-SNAPSHOT'
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'

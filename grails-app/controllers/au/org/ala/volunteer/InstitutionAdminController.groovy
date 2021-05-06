@@ -46,25 +46,6 @@ class InstitutionAdminController {
         respond institutionInstance
     }
 
-    def editNewsItems(Institution institutionInstance) {
-        def newsItems = NewsItem.findAllByInstitution(institutionInstance)
-        respond institutionInstance, model: [newsItems: newsItems]
-    }
-
-    def updateNewsItems() {
-        def institutionInstance = Institution.get(params.id)
-        if (!institutionInstance) {
-            notFound()
-            return
-        }
-        def pdni = params.getBoolean('disableNewsItems')
-        if (institutionInstance.disableNewsItems != pdni) {
-            institutionInstance.disableNewsItems = pdni
-            institutionInstance.save()
-        }
-        redirect(action: 'editNewsItems', id: institutionInstance.id)
-    }
-
     def update(Institution institutionInstance) {
         if (institutionInstance == null) {
             notFound()

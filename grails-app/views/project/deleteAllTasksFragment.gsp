@@ -25,30 +25,32 @@
                 <span class="sr-only">0% Complete</span>
             </div>
         </div>
+
+        <p>
+            Tasks are now being removed.  If you leave this page tasks will continue to be removed but you
+            will no longer be able to view the progress bar.
+        </p>
     </div>
 
-    <p>
-        Tasks are now being removed.  If you leave this page tasks will continue to be removed but you
-        will no longer be able to view the progress bar.
-    </p>
+
 
 </div>
 
 <script>
-    var url = "${createLink(controller: 'project', action: 'deleteTasks', id: projectInstance.id)}";
-    var taskCount = ${taskCount};
-    var id = ${projectInstance.id};
+    const url = "${createLink(controller: 'project', action: 'deleteTasks', id: projectInstance.id)}";
+    let taskCount = 0;
+    let id = ${projectInstance.id};
 
     $("#btnCancelDeleteAllTasks").click(function (e) {
         e.preventDefault();
         bvp.hideModal();
     });
 
-    var $progress = $('#progress');
-    var $confirm = $('#confirm');
+    let $progress = $('#progress');
+    let $confirm = $('#confirm');
 
     $("#btnSubmitDeleteAllTasks").click(function (e) {
-        var $this = $(this);
+        let $this = $(this);
         $this.disabled = true;
         $.post(url).done(function (data, status, xhr) {
             digivolNotifications.addMessageListener('deleteTasks', messageHandler);
@@ -60,24 +62,26 @@
         });
     });
 
-
     function messageHandler(e) {
         console.log("got message", e);
-        var data = JSON.parse(e.data);
-        if (id == data.projectId) {
+        const data = JSON.parse(e.data);
+        if (id === data.projectId) {
+            // console.log(data);
 
-            if (data.count == -1) {
+            if (data.count === -1) {
+                console.log("Error");
                 alert('There was an error deleting tasks.  The page will refresh, please try again and if the error persists contact the system administrators.');
                 digivolNotifications.removeMessageListener('deleteTasks', messageHandler);
                 window.location.reload(true);
             }
 
-            var count = data.count;
-            var pct = Math.round((count / taskCount) * 100);
+            let count = data.count;
+            let pct = Math.round((count / taskCount) * 100);
 
-            if (pct >= 100 && count != taskCount) pct = 99;
+            if (pct >= 100 && count !== taskCount) pct = 99;
 
-            var $bar = $progress.find('.progress-bar');
+            let $bar = $progress.find('.progress-bar');
+            // console.log("pct: " + pct);
             $bar.attr('aria-valuenow', pct);
             $bar.css('width', pct + '%');
             $bar.find('.sr-only').text(pct + '% Complete');

@@ -51,7 +51,7 @@ class Project implements Serializable {
     static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
 
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, projectAssociations: ProjectAssociation, newsItems: NewsItem, labels: Label, transcriptions: Transcription]
+    static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
 
     static mapping = {
@@ -62,7 +62,6 @@ class Project implements Serializable {
         tasks cascade: 'all,delete-orphan'
         projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
-        newsItems sort: 'created', order: 'desc', cascade: 'all,delete-orphan'
         harvestableByAla defaultValue: false
         version defaultValue: '0'
         imageSharingEnabled defaultValue: 'false'

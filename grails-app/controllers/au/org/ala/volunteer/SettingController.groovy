@@ -7,8 +7,13 @@ class SettingController {
 
     def settingsService
     def emailService
+    def userService
 
     def index() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
 
         def settings = []
         def values = [:]
@@ -27,10 +32,13 @@ class SettingController {
         }
 
         [settings: settings, values: values]
-
     }
 
     def editSetting() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def key = params.settingKey
 
         if (!key) {
@@ -45,6 +53,10 @@ class SettingController {
     }
 
     def saveSetting() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
         def key = params.settingKey as String
         def value = params.settingValue as String
 
@@ -56,8 +68,7 @@ class SettingController {
             flash.message= "Save setting failed! Either the setting key or value was missing/null"
         }
 
-        redirect(action:'index')
-
+        redirect(action: 'index')
     }
 
     private static SettingDefinition getSettingDefByKey(String key) {
@@ -79,6 +90,11 @@ class SettingController {
     }
 
     def sendTestEmail() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
         def to = params.to
 
         def name = message(code:'default.application.name', default: 'DigiVol')
@@ -87,6 +103,7 @@ class SettingController {
             emailService.sendMail(to,"Test message from ${name}", "This is a test message from ${name}.")
             flash.message = "Sent a test message to '${to}'"
         }
-        redirect(action:'index')
+
+        redirect(action: 'index')
     }
 }

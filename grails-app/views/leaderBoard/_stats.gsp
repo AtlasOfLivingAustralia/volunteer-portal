@@ -5,14 +5,14 @@
     <g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
-        <h2 class="heading">${instName} Stats<g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></h2>
+        <h2 class="heading">${instName} Stats
+            <cl:ifAdmin><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifAdmin>
+        </h2>
 
         <h3>
-            <g:link controller="user" action="list">
-                <span data-ng-if="loading"><cl:spinner/></span>
-                <span data-ng-if="!loading">{{transcriberCount}}</span>
-                Volunteers
-            </g:link>
+            <span data-ng-if="loading"><cl:spinner/></span>
+            <span data-ng-if="!loading">{{transcriberCount}}</span>
+            Volunteers
         </h3>
 
         <p>
@@ -177,7 +177,7 @@
             </div>
         </li>
     </ul>
-    <g:link controller="user" action="list"><g:message code="view.all.contributors.label" /> »</g:link>
+
 </section>
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script type="text/javascript">

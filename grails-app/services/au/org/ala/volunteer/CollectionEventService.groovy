@@ -11,7 +11,6 @@ class CollectionEventService {
 
     static Pattern normalisePattern = Pattern.compile('\\s|\\.|,|;|:|"|')
     def sessionFactory
-    def logService
 
     List<CollectionEvent> findCollectionEvents(String institutionCode, List<String> collectors, String eventDate, String locality, int maxRows) {
         def c = CollectionEvent.createCriteria();
