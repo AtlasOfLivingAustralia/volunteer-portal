@@ -26,7 +26,7 @@ class StatsController {
 
     def volunteerStats() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def fromDate = params?.date('startDate', dateFormats) ?: new Date() - defaultDayDiff
@@ -37,7 +37,7 @@ class StatsController {
 
     def activeTranscribers() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.activeTranscribers;
@@ -47,7 +47,7 @@ class StatsController {
 
     def transcriptionsByVolunteerAndProject() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.transcriptionsByVolunteerAndProject
@@ -57,7 +57,7 @@ class StatsController {
 
     def transcriptionsByDay() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.transcriptionsByDay
@@ -67,7 +67,7 @@ class StatsController {
 
     def validationsByDay() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.validationsByDay
@@ -77,7 +77,7 @@ class StatsController {
 
     def hourlyContributions() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.hourlyContributions
@@ -87,7 +87,7 @@ class StatsController {
 
     def historicalHonourBoard() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.historicalHonourBoard
@@ -97,7 +97,7 @@ class StatsController {
 
     def transcriptionsByInstitution() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.transcriptionsByInstitution
@@ -107,7 +107,7 @@ class StatsController {
 
     def transcriptionsByInstitutionByMonth() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType = StatsType.transcriptionsByInstitutionByMonth
@@ -117,7 +117,7 @@ class StatsController {
 
     def validationsByInstitution() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType =  StatsType.validationsByInstitution
@@ -127,7 +127,7 @@ class StatsController {
 
     def transcriptionTimeByProjectType() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def reportType = StatsType.transcriptionTimeByProjectType
@@ -241,7 +241,7 @@ class StatsController {
 
     def exportCSVReport () {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
 

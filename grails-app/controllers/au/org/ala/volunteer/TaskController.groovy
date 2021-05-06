@@ -184,14 +184,14 @@ class TaskController {
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, "list")
         } else {
-            redirect(controller: 'project', action: 'list')
+            redirect(uri: "/")
         }
     }
 
     def showDetails() {
         def currentUser = userService.currentUserId
         def taskInstance = Task.get(params.int('id'))
-        Project project = taskInstance.project
+        Project project = taskInstance?.project
         if (project && currentUser && userService.isValidator(project)) {
             def c = Field.createCriteria()
             def fields = c.list(params) {
@@ -201,7 +201,7 @@ class TaskController {
             // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
             [taskInstance: taskInstance, fields: fields]
         } else {
-            redirect(controller: 'project', action: 'list')
+            redirect(uri: "/")
         }
     }
 

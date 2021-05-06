@@ -5,7 +5,7 @@ class ValidationRuleController {
     def userService
 
     def index() {
-        redirect(action: list())
+        redirect(action: 'list')
     }
 
     def list() {

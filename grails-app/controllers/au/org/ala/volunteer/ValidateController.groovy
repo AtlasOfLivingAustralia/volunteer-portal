@@ -88,8 +88,8 @@ class ValidateController {
      * Mark a task as validated, hence removing it from the list of tasks to be validated.
      */
     def validate() {
-        def taskInstance = Task.get(params.id)
-        if (!userService.isValidatorForProjectId(taskInstance?.project?.id)) {
+        def taskInstance = Task.get(params.long('id'))
+        if (!userService.isValidatorForProjectId(taskInstance?.project?.id) || !taskInstance) {
             redirect(uri: "/")
             return
         }
@@ -106,13 +106,15 @@ class ValidateController {
             if (seconds) {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
             }
-            WebUtils.cleanRecordValues(params.recordValues)
+            WebUtils.cleanRecordValues(params.recordValues as Map)
 
             Transcription transcription = null
             if (taskInstance.project.requiredNumberOfTranscriptions == 1) {
                 transcription = taskInstance.transcriptions[0]
             }
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
+            fieldSyncService.syncFields(taskInstance, params.recordValues as Map, currentUser, false,
+                    true, true, fieldSyncService.truncateFieldsForProject(taskInstance.project),
+                    request.remoteAddr, transcription)
 
             if (taskInstance.hasErrors()) {
                 log.warn("Validation of task ${taskInstance.id} produced errors: " + errors)
@@ -127,8 +129,8 @@ class ValidateController {
      * To do determine actions if the validator chooses not to validate
      */
     def dontValidate() {
-        def taskInstance = Task.get(params.id)
-        if (!userService.isValidatorForProjectId(taskInstance?.project?.id)) {
+        def taskInstance = Task.get(params.long('id'))
+        if (!userService.isValidatorForProjectId(taskInstance?.project?.id) || !taskInstance) {
             redirect(uri: "/")
             return
         }
@@ -146,12 +148,14 @@ class ValidateController {
             if (seconds) {
                 taskInstance.timeToValidate = (taskInstance.timeToValidate ?: 0) + seconds
             }
-            WebUtils.cleanRecordValues(params.recordValues)
+            WebUtils.cleanRecordValues(params.recordValues as Map)
             Transcription transcription = null
             if (taskInstance.project.requiredNumberOfTranscriptions == 1) {
                 transcription = taskInstance.transcriptions[0]
             }
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, false, true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project), request.remoteAddr, transcription)
+            fieldSyncService.syncFields(taskInstance, params.recordValues as Map, currentUser, false,
+                    true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project),
+                    request.remoteAddr, transcription)
             redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id])
         } else {
             redirect(view: '../index')
@@ -159,7 +163,7 @@ class ValidateController {
     }
 
     def skip() {
-        def taskInstance = Task.get(params.id)
+        def taskInstance = Task.get(params.long('id'))
         if (taskInstance != null) {
             redirect(action: 'showNextFromProject', id: taskInstance.project.id)
         } else {
@@ -173,12 +177,13 @@ class ValidateController {
         def currentUser = userService.currentUserId
         def project = Project.get(params.long('id'))
 
-        if (!userService.isValidatorForProjectId(project?.id)) {
+        if (!userService.isValidatorForProjectId(project?.id) || !project) {
             redirect(uri: "/")
             return
         }
 
-        log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
+        log.debug("project id = " + params.long('id') + " || msg = " + params.msg?.toString() +
+                " || prevInt = " + params.long('prevId'))
         flash.message = params.msg
 
         def previousId = params.long('prevId',-1)

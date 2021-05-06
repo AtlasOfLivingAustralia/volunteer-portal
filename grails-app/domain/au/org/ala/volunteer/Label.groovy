@@ -38,4 +38,14 @@ class Label implements Serializable {
     LinkedHashMap<String,Object> toMap() {
         [id: id, category: category, value: value]
     }
+
+
+    @Override
+    public String toString() {
+        return "Label{" +
+                "id=" + id +
+                ", category='" + category + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

@@ -369,7 +369,7 @@ class UserController {
 
     def deleteRoles() {
         if (!userService.isAdmin()) {
-            render status: 401
+            render status: 403
             return
         }
         def userRoleId = params.selectedUserRoleId

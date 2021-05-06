@@ -1,7 +1,5 @@
 package au.org.ala.volunteer
 
-
-
 import grails.test.mixin.*
 import spock.lang.*
 
@@ -115,5 +113,64 @@ class LabelControllerSpec extends Specification {
             Label.count() == 0
             response.redirectedUrl == '/admin/label/index'
             flash.message != null
+    }
+
+    void "Test a user without Admin permission cannot save a label"() {
+        given:"The Collaborating service is a spy"
+            def userServiceStub = Stub(UserService) {
+                isAdmin() >> false
+            }
+
+        and:"The spy service is set on the controller"
+            controller.userService = userServiceStub
+
+        when:"The save action is executed with a valid instance"
+            request.contentType = FORM_CONTENT_TYPE
+            request.method = 'POST'
+            populateValidParams(params)
+            def label = new Label(params)
+            controller.save(label)
+
+        then: "A 403 status is returned (forbidden)"
+            response.status == 403
+    }
+
+    void "Test a user without Admin permission cannot update a label"() {
+        given:"The Collaborating service is a spy"
+            def userServiceStub = Stub(UserService) {
+                isAdmin() >> false
+            }
+
+        and:"The spy service is set on the controller"
+            controller.userService = userServiceStub
+
+        when:"The update action is executed with a valid instance"
+            request.contentType = FORM_CONTENT_TYPE
+            request.method = 'PUT'
+            def label = new Label(category: 'category', value: 'value').save(flush: true)
+            controller.update(label)
+
+        then: "A 403 status is returned (forbidden)"
+            response.status == 403
+    }
+
+    void "Test a user without Admin permission cannot delete a label"() {
+        given:"The Collaborating service is a spy"
+            def userServiceStub = Stub(UserService) {
+                isAdmin() >> false
+            }
+
+        and:"The spy service is set on the controller"
+            controller.userService = userServiceStub
+
+        when:"The delete action is executed with a valid instance"
+            request.contentType = FORM_CONTENT_TYPE
+            request.method = 'DELETE'
+            populateValidParams(params)
+            def label = new Label(params)
+            controller.delete(label)
+
+        then: "A 403 status is returned (forbidden)"
+            response.status == 403
     }
 }
