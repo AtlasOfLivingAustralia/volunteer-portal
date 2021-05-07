@@ -13,7 +13,7 @@
 
 <body class="digivol">
 
-    <cl:headerContent title="${landingPageInstance.title}" selectedNavItem="${landingPageInstance.shortUrl}" complexBodyMarkup="true"></cl:headerContent>
+    <cl:headerContent title="${landingPageInstance.title}" selectedNavItem="${landingPageInstance.shortUrl}" complexBodyMarkup="true" />
 
     <div class="a-feature wildlifespotter" style="background-image: url('${bgurl}');">
         <div class="container">

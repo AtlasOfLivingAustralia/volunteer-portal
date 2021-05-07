@@ -20,7 +20,6 @@ class AdminController {
     def userService
     def projectService
     def fullTextIndexService
-    //def domainUpdateService
     def eventSourceService
 
     def index() {
@@ -29,13 +28,13 @@ class AdminController {
     }
 
     def mailingList() {
-        if (checkAdminAccess()) {
+        if (checkAdminAccess(false)) {
             def userIds = User.withCriteria {
                 projections {
                     property('userId', 'userId')
                 }
             }
-            def emails = userService.getEmailAddressesForIds(userIds)
+            def emails = userService.getEmailAddressesForIds(userIds as List<String>)
             def list = emails.join(";\n")
             render(text:list, contentType: "text/plain")
         }
@@ -43,7 +42,8 @@ class AdminController {
 
     /**
      * Checks if the current logged in user has the access privilleges to access the admin page.
-     *
+     * @param includeInstitutionAdmin if true, adds a check if user is an institution admin and returns true or false
+     * as necessary.
      * @return true if access allowed. Redirects to home page with flash message if no access.
      */
     boolean checkAdminAccess(Boolean includeInstitutionAdmin) {
@@ -54,6 +54,7 @@ class AdminController {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
             redirect(uri: grailsApplication.config.grails.serverURL)
+            return false
         }
     }
 
@@ -64,7 +65,7 @@ class AdminController {
         checkAdminAccess(false)
         def institutionId = params.long('institution')
         def institution = Institution.get(institutionId)
-        List institutionAdminRoles
+        def institutionAdminRoles
 
         if (institution) {
             def c = UserRole.createCriteria()
@@ -89,11 +90,12 @@ class AdminController {
     def addInstituionAdmin() {
         checkAdminAccess(false)
         def currentUser = userService.getCurrentUser()
-        def userId = params.userId
+        def userId = params.userId?.toString()
         def user = User.findByUserId(userId)
 
         if (!user) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), userId])
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'user.label', default: 'User'), userId]) as String
             redirect(action: 'manageInstitutionAdmins')
             return
         }
@@ -101,7 +103,8 @@ class AdminController {
         def institutionId = params.long('institution')
         def institution = Institution.get(institutionId)
         if (!institution) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), institutionId])
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'institution.label', default: 'Institution'), institutionId]) as String
             redirect(action: 'manageInstitutionAdmins')
             return
         }
@@ -154,12 +157,13 @@ class AdminController {
     def addUserRole() {
         checkAdminAccess(true)
         def currentUser = userService.getCurrentUser()
-        def userId = params.userId
+        def userId = params.userId?.toString()
         def user = User.findByUserId(userId)
 
         if (!user) {
             log.error("Add user role: No user found for ${params.userId}")
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), userId])
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'user.label', default: 'User'), userId]) as String
             redirect(action: 'manageUserRoles')
             return
         }
@@ -176,16 +180,19 @@ class AdminController {
         } else if (levelOption == "byproj") {
             level = 2
         } else {
-            log.error("Add user role: No project or institution found: project ID: ${params.projectId}, institution ID: ${params.institutionId}")
-            flash.message = message(code: 'admin.user.role.not.created', args: [message(code: 'user.role.label', default: 'User Role'), 'missing Institution or Project ID'])
+            log.error("Add user role: No project or institution found: project ID: ${params.projectId}, " +
+                    "institution ID: ${params.institutionId}")
+            flash.message = message(code: 'admin.user.role.not.created',
+                     args: [message(code: 'user.role.label', default: 'User Role'), 'missing Institution or Project ID']) as String
             redirect(action: 'manageUserRoles')
             return
         }
 
-        def role = Role.get(params.userRole_role)
+        def role = Role.get(params.userRole_role?.toString())
         if (!role) {
             log.error("Add user role: No role found: ${params.userRole_role}")
-            flash.message = message(code: 'admin.user.role.not.created', args: [message(code: 'user.role.label', default: 'User Role'), 'missing role type'])
+            flash.message = message(code: 'admin.user.role.not.created',
+                     args: [message(code: 'user.role.label', default: 'User Role'), 'missing role type']) as String
             redirect(action: 'manageUserRoles')
             return
         }
@@ -241,11 +248,11 @@ class AdminController {
             projectList = Project.list(sort: 'name', order: 'asc')
         }
 
-        if (!Strings.isNullOrEmpty(params.q)) {
+        if (!Strings.isNullOrEmpty(params.q?.toString())) {
             parameters.q = params.q
         }
 
-        if (!Strings.isNullOrEmpty(params.userid)) {
+        if (!Strings.isNullOrEmpty(params.userid?.toString())) {
             parameters.userid = params.userid
         }
 
@@ -260,71 +267,67 @@ class AdminController {
     }
 
     def tutorialManagement() {
-        if (checkAdmin()) {
-            def searchTerm = (params.q) ? params.q : null
-            def tutorials = tutorialService.listTutorials(searchTerm)
-            render (view: 'tutorialManagement', model: [tutorials: tutorials])
-        }
+        checkAdminAccess(true)
+        def searchTerm = (params.q) ? params.q : null
+        def tutorials = tutorialService.listTutorials(searchTerm)
+        render (view: 'tutorialManagement', model: [tutorials: tutorials])
     }
 
     def uploadTutorial() {
-        if (checkAdmin()) {
-            if (request instanceof MultipartHttpServletRequest) {
-                MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
-                if (f != null) {
-                    def allowedMimeTypes = ['application/pdf']
-                    if (!allowedMimeTypes.contains(f.getContentType())) {
-                        flash.message = "The file must be one of: ${allowedMimeTypes}"
-                        redirect(action: 'tutorialManagement')
-                        return;
-                    }
-
-                    try {
-                        tutorialService.uploadTutorialFile(f)
-                        flash.message = "Tutorial uploaded successfully";
-                    } catch (Exception ex) {
-                        flash.message = "Failed to upload tutorial file: " + ex.message;
-                        log.error("Failed to upload tutorial file: " + ex.message, ex)
-                    }
-
+        checkAdminAccess(true)
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
+            if (f != null) {
+                def allowedMimeTypes = ['application/pdf']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "The file must be one of: ${allowedMimeTypes}"
+                    redirect(action: 'tutorialManagement')
+                    return
                 }
+
+                try {
+                    tutorialService.uploadTutorialFile(f)
+                    flash.message = "Tutorial uploaded successfully"
+                } catch (Exception ex) {
+                    flash.message = "Failed to upload tutorial file: " + ex.message
+                    log.error("Failed to upload tutorial file: " + ex.message, ex)
+                }
+
             }
-            redirect(action:'tutorialManagement')
         }
+        redirect(action: 'tutorialManagement')
     }
 
     def deleteTutorial() {
-        if (checkAdmin()) {
-            def filename = params.tutorialFile
-            if (filename) {
-                try {
-                    tutorialService.deleteTutorial(filename)
-                    flash.message = "Tutorial deleted successfully"
-                } catch (Exception ex) {
-                    flash.message = "Failed to delete tutorial file: " + ex.message
-                    log.error("Failed to delete tutorial file: " + ex.message, ex)
-                }
+        checkAdminAccess(true)
+        def filename = params.tutorialFile?.toString()
+        if (filename) {
+            try {
+                tutorialService.deleteTutorial(filename)
+                flash.message = "Tutorial deleted successfully"
+            } catch (Exception ex) {
+                flash.message = "Failed to delete tutorial file: " + ex.message
+                log.error("Failed to delete tutorial file: " + ex.message, ex)
             }
-            redirect(action:'tutorialManagement')
         }
+        redirect(action: 'tutorialManagement')
     }
 
     def renameTutorial() {
-        if (checkAdmin()) {
-            def filename = params.tutorialFile
-            def newName = params.newName
+        checkAdminAccess(true)
+        def filename = params.tutorialFile?.toString()
+        def newName = params.newName?.toString()
 
-            if (filename && newName) {
-                try {
-                    tutorialService.renameTutorial(filename, newName)
-                } catch (Exception ex) {
-                    flash.message = "Failed to rename tutorial file: " + ex.message
-                    log.error("Failed to rename tutorial file: " + ex.message)
-                }
-
+        if (filename && newName) {
+            try {
+                tutorialService.renameTutorial(filename, newName)
+            } catch (Exception ex) {
+                flash.message = "Failed to rename tutorial file: " + ex.message
+                log.error("Failed to rename tutorial file: " + ex.message)
             }
-            redirect(action:'tutorialManagement')
+
         }
+        redirect(action: 'tutorialManagement')
     }
 
     /**
@@ -334,9 +337,7 @@ class AdminController {
      * It is entirely possible that not collector id can be found, in which case the field value is cleared
      */
     def fixRecordedByID() {
-        if (!checkAdminAccess()) {
-             throw new RuntimeException("Not authorised!")
-        }
+        checkAdminAccess(true)
 
         // First find the candidate fields
         def fields = Field.findAllByNameAndValueLikeAndSuperceded('recordedByID', '%String%', false)
@@ -373,7 +374,7 @@ class AdminController {
                                 if (item.key) {
                                     log.debug("2nd chance. Found a collector number for ${collectorName}: ${newValue}")
                                     newValue = item.key
-                                    break;
+                                    break
                                 }
                             }
                         }
@@ -381,7 +382,7 @@ class AdminController {
                 }
 
                 log.debug("Updating field ${field.id} value from '${field.value}' to '${newValue}'.")
-                field.value = newValue;
+                field.value = newValue
 
                 if (newValue) {
                     collectorsFound++
@@ -404,18 +405,16 @@ class AdminController {
         flash.message = message
         log.debug(message)
 
-        redirect(action:'index')
+        redirect(action: 'index')
     }
 
     def fixUserCounts() {
-        if (!checkAdminAccess()) {
-             throw new RuntimeException("Not authorised!")
-        }
+        checkAdminAccess(true)
 
-        def users = User.list();
+        def users = User.list()
         int count = 0
         users.each { user ->
-            def transcribedCount = Task.countByFullyTranscribedBy(user.userId)
+            def transcribedCount = Transcription.countByFullyTranscribedBy(user.userId)
             def validatedCount = Task.countByFullyValidatedBy(user.userId)
 
             if (user.transcribedCount < transcribedCount) {
@@ -438,7 +437,7 @@ class AdminController {
     }
 
     def currentUsers() {
-        checkAdmin()
+        checkAdminAccess(false)
         render(view: 'currentUsers')
     }
 
@@ -458,7 +457,9 @@ class AdminController {
                 emailToIdMap = [:]
             }
 
-            def actWithOpenEventSources = activities*.properties.collect { it + [openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId] ?: '')] }
+            def actWithOpenEventSources = activities*.properties.collect {
+                it + [openESRequests: eventSourceService.getOpenRequestsForUser(emailToIdMap[it.userId]?.toString() ?: '')]
+            }
             respond([activities: actWithOpenEventSources])
         } else {
             render status: 403
@@ -466,39 +467,38 @@ class AdminController {
     }
 
     def tools() {
-        checkAdmin()
+        checkAdminAccess(false)
         render(view: 'tools')
     }
 
     def mappingTool() {
-        checkAdmin()
+        checkAdminAccess(false)
         render(view: 'mappingTool')
     }
 
     def migrateProjectsToInstitutions() {
-        if (checkAdmin()) {
-            final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
-            final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
+        checkAdminAccess(false)
+        final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
+        final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
 
-            final projectsWithScores = projectsWithOwners.collect { proj ->
-                final projOwner = proj.lowerFeaturedOwner ?: ''
-                final scores = insts.collect {
-                    final name = it.lowerName ?: ''
-                    [id: it.id, name: it.name, score: Fuzzy.ldRatio(projOwner, name)]
-                }.sort { it.score }.reverse()//.subList(0, 10)
-                [id: proj.id, name: proj.name, owner: proj.featuredOwner, scores: scores]
-            }
-
-            respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
+        final projectsWithScores = projectsWithOwners.collect { proj ->
+            final projOwner = proj.lowerFeaturedOwner ?: ''
+            final scores = insts.collect {
+                final name = it.lowerName ?: ''
+                [id: it.id, name: it.name, score: Fuzzy.ldRatio(projOwner, name)]
+            }.sort { it.score }.reverse()//.subList(0, 10)
+            [id: proj.id, name: proj.name, owner: proj.featuredOwner, scores: scores]
         }
+
+        respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
     }
 
     def doMigrateProjectsToInstitutions() {
         if (userService.isAdmin()) {
             def cmd = request.JSON
             cmd.each {
-                def proj = Project.get(it.id)
-                proj.institution = Institution.get(it.inst)
+                def proj = Project.get(new Long(it.id?.toString()).longValue())
+                proj.institution = Institution.get(new Long(it.inst?.toString()).longValue())
                 proj.save()
             }
             render status: 205
@@ -508,92 +508,86 @@ class AdminController {
     }
 
     def projectSummaryReport() {
-        if (checkAdminAccess()) {
-            def projects = Project.list([sort:'id'])
+        checkAdminAccess(false)
 
-            def dates = taskService.getProjectDates()
+        def projects = Project.list([sort:'id'])
+        def dates = taskService.getProjectDates()
+        def projectSummaries = projectService.getProjectSummaryList(params, true)
+        def summaryMap = projectSummaries.projectRenderList.collectEntries { [(it.project.id) : it ] }
 
-            def projectSummaries = projectService.getProjectSummaryList(params, true)
-
-            def summaryMap = projectSummaries.projectRenderList.collectEntries { [(it.project.id) : it ] }
-
-            def data = projects.collect { project ->
-                def summary = summaryMap[project.id]
-                [project: project, summary: summary, dates: dates[project.id]]
-            }
-
-            response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv")
-            response.addHeader("Content-type", "text/plain")
-            def sdf = new SimpleDateFormat("yyyy-MM-dd")
-
-            def dateStr = { d ->
-                if (d) {
-                    return sdf.format(d)
-                }
-                return ""
-            }
-
-            def daysBetween = { Date d1, Date d2 ->
-                if (d1 && d2) {
-                    return TimeCategory.minus(d2, d1).days
-                }
-                return ""
-            }
-
-            def writer = new CSVWriter((Writer) response.writer,  {
-                'Expedition Id' { it.project.id }
-                'Expedtion Name' { it.project.featuredLabel }
-                'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
-                'Institution Id' { it.project.institution?.id ?: "" }
-                'Inactive' { it.project.inactive ? "t" : "f" }
-                'Template' { it.project.template?.name }
-                'Expedition Type' { it.project.projectType?.name ?: "<unknown>" }
-                'Tasks' { it.summary?.taskCount ?: 0 }
-                'Transcribed Tasks' { it.summary?.transcribedCount ?: 0 }
-                'Validated Tasks' { it.summary?.validatedCount ?: 0 }
-                'Percent Transcribed' { it.summary?.percentTranscribed }
-                'Percent Validated' { it.summary?.percentValidated }
-                'Active Transcribers' { it.summary?.transcriberCount }
-                'Active Validators' { it.summary?.validatorCount }
-                'Transcription Start Date' { dateStr(it.dates?.transcribeStartDate) }
-                'Transcription End Date' { dateStr(it.dates?.transcribeEndDate) }
-                'Time taken (Transcribe)' { daysBetween(it.dates?.transcribeStartDate, it.dates?.transcribeEndDate) }
-                'Validation Start Date' { dateStr(it.dates?.validateStartDate) }
-                'Validation End Date' { dateStr(it.dates?.validateEndDate) }
-                'Time taken (Validate)' { daysBetween(it.dates?.validateStartDate, it.dates?.validateEndDate) }
-
-            })
-
-            for (def row : data) {
-                writer << row
-            }
-            response.flushBuffer()
+        def data = projects.collect { project ->
+            def summary = summaryMap[project.id]
+            [project: project, summary: summary, dates: dates[project.id]]
         }
+
+        response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv")
+        response.addHeader("Content-type", "text/plain")
+        def sdf = new SimpleDateFormat("yyyy-MM-dd")
+
+        def dateStr = { Date d ->
+            if (d) {
+                return sdf.format(d)
+            }
+            return ""
+        }
+
+        def daysBetween = { Date d1, Date d2 ->
+            if (d1 && d2) {
+                return TimeCategory.minus(d2, d1).days
+            }
+            return ""
+        }
+
+        def writer = new CSVWriter((Writer) response.writer,  {
+            'Expedition Id' { it.project.id }
+            'Expedtion Name' { it.project.featuredLabel }
+            'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
+            'Institution Id' { it.project.institution?.id ?: "" }
+            'Inactive' { it.project.inactive ? "t" : "f" }
+            'Template' { it.project.template?.name }
+            'Expedition Type' { it.project.projectType?.name ?: "<unknown>" }
+            'Tasks' { it.summary?.taskCount ?: 0 }
+            'Transcribed Tasks' { it.summary?.transcribedCount ?: 0 }
+            'Validated Tasks' { it.summary?.validatedCount ?: 0 }
+            'Percent Transcribed' { it.summary?.percentTranscribed }
+            'Percent Validated' { it.summary?.percentValidated }
+            'Active Transcribers' { it.summary?.transcriberCount }
+            'Active Validators' { it.summary?.validatorCount }
+            'Transcription Start Date' { dateStr(it.dates?.transcribeStartDate) }
+            'Transcription End Date' { dateStr(it.dates?.transcribeEndDate) }
+            'Time taken (Transcribe)' { daysBetween(it.dates?.transcribeStartDate, it.dates?.transcribeEndDate) }
+            'Validation Start Date' { dateStr(it.dates?.validateStartDate) }
+            'Validation End Date' { dateStr(it.dates?.validateEndDate) }
+            'Time taken (Validate)' { daysBetween(it.dates?.validateStartDate, it.dates?.validateEndDate) }
+        })
+
+        for (def row : data) {
+            writer << row
+        }
+        response.flushBuffer()
     }
 
     def reindexAllTasks() {
-        if (checkAdminAccess()) {
-            def c = Task.createCriteria()
-            def results = c.list() {
-                projections {
-                    property("id")
-                    order("lastViewed", "desc")
-                }
+        checkAdminAccess(false)
+        def c = Task.createCriteria()
+        def results = c.list() {
+            projections {
+                property("id")
+                order("lastViewed", "desc")
             }
-
-            results?.each { long taskId ->
-                DomainUpdateService.scheduleTaskIndex(taskId)
-            }
-
-            redirect(action:'tools')
         }
+
+        results?.each { long taskId ->
+            DomainUpdateService.scheduleTaskIndex(taskId)
+        }
+
+        redirect(action: 'tools')
     }
 
     def rebuildIndex() {
-        if (checkAdminAccess()) {
-            fullTextIndexService.reinitialiseIndex()
-            redirect(action:'tools')
-        }
+        checkAdminAccess(false)
+        fullTextIndexService.reinitialiseIndex()
+        redirect(action: 'tools')
     }
     
     def testQuery(String query, String searchType, String aggregation) {
@@ -610,7 +604,7 @@ class AdminController {
 
     // clear the grails gsp caches
     def clearPageCaches() {
-        if (!checkAdminAccess()) {
+        if (!userService.isAdmin()) {
             render status: 403
             return
 		}
@@ -622,7 +616,7 @@ class AdminController {
     }
 
     def clearAllCaches() {
-        if (!checkAdminAccess()) {
+        if (!userService.isAdmin()) {
             render status: 403
             return
 		}
@@ -632,7 +626,7 @@ class AdminController {
     }
 
     def updateUsers() {
-        if (!checkAdminAccess()) {
+        if (!userService.isAdmin()) {
             render status: 403
             return
 		}
