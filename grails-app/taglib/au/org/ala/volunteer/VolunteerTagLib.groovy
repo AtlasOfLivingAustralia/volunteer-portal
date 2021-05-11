@@ -1118,7 +1118,54 @@ function notify() {
 
             }
         }
+    }
 
+    /**
+     * Renders the options for a select list of templates, organised into categories.
+     * @attr templateList REQUIRED the list of maps - [template, category]
+     * @attr currentTemplateId REQUIRED the current selected template
+     */
+    def templateSelectOptions = { attrs ->
+        log.debug("Current template ID: ${attrs.currentTemplateId}")
+        def category = ""
+        def output = ""
+        attrs.templateList.each { Map row ->
+            Template template = row.template
+            if (category != row.category) {
+                category = row.category
+                if (output.length() > 0) output += "</optgroup>"
+                output += "<optgroup label='${getTemplateCategory(category)}'>"
+            }
+
+            if (!template.isHidden || userService.isSiteAdmin()) {
+                output += "<option value='${template.id}' ${(attrs.currentTemplateId == template.id ? 'selected' : '')}>${template}${(attrs.currentTemplateId == template.id ? ' (Current)' : '')}</option>"
+            } else if (template.isHidden && attrs.currentTemplateId == template.id) {
+                output += "<option value='${template.id}' selected>${template}</option>"
+            }
+        }
+
+        out << output
+    }
+
+    /**
+     * Returns a Category name for the category code provided.
+     *
+     * @param categoryCode the code, either c1, c2, c3 or c4.
+     * @return the name of the category.
+     */
+    private def getTemplateCategory(def categoryCode) {
+        def category
+        switch (categoryCode) {
+            case 'c1': category = "Global Templates"
+                break
+            case 'c2': category = "Hidden Templates"
+                break
+            case 'c4': category = "Unassigned Templates"
+                break
+            default: category = "Available Templates"
+
+        }
+        return category
     }
 
 }

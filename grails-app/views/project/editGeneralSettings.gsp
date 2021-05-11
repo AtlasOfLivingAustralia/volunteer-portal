@@ -22,7 +22,7 @@
 </g:hasErrors>
 
 <g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
-    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <g:hiddenField name="id" id="projectId" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
     <div class="form-group">
@@ -66,31 +66,12 @@
         <label class="control-label col-md-3" for="template">Template</label>
 
         <div class="col-md-6">
-%{--            <g:select name="template" class="form-control" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>--}%
-            <select name="template" class="form-control">
-                <g:each in="${templates}" var="template">
-                    <g:if test="${!template.isHidden}">
-                        <g:if test="${template.id == projectInstance.template?.id}">
-                            <option value="${template.id}" selected>${template}</option>
-                        </g:if>
-                        <g:else>
-                            <option value="${template.id}">${template}</option>
-                        </g:else>
-                    </g:if>
-                    <g:else>
-                        <g:if test="${template.id == projectInstance.template?.id}">
-                            <option value="${template.id}" selected>${template}</option>
-                        </g:if>
-                    </g:else>
-                </g:each>
+            <select name="template" id="template" class="form-control">
+                <cl:templateSelectOptions currentTemplateId="${projectInstance.template?.id}" templateList="${templates}" />
             </select>
         </div>
 
         <div class="col-md-3">
-%{--            <a class="btn btn-default"--}%
-%{--               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">Edit template</a>--}%
-%{--            <a class="btn btn-default"--}%
-%{--               href="${createLink(controller: 'template', action: 'list')}">All templates</a>--}%
             <a class="btn btn-xs btn-default" title="Edit Template" style="margin: 5px;"
                href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">
                 <i class="fa fa-pencil"></i>
@@ -111,7 +92,6 @@
         </div>
     </div>
 
-    %{--<g:if test="${projectInstance.template?.supportMultipleTranscriptions}">--}%
         <div class="multipleTranscriptionsSupport">
             <div class="form-group">
                 <label class="control-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
@@ -128,7 +108,6 @@
                 </div>
             </div>
         </div>
-    %{--</g:if>--}%
 
     <div class="form-group">
         <label class="control-label col-md-3" for="label">Tags</label>
@@ -146,9 +125,6 @@
             </g:each>
         </div>
 
-        %{--<div class="clearfix visible-md-block visible-lg-block"></div>--}%
-
-        %{--<div class="col-md-offset-3 col-md-6"></div>--}%
     </div>
 
     <div class="form-group">
@@ -194,8 +170,9 @@
        var checkSupportMultipleTransUrl = "${createLink(controller: 'project', action: 'checkTemplateSupportMultiTranscriptions')}";
 
        var templateId = $('#template').val();
-       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId}}).done(function(data) {
-           if (data && data.supportMultipleTranscriptions == 'true') {
+       const projectId = $('#projectId').val();
+       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId, projectId: projectId}}).done(function(data) {
+           if (data && data.supportMultipleTranscriptions === 'true') {
                if (!$('#transcriptionsPerTask').val()) {
                    $('#transcriptionsPerTask').val('1');
                }

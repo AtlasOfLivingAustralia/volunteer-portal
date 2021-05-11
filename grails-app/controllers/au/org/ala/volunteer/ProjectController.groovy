@@ -652,18 +652,19 @@ class ProjectController {
             }
 
             // Issue #371 - Activation notification
-            def oldInactiveFlag = project.inactive
+            def oldInactiveFlag = project.inactive == null ? false : project.inactive
             boolean newInactive = (params.inactive != null ? params.inactive == "true" : project.inactive)
 
-            Template newTemplate = Template.get(params.long('template'))
-            if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
-                project.errors.rejectValue("template", "project.template.notavailable",
-                        [newTemplate.name] as Object[],
-                        "Template is no longer available.")
-                return false
+            if (params.template) {
+                Template newTemplate = Template.get(params.long('template'))
+                if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
+                    project.errors.rejectValue("template", "project.template.notavailable",
+                            [newTemplate.name] as Object[],
+                            "Template is no longer available.")
+                    return false
+                }
             }
 
-            //projectInstance.properties = params
             bindData(project, params)
 
             if (!project.template.supportMultipleTranscriptions) {
@@ -672,6 +673,7 @@ class ProjectController {
             }
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
+                log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
                 if (((oldInactiveFlag != newInactive) && (!newInactive))) {
                     log.info("Project was activated Sending project activation notification")
                     def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: project.name])

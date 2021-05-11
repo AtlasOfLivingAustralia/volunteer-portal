@@ -96,7 +96,7 @@
                                     </a>
                             </g:if>
                             <g:else>
-                                    <button class="btn btn-xs btn-default" alt="Edit" title="Edit" disabled><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-xs btn-default" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
                             </g:else>
                                     <a class="btn btn-xs btn-default" alt="Preview Template" title="Preview Template"
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
@@ -106,7 +106,7 @@
                                     <a class="btn btn-xs btn-danger btnDeleteTemplate" data-link-count="${templateInstance.projects?.size()}" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                             </g:if>
                             <g:else>
-                                    <button class="btn btn-xs btn-danger" alt="Delete" title="Delete" disabled><i class="fa fa-times"></i></button>
+                                    <button class="btn btn-xs btn-danger" alt="Delete" title="You cannot delete this template" disabled><i class="fa fa-times"></i></button>
                             </g:else>
                                 </td>
                             </tr>

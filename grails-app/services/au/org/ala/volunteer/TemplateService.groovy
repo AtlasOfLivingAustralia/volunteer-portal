@@ -8,13 +8,14 @@ import grails.transaction.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
 
+import javax.sql.DataSource
 import java.util.regex.Pattern
 
 class TemplateService {
 
     GrailsApplication grailsApplication
     def userService
-    def dataSource
+    DataSource dataSource
 
     @Transactional
     def cloneTemplate(Template template, String newName) {
@@ -134,7 +135,7 @@ class TemplateService {
 
             def sql = new Sql(dataSource)
             sql.eachRow(query) { row ->
-                Template template = Template.get(row.id)
+                Template template = Template.get(row.id as long)
                 results.add(template)
             }
 
@@ -165,7 +166,24 @@ class TemplateService {
 //                ${includeHiddenClause}
 //                order by t.name """.stripIndent()
         def query = """\
-            select distinct template.id, template.name, template.is_global, template.is_hidden
+            select distinct template.id, 
+                template.name, 
+                template.is_global, 
+                template.is_hidden,
+                count(project.id) as num_projects,
+                CASE
+                    WHEN ( is_global = true ) THEN
+                        'c1'
+                    WHEN ( is_hidden = true ) THEN
+                        'c2'
+                    ELSE
+                        CASE
+                            WHEN ( COUNT(project.id) > 0 ) THEN
+                                    'c3'
+                            ELSE
+                                'c4'
+                        END
+                END AS category
             from template 
             left outer join project on (project.template_id = template.id)
             left outer join institution on (institution.id = project.institution_id)
@@ -173,12 +191,13 @@ class TemplateService {
                 or template.is_global = true
                 or institution.id is null)
                 ${includeHiddenClause}
-            order by template.name """.stripIndent()
+            group by template.id, template.name, template.is_global, template.is_hidden
+            order by category ASC, template.name ASC """.stripIndent()
 
         def sql = new Sql(dataSource)
         sql.eachRow(query, [institutionId: institution?.id]) { row ->
-            Template template = Template.get(row.id)
-            results.add(template)
+            Template template = Template.get(row.id as long)
+            results.add([template: template, category: row.category])
         }
 
         sql.close()
@@ -203,7 +222,8 @@ class TemplateService {
                 t.name, 
                 u.last_name || ', ' || u.first_name as author, 
                 t.author as author_user_id, 
-                t.view_name
+                t.view_name,
+                t.is_global
             from template t 
             left outer join project p on (p.template_id = t.id) 
             left outer join institution i on (i.id = p.institution_id) 
@@ -219,19 +239,19 @@ class TemplateService {
 //        }
 
         // Add the institution filter, if present
-        if (!Strings.isNullOrEmpty(params.institution) && params.institution != 'all') {
-            institution = Institution.get(params.institution)
+        if (!Strings.isNullOrEmpty(params.institution?.toString()) && params.institution != 'all') {
+            institution = Institution.get(Long.parseLong(params.institution?.toString()))
             clause.add(" i.id = :institutionId ")
             parameters.institutionId = institution.id
         }
 
         // Add the project search filter, if present
-        if (!Strings.isNullOrEmpty(params.q)) {
+        if (!Strings.isNullOrEmpty(params.q?.toString())) {
             clause.add(" p.name ilike '%${params.q}%' ")
         }
 
         // Add the view name filter, if present
-        if (!Strings.isNullOrEmpty(params.viewName)) {
+        if (!Strings.isNullOrEmpty(params.viewName?.toString())) {
             clause.add(" t.view_name = :viewName ")
             parameters.viewName = params.viewName
         }
@@ -246,7 +266,7 @@ class TemplateService {
             query += "${line}"
         }
 
-        if (!Strings.isNullOrEmpty(params.sort)) {
+        if (!Strings.isNullOrEmpty(params.sort?.toString())) {
             String sort
             switch (params.sort) {
                 case 'name': sort = "t.name"
@@ -258,12 +278,14 @@ class TemplateService {
                 default: sort = "t.id"
                     break
             }
-            query += " order by ${sort} ${params.order}"
+            query += " order by is_global desc, ${sort} ${params.order}"
+        } else {
+            query += " order by is_global desc, t.id asc"
         }
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, parameters, params.offset, params.max) { row ->
-            Template template = Template.get(row.template_id)
+        sql.eachRow(query, parameters, params.offset as int, params.max as int) { row ->
+            Template template = Template.get(row.template_id as long)
             results.add(template)
         }
 
