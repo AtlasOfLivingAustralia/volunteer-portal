@@ -16,7 +16,12 @@ final TOMCAT_LOG = 'TOMCAT_LOG'
 final ACCESS = 'ACCESS'
 final CAS = 'CAS'
 final DEBUG_LOG = 'DEBUG_LOG'
-final APPENDERS = [[name: TOMCAT_LOG, suffix: ''],[name:ACCESS, suffix: '-session-access'],[name: CAS, suffix: '-cas'],[name: DEBUG_LOG, suffix: '-debug']]
+final SLOW_QUERIES = 'QUERY_LOG'
+final APPENDERS = [[name: TOMCAT_LOG, suffix: ''],
+                   [name:ACCESS, suffix: '-session-access'],
+                   [name: CAS, suffix: '-cas'],
+                   [name: DEBUG_LOG, suffix: '-debug'],
+                   [name: SLOW_QUERIES, suffix: '-slow-queries']]
 for (def a : APPENDERS) {
     switch (Environment.current) {
         case Environment.PRODUCTION:
@@ -87,8 +92,6 @@ for (def a : APPENDERS) {
                 }
             }
             break
-
-
     }
 }
 
@@ -101,12 +104,12 @@ logger('org.jasig.cas', DEBUG, [CAS], false)
 
 logger('grails.app.services.au.org.ala.volunteer.TaskService', DEBUG, [DEBUG_LOG], false)
 
-final error = [
+logger('org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport', INFO, [SLOW_QUERIES], false)
 
+final error = [
 ]
 
 final warn = [
-
         'au.org.ala.cas.client',
         'au.org.ala.cas.util',
         'org.apache.coyote.http11.Http11Processor'
@@ -144,8 +147,8 @@ final trace = [
 //        'org.hibernate.type'
 ]
 
-for (def name : error) logger(name, ERROR)
-for (def name : warn) logger(name, WARN)
-for (def name: info) logger(name, INFO)
-for (def name: debug) logger(name, DEBUG)
-for (def name: trace) logger(name, TRACE)
+for (String name : error) logger(name, ERROR)
+for (String name : warn) logger(name, WARN)
+for (String name: info) logger(name, INFO)
+for (String name: debug) logger(name, DEBUG)
+for (String name: trace) logger(name, TRACE)
