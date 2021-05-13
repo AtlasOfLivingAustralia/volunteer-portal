@@ -89,6 +89,7 @@ class ValidateController {
     def validate() {
         def taskInstance = Task.get(params.long('id'))
         if (!userService.isValidatorForProjectId(taskInstance?.project?.id) || !taskInstance) {
+            log.warn("User requesting unauthed url: ${userService.currentUserId}")
             redirect(uri: "/")
             return
         }

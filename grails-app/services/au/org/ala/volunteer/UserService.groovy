@@ -180,18 +180,22 @@ class UserService {
         }
 
         // Otherwise check the intra app roles...
-        // If project is null, return true if the user can validate in any project and any institution
-        // If project is not null, return true only if they are validator for that project or institution, or if they have a null project and null institution in their validator role (meaning 'all projects' and 'all institutions')
+        // If project is null, return true if the user can validate in any project and any institution (institution
+        // matches the project's institution or the provided institution ID).
+        // If project is not null, return true only if they are validator for that project or institution, or if
+        // they have a null project and null institution in their validator role (meaning 'all projects' and 'all institutions')
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
-            def role = user.userRoles.find {
+            def project = Project.get(projectId)
+            def userRole = user.userRoles.find {
                 it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
                                                     projectId == null ||
-                                                    it.institution?.id == projectInstitutionId ||
+                                                    (it.institution?.id == projectInstitutionId ||
+                                                            it.institution?.id == project?.institution?.id) ||
                                                     it.project?.id == projectId)
             }
-            if (role) {
+            if (userRole) {
                 // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
                 // indicating that they can validate tasks from any project and or institution)
                 return true;
