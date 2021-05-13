@@ -58,7 +58,7 @@ class DomainUpdateService {
             if (RequestContextHolder.requestAttributes) {
                 currentUserId = userService.currentUserId
             } else {
-                log.info("Not currently in a request context, there is no current user to add to achivement evaluation.")
+                log.debug("Not currently in a request context, there is no current user to add to achivement evaluation.")
             }
             if (currentUserId) {
                 involvedUserIds.add(currentUserId)
