@@ -88,7 +88,8 @@ class ValidateController {
      */
     def validate() {
         def taskInstance = Task.get(params.long('id'))
-        if (!userService.isValidatorForProjectId(taskInstance?.project?.id) || !taskInstance) {
+        if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
+            log.warn("User requesting unauthed url: ${userService.currentUserId}")
             redirect(uri: "/")
             return
         }
@@ -129,7 +130,7 @@ class ValidateController {
      */
     def dontValidate() {
         def taskInstance = Task.get(params.long('id'))
-        if (!userService.isValidatorForProjectId(taskInstance?.project?.id) || !taskInstance) {
+        if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
             redirect(uri: "/")
             return
         }
@@ -176,7 +177,7 @@ class ValidateController {
         def currentUser = userService.currentUserId
         def project = Project.get(params.long('id'))
 
-        if (!userService.isValidatorForProjectId(project?.id) || !project) {
+        if (!userService.isValidator(project) || !project) {
             redirect(uri: "/")
             return
         }

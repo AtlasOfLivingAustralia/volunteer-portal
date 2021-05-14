@@ -843,12 +843,12 @@ class TaskController {
     }
 
     def viewedTaskFragment() {
-        if (!userService.isAdmin()) {
+        def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
+        if (!userService.isValidator(viewedTask?.task?.project)) {
             redirect(uri: "/")
             return
         }
 
-        def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
         if (viewedTask) {
             def lastViewedDate = new Date(viewedTask?.lastView)
             def tc = TimeCategory.minus(new Date(), lastViewedDate)
