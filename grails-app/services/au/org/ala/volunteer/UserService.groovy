@@ -154,18 +154,16 @@ class UserService {
     }
 
     /**
-     * returns true if the current user can validate tasks from the specified project
-     * @param project
-     *        institutionId where the project belongs to (if any)
-     * @return
-     *        true if user has validator access
-     *        false if user
+     * Returns true if the current user can validate tasks from the specified project
+     * @param projectId the project to check validator access to. Returns false if no project ID provided.
+     * @param institutionId (optional) where the project belongs to (if any)
+     * @return true if user has validator access, false if user does not.
      */
     public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
 
         def userId = currentUserId
 
-        if (!userId) {
+        if (!userId || !projectId) {
             return false;
         }
 
@@ -180,24 +178,28 @@ class UserService {
         }
 
         // Otherwise check the intra app roles...
-        // If project is null, return true if the user can validate in any project and any institution (institution
-        // matches the project's institution or the provided institution ID).
-        // If project is not null, return true only if they are validator for that project or institution, or if
-        // they have a null project and null institution in their validator role (meaning 'all projects' and 'all institutions')
+        // If, for the user's roles:
+        // - If both project and institution are null, this is a global level role - return true.
+        // - If the provided project's institution or the provided institution matches the role's institution,
+        //   this is an institution-level role - return true.
+        // - If the provided project matches the role's project, this is a project-level role - return true.
+        log.debug("Checking if user has validator role")
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def project = Project.get(projectId)
             def userRole = user.userRoles.find {
-                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
-                                                    projectId == null ||
+                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) /* global-level */ ||
+                                                    //projectId == null ||
                                                     (it.institution?.id == projectInstitutionId ||
-                                                            it.institution?.id == project?.institution?.id) ||
-                                                    it.project?.id == projectId)
+                                                            it.institution?.id == project?.institution?.id) /* institution-level */ ||
+                                                    it.project?.id == projectId /* project-level */)
             }
             if (userRole) {
-                // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
-                // indicating that they can validate tasks from any project and or institution)
+                log.debug("Found userRole: ${userRole}")
+                // a role exists for the current user and the specified project/institution (or the user has a role
+                // with a null project and null institution indicating that they can validate tasks from any project
+                // and or institution)
                 return true;
             }
         }
