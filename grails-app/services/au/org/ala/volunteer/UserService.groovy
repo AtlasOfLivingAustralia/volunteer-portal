@@ -159,7 +159,7 @@ class UserService {
      * @param institutionId (optional) where the project belongs to (if any)
      * @return true if user has validator access, false if user does not.
      */
-    public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
+    public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId) {
 
         def userId = currentUserId
 
@@ -187,12 +187,10 @@ class UserService {
         def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
-            def project = Project.get(projectId)
             def userRole = user.userRoles.find {
                 it.role.id == validatorRole.id && ((it.institution == null && it.project == null) /* global-level */ ||
                                                     //projectId == null ||
-                                                    (it.institution?.id == projectInstitutionId ||
-                                                            it.institution?.id == project?.institution?.id) /* institution-level */ ||
+                                                    it.institution?.id == projectInstitutionId /* institution-level */ ||
                                                     it.project?.id == projectId /* project-level */)
             }
             if (userRole) {
