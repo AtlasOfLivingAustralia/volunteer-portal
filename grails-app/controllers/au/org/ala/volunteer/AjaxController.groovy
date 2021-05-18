@@ -108,14 +108,12 @@ class AjaxController {
     }
 
     def userReport() {
-
         setNoCache()
 
         if (!userService.isAdmin()) {
             render ("${UNAUTH_MSG}")
             return
         }
-
 
         // Pre-create the writer and write the headings straight away to prevent a read timeout.
         def writer
@@ -144,7 +142,6 @@ class AjaxController {
             writer.writeHeadings()
             response.flushBuffer()
         }
-
 
         def asyncCounts = Task.async.withStatelessSession {
             def sw1 = Stopwatch.createStarted()
@@ -259,9 +256,7 @@ class AjaxController {
         sw5.stop()
         log.debug("UserReport sort took ${sw5.toString()}")
 
-
         if (params.wt && params.wt == 'csv') {
-
             for (def row : report) {
                 writer << row
             }
@@ -272,7 +267,7 @@ class AjaxController {
     }
 
     def loadProgress(long id) {
-        if (!userService.isAdmin()) {
+        if (!projectService.isAdminForProject(Project.get(id))) {
             render ("${UNAUTH_MSG}")
             return
         }
@@ -662,7 +657,7 @@ class AjaxController {
             return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
         }
 
-        if (!userService.isAdmin()) {
+        if (!projectService.isAdminForProject(Project.get(cmd.projectId))) {
             return render(status: request.userPrincipal ? SC_FORBIDDEN : SC_UNAUTHORIZED, text: 'Access denied')
         }
 

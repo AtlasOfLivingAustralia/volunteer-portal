@@ -4,7 +4,6 @@ class InstitutionController {
 
     def projectService
     def institutionService
-    def userService
 
     def index() {
         def institution = Institution.get(params.int("id"))
@@ -17,12 +16,14 @@ class InstitutionController {
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 
-        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
-        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
+        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter as String)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter as String)
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 
-        def projectSummaries = projectService.makeSummaryListForInstitution(institution, params.tag, params.q, params.sort, params.int('offset', 0), params.int('max'), params.order, statusFilterMode, activeFilterMode)
+        def projectSummaries = projectService.makeSummaryListForInstitution(institution, params.tag as String,
+                params.q as String, params.sort as String, params.int('offset', 0), params.int('max'),
+                params.order as String, statusFilterMode, activeFilterMode)
         def transcriberCount = institutionService.getTranscriberCount(institution)
 
         def taskCounts = institutionService.getTaskCounts(institution)
@@ -74,12 +75,12 @@ class InstitutionController {
         def projectVolunteers = institutionService.getTranscriberCounts(institutions)
         def taskCounts = institutionService.countTasksForInstitutions(institutions)
 
-        [   institutions: institutions,
+        [
+            institutions: institutions,
             totalInstitutions: totalCount,
             projectCounts: projectCounts,
             projectVolunteers: projectVolunteers,
             taskCounts: taskCounts
         ]
     }
-
 }

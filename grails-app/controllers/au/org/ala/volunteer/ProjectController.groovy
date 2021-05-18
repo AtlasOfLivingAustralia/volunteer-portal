@@ -41,17 +41,6 @@ class ProjectController {
     Closure<DSLContext> jooqContext
 
     /**
-     * Returns boolean if the user is an admin for the project or not.
-     * @param project the project in question
-     * @return true if user is admin, false if not.
-     */
-    def isAdminForProject(Project project) {
-        if (!project) return false
-        def currentUser = userService.currentUserId
-        return currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(project?.institution))
-    }
-
-    /**
      * Project home page - shows stats, etc.
      */
     def index() {
@@ -190,7 +179,7 @@ class ProjectController {
      */
     def mailingList() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -228,7 +217,7 @@ class ProjectController {
      */
     def exportCSV() {
         def project = Project.get(params.long('id'))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -281,7 +270,7 @@ class ProjectController {
 
     def deleteTasks() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -402,7 +391,7 @@ class ProjectController {
 
     def editGeneralSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -437,7 +426,7 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         def project = Project.findById(params.long('projectId'))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             render (["status": 403, "error": "Forbidden"] as JSON)
         } else {
             def template = Template.findById(params.long("templateId"))
@@ -451,7 +440,7 @@ class ProjectController {
 
     def editTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -467,7 +456,7 @@ class ProjectController {
 
     def editPicklistSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -497,7 +486,7 @@ class ProjectController {
 
     def editMapSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -507,7 +496,7 @@ class ProjectController {
 
     def editBannerImageSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -517,7 +506,7 @@ class ProjectController {
 
     def editBackgroundImageSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -527,7 +516,7 @@ class ProjectController {
 
     def editTaskSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -545,7 +534,7 @@ class ProjectController {
 
     def updateGeneralSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -577,7 +566,7 @@ class ProjectController {
 
     def update() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -597,7 +586,7 @@ class ProjectController {
 
     def updateTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -617,7 +606,7 @@ class ProjectController {
 
     def deleteAllTasksFragment() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -627,7 +616,7 @@ class ProjectController {
 
     def deleteProjectFragment() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -636,7 +625,7 @@ class ProjectController {
     }
 
     private boolean saveProjectSettingsFromParams(Project project, GrailsParameterMap params) {
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             return false
         }
 
@@ -694,7 +683,7 @@ class ProjectController {
 
     def updatePicklistSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -714,7 +703,7 @@ class ProjectController {
 
     def delete() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -741,7 +730,7 @@ class ProjectController {
     
     def uploadFeaturedImage() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -780,7 +769,7 @@ class ProjectController {
 
     def uploadBackgroundImage() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -824,7 +813,7 @@ class ProjectController {
 
     def clearBackgroundImageSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -841,7 +830,7 @@ class ProjectController {
 
     def updateMapSettings() {
         def project = Project.get(params.long("id"))
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -867,7 +856,7 @@ class ProjectController {
     }
 
     def findProjectFragment() {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -875,7 +864,7 @@ class ProjectController {
     }
 
     def findProjectResultsFragment() {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -896,7 +885,7 @@ class ProjectController {
     }
 
     def addLabel(Project project) {
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -917,7 +906,7 @@ class ProjectController {
     }
 
     def removeLabel(Project project) {
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -938,7 +927,7 @@ class ProjectController {
     }
 
     def newLabels(Project project) {
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -967,7 +956,7 @@ class ProjectController {
     }
 
     def wizard(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -1021,7 +1010,7 @@ class ProjectController {
     }
 
     def wizardAutosave(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1030,7 +1019,7 @@ class ProjectController {
     }
 
     def wizardImageUpload(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1077,7 +1066,7 @@ class ProjectController {
     }
 
     def wizardClearImage(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1093,7 +1082,7 @@ class ProjectController {
     }
 
     def wizardProjectNameValidator(String name) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1102,7 +1091,7 @@ class ProjectController {
     }
 
     def wizardCancel(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1112,7 +1101,7 @@ class ProjectController {
     }
 
     def wizardCreate(String id) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1139,7 +1128,7 @@ class ProjectController {
 
     def archiveList() {
         final sw = Stopwatch.createStarted()
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
         }
@@ -1252,7 +1241,7 @@ class ProjectController {
      * @param project the project to archive.
      */
     def archive(Project project) {
-        if (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution)) {
+        if (!projectService.isAdminForProject(project)) {
             log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
             redirect(uri: "/")
             return
@@ -1330,7 +1319,7 @@ class ProjectController {
     }
 
     def loadProgress(Project project) {
-        if (!isAdminForProject(project)) {
+        if (!projectService.isAdminForProject(project)) {
             respond status: 403
         } else {
             respond project

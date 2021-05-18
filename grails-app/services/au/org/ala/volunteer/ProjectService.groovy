@@ -36,6 +36,7 @@ import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
+import static org.jooq.impl.DSL.coalesce
 import static org.jooq.impl.DSL.condition
 import static org.jooq.impl.DSL.count
 import static org.jooq.impl.DSL.count as jCount
@@ -125,6 +126,17 @@ class ProjectService {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    /**
+     * Returns boolean if the user is an admin for the project or not.
+     * @param project the project in question
+     * @return true if user is admin, false if not.
+     */
+    def isAdminForProject(Project project) {
+        if (!project) return false
+        def currentUser = userService.currentUserId
+        return currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(project?.institution))
     }
 
     @Transactional(readOnly = true)
@@ -542,7 +554,8 @@ class ProjectService {
                 ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
-                orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
+                orderBy(coalesce(PROJECT.INACTIVE, false).sort(SortOrder.ASC),
+                        sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
         if (offset && max) return query.offset(offset).limit(max)
         else if (offset) return query.offset(offset)
         else if (max) return query.limit(max)

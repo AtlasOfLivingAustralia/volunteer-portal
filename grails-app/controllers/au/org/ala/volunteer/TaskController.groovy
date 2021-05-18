@@ -3,13 +3,11 @@ package au.org.ala.volunteer
 import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
+
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 
 class TaskController {
 
@@ -25,6 +23,7 @@ class TaskController {
     def stagingService
     def auditService
     def multimediaService
+    def projectService
 
     def projectAdmin() {
         def currentUser = userService.currentUserId
@@ -41,7 +40,7 @@ class TaskController {
 
     private def renderProjectListWithSearch(GrailsParameterMap params, String view) {
 
-        def projectInstance = Project.get(params.id)
+        def projectInstance = Project.get(params.long('id'))
 
         def currentUser = userService.currentUserId
         def userInstance = User.findByUserId(currentUser)
@@ -119,7 +118,7 @@ class TaskController {
                 views = c {
                     'in'("task", taskInstanceList)
                 }
-                views = views?.groupBy { it.task }
+                views = views?.groupBy { ((ViewedTask) it).task }
             }
 
             def lockedMap = [:]
@@ -138,7 +137,7 @@ class TaskController {
                     projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
         }
         else {
-            flash.message = "No project found for ID " + params.id
+            flash.message = "No project found for ID " + params.long('id')
         }
     }
 
@@ -206,18 +205,17 @@ class TaskController {
     }
 
     def show() {
-        def taskInstance = Task.get(params.id)
+        def task = Task.get(params.long('id'))
         def userTask = params.get('userId')
-        if (!taskInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id])}"
+        if (!task) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label', default: 'Task'), params.id]) as String
             redirect(action: "list")
         } else {
-
             def currentUser = userService.currentUserId
             def readonly = false
             def msg = ""
 
-            if (taskInstance) {
+            if (task) {
                 // first check is user is logged in...
                 if (!currentUser) {
                     readonly = true
@@ -226,7 +224,7 @@ class TaskController {
                     // work out if the task is currently being edited by someone else...
                     def prevUserId = null
                     def prevLastView = 0
-                    taskInstance.viewedTasks.each { viewedTask ->
+                    task.viewedTasks.each { viewedTask ->
                         // viewedTasks is a set so order is not guaranteed
                         if (viewedTask.lastView > prevLastView) {
                             // store the most recent viewedTask
@@ -238,17 +236,17 @@ class TaskController {
                     log.debug "<task.show> userId = " + currentUser + " || prevUserId = " + prevUserId + " || prevLastView = " + prevLastView
 //                    def millisecondsSinceLastView = (prevLastView > 0) ? System.currentTimeMillis() - prevLastView : null
 
-                    boolean isTaskLockedForTranscription = auditService.isTaskLockedForTranscription(taskInstance, currentUser)
+                    boolean isTaskLockedForTranscription = auditService.isTaskLockedForTranscription(task, currentUser)
                     //if (prevUserId != currentUser && millisecondsSinceLastView && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
                     if (isTaskLockedForTranscription) {
                         // task is already being viewed by another user (with timeout period)
                         //log.warn "Task was recently viewed: " + (millisecondsSinceLastView / (60 * 1000)) + " min ago by ${prevUserId}"
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
-                    } else if (taskInstance.fullyValidatedBy && taskInstance.isValid != null) {
+                    } else if (task.fullyValidatedBy && task.isValid != null) {
                         msg = "This task has been validated, and is currently read-only."
-                        if (userService.isValidator(taskInstance.project)) {
-                            def link = createLink(controller: 'validate', action: 'task', id: taskInstance.id)
+                        if (userService.isValidator(task.project)) {
+                            def link = createLink(controller: 'validate', action: 'task', id: task.id) as String
                             msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
                         }
                         readonly = true
@@ -262,41 +260,41 @@ class TaskController {
             if (!readonly) {
                 redirect(controller: 'transcribe', action: 'task', id: params.id)
             } else {
-                def project = Project.findById(taskInstance.project.id)
+                def project = Project.findById(task.project.id)
                 def template = Template.findById(project.template.id)
                 def isReadonly = 'readonly'
-                def isValidator = userService.isValidator(project)
-                log.debug currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
+                // def isValidator = userService.isValidator(project)
+                // log.debug currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator
 
 //                def imageMetaData = taskService.getImageMetaData(taskInstance)
 
-                //retrieve the existing values - if this is a multiple transcription task, we have to pick
+                // Retrieve the existing values - if this is a multiple transcription task, we have to pick
                 // which transcription to show.
                 Transcription transcription = null //
-                if (!taskInstance.fullyValidatedBy || taskInstance.project.requiredNumberOfTranscriptions == 1) { // If the task is not validated, pick a transcription.
+                if (!task.fullyValidatedBy || task.project.requiredNumberOfTranscriptions == 1) { // If the task is not validated, pick a transcription.
                     // If the user has transcribed the Task, use the user's transcription.
                     String userId = currentUser
-                    transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == userId}
+                    transcription = task.transcriptions.find{it.fullyTranscribedBy == userId}
 
                     // Otherwise use the transcription from the user notebook, if supplied.
                     if (params.userId) {
-                        transcription = taskInstance.transcriptions.find{it.fullyTranscribedBy == params.userId}
+                        transcription = task.transcriptions.find{it.fullyTranscribedBy == params.userId}
                     }
                     if (!transcription) {
-                        transcription = taskInstance.transcriptions.first()
+                        transcription = task.transcriptions.first()
                     }
                 }
-                Map recordValues = fieldSyncService.retrieveFieldsForTranscription(taskInstance, transcription)
-                def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
+                Map recordValues = fieldSyncService.retrieveFieldsForTranscription(task, transcription)
+                def adjacentTasks = taskService.getAdjacentTasksBySequence(task)
                 def model = [
-                        taskInstance: taskInstance,
+                        taskInstance: task,
                         recordValues: recordValues,
                         isReadonly: isReadonly,
                         template: template,
                         nextTask: adjacentTasks.next,
                         prevTask: adjacentTasks.prev,
                         sequenceNumber: adjacentTasks.sequenceNumber,
-                        thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)
+                        thumbnail: multimediaService.getImageThumbnailUrl(task.multimedia.first(), true)
                 ]
                 render(view: '/transcribe/templateViews/' + template.viewName, model: model)
             }
@@ -334,6 +332,7 @@ class TaskController {
                     filename: task.externalIdentifier,
                     thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
                     image: multimediaService.getImageUrl(mm),
+                // TODO: replace these?
                     transcriber: userService.detailsForUserId(task.fullyTranscribedBy)?.displayName,
                     dateTranscribed: task.dateFullyTranscribed,
                     validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
@@ -372,15 +371,16 @@ class TaskController {
     def taskBrowserTaskList() {
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
-            def projectInstance = task?.project
-            def taskList = taskService.transcribedDatesByUserAndProject(userService.currentUserId, projectInstance.id, params.search_text)
+            def project = task?.project
+            def taskList = taskService.transcribedDatesByUserAndProject(userService.currentUserId, project.id, params.search_text as String)
 
             taskList = taskList.sort { it.lastEdit }
 
             if (task) {
                 taskList.remove(task)
             }
-            [projectInstance: projectInstance, taskList: taskList.toList(), taskInstance: task]
+
+            [projectInstance: project, taskList: taskList.toList(), taskInstance: task]
         }
 
     }
@@ -484,16 +484,15 @@ class TaskController {
     }
 
     def staging() {
-        if (!userService.isAdmin()) {
+        def projectId = params.int("projectId")
+        def project = Project.get(projectId)
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectId = params.int("projectId")
-        def projectInstance = Project.get(projectId)
 
         cache false
-
-        if (!projectInstance) {
+        if (!project) {
             redirect(controller: 'index')
             return
         }
@@ -502,154 +501,169 @@ class TaskController {
             flash.message = 'Please wait while existing staged images are loaded'
             redirect(controller: 'project', action: 'loadProgress', id: projectId)
         } else {
-            [projectInstance: projectInstance, hasDataFile: stagingService.projectHasDataFile(projectInstance), dataFileUrl:stagingService.dataFileUrl(projectInstance)]
+            [projectInstance: project, hasDataFile: stagingService.projectHasDataFile(project), dataFileUrl:stagingService.dataFileUrl(project)]
         }
     }
 
     def stagedImages() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        def profile = ProjectStagingProfile.findByProject(projectInstance)
+
+        def profile = ProjectStagingProfile.findByProject(project)
         if (!profile) {
-            profile = new ProjectStagingProfile(project: projectInstance)
+            profile = new ProjectStagingProfile(project: project)
             profile.save(flush: true, failOnError: true)
         }
 
         if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
-            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex, format: "^(.*)\$", fieldName: "externalIdentifier"))
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex,
+                    format: "^(.*)\$", fieldName: "externalIdentifier"))
         }
 
         cache false
-        def images = stagingService.buildTaskMetaDataList(projectInstance)
+        def images = stagingService.buildTaskMetaDataList(project)
         render template:'stagedImages', model: [images: images, profile:profile]
     }
 
     def editStagingFieldFragment() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
+
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
-        def hasDataFile = stagingService.projectHasDataFile(projectInstance)
+        def hasDataFile = stagingService.projectHasDataFile(project)
         def dataFileColumns = []
         if (hasDataFile) {
             dataFileColumns = ['']
-            dataFileColumns.addAll(stagingService.getDataFileColumns(projectInstance))
+            dataFileColumns.addAll(stagingService.getDataFileColumns(project))
         }
-        [projectInstance: projectInstance, fieldDefinition: fieldDefinition, hasDataFile: hasDataFile, dataFileColumns: dataFileColumns ]
+
+        [projectInstance: project, fieldDefinition: fieldDefinition, hasDataFile: hasDataFile,
+         dataFileColumns: dataFileColumns ]
     }
 
     def uploadDataFileFragment() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        [projectInstance: projectInstance]
+
+        [projectInstance: project]
     }
 
     def uploadStagingDataFile() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            if(request instanceof MultipartHttpServletRequest) {
+
+        if (project) {
+            if (request instanceof MultipartHttpServletRequest) {
                 MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv', 'application/octet-stream', 'application/vnd.ms-excel']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
                         flash.message = "The image file must be one of: ${allowedMimeTypes}, recieved '${f.getContentType()}'}"
-                        redirect(action:'staging', params:[projectId:projectInstance?.id])
+                        redirect(action:'staging', params:[projectId:project?.id])
                         return
                     }
 
                     if (f.size == 0 || !f.originalFilename) {
                         flash.message = "You must select a file to upload"
-                        redirect(action:'staging', params:[projectId:projectInstance?.id])
+                        redirect(action:'staging', params:[projectId:project?.id])
                         return
                     }
-                    stagingService.uploadDataFile(projectInstance, f)
+                    stagingService.uploadDataFile(project, f)
                 }
             }
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def uploadTaskDataFile() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
+
+        if (project) {
             if(request instanceof MultipartHttpServletRequest) {
                 MultipartFile f = ((MultipartHttpServletRequest) request).getFile('dataFile')
                 if (f != null) {
                     def allowedMimeTypes = ['text/plain','text/csv']
                     if (!allowedMimeTypes.contains(f.getContentType())) {
                         flash.message = "The file must be one of: ${allowedMimeTypes}"
-                        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+                        redirect(action:'loadTaskData', params:[projectId:project?.id])
                         return
                     }
-                    stagingService.uploadDataFile(projectInstance, f)
+                    stagingService.uploadDataFile(project, f)
                 }
             }
         }
-        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+        redirect(action: 'loadTaskData', params: [projectId: project?.id])
     }
 
     def clearTaskDataFile() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            stagingService.clearDataFile(projectInstance)
+
+        if (project) {
+            stagingService.clearDataFile(project)
         }
-        redirect(action:'loadTaskData', params:[projectId:projectInstance?.id])
+
+        redirect(action: 'loadTaskData', params: [projectId: project?.id])
     }
 
     def clearStagedDataFile() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            stagingService.clearDataFile(projectInstance)
+
+        if (project) {
+            stagingService.clearDataFile(project)
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def deleteAllStagedImages() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            stagingService.deleteStagedImages(projectInstance)
+
+        if (project) {
+            stagingService.deleteStagedImages(project)
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def unstageImage() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        def imageName = params.imageName
-        if (projectInstance && imageName) {
+
+        def imageName = params.imageName as String
+        if (project && imageName) {
             try {
-                if (!stagingService.unstageImage(projectInstance, imageName)) {
+                if (!stagingService.unstageImage(project, imageName)) {
                     flash.message = "Failed to delete image. Possibly file permissions?"
                     log.error("Failed to delete image. Possibly file permissions?")
                 }
@@ -658,23 +672,24 @@ class TaskController {
                 log.error("Failed to delete image: " + ex.message, ex)
             }
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def saveFieldDefinition() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
+
         def fieldName = params.fieldName
-        if (projectInstance && fieldName) {
+        if (project && fieldName) {
 
             def fieldType = (params.fieldType as FieldDefinitionType) ?: FieldDefinitionType.Literal
             def format = params.format ?: params.fmt ?: ""
             def recordIndex = params.int("recordIndex") ?: 0
-
-            def profile = ProjectStagingProfile.findByProject(projectInstance)
+            def profile = ProjectStagingProfile.findByProject(project)
 
             def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
             if (fieldDefinition) {
@@ -685,86 +700,90 @@ class TaskController {
                 fieldDefinition.format = format
                 fieldDefinition.save(flush:true)
             } else {
-                fieldDefinition = new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format, fieldName: fieldName, recordIndex: recordIndex)
+                fieldDefinition = new StagingFieldDefinition(fieldDefinitionType: fieldType, format: format,
+                        fieldName: fieldName, recordIndex: recordIndex)
                 profile.addToFieldDefinitions(fieldDefinition)
                 fieldDefinition.save(flush: true)
             }
-
         }
 
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def updateFieldDefinitionType() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
+
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         String newFieldType = params.newFieldType
-        if (projectInstance && fieldDefinition && newFieldType) {
+        if (project && fieldDefinition && newFieldType) {
             fieldDefinition.fieldDefinitionType = newFieldType
         }
         fieldDefinition.save(flush: true)
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def updateFieldDefinitionFormat() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
+
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
         String newFieldFormat = params.newFieldFormat
-        if (projectInstance && fieldDefinition && newFieldFormat) {
+        if (project && fieldDefinition && newFieldFormat) {
             fieldDefinition.format = newFieldFormat
         }
         fieldDefinition.save(flush: true)
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def deleteFieldDefinition() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
+
         def fieldDefinition = StagingFieldDefinition.get(params.int("fieldDefinitionId"))
-        if (projectInstance && fieldDefinition) {
+        if (project && fieldDefinition) {
             fieldDefinition.delete(flush: true)
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def loadStagedTasks() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            def results = taskLoadService.loadTasksFromStaging(projectInstance)
+
+        if (project) {
+            def results = taskLoadService.loadTasksFromStaging(project)
             flash.message = results.message
             if (results.success) {
-                redirect( controller:'project', action:'loadProgress', id: projectInstance.id)
+                redirect(controller:'project', action:'loadProgress', id: project.id)
                 return
             }
         }
-        redirect(action:'staging', params:[projectId:projectInstance?.id])
+        redirect(action: 'staging', params: [projectId: project?.id])
     }
 
     def exportStagedTasksCSV() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
-        def projectInstance = Project.get(params.int("projectId"))
 
-        if (projectInstance) {
-
-            def profile = ProjectStagingProfile.findByProject(projectInstance)
+        if (project) {
+            def profile = ProjectStagingProfile.findByProject(project)
 
             response.addHeader("Content-type", "text/plain")
             def writer = new BVPCSVWriter( (Writer) response.writer,  {
@@ -778,10 +797,9 @@ class TaskController {
                 }
             }
             writer.resetProducers()
-
             writer.writeHeadings = true
 
-            def images = stagingService.buildTaskMetaDataList(projectInstance)
+            def images = stagingService.buildTaskMetaDataList(project)
 
             images.each {
                 writer << it
@@ -789,52 +807,53 @@ class TaskController {
 
             response.writer.flush()
         }
-
     }
 
     def loadTaskData() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
 
-        def projectInstance = Project.get(params.int("projectId"))
-        if (!projectInstance) {
+        if (!project) {
             flash.errorMessage = "No project/invalid project id!"
             redirect(controller:'admin', action:'index')
             return
         }
 
-        def hasDataFile = stagingService.projectHasDataFile(projectInstance)
+        def hasDataFile = stagingService.projectHasDataFile(project)
         def fieldValues = [:]
         def columnNames = []
         if (hasDataFile) {
-            fieldValues = stagingService.buildTaskFieldValuesFromDataFile(projectInstance)
+            fieldValues = stagingService.buildTaskFieldValuesFromDataFile(project)
             if (fieldValues.size() > 0) {
                 columnNames = fieldValues[fieldValues.keySet().first()].keySet().collect()
             }
         }
 
-        [projectInstance: projectInstance, hasDataFile: hasDataFile, dataFileUrl:stagingService.dataFileUrl(projectInstance), fieldValues: fieldValues, columnNames: columnNames]
+        [projectInstance: project, hasDataFile: hasDataFile, dataFileUrl:stagingService.dataFileUrl(project),
+         fieldValues: fieldValues, columnNames: columnNames]
     }
 
     def processTaskDataLoad() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.int("projectId"))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
 
-        def projectInstance = Project.get(params.int("projectId"))
-        if (projectInstance) {
-            def results = stagingService.loadTaskDataFromFile(projectInstance)
+        if (project) {
+            def results = stagingService.loadTaskDataFromFile(project)
             flash.message = results?.message
         }
 
-        redirect(action:'loadTaskData', params:[projectId: projectInstance?.id])
+        redirect(action: 'loadTaskData', params: [projectId: project?.id])
     }
 
     def exportOptionsFragment() {
-        if (!userService.isAdmin()) {
+        def project = Project.get(params.long('projectId'))
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
@@ -843,12 +862,13 @@ class TaskController {
     }
 
     def viewedTaskFragment() {
-        if (!userService.isAdmin()) {
+        def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
+        def project = viewedTask?.task?.project
+        if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
         }
 
-        def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
         if (viewedTask) {
             def lastViewedDate = new Date(viewedTask?.lastView)
             def tc = TimeCategory.minus(new Date(), lastViewedDate)
@@ -859,39 +879,29 @@ class TaskController {
     }
 
     def resetTranscribedStatus() {
-
-        def taskInstance = Task.get(params.int('id'))
-        if (!taskInstance) {
-            redirect(action: 'showDetails')
+        def task = Task.get(params.int('id'))
+        if (!task || (!userService.isAdmin() && !userService.isInstitutionAdmin(task.project.institution))) {
+            if (task) flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform " +
+                    "this action!"
+            redirect(action: 'showDetails', id: params.id)
             return
         }
 
-        if (!userService.isAdmin()) {
-            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
-            redirect(action:'showDetails', id: taskInstance.id)
-            return
-        }
-
-        taskService.resetTranscribedStatus(taskInstance)
-        redirect(action:'showDetails', id: taskInstance.id)
-
+        taskService.resetTranscribedStatus(task)
+        redirect(action: 'showDetails', id: task.id)
     }
 
     def resetValidatedStatus() {
-
-        def taskInstance = Task.get(params.int('id'))
-        if (!taskInstance) {
-            redirect(action: 'showDetails')
-            return
-        }
-        if (!userService.isAdmin()) {
-            flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform this action!"
-            redirect(action:'showDetails', id: taskInstance.id)
+        def task = Task.get(params.int('id'))
+        if (!task || (!userService.isAdmin() && !userService.isInstitutionAdmin(task.project.institution))) {
+            if (task) flash.errorMessage = "Only ${message(code:"default.application.name")} administrators can perform " +
+                    "this action!"
+            redirect(action: 'showDetails', id: params.id)
             return
         }
 
-        taskService.resetValidationStatus(taskInstance)
-        redirect(action:'showDetails', id: taskInstance.id)
+        taskService.resetValidationStatus(task)
+        redirect(action:'showDetails', id: task.id)
     }
 
     /**
@@ -929,5 +939,4 @@ class TaskController {
             response.flushBuffer()
         }
     }
-
 }
