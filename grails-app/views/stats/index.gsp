@@ -242,6 +242,33 @@
                 </div>
             </uib-tab>
             </cl:ifSiteAdmin>
+
+            <uib-tab heading="Downloads">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h4>Institution Data Downloads</h4></div>
+                            <div class="panel-body">
+                                <p>Below is a list of the Institutions you have been assigned Institution Admin. Clicking on a link will download a CSV
+                                of all task data for that institution.<br />
+                                Data includes:
+                                <ul>
+                                    <li>Institution ID and name</li>
+                                    <li>Project ID and name</li>
+                                    <li>Task ID, external URL, validation status, transcriber and validator ID</li>
+                                    <li>Date of transcription and validation</li>
+                                </ul></p>
+                                <b>Institutions</b><br />
+                                <ul style="list-style-type: none;">
+                                <g:each in="${institutionList}" var="institution">
+                                    <li style="padding-top: 5px;"><g:link action="institutionStatsDownload" id="${institution.id}">${institution.name}</g:link><br /></li>
+                                </g:each>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
         </uib-tabset>
     </div>
 </section>

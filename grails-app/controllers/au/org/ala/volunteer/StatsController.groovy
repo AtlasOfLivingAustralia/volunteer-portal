@@ -251,6 +251,48 @@ class StatsController {
         }
     }
 
+    def institutionStatsDownload() {
+        if (!userService.isInstitutionAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        Institution institution = Institution.get(params.long('id'))
+        if (!institution) {
+            return
+        }
+
+        def headers = ["institution_id",
+                       "institution_name",
+                       "project_id",
+                       "project_name",
+                       "task_id",
+                       "external_url",
+                       "validation_status",
+                       "transcriber_id",
+                       "validator_id",
+                       "export_comment",
+                       "date_transcribed",
+                       "date_validated"]
+        response.setHeader("Content-Disposition", "attachment;filename=institution-task-data-${institution.id}.csv")
+        response.setContentType("text/csv;charset=utf-8")
+        def result = statsService.getInstitutionRawData(institution)
+
+        try {
+            new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
+                // write header line (field names)
+                writer.writeNext(headers as String[])
+
+                // write all the values
+                result.each({
+                    i -> writer.writeNext(i as String[])
+                })
+            }
+        } catch (Exception e) {
+            log.error("Error while writing CSV data for institution task data.", e)
+        }
+    }
+
     def exportCSVReport () {
         if (!userService.isInstitutionAdmin()) {
             render status: 403

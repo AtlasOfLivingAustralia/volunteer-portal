@@ -192,6 +192,78 @@ class StatsService {
                 cachedTotalVolunteers: volunteerScores['totalVolunteers']]
     }
 
+    def getInstitutionRawData(Institution institution) {
+        String query = """
+            SELECT
+                institution.id                                                           AS institution_id,
+                institution.name                                                         AS institution_name,
+                project.id                                                               AS project_id,
+                project.name                                                             AS project_name,
+                task.id                                                                  AS task_id,
+                concat('https://volunteer.ala.org.au/task/showDetails/', task.id)        AS external_url,
+                CASE
+                    WHEN task.is_valid = true     THEN 'valid'
+                    WHEN task.is_valid = false    THEN 'invalid'
+                    WHEN task.is_valid IS NULL THEN ''
+                END                                                                      AS validation_status,
+                concat(u1.first_name, ' ', u1.last_name)                                 AS transcriber_id,
+                concat(u2.first_name, ' ', u2.last_name)                                 AS validator_id,
+                task.external_identifier,
+                concat(
+                    CASE
+                        WHEN task.fully_validated_by IS NOT NULL
+                             AND transcription.fully_transcribed_by IS NOT NULL THEN
+                            CASE WHEN task.fully_validated_by = 'system' THEN
+                                concat('Auto-validated by DigiVol. ')
+                             ELSE 
+                                concat('Validated by ', u2.first_name, ' ', u2.last_name, '. ')
+                             END
+                        WHEN task.fully_validated_by IS NULL
+                             AND transcription.fully_transcribed_by IS NOT NULL THEN
+                            concat('Fully Transcribed by ', u1.first_name, ' ', u1.last_name, '. ')
+                    END,
+                    'Exported on ',
+                    to_char(current_timestamp, 'DD Mon YYYY HH24:MI:SS TZ'),
+                    ' from DigiVol.')                                                 AS export_comment,
+                transcription.date_fully_transcribed                                     AS date_transcribed,
+                task.date_fully_validated                                                AS date_validated
+            FROM
+                task
+                JOIN project ON ( project.id = task.project_id )
+                JOIN institution ON ( institution.id = project.institution_id )
+                LEFT JOIN transcription ON ( transcription.task_id = task.id )
+                LEFT JOIN vp_user  u1 ON ( u1.user_id = transcription.fully_transcribed_by )
+                LEFT JOIN vp_user  u2 ON ( u2.user_id = task.fully_validated_by )
+            WHERE
+                project.institution_id IN (
+                    SELECT id
+                    FROM institution
+                    WHERE id = :institutionId) """.stripIndent()
+
+        if (!institution) return []
+        def params = [institutionId: institution.id]
+        def results = []
+
+        def sql = new Sql(dataSource)
+        sql.eachRow(query, params) { row ->
+            def taskRow = [row.institution_id,
+                           row.institution_name,
+                           row.project_id,
+                           row.project_name,
+                           row.task_id,
+                           row.external_url,
+                           row.validation_status,
+                           row.transcriber_id,
+                           row.validator_id,
+                           row.export_comment,
+                           row.date_transcribed,
+                           row.date_validated]
+            results.add(taskRow)
+        }
+
+        return results
+    }
+
     def getActiveTasks(Date startDate, Date endDate, Institution institution) {
         def institutionClause = ""
         def projectClause = ""
