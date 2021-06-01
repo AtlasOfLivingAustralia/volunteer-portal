@@ -157,7 +157,7 @@ class VolunteerTagLib {
     def ifInstitutionAdmin = { attrs, body ->
         if (isSiteAdmin()) {
             out << body()
-        } else if (attrs.institution && isInstitutionAdmin(attrs.institution)) {
+        } else if (attrs.institution && isInstitutionAdmin(attrs.institution as Institution)) {
             out << body()
         } else if (attrs.project) {
             Project p = attrs.project as Project

@@ -6,21 +6,21 @@
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats
-            <cl:ifAdmin><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifAdmin>
+            <cl:ifSiteAdmin><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
         </h2>
 
         <h3>
             <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{transcriberCount}}</span>
+            <span data-ng-if="!loading">{{transcriberCount | number}}</span>
             Volunteers
         </h3>
 
         <p>
             <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{completedTasks}}</span>
+            <span data-ng-if="!loading">{{completedTasks | number}}</span>
             tasks of
             <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{totalTasks}}</span>
+            <span data-ng-if="!loading">{{totalTasks | number}}</span>
             completed
         </p>
 
@@ -52,7 +52,7 @@
                     <a id="day-tripper-name" data-ng-href="{{userProfileUrl(daily)}}">{{daily.name}}</a>
                     </span>
                 </th>
-                <td id="day-tripper-amount" class="transcribed-amount">{{daily.score}}</td>
+                <td id="day-tripper-amount" class="transcribed-amount">{{daily.score | number}}</td>
             </tr>
             </tbody>
             <thead>
@@ -75,7 +75,7 @@
                     <a id="weekly-wonder-name" data-ng-href="{{userProfileUrl(weekly)}}">{{weekly.name}}</a>
                     </span>
                 </th>
-                <td id="weekly-wonder-amount" class="transcribed-amount">{{weekly.score}}</td>
+                <td id="weekly-wonder-amount" class="transcribed-amount">{{weekly.score | number}}</td>
             </tr>
             </tbody>
             <thead>
@@ -99,7 +99,7 @@
                        data-ng-href="{{userProfileUrl(monthly)}}">{{monthly.name}}</a>
                     </span>
                 </th>
-                <td id="monthly-maestro-amount" class="transcribed-amount">{{monthly.score}}</td>
+                <td id="monthly-maestro-amount" class="transcribed-amount">{{monthly.score | number}}</td>
             </tr>
             </tbody>
             <thead>
@@ -123,7 +123,7 @@
                        data-ng-href="{{userProfileUrl(alltime)}}">{{alltime.name}}</a>
                     </span>
                 </th>
-                <td id="digivol-legend-amount" class="transcribed-amount">{{alltime.score}}</td>
+                <td id="digivol-legend-amount" class="transcribed-amount">{{alltime.score | number}}</td>
             </tr>
             </tbody>
         </table>
