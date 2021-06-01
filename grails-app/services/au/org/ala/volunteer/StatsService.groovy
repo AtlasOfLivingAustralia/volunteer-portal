@@ -9,7 +9,7 @@ import javax.sql.DataSource
 @Transactional
 class StatsService {
 
-    def grailsApplication
+    def userService
     DataSource dataSource
 
     def transcriptionsByMonth() {
@@ -77,7 +77,7 @@ class StatsService {
             if (!x) {
                 results.add([month:key, count: 0])
             }
-            month++;
+            month++
             if (month > 12) {
                 month = 1
                 year++
@@ -89,113 +89,197 @@ class StatsService {
 
     }
 
-    def getNewUser(Date startDate, Date endDate) {
-        String select ="""
-SELECT COUNT(user_id) FROM (
-   SELECT v.user_id
-   FROM vp_user v
-   WHERE v.created >= :startDate
-     AND v.created <= :endDate
-     AND EXISTS(SELECT 1
-                FROM task t
-                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
-                LIMIT 1)
-   UNION DISTINCT
-   SELECT v.user_id
-   FROM vp_user v
-   WHERE v.created >= :startDate
-     AND v.created <= :endDate
-     AND EXISTS(SELECT 1
-                FROM transcription t
-                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
-                LIMIT 1)
-) AS new_users;
-        """.stripIndent()
+    def getNewUser(Date startDate, Date endDate, Institution institution) {
+        def institutionClause = ""
+        def projectJoin = ""
+        def params = [:]
+
+        if (institution) {
+            projectJoin = "JOIN project p ON (p.id = t.project_id) "
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                projectJoin = "JOIN project p ON (p.id = t.project_id) "
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
+        String newUsersQuery = """
+            SELECT COUNT(user_id) FROM (
+               SELECT v.user_id
+               FROM vp_user v
+               WHERE v.created >= :startDate
+                 AND v.created <= :endDate
+                 AND EXISTS(SELECT 1
+                            FROM task t
+                            ${projectJoin}
+                            WHERE (t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id)
+                            ${institutionClause}
+                            LIMIT 1)
+               UNION DISTINCT
+               SELECT v.user_id
+               FROM vp_user v
+               WHERE v.created >= :startDate
+                 AND v.created <= :endDate
+                 AND EXISTS(SELECT 1
+                            FROM transcription t
+                            ${projectJoin}
+                            WHERE (t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id)
+                            ${institutionClause}
+                            LIMIT 1)
+            ) AS new_users; """.stripIndent()
 
         def selectAllUsers = """
-SELECT COUNT(user_id) FROM (
-   SELECT v.user_id
-   FROM vp_user v
-   WHERE EXISTS(SELECT 1
-                FROM task t
-                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
-                LIMIT 1)
-   UNION DISTINCT
-   SELECT v.user_id
-   FROM vp_user v
-   WHERE EXISTS(SELECT 1
-                FROM transcription t
-                WHERE t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id
-                LIMIT 1)
-) AS total_users;
-""".stripIndent()
+            SELECT COUNT(user_id) FROM (
+               SELECT v.user_id
+               FROM vp_user v
+               WHERE EXISTS(SELECT 1
+                            FROM task t
+                            ${projectJoin}
+                            WHERE (t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id)
+                            ${institutionClause}
+                            LIMIT 1)
+               UNION DISTINCT
+               SELECT v.user_id
+               FROM vp_user v
+               WHERE EXISTS(SELECT 1
+                            FROM transcription t
+                            ${projectJoin}
+                            WHERE (t.fully_transcribed_by = v.user_id OR t.fully_validated_by = v.user_id)
+                            ${institutionClause}
+                            LIMIT 1)
+            ) AS total_users; """.stripIndent()
+
         def selectCached = """
-SELECT
-    SUM(CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END) as newVolunteers,
-    COUNT(v.id) as totalVolunteers
-FROM vp_user v
-WHERE v.transcribed_count + v.validated_count > 0;
-""".stripIndent()
+            SELECT
+                SUM(CASE WHEN v.created >= :startDate AND v.created <= :endDate THEN 1 ELSE 0 END) as newVolunteers,
+                COUNT(v.id) as totalVolunteers
+            FROM vp_user v
+            WHERE v.transcribed_count + v.validated_count > 0; """.stripIndent()
 
         Sql sql = new Sql(dataSource)
         def sw = Stopwatch.createStarted()
-        def newVolunteers = sql.firstRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()])
-        log.debug("Took {} to count new volunteers for date range {} -> {}", sw, startDate, endDate)
-        sw.reset().start()
-        def totalVolunteers = sql.firstRow(selectAllUsers)
-        log.debug("Took {} to count all volunteers", sw)
-        sw.reset().start()
-        def volunteerScores = sql.firstRow(selectCached, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()])
-        log.debug("Took {} to get cached volunteer counts", sw)
 
-        return [newVolunteers: newVolunteers['count'], totalVolunteers: totalVolunteers['count'], cachedNewVolunteers: volunteerScores['newVolunteers'], cachedTotalVolunteers: volunteerScores['totalVolunteers']]
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
+
+        def newVolunteers = sql.firstRow(newUsersQuery, params)
+        log.debug("Took ${sw} to count new volunteers for date range ${startDate} -> ${endDate}")
+        sw.reset().start()
+
+        def totalVolunteers = [:]
+        if (institution) {
+            totalVolunteers = sql.firstRow(selectAllUsers, params)
+            log.debug("Took ${sw} to count all volunteers")
+            sw.reset().start()
+        } else if (!institution && !userService.isSiteAdmin()) {
+            // All institutions
+            totalVolunteers = sql.firstRow(selectAllUsers)
+            log.debug("Took ${sw} to count all volunteers")
+            sw.reset().start()
+        }
+
+        def volunteerScores = sql.firstRow(selectCached, params)
+        log.debug("Took ${sw} to get cached volunteer counts")
+
+        return [newVolunteers: newVolunteers['count'],
+                totalVolunteers: totalVolunteers['count'],
+                cachedNewVolunteers: volunteerScores['newVolunteers'],
+                cachedTotalVolunteers: volunteerScores['totalVolunteers']]
     }
 
-    def getActiveTasks(Date startDate, Date endDate) {
+    def getActiveTasks(Date startDate, Date endDate, Institution institution) {
+        def institutionClause = ""
+        def projectClause = ""
+        def params = [:]
 
-        String select ="""
+        if (institution) {
+            projectClause = "JOIN project p ON (p.id = transcription.project_id) "
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                projectClause = "JOIN project p ON (p.id = transcription.project_id) "
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
+        String select = """
             WITH task_count AS (
-              SELECT fully_transcribed_by as user_id, count(*) as count
-              FROM transcription
-              WHERE
-                date_fully_transcribed BETWEEN :startDate AND :endDate
-               GROUP BY fully_transcribed_by
-               )
+                SELECT fully_transcribed_by as user_id, count(*) as count
+                FROM transcription
+                ${projectClause}
+                WHERE date_fully_transcribed BETWEEN :startDate AND :endDate
+                ${institutionClause}
+                GROUP BY fully_transcribed_by)
             SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, t.count
-            FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id
-            ORDER BY count DESC;
-        """
+            FROM   vp_user u 
+            JOIN task_count t ON u.user_id = t.user_id
+            ORDER BY count DESC; """.stripIndent()
 
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
 
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
-            def transcriberTask = [row.display_name, row.count ]
+        sql.eachRow(select, params) { row ->
+            def transcriberTask = [row.display_name, row.count]
             results.add(transcriberTask)
         }
 
         return results
     }
 
-    def getTasksGroupByVolunteerAndProject (Date startDate, Date endDate) {
+    def getTasksGroupByVolunteerAndProject (Date startDate, Date endDate, Institution institution) {
+//        def institutionClause = ""
+//        def institutionParams
+//        if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+//            institutionClause = "AND p.institution_id in (:institutionList)"
+//            institutionParams = userService.getAdminInstitutionList()*.id
+//            institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+//            log.debug("Loading institution clause parameters: ${institutionParams}")
+//        }
+        def institutionClause = ""
+        def params = [:]
 
-        String select ="""
+        if (institution) {
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
+        String select = """
             WITH task_count AS (
               SELECT t.fully_transcribed_by as user_id, p.id as project_id, count(*) as count
               FROM transcription t JOIN project p on t.project_id = p.id
               WHERE
                 t.date_fully_transcribed BETWEEN :startDate AND :endDate
+                ${institutionClause}
                GROUP BY t.fully_transcribed_by, p.id
                )
             SELECT u.user_id, u.first_name || ' ' || u.last_name AS display_name, p.name as name, t.count
             FROM   vp_user u JOIN task_count t ON u.user_id = t.user_id JOIN project p ON t.project_id = p.id
-            ORDER BY count DESC;
-        """
+            ORDER BY count DESC; """.stripIndent()
 
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
 
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+        sql.eachRow(select, params) { row ->
             def transcriberTask = [row.display_name, row.name, row.count ]
             results.add(transcriberTask)
         }
@@ -203,28 +287,50 @@ WHERE v.transcribed_count + v.validated_count > 0;
         return results
     }
 
-    def getTranscriptionsByDay(Date startDate, Date endDate) {
+    def getTranscriptionsByDay(Date startDate, Date endDate, Institution institution) {
+        def institutionClause = ""
+        def projectClause = ""
+        def params = [:]
 
-        String select ="""
-                        SELECT DISTINCT transcribeDate as day,
-                            count(tmp.transcribeDate) as taskCount,
-                            MAX(transcribeDay),
-                            MAX(transcribeMonth)
+        if (institution) {
+            projectClause = "JOIN project p ON (p.id = transcription.project_id) "
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                projectClause = "JOIN project p ON (p.id = transcription.project_id) "
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
+        String select = """
+            SELECT DISTINCT transcribeDate as day,
+                count(tmp.transcribeDate) as taskCount,
+                MAX(transcribeDay),
+                MAX(transcribeMonth),
+                MAX(transcribeYear)
             FROM ( SELECT to_char(date_fully_transcribed, 'DD') as transcribeDay,
                           to_char(date_fully_transcribed, 'MM') as transcribeMonth,
-                          to_char(date_fully_transcribed, 'DD/MM') as transcribeDate
+                          to_char(date_fully_transcribed, 'DD/MM') as transcribeDate,
+                          to_char(date_fully_transcribed, 'YYYY') as transcribeYear
                    FROM transcription
+                   ${projectClause}
                    WHERE date_fully_transcribed is not null
+                   ${institutionClause}
                    AND  date_fully_transcribed >= :startDate
                    AND  transcription.date_fully_transcribed <= :endDate ) as tmp
             group by transcribeDate
-            ORDER BY MAX(transcribeMonth), MAX(transcribeDay)
-        """
+            ORDER BY MAX(transcribeYear), MAX(transcribeMonth), MAX(transcribeDay) """.stripIndent()
 
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
 
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+        sql.eachRow(select, params) { row ->
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
@@ -232,28 +338,50 @@ WHERE v.transcribed_count + v.validated_count > 0;
         return results
     }
 
-    def getValidationsByDay(Date startDate, Date endDate) {
+    def getValidationsByDay(Date startDate, Date endDate, Institution institution) {
+        def institutionClause = ""
+        def projectClause = ""
+        def params = [:]
 
-        String select ="""
+        if (institution) {
+            projectClause = "join project p on p.id = task.project_id "
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                projectClause = "join project p on p.id = task.project_id "
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
+        String select = """
             SELECT DISTINCT tmp.validateDate as day,
                             count(tmp.validateDate) as taskCount,
                             max(validateDay),
-                            max(validateMonth)
+                            max(validateMonth),
+                            MAX(validateYear)
             FROM ( SELECT to_char(date_fully_validated, 'DD/MM') as validateDate,
                           to_char(date_fully_validated, 'DD') as validateDay,
-                          to_char(date_fully_validated, 'MM') as validateMonth
+                          to_char(date_fully_validated, 'MM') as validateMonth,
+                          to_char(date_fully_validated, 'YYYY') as validateYear
                    FROM task
+                   ${projectClause}
                    WHERE date_fully_validated is not null
+                   ${institutionClause}
                    AND  date_fully_validated >= :startDate
                    AND  task.date_fully_validated <= :endDate ) as tmp
             group by validateDate
-            order by max(validateMonth), max(validateDay)
-        """
+            order by MAX(validateYear), max(validateMonth), max(validateDay) """.stripIndent()
 
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
 
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+        sql.eachRow(select, params) { row ->
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
@@ -263,13 +391,12 @@ WHERE v.transcribed_count + v.validated_count > 0;
 
     def getTranscriptionsByInstitution() {
 
-        String select ="""
+        String select = """
             SELECT project.featured_owner featured_owner, count(transcription.id) as task_count
             FROM transcription JOIN project ON transcription.project_id = project.id
             WHERE transcription.fully_transcribed_by is NOT null
             GROUP BY project.featured_owner
-            ORDER BY task_count DESC;
-        """
+            ORDER BY task_count DESC; """.stripIndent()
 
         def results = []
 
@@ -291,8 +418,7 @@ WHERE v.transcribed_count + v.validated_count > 0;
             FROM transcription t JOIN project p on t.project_id = p.id
             WHERE t.fully_transcribed_by is NOT NULL
             GROUP BY month, p.featured_owner
-            ORDER BY 1, 2
-""".stripIndent()
+            ORDER BY 1, 2 """.stripIndent()
 
         Set<String> columnSet = new HashSet<String>()
 
@@ -334,26 +460,68 @@ WHERE v.transcribed_count + v.validated_count > 0;
         return results
     }
 
-    def getHourlyContributions(Date startDate, Date endDate) {
+    def getHourlyContributions(Date startDate, Date endDate, Institution institution) {
+        def taskView = ""
+        def taskJoin = ""
+        def taskViewName = ""
+        def taskViewClause = ""
+        def institutionParams
+        def params = [:]
+
+        if (institution) {
+            taskView = """
+                    WITH task_count AS (
+                        select t.id as task_id
+                        from task t
+                        join project p on t.project_id = p.id
+                        where p.institution_id = :institutionId
+                    ) """.stripIndent()
+            taskJoin = "join task_count on (field.task_id = task_count.task_id) "
+            taskViewName = ", task_count "
+            taskViewClause = "and field.task_id = task_count.task_id "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                taskView = """
+                    WITH task_count AS (
+                        select t.id as task_id
+                        from task t
+                        join project p on t.project_id = p.id
+                        where p.institution_id in (:institutionList)
+                    ) """.stripIndent()
+                taskJoin = "join task_count on (field.task_id = task_count.task_id) "
+                taskViewName = ", task_count "
+                taskViewClause = "and field.task_id = task_count.task_id "
+                institutionParams = userService.getAdminInstitutionList()*.id
+                taskView = taskView.replace(':institutionList', institutionParams.join(","))
+                log.debug("Loading institution clause parameters: ${institutionParams}")
+            }
+        }
 
         String select = """
-            SELECT  trim(leading ' ' from to_char(date_part('hour', updated)::numeric(4,2), '00D99')) as hour,
-                    round(count(*)/MAX(total)::numeric(10,2) * 100, 2) as contribution
+            ${taskView}
+            SELECT trim(leading ' ' from to_char(date_part('hour', updated)::numeric(4,2), '00D99')) as hour,
+                   round(count(*)/MAX(total)::numeric(10,2) * 100, 2) as contribution
             FROM field,
                  (SELECT count (*) as total
                   FROM  field
+                  ${taskJoin}
                   WHERE updated >= :startDate
                   AND   updated <= :endDate) as allContributions
+                  ${taskViewName}
             WHERE  updated >= :startDate
             AND updated <= :endDate
+            ${taskViewClause}
             GROUP BY date_part('hour', updated)
-            ORDER BY date_part('hour', updated)
-        """
+            ORDER BY date_part('hour', updated) """.stripIndent()
 
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
 
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+        sql.eachRow(select, params) { row ->
             def validationsByInstitution = [row.hour, row.contribution ]
             results.add(validationsByInstitution)
         }
@@ -361,26 +529,45 @@ WHERE v.transcribed_count + v.validated_count > 0;
         return results
     }
 
-    def getTranscriptionTimeByProjectType(Date startDate, Date endDate) {
+    def getTranscriptionTimeByProjectType(Date startDate, Date endDate, Institution institution) {
+        def institutionClause = ""
+        def params = [:]
+
+        if (institution) {
+            institutionClause = "AND p.institution_id = :institutionId "
+            params.institutionId = institution?.id
+        } else {
+            // If Institution Admin, select from all institutions they admin for.
+            if (!userService.isSiteAdmin() && userService.isInstitutionAdmin()) {
+                institutionClause = "AND p.institution_id in (:institutionList)"
+                def institutionParams = userService.getAdminInstitutionList()*.id
+                institutionClause = institutionClause.replace(':institutionList', institutionParams.join(","))
+            }
+        }
+
         String select = """
-SELECT
-    CASE
-        WHEN p.project_type_id is null THEN 'Total'
-        ELSE (SELECT pt.label FROM project_type pt WHERE pt.id = p.project_type_id)
-    END AS label,
-    p.project_type_id,
-    AVG(t.time_to_transcribe)
-FROM
-    transcription t
-    JOIN project p on t.project_id = p.id
-WHERE
-  t.time_to_transcribe IS NOT null
-  AND t.date_fully_transcribed BETWEEN :startDate AND :endDate
-GROUP BY ROLLUP (p.project_type_id);
-"""
+            SELECT
+                CASE
+                    WHEN p.project_type_id is null THEN 'Total'
+                    ELSE (SELECT pt.label FROM project_type pt WHERE pt.id = p.project_type_id)
+                END AS label,
+                p.project_type_id,
+                AVG(t.time_to_transcribe)
+            FROM
+                transcription t
+                JOIN project p on t.project_id = p.id
+            WHERE
+              t.time_to_transcribe IS NOT null
+              AND t.date_fully_transcribed BETWEEN :startDate AND :endDate
+              ${institutionClause}
+            GROUP BY ROLLUP (p.project_type_id); """.stripIndent()
+
         def results = []
+        params.startDate = startDate.toTimestamp()
+        params.endDate = endDate.toTimestamp()
+
         def sql = new Sql(dataSource)
-        sql.eachRow(select, [startDate: startDate.toTimestamp(), endDate: endDate.toTimestamp()]) { row ->
+        sql.eachRow(select, params) { row ->
             def transcriptionTimesByProjectType = [row.label, row.avg]
             results.add(transcriptionTimesByProjectType)
         }

@@ -81,11 +81,13 @@
                             </td>
                             <td>Configure the appearance of the Honour Board</td>
                         </tr>
+                        </cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
                             <td>Various Statistics (Experimental!)</td>
                         </tr>
+                        <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial files</a>
