@@ -61,10 +61,6 @@ class AjaxController {
     private def statsCache = Suppliers.memoizeWithExpiration(this.&statsInternal, 1, TimeUnit.MINUTES)
 
     def stats() {
-        if (!userService.isAdmin()) {
-            render ("${UNAUTH_MSG}")
-            return
-        }
         setNoCache()
         log.debug("stats")
         def stats = statsCache.get()
@@ -75,7 +71,7 @@ class AjaxController {
 
         log.debug("statsInternal")
 
-        def stats = [:]
+        Map<String, ?> stats = [:]
 
         def projectTypes = ProjectType.list()
 
@@ -85,12 +81,11 @@ class AjaxController {
         }
 
         stats.volunteerCount = userService.countActiveUsers()
-        def topVolunteers = userService.getUserCounts([], 10)
-        stats.topTenVolunteers = topVolunteers
+        // def topVolunteers = userService.getUserCounts([], 10)
+        // stats.topTenVolunteers = topVolunteers
 
-//        def projects = Project.list();
         stats.expeditionCount = Project.count()
-        def inactiveCount = taskService.countInactiveProjects()
+        // def inactiveCount = taskService.countInactiveProjects()
         def projectCounts = taskService.getProjectTaskTranscribedCounts(true)
         def projectTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts(true)
 
@@ -102,7 +97,7 @@ class AjaxController {
 
         stats.activeExpeditionsCount = incompleteCount
         stats.completedExpeditionsCount = completedCount
-        stats.deactivatedExpeditionsCount = inactiveCount
+        // stats.deactivatedExpeditionsCount = inactiveCount
 
         return stats
     }
