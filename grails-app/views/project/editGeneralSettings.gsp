@@ -2,8 +2,6 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <asset:stylesheet src="institution-dropdown"/>
-    <asset:stylesheet src="label-autocomplete"/>
 </head>
 
 <body>
@@ -26,15 +24,15 @@
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredOwner">Expedition institution</label>
-
+        <label class="control-label col-md-3" for="institutionId">Expedition institution</label>
         <div class="col-md-6">
-            <g:textField class="form-control"  name="featuredOwner" value="${projectInstance.featuredOwner}"/>
-            <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}"/>
+        <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
+          optionKey="id"
+          value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
-
         <div id="institution-link-icon" class="col-md-3 control-label text-left">
-            <i class="fa fa-check"></i> Linked to <a id="institution-link" href="">institution</a>!
+            <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
+                action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
         </div>
     </div>
 
@@ -210,39 +208,6 @@
     });
 
     jQuery(function($) {
-        var institutions = <cl:json value="${institutions}"/>;
-        var nameToId = <cl:json value="${institutionsMap}"/>;
-        var labelColourMap = <cl:json value="${labelColourMap}"/>;
-        var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
-
-        setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
-        labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
-            //var obj = JSON.parse(item);
-            var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
-            //showSpinner();
-            $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
-                .done(function(data) {
-                    $( "<span>" )
-                        .addClass("label")
-                        .addClass(labelColourMap[item.category])
-                        .attr("title", item.category)
-                        .text(item.value)
-                        .append(
-                        $( "<i>" )
-                            .attr("data-label-id", item.id)
-                            .addClass("fa")
-                            .addClass("fa-times-circle")
-                            .addClass("delete-label")
-                        )
-                        .appendTo(
-                            $( "#labels" )
-                        );
-                })
-                .fail(function() { alert("Couldn't add label")});
-                //.always(hideSpinner);
-            return null;
-        });
-
         function onDeleteClick(e) {
             var deleteUrl = "${createLink(controller: 'project', action: 'removeLabel', id: projectInstance.id)}";
         //    showSpinner();

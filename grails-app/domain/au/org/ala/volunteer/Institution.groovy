@@ -18,6 +18,7 @@ class Institution implements Serializable {
     String imageCaption // optional
     String themeColour // optional
     boolean disableNewsItems = false
+    boolean isInactive = false
 
     int version
 
@@ -35,15 +36,17 @@ class Institution implements Serializable {
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
         themeColour blank: true, nullable: true
+        isInactive blank: false, nullable: false
     }
 
     static mapping = {
         description widget: 'textarea'
         disableNewsItems defaultValue: 'false'
+        isInactive defaultValue: false
     }
 
     String toString() {
-        return name
+        return name + (isInactive ? " (inactive)" : "")
     }
 
     String getKey () {

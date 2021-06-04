@@ -31,6 +31,12 @@
                         <tbody>
 
                         <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage Institutions</a>
+                            </td>
+                            <td>Manage Institutions</td>
+                        </tr>
+                        <tr>
                             <td>
                                 <a class="btn btn-default bs3"
                                    href="${createLink(controller: 'project', action: 'wizard')}">Create New Expedition</a>
@@ -98,12 +104,6 @@
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
                             <td>Tools</td>
-                        </tr>
-                        <tr>
-                            <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage Institutions</a>
-                            </td>
-                            <td>Manage Institutions</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"

@@ -30,7 +30,7 @@
 
     <g:form class="form-horizontal" controller="institutionAdmin" action="update" id="${institutionInstance?.id}" method="PUT">
         <g:hiddenField name="version" value="${institutionInstance?.version}"/>
-        <g:render template="form"/>
+        <g:render template="form" model="[mode: 'edit']"/>
         <div class="form-group">
             <div class="col-md-offset-3 col-md-9">
                 <g:submitButton class="save btn btn-primary" name="update"

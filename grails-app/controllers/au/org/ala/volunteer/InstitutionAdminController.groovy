@@ -19,8 +19,14 @@ class InstitutionAdminController {
     def userService
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
+        params.max = Math.min(params.max ? params.int('max') : 20, 100)
+        if (!userService.isSiteAdmin()) {
+            respond userService.getAdminInstitutionList()
+        } else {
+            params.sort = 'name'
+            params.order = 'asc'
+            respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
+        }
     }
 
     def create() {

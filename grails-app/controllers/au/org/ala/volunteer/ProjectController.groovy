@@ -390,7 +390,8 @@ class ProjectController {
     }
 
     def editGeneralSettings() {
-        def project = Project.get(params.long("id"))
+        Project project = Project.get(params.long("id"))
+
         if (!projectService.isAdminForProject(project)) {
             redirect(uri: "/")
             return
@@ -401,27 +402,31 @@ class ProjectController {
                      args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
-            final insts = (userService.isSiteAdmin() ? Institution.list() : userService.getAdminInstitutionList())
-            final names = insts*.name
-            final nameToId = insts.collectEntries { [(it.name): it.id] }
-            final labelCats = Label.withCriteria { projections { distinct 'category' } }
-            final templates = templateService.getTemplatesForInstitution(project.institution, true)
+            def editLists = getGeneralProjectLists(project)
 
-            final sortedLabels = project.labels.sort { a,b ->
-                def x = a.category?.compareTo(b.category)
-                return x == 0 ? a.value <=> b.value : x
-            }
-
-            def counter = 0
-            final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
             return [projectInstance: project,
-                    templates      : templates,
+                    templates      : editLists?.templates,
                     projectTypes   : ProjectType.listOrderByName(),
-                    institutions   : names,
-                    institutionsMap: nameToId,
-                    labelColourMap : catColourMap,
-                    sortedLabels   : sortedLabels]
+                    institutionList: editLists?.insts,
+                    labelColourMap : editLists?.catColourMap,
+                    sortedLabels   : editLists?.sortedLabels]
         }
+    }
+
+    def getGeneralProjectLists(Project project) {
+        final insts = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        final templates = templateService.getTemplatesForInstitution(project.institution, true)
+
+        final sortedLabels = project.labels.sort { a,b ->
+            def x = a.category?.compareTo(b.category)
+            return x == 0 ? a.value <=> b.value : x
+        }
+
+        def counter = 0
+        final catColourMap = labelCats?.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
+
+        return [insts: insts, labelCats: labelCats, templates: templates, sortedLabels: sortedLabels, catColourMap: catColourMap]
     }
 
     def checkTemplateSupportMultiTranscriptions() {
@@ -544,16 +549,14 @@ class ProjectController {
                 params.featuredLabel = params.name
             }
 
-            final instId = params.getLong("institutionId")
-            def inst
-            if (instId && (inst = Institution.get(instId))) {
-                project.institution = inst
-            } else {
-                project.institution = null
-            }
-
             if (!saveProjectSettingsFromParams(project, params)) {
-                render(view: "editGeneralSettings", model: [projectInstance: project])
+                def editLists = getGeneralProjectLists(project)
+                render(view: "editGeneralSettings", model: [projectInstance: project,
+                                                            templates      : editLists?.templates,
+                                                            projectTypes   : ProjectType.listOrderByName(),
+                                                            institutionList: editLists?.insts,
+                                                            labelColourMap : editLists?.catColourMap,
+                                                            sortedLabels   : editLists?.sortedLabels])
             } else {
                 redirect(action:'editGeneralSettings', id: project.id)
             }
@@ -629,7 +632,7 @@ class ProjectController {
             return false
         }
 
-        if (project) {
+        if (project != null) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (project.version > version) {
@@ -652,6 +655,17 @@ class ProjectController {
                             "Template is no longer available.")
                     return false
                 }
+            }
+
+            final instId = params.getLong("institutionId")
+            def inst
+            if (instId && (inst = Institution.get(instId))) {
+                project.institution = inst
+            } else {
+                project.errors.rejectValue("institutionId", "project.institution.required",
+                        [message(code: 'project.label', default: 'Project')] as Object[],
+                        message(code: 'project.institution.required', default: 'Institution required') as String)
+                return false
             }
 
             bindData(project, params)

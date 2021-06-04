@@ -64,11 +64,12 @@ class InstitutionController {
 
         if (params.q) {
             def query = "%${params.q}%"
-            institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
-            totalCount = Institution.countByNameIlikeOrAcronymIlike(query, query)
+            //institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
+            institutions = Institution.findAllByIsInactiveAndNameIlikeOrAcronymIlike(false, query, query, params)
+            totalCount = Institution.countByIsInactiveAndNameIlikeOrAcronymIlike(false, query, query)
         } else {
-            institutions = Institution.list(params)
-            totalCount = Institution.count()
+            institutions = Institution.findAllByIsInactive(false, params)
+            totalCount = Institution.countByIsInactive(false)
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)

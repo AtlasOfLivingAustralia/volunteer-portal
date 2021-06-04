@@ -18,11 +18,13 @@
 
     %>
 
+    <cl:ifSiteAdmin>
     <a class="btn btn-success" href="${createLink(action: "create")}"><i
             class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
     <a id="quick-create" role="button" class="create btn btn-default" href="javascript:void(0)" data-target="#quick-create-modal"
        data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory"
                                       args="[entityName]"/></a>
+    </cl:ifSiteAdmin>
 </cl:headerContent>
 
 <div class="container">
@@ -47,35 +49,41 @@
                         <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                                <td><g:link action="edit"
-                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+                                <td width="35%"><g:link action="edit"
+                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link>
+                                    <g:if test="${institutionInstance.isInactive}"><i>(inactive)</i></g:if>
+                                </td>
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
-                                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
+                                <td><g:formatDate format="yyyy-MM-dd" date="${institutionInstance.dateCreated}"/></td>
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <g:actionSubmit class="btn btn-danger delete-institution"
-                                                        value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                                        <a class="btn btn-default"
+%{--                                        <g:actionSubmit class="btn btn-danger delete-institution"--}%
+%{--                                                        value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>--}%
+                                        <a class="btn btn-xs btn-default"
                                            href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                                                 class="fa fa-home"></i></a>
-                                        <a class="btn btn-default"
+                                        <a class="btn btn-xs btn-default"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
+                                        <cl:ifSiteAdmin>
+                                                <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                                        </cl:ifSiteAdmin>
                                     </g:form>
                                 </td>
                             </tr>
                         </g:each>
                         </tbody>
                     </table>
-
+                    <g:if test="${institutionInstanceCount > 20}">
                     <div class="pagination">
                         <g:paginate total="${institutionInstanceCount ?: 0}"/>
                     </div>
+                    </g:if>
                 </div>
             </div>
         </div>
