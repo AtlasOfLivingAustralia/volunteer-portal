@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import com.google.common.io.Closer
+import grails.events.EventPublisher
+import grails.events.annotation.Subscriber
 import grails.gorm.DetachedCriteria
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
@@ -26,7 +28,7 @@ import static org.hibernate.FetchMode.*
 
 @Consumer
 @Transactional
-class AchievementService {
+class AchievementService implements EventPublisher {
 
     public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
     public static final String ACHIEVEMENT_VIEWED = 'achievement.viewed'
@@ -296,6 +298,8 @@ class AchievementService {
 
     }
 
+    // TODO Update to @Subscriber
+//    @Subscriber('achievement.awarded')
     @Selector('achievement.awarded')
     void achievementAwarded(AchievementAward award) {
         try {
@@ -306,6 +310,7 @@ class AchievementService {
         }
     }
 
+    //    @Subscriber('achievement.viewed')
     @Selector('achievement.viewed')
     void achievementViewed(Map args) {
         try {

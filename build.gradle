@@ -148,11 +148,12 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
+    compile "org.grails:grails-async-gpars"
+    compile "org.grails:grails-events-rxjava2"
     compile "org.grails.plugins:grails-java8"
-    //compile "org.grails.plugins:rxjava2:2.0.0"
-    compile "org.grails:grails-events-rxjava"
-    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
-    compile "org.hibernate:hibernate-java8:5.1.3.Final"
+    compile "org.grails.plugins:rxjava2:2.0.0"
+//    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
+    compile "io.reactivex.rxjava2:rxjava:2.1.3"
 
     // Additional Plugins
     compile 'org.grails.plugins:cache-headers:2.0.2'

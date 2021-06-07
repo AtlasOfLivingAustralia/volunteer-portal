@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
+import grails.events.annotation.Subscriber
 import io.reactivex.Observable
 import io.reactivex.subjects.Subject
 import io.reactivex.subjects.UnicastSubject
@@ -141,6 +142,7 @@ class EventSourceService {
                 .filter { !it.to || it.to == userId }
     }
 
+//    @Subscriber(EventSourceService.NEW_MESSAGE)
     @Selector(EventSourceService.NEW_MESSAGE)
     void newMessage(Message.EventSourceMessage message) {
         for (def kv : ongoingRequests) {

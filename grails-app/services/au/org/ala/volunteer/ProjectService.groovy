@@ -49,7 +49,7 @@ import static org.jooq.impl.DSL.sum as jSum
 import static org.jooq.impl.DSL.when as jWhen
 
 @Transactional
-class ProjectService {
+class ProjectService implements EventPublisher {
 
     static final String TASK_COUNT_COLUMN = 'taskCount'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'

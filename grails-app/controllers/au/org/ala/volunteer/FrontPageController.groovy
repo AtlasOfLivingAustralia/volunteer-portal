@@ -4,7 +4,7 @@ import grails.events.EventPublisher
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 
-class FrontPageController {
+class FrontPageController implements EventPublisher {
 
     def userService
     def fileUploadService
