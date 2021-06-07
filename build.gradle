@@ -152,7 +152,7 @@ dependencies {
     compile "org.grails:grails-events-rxjava2"
     compile "org.grails.plugins:grails-java8"
     compile "org.grails.plugins:rxjava2:2.0.0"
-//    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
+    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
     compile "io.reactivex.rxjava2:rxjava:2.1.3"
 
     // Additional Plugins
