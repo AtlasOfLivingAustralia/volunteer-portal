@@ -101,6 +101,13 @@ grails {
         }
 
     }
+    gorm {
+        'default' {
+            mapping = {
+                autowire: true
+            }
+        }
+    }
 //    gorm {
 //        'default' {
 //            mapping = {

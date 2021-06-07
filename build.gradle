@@ -122,7 +122,7 @@ repositories {
 //}
 
 dependencies {
-    // Grails 3.2.11
+    // Grails 3.3.11
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
@@ -130,9 +130,10 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
-    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:cache:4.0.0"
     compile "org.grails.plugins:scaffolding"
     compile "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
+    compile "org.grails.plugins:converters"
     compile "org.hibernate:hibernate-core:5.1.3.Final"
     compile "org.hibernate:hibernate-ehcache:5.1.3.Final"
     console "org.grails:grails-console"
@@ -140,13 +141,16 @@ dependencies {
     profile "org.grails.profiles:web"
     compile "com.bertramlabs.plugins:asset-pipeline-grails:$assetPipelineVersion"
     assets "com.bertramlabs.plugins:sass-asset-pipeline:$assetPipelineVersion"
-    testCompile "org.grails:grails-plugin-testing"
+    //testCompile "org.grails:grails-plugin-testing" // Moved in upgrade to Grails 3.3.11
+    testCompile "org.grails:grails-test-mixins:3.3.0" // For legacy @TestMixin and @TestFor
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
     compile "org.grails.plugins:grails-java8"
-    compile "org.grails.plugins:rxjava2:2.0.0"
+    //compile "org.grails.plugins:rxjava2:2.0.0"
+    compile "org.grails:grails-events-rxjava"
+    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
     compile "org.hibernate:hibernate-java8:5.1.3.Final"
 
     // Additional Plugins
@@ -163,14 +167,8 @@ dependencies {
     // TODO ALA Plugins: image service (is it used anywhere?)
     compile 'org.grails.plugins:ala-auth:3.0.5'
     compile 'au.org.ala:userdetails-service-client:1.4.0' // override this to for external properties changes
-    compile 'org.grails.plugins:cache-ehcache:2.0.0.BUILD-SNAPSHOT'
-    //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
+    compile 'org.grails.plugins:cache-ehcache:3.0.0'
     // TODO Collection Event Controller?
-
-    // BOOTSTRAP, FONT-AWESOME?  NPM?  Yarn? webjars ?
-//    compile 'org.webjars:bootstrap:3.3.7-1'
-//    compile 'org.webjars:angularjs:1.6.1'
-//    compile 'org.webjars:font-awesome:4.7.0'
 
     // Dependencies
     runtime "org.postgresql:postgresql:$postgresVersion"
@@ -280,33 +278,3 @@ publish {
     dependsOn assemble
 }
 
-
-//node {
-//    // Version of node to use.
-//    version = '6.9.4'
-//
-//    // Version of npm to use.
-//    npmVersion = '3.10.10'
-//
-//    // Version of Yarn to use.
-//    yarnVersion = '0.16.1'
-//
-//    // Base URL for fetching node distributions (change if you have a mirror).
-//    distBaseUrl = 'https://nodejs.org/dist'
-//
-//    // If true, it will download node using above parameters.
-//    // If false, it will try to use globally installed node.
-//    download = false
-//
-//    // Set the work directory for unpacking node
-//    workDir = file("${project.buildDir}/nodejs")
-//
-//    // Set the work directory for NPM
-//    npmWorkDir = file("${project.buildDir}/npm")
-//
-//    // Set the work directory for Yarn
-//    yarnWorkDir = file("${project.buildDir}/yarn")
-//
-//    // Set the work directory where node_modules should be located
-//    nodeModulesDir = file("${project.projectDir}/grails-app/assets")
-//}
