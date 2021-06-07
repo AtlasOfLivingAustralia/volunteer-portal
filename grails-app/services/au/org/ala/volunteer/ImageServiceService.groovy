@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonBuilder
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder

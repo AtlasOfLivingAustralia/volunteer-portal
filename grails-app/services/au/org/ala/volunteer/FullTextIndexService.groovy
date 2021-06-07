@@ -2,8 +2,8 @@ package au.org.ala.volunteer
 
 import grails.async.Promises
 import grails.converters.JSON
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.NotImplementedException
 import org.elasticsearch.index.query.FilterBuilders

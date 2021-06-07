@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
 import grails.plugins.csv.CSVReaderUtils
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 //import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.FlushMode

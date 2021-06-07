@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.web.AlaSecured
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.converters.JSON
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NO_CONTENT

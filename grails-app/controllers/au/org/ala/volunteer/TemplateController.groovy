@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.hash.HashCode
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.io.FilenameUtils
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile

@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.io.Closer
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig

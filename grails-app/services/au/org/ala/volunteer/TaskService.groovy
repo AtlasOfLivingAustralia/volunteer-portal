@@ -4,8 +4,8 @@ import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.imgscalr.Scalr
 import org.jooq.DSLContext
