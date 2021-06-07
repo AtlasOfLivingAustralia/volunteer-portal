@@ -130,7 +130,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
-    compile "org.grails.plugins:cache:4.0.0"
+    compile "org.grails.plugins:cache:4.0.3"
     compile "org.grails.plugins:scaffolding"
     compile "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
     compile "org.grails.plugins:converters"
@@ -170,6 +170,7 @@ dependencies {
     compile 'org.grails.plugins:ala-auth:3.0.5'
     compile 'au.org.ala:userdetails-service-client:1.4.0' // override this to for external properties changes
     compile 'org.grails.plugins:cache-ehcache:3.0.0'
+    compile 'org.ehcache:ehcache:3.4.0' // Prevent cache-ehcache dependent version being overridden
     // TODO Collection Event Controller?
 
     // Dependencies
