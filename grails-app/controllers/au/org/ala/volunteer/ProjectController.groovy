@@ -378,6 +378,19 @@ class ProjectController {
         }
     }
 
+    def create() {
+        if (!userService.isInstitutionAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        def templateList = templateService.getTemplatesForUser()
+        def projectTypes = ProjectType.listOrderByName()
+
+        [institutionList: institutionList, templateList: templateList, projectTypes: projectTypes]
+    }
+
     def edit() {
         def currentUser = userService.currentUserId
         Project p = Project.get(params.long('id'))

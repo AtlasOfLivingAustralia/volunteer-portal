@@ -116,7 +116,7 @@ class TemplateService {
      */
     def getTemplatesForUser() {
         if (userService.isSiteAdmin()) {
-            return Template.listOrderByName()
+            return Template.listOrderByName([sort: 'name', order: 'asc'])
         } else {
             def institutionAdminList = userService.getAdminInstitutionList()*.id.unique()
             def institutionIdList = institutionAdminList.join(",")

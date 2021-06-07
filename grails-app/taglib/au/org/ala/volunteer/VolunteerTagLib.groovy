@@ -1129,6 +1129,7 @@ function notify() {
         log.debug("Current template ID: ${attrs.currentTemplateId}")
         def category = ""
         def output = ""
+        log.debug("Template count: ${attrs.templateList.size()}")
         attrs.templateList.each { Map row ->
             Template template = row.template
             if (category != row.category) {
