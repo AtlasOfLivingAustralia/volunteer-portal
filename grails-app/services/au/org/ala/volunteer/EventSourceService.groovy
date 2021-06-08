@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.UserDetails
 import grails.events.annotation.Subscriber
+import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 import io.reactivex.subjects.Subject
 import io.reactivex.subjects.UnicastSubject
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.TimeUnit
 
+@Slf4j
 @Consumer
 class EventSourceService {
 
