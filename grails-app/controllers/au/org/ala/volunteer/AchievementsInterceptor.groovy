@@ -1,8 +1,10 @@
 package au.org.ala.volunteer
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 
 @CompileStatic
+@Slf4j
 class AchievementsInterceptor {
 
     DomainUpdateService domainUpdateService

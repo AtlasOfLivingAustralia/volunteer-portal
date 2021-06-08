@@ -2,8 +2,10 @@ package au.org.ala.volunteer
 
 import au.org.ala.cas.util.AuthenticationCookieUtils
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 
 @CompileStatic
+@Slf4j
 class DigivolActivityInterceptor {
 
     UserService userService
