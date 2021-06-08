@@ -57,7 +57,7 @@ class TaskService {
      */
     Integer countValidUserTranscriptionsForProject(String userId, Project project) {
         String hql = "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.isValid = :valid"
-        Map params = [userId: userId, valid:true]
+        def params = [userId: userId, valid:true]
         if (project) {
             hql += " and t.project = :project"
             params.project = project
@@ -199,7 +199,7 @@ class TaskService {
         int matches = 0
         log.debug("Processing results for user ${userId}, jump ${jump}, and lastId ${lastId}")
         results?.find { result ->
-            Task task = Task.get(result[0])
+            Task task = Task.get(result[0] as long)
             log.debug("Checking task ${result[0]}")
             log.debug("Task: ${task}")
 
@@ -260,7 +260,7 @@ class TaskService {
 
         if (results) {
             def taskResult = results.last()
-            task = Task.get(taskResult[0])
+            task = Task.get(taskResult[0] as long)
         }
         task
     }
@@ -327,7 +327,7 @@ class TaskService {
     Task getNextTask(String userId, Project project, Long lastId = -1) {
 
         if (!project || !userId) {
-            return null;
+            return null
         }
 
 //        Task task = null
@@ -384,7 +384,7 @@ class TaskService {
     Task getNextTaskForValidationForProject(String userId, Project project) {
 
         if (!project || !userId) {
-            return null;
+            return null
         }
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
@@ -404,7 +404,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
+            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
@@ -422,7 +422,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
+            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
@@ -441,7 +441,7 @@ class TaskService {
         c.list(params) {
             eq("fullyTranscribedBy", userId)
             isNotNull("dateFullyTranscribed")
-        }
+        } as List<Task>
     }
 
     /**
@@ -551,10 +551,10 @@ WHERE
         }
 
         String select = """
-WITH
-${getNotificationWithClauses(projectQuery).join(',\n')}
-(SELECT * FROM updated_task_ids) UNION (SELECT * FROM validator_notes_task_ids)
-"""
+            WITH
+            ${getNotificationWithClauses(projectQuery).join(',\n')}
+            (SELECT * FROM updated_task_ids) UNION (SELECT * FROM validator_notes_task_ids)
+            """.stripIndent()
 
         def sql = new Sql(dataSource)
 
@@ -628,8 +628,8 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             log.debug("Getting recently validated tasks. ")
         }
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS))
 
         def tasks = Task.createCriteria().list() {
             eq("fullyTranscribedBy", transcriber)
@@ -638,7 +638,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             isNotNull("isValid")
             gt("dateFullyTranscribed", recentDate)
             order('dateLastUpdated','desc')
-        }
+        } as List<Task>
 
          if (log.isInfoEnabled()) {
             sw.stop()
@@ -747,7 +747,7 @@ ORDER BY record_idx, name;
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         if (!filename.trim()) {
-            filename = "image_" + taskId;
+            filename = "image_${taskId}"
         }
         filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
@@ -759,7 +759,7 @@ ORDER BY record_idx, name;
         }
 
         try {
-            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            def dir = new File("${grailsApplication.config.images.home}/${projectId}/${taskId}/${multimediaId}")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
@@ -790,7 +790,7 @@ ORDER BY record_idx, name;
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
         sizes.each{
             fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
-            BufferedImage scaledImage = srcImage;
+            BufferedImage scaledImage = srcImage
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {
                 scaledImage = Scalr.resize(srcImage, it.value)
             }
@@ -802,14 +802,14 @@ ORDER BY record_idx, name;
 
     static BufferedImage ensureOpaque(BufferedImage bi) {
         if (bi.getTransparency() == BufferedImage.OPAQUE)
-            return bi;
-        int w = bi.getWidth();
-        int h = bi.getHeight();
-        int[] pixels = new int[w * h];
-        bi.getRGB(0, 0, w, h, pixels, 0, w);
-        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        bi2.setRGB(0, 0, w, h, pixels, 0, w);
-        return bi2;
+            return bi
+        int w = bi.getWidth()
+        int h = bi.getHeight()
+        int[] pixels = new int[w * h]
+        bi.getRGB(0, 0, w, h, pixels, 0, w)
+        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
+        bi2.setRGB(0, 0, w, h, pixels, 0, w)
+        return bi2
     }
 
     /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
@@ -846,13 +846,13 @@ ORDER BY record_idx, name;
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
         sql.eachRow(select, [userid: userid, projectId: projectId, labelTextFilter: '%' + labelTextFilter + '%']) { row ->
             def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
             results.add(taskRow)
         }
 
-        return results;
+        return results
     }
 
 
@@ -897,20 +897,20 @@ ORDER BY record_idx, name;
     Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select = """
             WITH task_ids AS (SELECT id from task where project_id = :projectId)
-            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue;
+            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue
         """
 
-        def sql = new Sql(dataSource: dataSource)
-        int taskId = -1;
+        def sql = new Sql(dataSource)
+        int taskId = -1
         def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
-            taskId = row[0]
+            taskId = row[0] as int
         }
         return Task.findById(taskId)
     }
 
 
-    public Map getImageMetaData(Task taskInstance) {
+    Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
         taskInstance.multimedia.each { multimedia ->
@@ -920,7 +920,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
+    @Cacheable(value='getImageMetaData', key = { (multimedia?.id?:0) + '-' + (rotate?:0) })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
@@ -940,14 +940,14 @@ ORDER BY record_idx, name;
         return null
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key="(#resource?.URI ?: #resource?.filename ?: '') + '-' + (#imageUrl ?: '') + '-' + (#rotate)")
+    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI ?: resource?.filename ?: '')}" + "-" + "${(imageUrl ?: '')}" + "-" + rotate })
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: {}, {}", resource, ex.message)  // don't print whoel stack trace
+            log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whoel stack trace
         }
 
         if (image) {
@@ -1028,26 +1028,27 @@ ORDER BY record_idx, name;
         task.dateFullyValidated = null
     }
 
-    @CacheEvict(value = 'findMaxSequenceNumber', key='#projectId')
+    @CacheEvict(value = 'findMaxSequenceNumber', key = { projectId })
     void clearMaxSequenceNumber(long projectId) {
-        log.debug('max sequence number cleared for project {}', projectId)
+        log.debug('max sequence number cleared for project ${projectId}')
     }
 
-    @Cacheable(value = 'findMaxSequenceNumber', key='#project?.id?:-1')
+    @Cacheable(value = 'findMaxSequenceNumber', key = { project?.id ?: -1 })
     Integer findMaxSequenceNumber(Project project) {
         def select ="""
             WITH task_ids AS (SELECT id FROM task WHERE project_id = ${project.id})
-            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f WHERE f.task_id IN (SELECT id FROM task_ids) AND f.name = 'sequenceNumber';
-        """
+            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) 
+            FROM FIELD f 
+            WHERE f.task_id IN (SELECT id FROM task_ids) 
+            AND f.name = 'sequenceNumber'; """
 
-        def sql = new Sql(dataSource: dataSource)
-
+        def sql = new Sql(dataSource)
         def row = sql.firstRow(select)
 
-        row ? row[0] : null
+        row ? row[0] as Integer : null
     }
 
-    public Map getAdjacentTasksBySequence(Task task) {
+    Map getAdjacentTasksBySequence(Task task) {
         def results = [:]
         if (!task) {
             return results
@@ -1057,7 +1058,7 @@ ORDER BY record_idx, name;
         def field = fieldService.getFieldForTask(task, "sequenceNumber")
 
         if (field?.value && field.value.isInteger()) {
-            def sequenceNumber = Integer.parseInt(field.value);
+            def sequenceNumber = Integer.parseInt(field.value)
             def padSize = 0
             if (field.value.startsWith("0")) {
                 // remember to left pad the resulting sequence numbers with 0
@@ -1339,7 +1340,7 @@ ORDER BY record_idx, name;
 
             // add additional info for notifications tab
             if (selectedTab == 0 && results.viewList) {
-                def ids = results.viewList.collect { it.id }
+                def ids = results.viewList.collect { it.id } as List<Integer>
                 def unreadIds = getLastViewedBeforeValidation(project, user.userId, ids)
 
                 results.viewList.each { it.unread = unreadIds.contains(it.id) }
