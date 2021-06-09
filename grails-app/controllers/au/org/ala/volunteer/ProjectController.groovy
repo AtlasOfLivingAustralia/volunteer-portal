@@ -385,10 +385,47 @@ class ProjectController {
         }
 
         def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-        def templateList = templateService.getTemplatesForUser()
         def projectTypes = ProjectType.listOrderByName()
 
-        [institutionList: institutionList, templateList: templateList, projectTypes: projectTypes]
+        [institutionList: institutionList, projectTypes: projectTypes]
+    }
+
+    def save() {
+        if (!userService.isInstitutionAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        Project project = new Project()
+        bindData(project, params)
+
+        if (params.institutionId) {
+            Institution institution = Institution.get(params.long('institutionId') as Long)
+            if (institution) {
+                project.institution = institution
+            } else {
+                project.errors.rejectValue("institution", "project.institution.required",
+                        "Institution is required.")
+            }
+        }
+
+        if (project.errors.hasErrors()) {
+            def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+            def projectTypes = ProjectType.listOrderByName()
+            render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
+            return
+        } else {
+            if (!projectService.createProject(project)) {
+                log.error("Error creating project, reloading create page.")
+                flash.message = "An error occurred creating the Project."
+                def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+                def projectTypes = ProjectType.listOrderByName()
+                render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
+                return
+            }
+        }
+
+        redirect(action: 'index', id: project?.id)
     }
 
     def edit() {
@@ -429,7 +466,7 @@ class ProjectController {
     def getGeneralProjectLists(Project project) {
         final insts = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
         final labelCats = Label.withCriteria { projections { distinct 'category' } }
-        final templates = templateService.getTemplatesForInstitution(project.institution, true)
+        final templates = templateService.getTemplatesForInstitution(project.institution, userService.isSiteAdmin())
 
         final sortedLabels = project.labels.sort { a,b ->
             def x = a.category?.compareTo(b.category)
@@ -739,11 +776,11 @@ class ProjectController {
             try {
                 projectService.deleteProject(project)
                 flash.message = message(code: 'default.deleted.message',
-                         args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
+                         args: [message(code: 'project.label', default: 'Project'), project.name]) as String
                 redirect(action: "list")
             } catch (DataIntegrityViolationException e) {
                 String message = message(code: 'default.not.deleted.message',
-                          args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
+                          args: [message(code: 'project.label', default: 'Project'), project.name]) as String
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "show", id: params.long('id'))

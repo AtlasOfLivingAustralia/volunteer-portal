@@ -475,7 +475,7 @@ class TemplateController {
     @Transactional
     def saveWildlifeTemplateConfig(long id) {
         if (!userService.isInstitutionAdmin()) {
-            respond status: SC_UNAUTHORIZED
+            respond status: SC_FORBIDDEN
             return
         }
 
@@ -491,7 +491,7 @@ class TemplateController {
      */
     def uploadWildlifeImage() {
         if (!userService.isInstitutionAdmin()) {
-            respond status: SC_UNAUTHORIZED
+            respond status: SC_FORBIDDEN
             return
         }
 
@@ -506,6 +506,30 @@ class TemplateController {
             render([ hash: hash, format: ext ] as JSON)
         } else {
             render([ error: "One of animal or entry must be provided" ] as JSON, status: SC_BAD_REQUEST)
+        }
+    }
+
+    /**
+     * This is an AJAX endpoint for the project create form. Returns a list of available templates for the given
+     * institution ID. Returns status 401 if no institution parameter provided.
+     * Results include the category (global, available or unassigned) and sorted in that order.
+     * @param id the Institution ID.
+     * @return a list of available templates.
+     */
+    def templatesForInstitution(long id) {
+        log.debug("AJAX templatesForInstitution: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            def results = templateService.getTemplatesForInstitution(institution, userService.isSiteAdmin(), true)
+            render(results as JSON)
         }
     }
 }

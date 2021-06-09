@@ -201,6 +201,27 @@ class ProjectService {
         projectInstance.save(flush: flush, failOnError: failOnError)
     }
 
+    def createProject(Project project) {
+        def user = userService.getCurrentUser()
+
+        try {
+            // Set inactive and created by
+            project.featuredLabel = project.name
+            project.featuredOwner = project.institution.name
+            project.inactive = true
+            project.createdBy = user
+            project.save(failOnError: true, flush: true)
+
+            // sign the creator up for project forum topic notifications
+            forumService.watchProject(user, project, true)
+        } catch (Exception ex) {
+            log.error("Unable to save Project: ${ex.getMessage()}", ex)
+            return false
+        }
+
+        true
+    }
+
     /**
      * Sends an email notification to the configured email with the included message. Project notifications are sent
      * to the configured address (notifications.project.address).

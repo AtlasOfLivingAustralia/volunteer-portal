@@ -39,7 +39,7 @@
                         <tr>
                             <td>
                                 <a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'project', action: 'wizard')}">Create New Expedition</a>
+                                   href="${createLink(controller: 'project', action: 'create')}">Create New Expedition</a>
                             </td>
                             <td>Create a new ${message(code: 'default.application.name')} Expedition</td>
                         </tr>

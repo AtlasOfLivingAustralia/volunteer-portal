@@ -41,27 +41,28 @@
                         <li>Picklists</li>
                         <li>Tutorial information</li>
                     </ul>
+                    <p>* denotes required information.</p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="save" class="form-horizontal">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="institutionId">Expedition institution</label>
+                            <label class="control-label col-md-3" for="institutionId">Expedition institution*</label>
                             <div class="col-md-6">
                                 <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
-                                          optionKey="id" noSelection="['':'- Select an Institution -']" />
+                                          optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
                             </div>
                             <div id="institution-link-icon" class="col-md-3 control-label text-left">
                                 <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
-                                    action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
+                                    action: 'index', id: params?.institutionId)}" target="_blank">Institution Page</a>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="name">Expedition name</label>
+                            <label class="control-label col-md-3" for="name">Expedition name*</label>
 
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="name" />
+                                <g:textField class="form-control" name="name" value="${params?.name}" required="required"/>
                             </div>
                         </div>
 
@@ -69,7 +70,7 @@
                             <label class="control-label col-md-3" for="shortDescription">Short description</label>
 
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="shortDescription"/>
+                                <g:textField class="form-control" name="shortDescription" value="${params?.shortDescription}" />
                             </div>
                         </div>
 
@@ -77,25 +78,25 @@
                             <label class="control-label col-md-3" for="description">Long description</label>
 
                             <div class="col-md-9">
-                                <g:textArea name="description" class="mce form-control" rows="10" />
+                                <g:textArea name="description" class="mce form-control" value="${params?.description}" rows="10" />
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="template">Template</label>
+                            <label class="control-label col-md-3" for="template">Template*</label>
 
                             <div class="col-md-6">
-                                <g:select name="template" from="${templateList}" optionValue="name" optionKey="id"
-                                          class="form-control" noSelection="['':'- Select a Template -']"/>
+                                <g:select name="template" from="${[]}" id="template" required="required"
+                                          class="form-control" value="${params?.template}" noSelection="['':'- Select a Template -']"/>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="projectType">Expedition type</label>
+                            <label class="control-label col-md-3" for="projectType">Expedition type*</label>
 
                             <div class="col-md-6">
                                 <g:select name="projectType" from="${projectTypes}" optionValue="label" optionKey="id"
-                                          class="form-control" noSelection="['':'- Select a Project type -']"/>
+                                          class="form-control"  value="${params?.projectType}" noSelection="['':'- Select a Project type -']" required="required"/>
                             </div>
                         </div>
 
@@ -113,5 +114,82 @@
     </div>
 </div>
 <asset:javascript src="tinymce-simple" asset-defer="" />
+<asset:script type="text/javascript">
+    $(document).ready(function() {
+        function loadTemplatesOnError() {
+            const templateId = ${(params?.institutionId ?: 0)};
+            if (templateId > 0) {
+                // Update institution Home page link
+                updateInstitutionLink(templateId);
+                getTemplatesForInstitution(templateId);
+            }
+        }
+
+        loadTemplatesOnError();
+
+        function updateInstitutionLink(institutionId) {
+            // Update institution Home page link
+            let url = "${createLink(controller: 'institution', action: 'index')}";
+            url = url + "/" + institutionId;
+            $('#institution-link').attr('href', url);
+        }
+
+        $('#institution').change(function() {
+            // Update institution Home page link
+            updateInstitutionLink(this.value);
+
+            // Update Template select list
+            getTemplatesForInstitution(this.value);
+        });
+    });
+
+    function getTemplatesForInstitution(institutionId) {
+        //console.log(institutionId);
+        const url = "${createLink(controller: 'template', action: 'templatesForInstitution')}/" + institutionId;
+        //console.log(url);
+        $.get({
+            url: url,
+            dataType: 'json'
+        }).done(function(data) {
+            //console.log(data)
+            buildTemplateSelect(data);
+        });
+    }
+
+    function buildTemplateSelect(data) {
+        const selectedTemplate = ${(params?.template ?: 0)};
+        let templateList = "";
+        const noSelection = '<option value>- Select a Template -</option>';
+        let currentCategory = "";
+        $.each(data, function(idx, t) {
+            console.log(t);
+            if (currentCategory !== t.category) {
+                if (templateList.length > 0) templateList += '</optGroup>';
+                templateList += "<optgroup label='" + getTemplateCategory(t.category) + "'>";
+                currentCategory = t.category;
+            }
+
+            templateList += "<option value='" + t.template.id + "'" + (selectedTemplate === t.template.id ? " selected='selected'" : "") +
+                ">" + t.template.name + (t.template.isHidden ? ' (HIDDEN)' : '') + "</option>";
+
+        });
+        $('#template').empty()
+            .append(noSelection + templateList);
+    }
+
+    function getTemplateCategory(categoryCode) {
+        let category = "";
+        switch (categoryCode) {
+            case 'c1': category = "Global Templates";
+                break;
+            case 'c2': category = "Hidden Templates";
+                break;
+            case 'c4': category = "Unassigned Templates";
+                break;
+            default: category = "Available Templates";
+        }
+        return category;
+    }
+</asset:script>
 </body>
 </html>

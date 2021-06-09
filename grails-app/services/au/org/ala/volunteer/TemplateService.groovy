@@ -109,62 +109,16 @@ class TemplateService {
     }
 
     /**
-     * Returns a list of templates available for the currently logged in user.
-     * If that user is an Institution Admin, the list includes templates used by their projects and global templates but
-     * not hidden templates.
-     * @return a list of available templates.
-     */
-    def getTemplatesForUser() {
-        if (userService.isSiteAdmin()) {
-            return Template.listOrderByName([sort: 'name', order: 'asc'])
-        } else {
-            def institutionAdminList = userService.getAdminInstitutionList()*.id.unique()
-            def institutionIdList = institutionAdminList.join(",")
-            def results = []
-
-            def query = """\
-                select t.id, t.name
-                from template t
-                where (t.id in (
-                    select distinct p.template_id
-                    from project p
-                    where p.institution_id in (${institutionIdList}))
-                 or t.is_global = true)
-                and t.is_hidden = false 
-                order by t.name """.stripIndent()
-
-            def sql = new Sql(dataSource)
-            sql.eachRow(query) { row ->
-                Template template = Template.get(row.id as long)
-                results.add(template)
-            }
-
-            sql.close()
-            return results
-        }
-    }
-
-    /**
      * Returns a list of templates available for an institution. Includes templates previously used by the institution
      * and any global templates.
      * @param institution the institution
      * @param includeHidden determines if the query excludes hidden templates.
      * @return a list of available templates
      */
-    def getTemplatesForInstitution(Institution institution, boolean includeHidden = false) {
+    def getTemplatesForInstitution(Institution institution, boolean includeHidden = false, boolean concise = false) {
         def results = []
         def includeHiddenClause = (!includeHidden ? " and template.is_hidden = false " : "")
 
-//        def query = """\
-//                select t.id, t.name
-//                from template t
-//                where (t.id in (
-//                    select distinct p.template_id
-//                    from project p
-//                    where p.institution_id = (:institutionId))
-//                 or t.is_global = true)
-//                ${includeHiddenClause}
-//                order by t.name """.stripIndent()
         def query = """\
             select distinct template.id, 
                 template.name, 
@@ -197,7 +151,12 @@ class TemplateService {
         def sql = new Sql(dataSource)
         sql.eachRow(query, [institutionId: institution?.id]) { row ->
             Template template = Template.get(row.id as long)
-            results.add([template: template, category: row.category])
+            if (concise) {
+                // Only put the id, name and flags into the map.
+                results.add([template: template.getTemplateMap(), category: row.category])
+            } else {
+                results.add([template: template, category: row.category])
+            }
         }
 
         sql.close()
