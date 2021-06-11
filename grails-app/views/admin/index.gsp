@@ -37,9 +37,15 @@
                             <td>Manage Institutions</td>
                         </tr>
                         <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'project', action: 'manage')}">Manage Expeditions</a>
+                            </td>
+                            <td>Download expedition images and remove from server, clone and edit expedition.</td>
+                        </tr>
+                        <tr>
                             <td>
                                 <a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'project', action: 'create')}">Create New Expedition</a>
+                                   href="${createLink(controller: 'project', action: 'create')}">Create new Expedition</a>
                             </td>
                             <td>Create a new ${message(code: 'default.application.name')} Expedition</td>
                         </tr>
@@ -52,15 +58,9 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'picklist', action: 'manage')}">Bulk manage picklists</a>
+                                   href="${createLink(controller: 'picklist', action: 'manage')}">Bulk manage Picklists</a>
                             </td>
                             <td>Allows modification to the values held in various picklists</td>
-                        </tr>
-                        <tr>
-                            <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'project', action: 'archiveList')}">Archive expeditions</a>
-                            </td>
-                            <td>Download expedition images and remove from server.</td>
                         </tr>
                         <cl:ifSiteAdmin>
                         <tr>
@@ -71,7 +71,7 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'frontPage', action: 'edit')}">Configure front page</a>
+                                   href="${createLink(controller: 'frontPage', action: 'edit')}">Configure Front Page</a>
                             </td>
                             <td>Configure the appearance of the front page</td>
                         </tr>
@@ -96,7 +96,7 @@
                         <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
-                                   href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial files</a>
+                                   href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial Files</a>
                             </td>
                             <td>Manage tutorial files</td>
                         </tr>

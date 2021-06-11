@@ -13,11 +13,13 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                    [link: createLink(controller: 'project', action: 'manage'), label: message(code: 'default.project.manage', default: 'Manage projects')],
                     [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel ?: ""]
             ]
         %>
-        <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted>
-        </small></h1>
+        <h1>Expedition Settings - ${projectInstance.name}</h1>
+        <h2><g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
+            <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if></h2>
         <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
     </cl:headerContent>
 
@@ -69,8 +71,13 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
+                                            <g:if test="${projectInstance.archived}">
+                                                <span class="expedition disabledMenuItem" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off"></i> Activate expedition</span>
+                                            </g:if>
+                                            <g:else>
                                             <a id="btnToggleActivation" class="${projectInstance.inactive ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}"
                                                href="#"> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}</a>
+                                            </g:else>
                                         </li>
                                         <li class="divider"></li>
                                         <li>

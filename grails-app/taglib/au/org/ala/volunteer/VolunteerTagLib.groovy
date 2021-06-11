@@ -998,8 +998,8 @@ class VolunteerTagLib {
     }
 
     Closure formatFileSize = { attrs, body ->
-        def size = attrs.remove('size')
-        return FileUtils.byteCountToDisplaySize(size)
+        def size = attrs.remove('size') as long
+        return PrettySize.toPrettySize(size)
     }
 
     /**
@@ -1129,7 +1129,7 @@ function notify() {
         log.debug("Current template ID: ${attrs.currentTemplateId}")
         def category = ""
         def output = ""
-        log.debug("Template count: ${attrs.templateList.size()}")
+        log.debug("Template count: ${attrs.templateList?.size()}")
         attrs.templateList.each { Map row ->
             Template template = row.template
             if (category != row.category) {

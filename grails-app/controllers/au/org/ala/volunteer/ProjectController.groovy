@@ -777,7 +777,7 @@ class ProjectController {
                 projectService.deleteProject(project)
                 flash.message = message(code: 'default.deleted.message',
                          args: [message(code: 'project.label', default: 'Project'), project.name]) as String
-                redirect(action: "list")
+                redirect(action: "manage")
             } catch (DataIntegrityViolationException e) {
                 String message = message(code: 'default.not.deleted.message',
                           args: [message(code: 'project.label', default: 'Project'), project.name]) as String
@@ -788,7 +788,7 @@ class ProjectController {
         } else {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
-            redirect(action: "list")
+            redirect(action: "manage")
         }
     }
     
@@ -1190,6 +1190,174 @@ class ProjectController {
         }
     }
 
+    def manage() {
+        if (!userService.isInstitutionAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+
+        def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) :
+                userService.getAdminInstitutionList())
+
+        def statusFilterList = [[key: "active", value: "Active"],
+                                [key: "inactive", value: "Inactive"],
+                                [key: "archived", value: "Archived"],
+                                [key: "not-archived", value: "Not Archived"]]
+
+        params.sort = (params.sort ?: 'id')
+        params.order = (params.order ?: 'asc')
+        params.max = (params.max ?: 20)
+        if (params.sort == 'status') {
+            if (params.order == 'asc') params.sortFields = ['inactive', 'archived', 'id']
+            else params.sortFields = ['archived', 'inactive', 'id']
+        }
+
+        def institutionFilter = []
+        Institution institution = (params.institution ? Institution.get(params.long('institution')) : null)
+        if (institution) institutionFilter.add(institution)
+        else institutionFilter = institutionList
+
+        def statusFilter = (params.statusFilter ?: null)
+
+        def results = getProjectsForManagement(institutionFilter, statusFilter)
+        def projectList = results.projectList
+        def completions = projectService.calculateCompletion(projectList)
+        def totalProjects = results.count
+        // Drop the sortFields to prevent junking up the querystring.
+        params.remove('sortFields')
+
+        List<ManageProject> projectsWithSize = projectList.collect {
+            log.debug("Project: ${it}")
+            final counts = completions[it.id as long]
+            final transcribed
+            final validated
+            if (counts) {
+                transcribed = (counts.transcribed / counts.total) * 100.0
+                validated = (counts.validated / counts.total) * 100.0
+            } else {
+                transcribed = 0.0
+                validated = 0.0
+            }
+
+            new ManageProject(project: it, percentTranscribed: transcribed, percentValidated: validated)
+        }
+
+        render(view: 'manage', model: ['archiveProjectInstanceList'    : projectsWithSize,
+                                       'archiveProjectInstanceListSize': totalProjects,
+                                       'imageStoreStats'               : projectService.imageStoreStats(),
+                                       'institutionList'               : institutionList,
+                                       'statusFilterList'              : statusFilterList])
+    }
+
+    /**
+     * Private method to get list of projects for management.
+     * Not in the service due to clash with JOOQ.
+     * @param institutionFilter the list of Institutions to select projects for. Use an empty list for ALL projects.
+     * @param params the query parameters (q, sort, order, max, offset etc)
+     * @return a Map containing the projectList and count.
+     */
+    private def getProjectsForManagement(List institutionFilter, String statusFilter = null) {
+        Closure fetchProjects = {
+            if (institutionFilter?.size() > 0) {
+                'in' ('institution', institutionFilter)
+            }
+            if (!Strings.isNullOrEmpty(params.q as String)) {
+                or {
+                    ilike('name', "%${params.q}%")
+                }
+            }
+            if (statusFilter) {
+                switch (statusFilter) {
+                    case 'active':
+                        and {
+                            eq('inactive', false)
+                            eq('archived', false)
+                        }
+                        break
+                    case 'inactive':
+                        and {
+                            eq('inactive', true)
+                            eq('archived', false)
+                        }
+                        break
+                    case 'archived':
+                        eq('archived', true)
+                        break
+                    case 'not-archived':
+                        eq('archived', false)
+                        break
+                }
+            }
+        }
+        List results = Project.createCriteria().list() {
+            fetchProjects.delegate = delegate
+            fetchProjects()
+            maxResults(params.int('max'))
+            firstResult(params.int('offset') ?: 0)
+            if (params.sortFields) {
+                params.sortFields.each {
+                    order(it as String, params.order as String)
+                }
+            } else {
+                order(params.sort as String, params.order as String)
+            }
+        } as List
+
+        int resultCount = Project.createCriteria().get() {
+            fetchProjects.delegate = delegate
+            fetchProjects()
+            projections {
+                count('id')
+            }
+        } as int
+
+        return [projectList: results, count: resultCount]
+    }
+
+    def cloneProjectFragment() {
+        if (!userService.isInstitutionAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def project = Project.get(params.int("sourceProjectId"))
+        [project: project]
+    }
+
+    def cloneProject() {
+        if (!userService.isInstitutionAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        def project = Project.get(params.int("projectId"))
+        String newName = params.newName
+
+        if (newName) {
+            def existing = Project.findByName(newName)
+            if (existing) {
+                flash.message = message(code: 'project.clone.fail.existing.name', default: 'Cloning project failed.', args: [newName]) as String
+                redirect(action: 'manage')
+                return
+            }
+        }
+
+        def newProject
+        if (project && newName) {
+            newProject = projectService.cloneProject(project, newName)
+        }
+
+        if (newProject) {
+            redirect(action: 'edit', id: newProject.id)
+        } else {
+            flash.message = message(code: 'project.clone.fail', default: 'Cloning project failed.') as String
+            redirect(action: 'manage')
+        }
+    }
+
+    /**
+     * @deprecated
+     * @return
+     */
     def archiveList() {
         final sw = Stopwatch.createStarted()
         if (!userService.isInstitutionAdmin()) {
@@ -1272,7 +1440,7 @@ class ProjectController {
         log.debug("archiveList: calculateCompletion = $sw")
         sw.reset().start()
 
-        List<ArchiveProject> projectsWithSize = projects.collect {
+        List<ManageProject> projectsWithSize = projects.collect {
             final counts = completions[it.id]
             final transcribed
             final validated
@@ -1283,7 +1451,7 @@ class ProjectController {
                 transcribed = 0.0
                 validated = 0.0
             }
-            new ArchiveProject(project: it, /*size: sizes[it.id].size,*/ percentTranscribed: transcribed, percentValidated: validated)
+            new ManageProject(project: it, percentTranscribed: transcribed, percentValidated: validated)
         }
 
         respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total,
@@ -1295,8 +1463,11 @@ class ProjectController {
         if (!userService.isInstitutionAdmin()) {
             respond status: 403
         } else {
-            def size = [size: FileUtils.byteCountToDisplaySize(projectService.projectSize(project).size)]
-            respond(size)
+            def projectSize = projectService.projectSize(project).size as long
+            def size
+            if (projectSize > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(projectSize))
+            else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+            respond([size: size])
         }
     }
 
@@ -1315,11 +1486,11 @@ class ProjectController {
             projectService.archiveProject(project)
             log.debug("${project.name} (id=${project.id}) archived")
             flash.message = "${message(code: 'project.label', default: 'Project')} ${project.name} archived."
-            redirect(action: 'archiveList', params: params)
+            redirect(action: 'manage', params: params)
         } catch (e) {
             flash.message = "An error occured while archiving ${project.name}."
             log.error("An error occured while archiving ${message(code: 'project.label', default: 'Project')} ${project}", e)
-            redirect(action: 'archiveList', params: params)
+            redirect(action: 'manage', params: params)
         }
     }
 

@@ -60,7 +60,6 @@ class Project implements Serializable {
         autoTimestamp true
         description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
-        projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         harvestableByAla defaultValue: false
         version defaultValue: '0'
@@ -197,6 +196,33 @@ class Project implements Serializable {
 
     String getKey() {
         name ?: ''
+    }
+
+    static def getCloneableFields() {
+        // Don't include anything from hasMany. Do them manually.
+        return ['description',
+                'tutorialLinks',
+                'showMap',
+                'shortDescription',
+                'featuredOwner',
+                'institution',
+                'leaderIconIndex',
+                'featuredImageCopyright',
+                'backgroundImageAttribution',
+                'backgroundImageOverlayColour',
+                'collectionEventLookupCollectionCode',
+                'localityLookupCollectionCode',
+                'picklistInstitutionCode',
+                'mapInitZoomLevel',
+                'mapInitLatitude',
+                'mapInitLongitude',
+                'imageSharingEnabled',
+                'extractImageExifData',
+                'transcriptionsPerTask',
+                'thresholdMatchingTranscriptions',
+                'template',
+                'projectType'
+                ]
     }
 
 }

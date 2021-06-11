@@ -1,17 +1,14 @@
 package au.org.ala.volunteer
 
-import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import grails.web.mapping.LinkGenerator
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.transform.Immutable
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.SimpleType
 import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.DSLContext
@@ -22,27 +19,23 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
-import java.security.Principal
 
 import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
 import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
 import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
-import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
-import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
-import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
 import static au.org.ala.volunteer.jooq.tables.Label.LABEL
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
+import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.coalesce
-import static org.jooq.impl.DSL.condition
-import static org.jooq.impl.DSL.count
+import static org.jooq.impl.DSL.*
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
-import static org.jooq.impl.DSL.not
 import static org.jooq.impl.DSL.nvl as jNvl
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.sum as jSum
@@ -64,7 +57,6 @@ class ProjectService {
     private static final Condition getACTIVE_ONLY() { PROJECT.INACTIVE.eq(false) | PROJECT.INACTIVE.isNull() }
 
     def userService
-    def taskService
     LinkGenerator grailsLinkGenerator
     def projectTypeService
     def forumService
@@ -253,7 +245,7 @@ class ProjectService {
 
 
         if (!projectInstance) {
-            return;
+            return
         }
 
         // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
@@ -639,7 +631,7 @@ class ProjectService {
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
             def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-            def file = new File(filePath);
+            def file = new File(filePath)
             if (!file.exists()) {
                 return
             }
@@ -736,12 +728,33 @@ class ProjectService {
         }
     }
 
+    def cloneProject(Project sourceProject, String newName) {
+        def newProject = new Project(name: newName, featuredLabel: newName, inactive: true,
+                createdBy: userService.getCurrentUser())
+
+        def cloneableFields = Project.getCloneableFields()
+        cloneableFields.each { field ->
+            newProject."${field}" = sourceProject."${field}"
+            log.debug("Source value: " + sourceProject."${field}")
+            log.debug("New value: " + newProject."${field}")
+        }
+
+        def sourceLabels = sourceProject.labels
+        sourceLabels.each { Label label ->
+            newProject.addToLabels(label)
+        }
+
+        newProject.save(failOnError: true, flush: true)
+
+        return newProject
+    }
+
     static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
-        String entryName = entryPath + path.getName();
+        String entryName = entryPath + path.getName()
 
         if (path.isFile()) {
-            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
-            zos.putArchiveEntry(zipEntry);
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName)
+            zos.putArchiveEntry(zipEntry)
             path.withInputStream { fis ->
                 zos << fis
             }
