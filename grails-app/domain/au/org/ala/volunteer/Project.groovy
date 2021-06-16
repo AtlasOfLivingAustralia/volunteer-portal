@@ -38,6 +38,8 @@ class Project implements Serializable {
 
     Date dateCreated
     Date lastUpdated
+    // Project of the Day Last Selected Date
+    Date potdLastSelected
 
     Integer version
 

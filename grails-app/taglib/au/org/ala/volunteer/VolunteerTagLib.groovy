@@ -1169,4 +1169,43 @@ function notify() {
         return category
     }
 
+    /**
+     * Builds a Project select list with projects grouped into Insitutions.
+     * @attr inactiveFlag The inactive flag to use (include active or inactive projects)
+     * @attr archiveFlag The archive flag to use
+     * @attr selectedProject the current project to display as selected
+     */
+    def projectSelectGrouped = { attrs ->
+        boolean inactive = false
+        boolean archived = false
+        def output = ""
+        def currInstitution = 0
+        if (attrs.inactiveFlag) inactive = attrs.inactiveFlag
+        if (attrs.archiveFlag) archived = attrs.archiveFlag
+        def projectList = Project.createCriteria().list {
+            and {
+                eq('inactive', inactive)
+                eq('archived', archived)
+            }
+            'institution' {
+                order('name', 'asc')
+            }
+            order('name', 'asc')
+        }
+        projectList.each { Project project ->
+            if (currInstitution != project.institution.id) {
+                currInstitution = project.institution.id
+                if (output.length() > 0) output += "</optgroup>"
+                output += "<optgroup label='${project.institution.name}'>"
+            }
+            if (project.id == attrs.selectedProject) {
+                output += "<option value='${project.id}' selected>${project.name}</option>"
+            } else {
+                output += "<option value='${project.id}'>${project.name}</option>"
+            }
+        }
+
+        out << output
+    }
+
 }

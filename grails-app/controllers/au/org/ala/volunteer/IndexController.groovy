@@ -7,6 +7,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
+    def frontPageService
     def projectService
     def volunteerStatsService
 
@@ -15,10 +16,26 @@ class IndexController {
         def frontPage = FrontPage.instance()
 
         def featuredProjects = projectService.getFeaturedProjectList()
+
+        // Check if random project of the day is switched on, if it is, grab one and display, else display the current
+        // if set.
         def potdSummary = null
-        if (frontPage?.projectOfTheDay) {
-            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
+        def projectToDisplay
+        log.debug("Random project of the day?")
+        if (frontPage?.randomProjectOfTheDay) {
+            log.debug("Selecing random...")
+            projectToDisplay = frontPageService.checkProjectOfTheDay(frontPage)
+        } else {
+            log.debug("Project: ${frontPage?.projectOfTheDay}")
+            projectToDisplay = frontPage?.projectOfTheDay
         }
+        if (projectToDisplay) {
+            potdSummary = projectService.makeSummaryListFromProjectList([projectToDisplay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
+            log.debug("PotD Summary: ${potdSummary}")
+        }
+//        if (frontPage?.projectOfTheDay) {
+//            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
+//        }
         render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 

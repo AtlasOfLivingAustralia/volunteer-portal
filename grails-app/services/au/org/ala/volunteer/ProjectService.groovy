@@ -694,6 +694,27 @@ class ProjectService {
         }
     }
 
+    /**
+     * Checks if the current project is complete. Returns true if all tasks have been transcribed. Returns false if
+     * not or the project parameter is null.
+     * @param project The project to check
+     * @return true if project has been completed, false if not.
+     */
+    def isProjectComplete(Project project) {
+        if (!project) {
+            return true
+        } else {
+            def projectMap = calculateCompletion([project])
+            final projectCounts = projectMap[project.id]
+            if (projectCounts) {
+                def transcribed = (projectCounts.transcribed / projectCounts.total) * 100.0
+                return (transcribed == 100)
+            }
+        }
+
+        return false
+    }
+
     def writeArchive(Project project, OutputStream outputStream) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
