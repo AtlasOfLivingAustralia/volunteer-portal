@@ -93,13 +93,13 @@
                                    href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
                             <td>Various Statistics (Experimental!)</td>
                         </tr>
-                        <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial Files</a>
                             </td>
                             <td>Manage tutorial files</td>
                         </tr>
+                        <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
