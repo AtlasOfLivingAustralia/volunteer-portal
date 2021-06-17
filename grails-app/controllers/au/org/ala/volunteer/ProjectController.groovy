@@ -683,46 +683,51 @@ class ProjectController {
         }
 
         if (project != null) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (project.version > version) {
-                    project.errors.rejectValue("version", "default.optimistic.locking.failure",
-                            [message(code: 'project.label', default: 'Project')] as Object[],
-                            "Another user has updated this Project while you were editing")
-                    return false
-                }
-            }
-
             // Issue #371 - Activation notification
             def oldInactiveFlag = project.inactive == null ? false : project.inactive
             boolean newInactive = (params.inactive != null ? params.inactive == "true" : project.inactive)
 
-            if (params.template) {
-                Template newTemplate = Template.get(params.long('template'))
-                if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
-                    project.errors.rejectValue("template", "project.template.notavailable",
-                            [newTemplate.name] as Object[],
-                            "Template is no longer available.")
+            // If the user is toggling the inactive setting, only that parameter exists.
+            if (params.inactive) {
+                project.inactive = (params.inactive == "true")
+            } else {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (project.version > version) {
+                        project.errors.rejectValue("version", "default.optimistic.locking.failure",
+                                [message(code: 'project.label', default: 'Project')] as Object[],
+                                "Another user has updated this Project while you were editing")
+                        return false
+                    }
+                }
+
+                if (params.template) {
+                    Template newTemplate = Template.get(params.long('template'))
+                    if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
+                        project.errors.rejectValue("template", "project.template.notavailable",
+                                [newTemplate.name] as Object[],
+                                "Template is no longer available.")
+                        return false
+                    }
+                }
+
+                log.debug("Institution from edit: ${params.institutionId}")
+                def inst = Institution.get(params.getLong('institutionId'))
+                if (inst) {
+                    project.institution = inst
+                } else {
+                    project.errors.rejectValue("institutionId", "project.institution.required",
+                            [message(code: 'project.label', default: 'Project')] as Object[],
+                            message(code: 'project.institution.required', default: 'Institution required') as String)
                     return false
                 }
-            }
 
-            final instId = params.getLong("institutionId")
-            def inst
-            if (instId && (inst = Institution.get(instId))) {
-                project.institution = inst
-            } else {
-                project.errors.rejectValue("institutionId", "project.institution.required",
-                        [message(code: 'project.label', default: 'Project')] as Object[],
-                        message(code: 'project.institution.required', default: 'Institution required') as String)
-                return false
-            }
+                bindData(project, params)
 
-            bindData(project, params)
-
-            if (!project.template.supportMultipleTranscriptions) {
-                project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
-                project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+                if (!project.template.supportMultipleTranscriptions) {
+                    project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+                    project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+                }
             }
 
             if (!project.hasErrors() && projectService.saveProject(project)) {

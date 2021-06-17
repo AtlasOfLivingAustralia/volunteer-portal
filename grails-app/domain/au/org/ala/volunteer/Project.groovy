@@ -87,7 +87,6 @@ class Project implements Serializable {
         featuredImageCopyright nullable: true
         backgroundImageAttribution nullable: true
         backgroundImageOverlayColour nullable: true
-        inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
@@ -100,6 +99,7 @@ class Project implements Serializable {
         extractImageExifData nullable: true
         transcriptionsPerTask nullable: true
         thresholdMatchingTranscriptions nullable: true
+        potdLastSelected nullable: true
     }
 
     /**
