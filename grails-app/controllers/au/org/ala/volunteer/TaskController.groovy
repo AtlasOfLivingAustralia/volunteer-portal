@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
@@ -14,6 +15,8 @@ class TaskController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST", viewTask: "POST"]
     public static final String PROJECT_LIST_STATE_SESSION_KEY = "project.admin.list.state"
     public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
+    public static final String VIEW_TASK_LIST_ADMIN = 'adminList'
+    public static final String VIEW_TASK_LIST = 'list'
 
     def taskService
     def fieldSyncService
@@ -29,26 +32,22 @@ class TaskController {
         def currentUser = userService.currentUserId
         def project = Project.get(params.int("id"))
         if (project && currentUser && userService.isValidator(project)) {
-            renderProjectListWithSearch(params, "adminList")
+            renderProjectListWithSearch(params, VIEW_TASK_LIST_ADMIN)
         } else {
             flash.message = "You do not have permission to view the Admin Task List page (you need to be either an adminstrator or a validator)"
             redirect(controller: "project", action: "index", id: params.id)
         }
     }
 
-    def extra_fields_default = ["catalogNumber","scientificName"]
+    def extra_fields_default = ["catalogNumber", "scientificName"]
 
     private def renderProjectListWithSearch(GrailsParameterMap params, String view) {
-
-        def projectInstance = Project.get(params.long('id'))
-
+        def project = Project.get(params.long('id'))
         def currentUser = userService.currentUserId
         def userInstance = User.findByUserId(currentUser)
-
         String[] fieldNames = null
 
-        def extraFieldProperty = this.metaClass.properties.find() { it.name == "extra_fields_" + projectInstance.template.name }
-
+        def extraFieldProperty = this.metaClass.properties.find() { it.name == "extra_fields_" + project.template.name }
         if (extraFieldProperty) {
             fieldNames = extraFieldProperty.getProperty(this)
         }
@@ -57,7 +56,7 @@ class TaskController {
             fieldNames = extra_fields_default
         }
 
-        if (projectInstance) {
+        if (project) {
             // The last time we were at this view, was it for the same project?
             def lastProjectId = session[PROJECT_LIST_LAST_PROJECT_ID_KEY]
             if (lastProjectId && lastProjectId != params.id) {
@@ -69,8 +68,12 @@ class TaskController {
 
             params.max = Math.min(params.max ? params.int('max') : lastState.max, 200)
             params.order = params.order ?: lastState.order
-            params.sort = params.sort ?: lastState.sort
             params.offset = params.offset ?: lastState.offset
+            params.sort = params.sort ?: lastState.sort
+
+            if (params.statusFilter && params.statusFilter != lastState.statusFilter) {
+                params.offset = 0
+            }
 
             if (params.q && params.q != lastState.query) {
                 params.offset = 0
@@ -82,35 +85,37 @@ class TaskController {
                 order: params.order,
                 sort: params.sort,
                 offset: params.offset,
-                query: params.q
-
+                query: params.q,
+                statusFilter: params.statusFilter
             ]
             session[PROJECT_LIST_LAST_PROJECT_ID_KEY] = params.id
 
             def taskInstanceList
-            def taskInstanceTotal
+            def taskQueryTotal
             def extraFields = [:] // Map
             def query = params.q as String
+            def statusFilter = params.statusFilter as String
 
             if (query) {
-                // def fullList = Task.findAllByProject(projectInstance, [max: 9999])
                 def fieldNameList = Arrays.asList(fieldNames)
-                taskInstanceList = fieldService.findAllTasksByFieldValues(projectInstance, query, params, fieldNameList)
-                taskInstanceTotal = fieldService.countAllTasksByFieldValueQuery(projectInstance, query, fieldNameList)
+                def taskInfo = fieldService.findAllTasksByFieldValues(project, query, params)
+                taskInstanceList = taskInfo.taskList
+                taskQueryTotal = taskInfo.taskCount
             } else {
-                taskInstanceList = Task.findAllByProject(projectInstance, params)
-                taskInstanceTotal = Task.countByProject(projectInstance)
+                def taskInfo = taskService.getTaskListForProject(project, params)
+                taskInstanceList = taskInfo.taskList
+                taskQueryTotal = taskInfo.taskCount
             }
 
-            int transcribedCount = taskService.getNumberOfFullyTranscribedTasks(projectInstance)
-            int validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)
+            int transcribedCount = taskService.getNumberOfFullyTranscribedTasks(project)
+            int validatedCount = Task.countByProjectAndFullyValidatedByIsNotNull(project)
+            int taskInstanceTotal = (Strings.isNullOrEmpty(statusFilter) && Strings.isNullOrEmpty(params.q) ? taskQueryTotal : Task.countByProject(project))
 
-            if (taskInstanceTotal) {
+            if (taskQueryTotal) {
                 fieldNames.each {
-                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList, params).groupBy { it.task.id }
+                    extraFields[it] = fieldService.getLatestFieldsWithTasks(it, taskInstanceList as List<Task>, params).groupBy { it.task.id }
                 }
             }
-
 
             def views = [:]
             if (taskInstanceList) {
@@ -131,12 +136,31 @@ class TaskController {
                 }
             }
 
+            // Get Project size (for Admin view)
+            def projectSize = 0
+            if (view == VIEW_TASK_LIST_ADMIN) {
+                projectSize = projectService.projectSize(project).size
+                if (projectSize < 0) projectSize = 0
+            }
+
+            def statusFilterList = [[key: "transcribed", value: "View transcribed tasks"],
+                                    [key: "validated", value: "View validated tasks"],
+                                    [key: "not-transcribed", value: "View tasks not yet transcribed"]]
+
             // add some associated "field" values
             render(view: view, model:
-                    [taskInstanceList: taskInstanceList, taskInstanceTotal: taskInstanceTotal, validatedCount: validatedCount, transcribedCount: transcribedCount,
-                    projectInstance: projectInstance, extraFields: extraFields, userInstance: userInstance, lockedMap: lockedMap])
-        }
-        else {
+                    [taskInstanceList : taskInstanceList,
+                     taskQueryTotal   : taskQueryTotal,
+                     taskInstanceTotal: taskInstanceTotal,
+                     validatedCount   : validatedCount,
+                     transcribedCount : transcribedCount,
+                     projectInstance  : project,
+                     extraFields      : extraFields,
+                     userInstance     : userInstance,
+                     lockedMap        : lockedMap,
+                     projectSize      : projectSize,
+                     statusFilterList : statusFilterList])
+        } else {
             flash.message = "No project found for ID " + params.long('id')
         }
     }
@@ -181,7 +205,7 @@ class TaskController {
 
         def project = Project.get(params.int("id"))
         if (project && currentUser && userService.isValidator(project)) {
-            renderProjectListWithSearch(params, "list")
+            renderProjectListWithSearch(params, VIEW_TASK_LIST)
         } else {
             redirect(uri: "/")
         }

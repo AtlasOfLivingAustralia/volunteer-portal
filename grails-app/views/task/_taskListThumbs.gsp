@@ -1,21 +1,22 @@
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
-<table class="table table-striped table-condensed table-bordered">
+<table class="table table-striped table-condensed">
     <thead>
     <tr>
-        <g:sortableColumn property="id" title="${message(code: 'task.id.label', default: 'External Id')}"
+        <g:sortableColumn property="id" style="padding: 0.9em;"
+                          title="${message(code: 'task.id.label', default: 'External Id')}"
                           params="${[q: params.q, mode: params.mode]}"/>
-        <th>${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
+        <th style="padding: 0.9em;" >${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
         <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
-            <g:sortableColumn property="numberOfMatchingTranscriptions"
+            <g:sortableColumn property="numberOfMatchingTranscriptions" style="padding: 0.9em;"
                               title="${message(code: 'task.numberOfMatchingTranscriptions.label', default: 'Matching')}"
                               params="${[q: params.q]}"/>
         </g:if>
-        <g:sortableColumn property="fullyValidatedBy"
+        <g:sortableColumn property="fullyValidatedBy" style="padding: 0.9em;"
                           title="${message(code: 'task.fullyValidatedBy.label', default: 'Fully Validated By')}"
                           params="${[q: params.q, mode: params.mode]}"/>
         <g:sortableColumn property="isValid"
                           title="${message(code: 'task.isValid.label', default: 'Validation Status')}"
-                          params="${[q: params.q, mode: params.mode]}" style="text-align: center;"/>
+                          params="${[q: params.q, mode: params.mode]}" style="text-align: center; padding: 0.9em;"/>
     </tr>
     </thead>
 </table>
@@ -80,5 +81,5 @@
 </div>
 
 <div class="pagination">
-    <g:paginate total="${taskInstanceTotal}" id="${params?.id}" params="${[q: params.q, mode: params.mode]}"/>
+    <g:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q, mode: params.mode]}"/>
 </div>

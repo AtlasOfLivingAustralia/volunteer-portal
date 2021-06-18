@@ -1096,26 +1096,24 @@ function notify() {
     def transcriberNames = { attrs ->
 
         def taskInstance = attrs.task as Task
-
         Set transcribers = new HashSet()
         if (taskInstance) {
-
             taskInstance.transcriptions.each {
                 if (it.dateFullyTranscribed) {
                     transcribers << it.fullyTranscribedBy
                 }
             }
 
-
             def mb = new MarkupBuilder(out)
-            transcribers.each { transcriberUserId ->
-                User user = User.findByUserId(transcriberUserId)
-                mb.p {
-                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:user?.id) {
-                        cl.userDetails(id:transcriberUserId, displayName:true)
+            mb.p {
+                transcribers.eachWithIndex { transcriberUserId, idx ->
+                    User user = User.findByUserId(transcriberUserId as String)
+                    mkp.yieldUnescaped(g.link(controller: 'user', action: 'show', id: user?.id) {
+                        cl.userDetails(id: transcriberUserId, displayName: true)
                     })
-                }
 
+                    if (idx < transcribers.size()) mkp.yieldUnescaped('<br />')
+                }
             }
         }
     }
