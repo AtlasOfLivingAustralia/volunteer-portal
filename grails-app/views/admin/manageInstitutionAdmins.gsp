@@ -23,7 +23,7 @@
             <g:form controller="admin" action="addInstituionAdmin" method="POST">
             <div class="form-group">
                 <div class="col-md-4">
-                        <g:select class="form-control" name="institution" required="true" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                        <g:select class="form-control" name="institution" required="true" from="${Institution.listApproved([sort: 'name', order: 'asc'])}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                 </div>
@@ -50,7 +50,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <g:form controller="admin" action="manageInstitutionAdmins" method="GET">
-                        <g:select class="form-control" name="institution" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                        <g:select class="form-control" name="institution" from="${Institution.listApproved([sort: 'name', order: 'asc'])}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Filter by Institution -']" onchange="submit()" />
                     </g:form>

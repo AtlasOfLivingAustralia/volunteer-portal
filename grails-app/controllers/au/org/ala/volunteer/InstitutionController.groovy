@@ -64,12 +64,34 @@ class InstitutionController {
 
         if (params.q) {
             def query = "%${params.q}%"
-            //institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
-            institutions = Institution.findAllByIsInactiveAndNameIlikeOrAcronymIlike(false, query, query, params)
-            totalCount = Institution.countByIsInactiveAndNameIlikeOrAcronymIlike(false, query, query)
+
+            def closure = {
+                and {
+                    eq('isInactive', false)
+                    eq('isApproved', true)
+                    or {
+                        ilike('name', query)
+                        ilike('acronym', query)
+                    }
+                }
+            }
+
+            institutions = Institution.createCriteria().list(params) {
+                closure.delegate = delegate
+                closure()
+            } as List
+
+            totalCount = Institution.createCriteria().get {
+                closure.delegate = delegate
+                closure()
+                projections {
+                    count('id')
+                }
+            }
+
         } else {
-            institutions = Institution.findAllByIsInactive(false, params)
-            totalCount = Institution.countByIsInactive(false)
+            institutions = Institution.findAllByIsInactiveAndIsApproved(false, true, params)
+            totalCount = Institution.countByIsInactiveAndIsApproved(false, true)
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)

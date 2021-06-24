@@ -12,6 +12,19 @@ class InstitutionService {
     def grailsLinkGenerator
     def sessionFactory
     def taskService
+    def emailService
+
+    static final String NOTIFICATION_DEFAULT = "New Institution Notification"
+    static final String NOTIFICATION_APPLICATION = "New Institution Application"
+    static final String NOTIFICATION_APPLICATION_APPROVED = "New Institution Approved"
+
+    def emailNotification(String message, String title = NOTIFICATION_DEFAULT, String recipient = null) {
+        // Send email to grailsApplication.config.notifications.default.address
+        log.debug("Sending institution notification")
+        def to = recipient
+        if (!recipient) to = grailsApplication.config.notifications.default.address as String
+        emailService.sendMail(to, title, message)
+    }
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
         if (url && localPath) {
@@ -25,27 +38,27 @@ class InstitutionService {
         return false
     }
 
-    public uploadImageFromUrl(Institution institution, String url) {
+    def uploadImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getImagePath(institution.id))
     }
 
-    public uploadBannerImageFromUrl(Institution institution, String url) {
+    def uploadBannerImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getBannerImagePath(institution.id))
     }
 
-    public uploadLogoImageFromUrl(Institution institution, String url) {
+    def uploadLogoImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getLogoImagePath(institution.id))
     }
 
-    public clearImage(Institution institution) {
+    def clearImage(Institution institution) {
         deleteLocalFile(getImagePath(institution.id))
     }
 
-    public clearLogo(Institution institution) {
+    def clearLogo(Institution institution) {
         deleteLocalFile(getLogoImagePath(institution.id))
     }
 
-    public clearBanner(Institution institution) {
+    def clearBanner(Institution institution) {
         deleteLocalFile(getBannerImagePath(institution.id))
     }
 
@@ -59,7 +72,6 @@ class InstitutionService {
         }
         return false
     }
-
 
     private boolean uploadToLocalPath(MultipartFile mpfile, String localFile) {
         if (!mpfile) {
@@ -80,34 +92,34 @@ class InstitutionService {
         }
     }
 
-    public uploadImage(Institution institution, MultipartFile mpfile) {
+    def uploadImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getImagePath(institution?.id))
     }
 
-    public uploadBannerImage(Institution institution, MultipartFile mpfile) {
+    def uploadBannerImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getBannerImagePath(institution.id))
     }
 
-    public uploadLogoImage(Institution institution, MultipartFile mpfile) {
+    def uploadLogoImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getLogoImagePath(institution.id))
     }
 
-    public boolean hasImage(Institution institution) {
+    boolean hasImage(Institution institution) {
         def f = new File(getImagePath(institution?.id))
         return f.exists()
     }
 
-    public boolean hasBannerImage(Institution institution) {
+    boolean hasBannerImage(Institution institution) {
         def f = new File(getBannerImagePath(institution?.id))
         return f.exists()
     }
 
-    public boolean hasLogoImage(Institution institution) {
+    boolean hasLogoImage(Institution institution) {
         def f = new File(getLogoImagePath(institution?.id))
         return f.exists()
     }
 
-    public String getImageUrl(Institution institution) {
+    String getImageUrl(Institution institution) {
         if (hasImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
         } else {
@@ -115,13 +127,13 @@ class InstitutionService {
         }
     }
 
-    public String getBannerImageUrl(Institution institution) {
+    String getBannerImageUrl(Institution institution) {
         if (hasBannerImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/banner-image.jpg"
         }
     }
 
-    public String getLogoImageUrl(Institution institution) {
+    String getLogoImageUrl(Institution institution) {
         if (institution && hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
@@ -142,7 +154,7 @@ class InstitutionService {
     }
 
 
-    public CollectoryProviderDto getCollectoryObjectFromUid(String uid) {
+    CollectoryProviderDto getCollectoryObjectFromUid(String uid) {
 
         CollectoryProviderDto provider = null
         if (uid?.toLowerCase()?.startsWith("in")) {
@@ -154,7 +166,7 @@ class InstitutionService {
         return provider
     }
 
-    public List<CollectoryDto> getCombinedInsitutionsAndCollections() {
+    List<CollectoryDto> getCombinedInsitutionsAndCollections() {
         def results = collectoryClient.getInstitutions().execute().body()
         def collections = collectoryClient.getCollections().execute().body()
         // Merge the two lists
@@ -163,7 +175,6 @@ class InstitutionService {
 
         return results
     }
-
 
     Institution findByIdOrName(Long id, String name) {
         Institution retVal
@@ -181,12 +192,30 @@ class InstitutionService {
     }
 
     /**
+     * Returns a simple count of projects within a given institution.
+     * @param institution the institution to query.
+     * @return the number of projects
+     */
+    def getProjectCount(Institution institution) {
+        if (!institution) return 0
+        def result = Project.createCriteria().get {
+            'institution' {
+                eq('id', institution.id)
+            }
+            projections {
+                count('id')
+            }
+        }
+
+        return result
+    }
+
+    /**
      * Returns a map of project counts, keyed by institution
      *
      * @param institutions
      */
     def getProjectCounts(List<Institution> institutions, boolean includeDeactivated = false) {
-
         if (!institutions) {
             return [:]
         }
@@ -236,15 +265,15 @@ class InstitutionService {
         // TODO Do this with Detached Criteria
         // see: https://jira.grails.org/browse/GRAILS-9223
         final String query = '''
-SELECT COUNT(p.id)
-FROM project p
-WHERE
-  p.institution_id = :instId
-  AND
-  EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
-  AND
-  NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_validated_by IS NULL)
-'''
+            SELECT COUNT(p.id)
+            FROM project p
+            WHERE
+              p.institution_id = :instId
+              AND
+              EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
+              AND
+              NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_validated_by IS NULL)
+            '''.stripIndent()
 
         // Create native SQL query.
         final sqlQuery = session.createSQLQuery(query)

@@ -384,7 +384,7 @@ class ProjectController {
             return
         }
 
-        def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
         def projectTypes = ProjectType.listOrderByName()
 
         [institutionList: institutionList, projectTypes: projectTypes]
@@ -410,7 +410,7 @@ class ProjectController {
         }
 
         if (project.errors.hasErrors()) {
-            def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+            def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
             def projectTypes = ProjectType.listOrderByName()
             render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
             return
@@ -418,7 +418,7 @@ class ProjectController {
             if (!projectService.createProject(project)) {
                 log.error("Error creating project, reloading create page.")
                 flash.message = "An error occurred creating the Project."
-                def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+                def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
                 def projectTypes = ProjectType.listOrderByName()
                 render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
                 return
@@ -464,7 +464,7 @@ class ProjectController {
     }
 
     def getGeneralProjectLists(Project project) {
-        final insts = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        final insts = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
         final labelCats = Label.withCriteria { projections { distinct 'category' } }
         final templates = templateService.getTemplatesForInstitution(project.institution, userService.isSiteAdmin())
 
@@ -1024,6 +1024,11 @@ class ProjectController {
         render labels as JSON
     }
 
+    /**
+     * Project Creation Wizard.
+     * @deprecated
+     * @param id
+     */
     def wizard(String id) {
         if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
@@ -1078,6 +1083,10 @@ class ProjectController {
         ]
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardAutosave(String id) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1087,6 +1096,10 @@ class ProjectController {
         render status: 204
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardImageUpload(String id) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1134,6 +1147,10 @@ class ProjectController {
         }
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardClearImage(String id) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1150,6 +1167,10 @@ class ProjectController {
         render status: 204
     }
 
+    /**
+     * @deprecated
+     * @param name
+     */
     def wizardProjectNameValidator(String name) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1159,6 +1180,10 @@ class ProjectController {
         render([ count: Project.countByName(name) ] as JSON)
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardCancel(String id) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1169,6 +1194,10 @@ class ProjectController {
         redirect(controller:'admin', action:"index")
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardCreate(String id) {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -1201,7 +1230,7 @@ class ProjectController {
             return
         }
 
-        def institutionList = (userService.isSiteAdmin() ? Institution.list([sort: 'name', order: 'asc']) :
+        def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) :
                 userService.getAdminInstitutionList())
 
         def statusFilterList = [[key: "active", value: "Active"],

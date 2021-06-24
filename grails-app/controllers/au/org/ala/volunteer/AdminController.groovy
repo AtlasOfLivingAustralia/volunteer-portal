@@ -234,7 +234,7 @@ class AdminController {
         // Obtain the available institutions/projects (i.e. if Institution Admin, only allow access to that
         // institution's roles).
         // If an IA, add that to the userRole query parameters.
-        def institutionList = (!userService.isSiteAdmin() ? userService.getAdminInstitutionList() : Institution.list(sort: 'name', order: 'asc'))
+        def institutionList = (!userService.isSiteAdmin() ? userService.getAdminInstitutionList() : Institution.listApproved(sort: 'name', order: 'asc'))
         if (!userService.isSiteAdmin()) parameters.institutionList = institutionList
 
         def projectList

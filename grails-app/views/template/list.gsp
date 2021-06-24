@@ -26,7 +26,7 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-success">Create new template</a>
         </div>
     </cl:headerContent>
 
@@ -34,7 +34,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-4">
-                    <g:select class="form-control" name="institution" id="institution" from="${Institution.list(sort: 'name', order: 'asc')}"
+                    <g:select class="form-control" name="institution" id="institution" from="${Institution.listApproved(sort: 'name', order: 'asc')}"
                               optionKey="id"
                               value="${params?.institution}" noSelection="['all':'- View ALL Institutions -']" />
                 </div>

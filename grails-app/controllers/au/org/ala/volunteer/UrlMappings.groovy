@@ -10,6 +10,8 @@ class UrlMappings {
         "/image/$prefix/$width/$height/$name.$format"(controller: 'image', action: 'size')
 
         name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')
+        "/institution/apply?"(controller: 'institutionAdmin', action: 'apply')
+        "/institution/applyConfirm?"(controller: 'institutionAdmin', action: 'applyConfirm')
         "/admin/label/$action?" (controller: 'label')
         "/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')

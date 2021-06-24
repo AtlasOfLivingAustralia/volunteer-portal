@@ -22,7 +22,7 @@ class StatsController {
 
         def institutionList
         if (userService.isSiteAdmin()) {
-            institutionList = Institution.list([sort: 'name', order: 'asc'])
+            institutionList = Institution.listApproved([sort: 'name', order: 'asc'])
         } else {
             institutionList = userService.getAdminInstitutionList()
         }

@@ -10,7 +10,7 @@
 
 <body class="admin">
 
-<cl:headerContent title="${message(code: 'default.institutions.label', default: 'Manage Institutions')}" selectedNavItem="bvpadmin">
+<cl:headerContent title="${message(code: 'default.institutions.label', default: 'Manage Institution Applications')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
@@ -35,7 +35,7 @@
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="${createLink(action: "applications")}"><i class="fa fa-inbox"></i>&nbsp;Manage Applications</a>
+                    <a href="${createLink(action: "index")}"><i class="fa fa-building-o"></i>&nbsp;Manage Institutions</a>
                 </li>
                 <li class="divider"></li>
                 <li>
@@ -49,22 +49,10 @@
 <div class="container">
     <div class="panel panel-default">
         <div class="panel-body">
-            <cl:ifSiteAdmin>
-            <div class="row">
-                <div class="col-md-3">
-                    <g:select class="form-control statusFilter" name="statusFilter" from="${[[key: 'active', value: 'Active Institutions'], [key: 'inactive', value: 'Inactive Institutions']]}"
-                              optionKey="key"
-                              optionValue="value"
-                              value="${params?.statusFilter}"
-                              noSelection="['':'- Filter by Status -']" />
-                </div>
-            </div>
-            </cl:ifSiteAdmin>
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
-                        <cl:ifSiteAdmin>
                         <tr>
                             <g:sortableColumn property="name"
                                               title="${message(code: 'institution.name.label', default: 'Name')}"
@@ -80,15 +68,6 @@
                                               params="${params}"/>
                             <th/>
                         </tr>
-                        </cl:ifSiteAdmin>
-                        <cl:ifNotSiteAdmin>
-                            <tr>
-                                <th>${message(code: 'institution.name.label', default: 'Name')}</th>
-                                <th>${message(code: 'institution.contactName.label', default: 'Contact Name')}</th>
-                                <th>${message(code: 'institution.contactEmail.label', default: 'Contact Email')}</th>
-                                <th>${message(code: 'institution.dateCreated.label', default: 'Date Created')}</th>
-                            </tr>
-                        </cl:ifNotSiteAdmin>
                         </thead>
                         <tbody>
                         <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
@@ -106,23 +85,12 @@
                                 <td><g:formatDate format="yyyy-MM-dd" date="${institutionInstance.dateCreated}"/></td>
 
                                 <td>
-                                    <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
-
-                                        <a class="btn btn-xs btn-default"
-                                           href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
-                                                class="fa fa-home"></i></a>
+                                    <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
                                         <a class="btn btn-xs btn-default"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
                                         <cl:ifSiteAdmin>
-                                            <g:if test="${institutionInstance.getProjectCount() == 0}">
                                                 <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
-                                            </g:if>
-                                            <g:else>
-                                                <button class="btn btn-xs btn-danger delete-institution" alt="Delete" title="You cannot delete an institution that has projects." disabled>
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            </g:else>
                                         </cl:ifSiteAdmin>
                                     </g:form>
                                 </td>
@@ -166,56 +134,47 @@
     </div>
 </div>
 <asset:script>
-    $(function($) {
-        var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
-        $('#quick-create-modal').on('shown.bs.modal', function (e) {
-            loadQuickCreateData();
-        })
-        $('#quick-create-button').click(function (e) {
-            $('#quick-create-form').submit();
-        });
-        function loadQuickCreateData() {
-            removeOptions(document.getElementById("cid"));
-            $('#quick-create-button').button('loading');
-            $.getJSON(api, function(data) {
-                var cid = document.getElementById('cid')
-                var i;
-                for (i = 0; i < data.length; ++i) {
-                       var o = new Option(data[i].name,data[i].id);
-                       o.innerHTML = data[i].name; // required for IE 8
-                       cid.appendChild(o);
+            $(function($) {
+                var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
+                $('#quick-create-modal').on('shown.bs.modal', function (e) {
+                    loadQuickCreateData();
+                })
+                $('#quick-create-button').click(function (e) {
+                    $('#quick-create-form').submit();
+                });
+                function loadQuickCreateData() {
+                    removeOptions(document.getElementById("cid"));
+                    $('#quick-create-button').button('loading');
+                    $.getJSON(api, function(data) {
+                        var cid = document.getElementById('cid')
+                        var i;
+                        for (i = 0; i < data.length; ++i) {
+                               var o = new Option(data[i].name,data[i].id);
+                               o.innerHTML = data[i].name; // required for IE 8
+                               cid.appendChild(o);
+                        }
+                        $('#quick-create-button').button('reset');
+                    });
+                };
+                function removeOptions(selectbox)
+                {
+                    var i;
+                    for(i=selectbox.options.length-1;i>=0;i--)
+                    {
+                        selectbox.remove(i);
+                    }
                 }
-                $('#quick-create-button').button('reset');
+
+                $('.delete-institution').on('click', function(e) {
+                    e.preventDefault();
+                    var self = this;
+                    bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
+                        if (result) {
+                            $(self).closest('form').submit();
+                        }
+                    });
+                });
             });
-        };
-        function removeOptions(selectbox)
-        {
-            var i;
-            for(i=selectbox.options.length-1;i>=0;i--)
-            {
-                selectbox.remove(i);
-            }
-        }
-
-        $('.delete-institution').on('click', function(e) {
-            e.preventDefault();
-            var self = this;
-            bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
-                if (result) {
-                    $(self).closest('form').submit();
-                }
-            });
-        });
-
-        $('.statusFilter').change(function() {
-            let filter = $(this).val();
-
-            var url = "${createLink(controller: 'institutionAdmin', action: 'index')}" +
-
-                "?statusFilter=" + filter;
-            window.location = url;
-        });
-    });
 </asset:script>
 </body>
 </html>
