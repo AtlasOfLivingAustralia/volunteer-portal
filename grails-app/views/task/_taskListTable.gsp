@@ -6,8 +6,8 @@
                           title="${message(code: 'task.id.label', default: 'External Id')}"
                           params="${[q: params.q]}"/>
 
-%{--        <g:each in="${extraFields}"--}%
-%{--                var="field"><th style="padding: 0.9em;">${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>--}%
+        <g:each in="${extraFields}"
+                var="field"><th style="padding: 0.9em;">${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
 
         <th style="padding: 0.9em;">${message(code: 'task.fullyTranscribedBy.label', default: 'Fully Transcribed By')}</th>
 
@@ -44,12 +44,12 @@
                 </g:if>
             </td>
 
-%{--            <g:each in="${extraFields}" var="field">--}%
-%{--                <td style="padding: 0.9em;">--}%
-%{--                    --}%%{--Use superceded field or the first row --}%
-%{--                    ${field?.value[taskInstance.id]?.value?.getAt(0)}--}%
-%{--                </td>--}%
-%{--            </g:each>--}%
+            <g:each in="${extraFields}" var="field">
+                <td style="padding: 0.9em;">
+                    %{-- Use superceded field or the first row--}%
+                    ${field?.value[taskInstance.id]?.value?.getAt(0)}
+                </td>
+            </g:each>
 
             <td style="padding: 0.9em;">
                 <cl:transcriberNames task="${taskInstance}"/>
