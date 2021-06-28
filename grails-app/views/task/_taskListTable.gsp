@@ -82,19 +82,13 @@
 
             <td style="text-align: center; padding: 0.9em;">
                 <g:if test="${taskInstance.fullyValidatedBy}">
-                    <g:link controller="validate" action="task" id="${taskInstance.id}">review</g:link>
-                %{--<button class="btn btn-mini" onclick="validateInSeparateWindow(${taskInstance.id})" title="Review task in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
-                %{--</button>--}%
+                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">review</g:link>
                 </g:if>
                 <g:elseif test="${taskInstance.isFullyTranscribed}">
-                    <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'validate', action:'task', id:taskInstance.id, params: params.clone())}'">validate</button>
-                %{--<button class="btn btn-small" onclick="validateInSeparateWindow(${taskInstance.id})" title="Validate in a separate window"><img src="${resource(dir: '/images', file: 'right_arrow.png')}">--}%
-                %{--</button>--}%
+                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id} params=${params.clone()}">validate</g:link>
                 </g:elseif>
                 <g:else>
-                    <button class="btn btn-small"
-                            onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id, params: params.clone())}'">transcribe</button>
+                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id} params=${params.clone()}">transcribe</g:link>
                 </g:else>
             </td>
 
