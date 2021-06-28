@@ -28,11 +28,6 @@
                 <li>
                     <a href="${createLink(action: "create")}"><i class="fa fa-plus"></i>&nbsp;Add Institution</a>
                 </li>
-                <li>
-                    <a href="javascript:void(0)" data-target="#quick-create-modal" data-toggle="modal">
-                        <i class="fa fa-cloud-download"></i>&nbsp;<g:message code="quick.new.label" default="Create from Atlas Collectory" args="[entityName]"/>
-                    </a>
-                </li>
                 <li class="divider"></li>
                 <li>
                     <a href="${createLink(action: "applications")}"><i class="fa fa-inbox"></i>&nbsp;Manage Applications</a>
