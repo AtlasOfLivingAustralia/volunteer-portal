@@ -74,10 +74,10 @@ class ValidationService {
 
     private Map matchTranscriptions(Task task) {
         Map matchCounts = [:].withDefault{1}
-        List completeTranscriptions = new ArrayList(task.transcriptions.findAll{it.fullyTranscribedBy != null})
+        List<Transcription> completeTranscriptions = task.transcriptions.findAll{it.fullyTranscribedBy != null}.toList()
         log.debug("Found ${completeTranscriptions.size()} transcriptions")
         for (int i = 0; i < completeTranscriptions.size(); i++) {
-            Transcription t1 = completeTranscriptions[i] as Transcription
+            Transcription t1 = completeTranscriptions[i]
             for (int j=i + 1; j < completeTranscriptions.size(); j++) {
                 Transcription t2 = completeTranscriptions[j] as Transcription
                 if (fieldsMatch(t1, t2)) {
