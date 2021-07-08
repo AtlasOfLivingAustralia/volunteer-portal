@@ -9,6 +9,11 @@
     <title><g:message code="admin.user.role.label" default="Administration - User Roles"/></title>
     <asset:stylesheet src="label-autocomplete"/>
     <asset:stylesheet src="bootstrap-select.css" asset-defer="" />
+    <style type="text/css">
+        table {
+            font-size: 0.9em;
+        }
+    </style>
     <asset:javascript src="bootstrap-select.js" asset-defer="" />
     <asset:script type="text/javascript">
 
@@ -111,16 +116,21 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
+                    <small>${userRoleTotalCount ?: 0} Users found.</small>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <th><span><g:message code="admin.user.role.name.label" default="Name" /></span></th>
+                            <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.name.label" default="Name" /></span></th>
                             <th><span><g:message code="admin.user.role.role.label" default="Role" /></span></th>
                             <th><span><g:message code="admin.user.role.level.label" default="Role Level" /></span></th>
-                            <th><span><g:message code="admin.user.role.level.name.label" default="Institution/Project" /></span></th>
-                            <th><span><g:message code="admin.user.role.createdby.label" default="Added By" /></span></th>
-                            <th><span><g:message code="admin.user.role.dateadded.label" default="Date Added" /></span></th>
+                            <th style="width: 45%;"><span><g:message code="admin.user.role.level.name.label" default="Institution/Project" /></span></th>
+                            <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.createdby.label" default="Added By" /></span></th>
+                            <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.dateadded.label" default="Date Added" /></span></th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -131,12 +141,19 @@
                                 <td>${userRole.user?.displayName}</td>
                                 <td><g:if test="${userRole.role.name == BVPRole.FORUM_MODERATOR}">Forum Moderator</g:if><g:else>Validator</g:else></td>
                                 <td><g:if test="${userRole.project}">Project</g:if><g:else>Institution</g:else></td>
-                                <td><g:if test="${userRole.project}">${userRole.project.name}</g:if><g:else>${userRole.institution?.name}</g:else></td>
+                                <td>
+                                    <g:if test="${userRole.project}">
+                                        <g:link controller="project" action="editGeneralSettings" id="${userRole.project.id}">${userRole.project.name}</g:link>
+                                    </g:if>
+                                    <g:elseif test="${userRole.institution}">
+                                        <g:link controller="institutionAdmin" action="edit" id="${userRole.institution.id}">${userRole.institution.name}</g:link>
+                                    </g:elseif>
+                                </td>
                                 <td>${userRole.createdBy?.displayName}</td>
                                 <td><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td>
                                     <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
-                                        <i class="icon-remove icon-white"></i>&nbsp;Delete
+                                        <i class="fa fa-times" title="Delete Role from User"></i>
                                     </button>
                                 </td>
                             </tr>
