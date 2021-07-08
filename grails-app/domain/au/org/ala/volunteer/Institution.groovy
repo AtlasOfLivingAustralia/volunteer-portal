@@ -39,10 +39,7 @@ class Institution implements Serializable {
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
         themeColour blank: true, nullable: true
-        isInactive blank: false, nullable: false
-        isApproved blank: false, nullable: false
-        displayContact blank: false, nullable: false
-        createdBy blank: true, nullable: true
+        createdBy nullable: true
     }
 
     static mapping = {
