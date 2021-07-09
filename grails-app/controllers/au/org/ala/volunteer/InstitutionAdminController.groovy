@@ -2,10 +2,13 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.base.Strings
+import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import retrofit2.Call
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static org.springframework.http.HttpStatus.*
 
 // For Institution Admins (DigiVol role), the SpringSecurity role annotation '@AlaSecured("ROLE_VP_ADMIN")'
@@ -20,6 +23,11 @@ class InstitutionAdminController {
     def groovyPageRenderer
 
     def index() {
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
         params.max = Math.min(params.max ? params.int('max') : 20, 100)
         if (!userService.isSiteAdmin()) {
             respond userService.getAdminInstitutionList()
@@ -445,4 +453,55 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
+    /**
+     * AJAX Endpoint returning a JSON list of active projects.
+     * @see {@link InstitutionService#getActiveProjectsForInstitution(Institution)}
+     */
+    def getActiveProjectsForInstitution(long id) {
+        log.debug("AJAX getActiveProjects: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            if (institution) {
+                def results = institutionService.getActiveProjectsForInstitution(institution)
+                render(results as JSON)
+            } else {
+                render status: 404
+            }
+        }
+    }
+
+    /**
+     * AJAX Endpoint for returning a JSON list of active users for a given institution.
+     * @see {@link InstitutionService#getActiveUsersForInstitution(Institution)}
+     * @param id the institution ID to query
+     * @return a List (in JSON format) of users.
+     */
+    def getUsersForInstitution(long id) {
+        log.debug("AJAX getActiveProjects: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            if (institution) {
+                def usersForInstitution = institutionService.getActiveUsersForInstitution(institution)
+                render(usersForInstitution as JSON)
+            } else {
+                render status: 404
+            }
+        }
+    }
 }

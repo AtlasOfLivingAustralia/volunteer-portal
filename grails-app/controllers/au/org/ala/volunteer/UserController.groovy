@@ -84,6 +84,66 @@ class UserController {
       redirect(action: "show", id: userInstance.id, params: params )
     }
 
+    /**
+     * Lists users with an opt-out record.
+     */
+    def listOptOut() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        params.max = Math.min(params.max ? params.int('max') : 20, 100)
+
+        def userList = UserOptOut.list(params)
+        def userListCount = UserOptOut.list().size()
+
+        [userList: userList, userListCount: userListCount]
+    }
+
+    /**
+     * Deletes a user's opt-out record.
+     * @param userOptOut the opt-out record to delete.
+     */
+    def deleteOptOut(UserOptOut userOptOut) {
+        if (!userOptOut || !userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+        def name = userOptOut.user.displayName
+        userOptOut.delete(flush: true, failOnError: true)
+        flash.message = message(code: 'optout.deleted.message', args: [name]) as String
+        redirect(action: 'listOptOut')
+    }
+
+    /**
+     * Adds a new user opt-out request.
+     */
+    def addUserOptOut() {
+        if (!userService.isAdmin()) {
+            redirect(uri: "/")
+            return
+        }
+
+        def userId = params.userId?.toString()
+        def user = User.findByUserId(userId)
+
+        if (!user) {
+            log.error("Add user opt-out: No user found for ${params.userId}")
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'user.label', default: 'User'), userId]) as String
+            redirect(action: 'listOptOut')
+            return
+        }
+
+        UserOptOut opt = new UserOptOut(user: user)
+        opt.dateCreated = new Date()
+        log.debug("New opt-out: ${opt}")
+        opt.save(failOnError: true, flush: true)
+
+        flash.message = message(code: 'optout.created.message', args: [user.displayName]) as String
+        redirect(action: 'listOptOut')
+    }
+
     def list() {
         if (!userService.isAdmin()) {
             redirect(uri: "/")
@@ -115,6 +175,10 @@ class UserController {
         [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser]
     }
 
+    /**
+     * AJAX endpoint for listing users
+     * @return
+     */
     def listUsersForJson() {
         if (!userService.isInstitutionAdmin()) {
             render status: 403
@@ -130,9 +194,14 @@ class UserController {
             }
             maxResults 20
             order "displayName", "desc"
+        } as List<User>
+
+        // Don't divulge email addresses.
+        def userList = users.collect { user ->
+            [id: user.id, userId: user.userId, displayName: user.displayName]
         }
 
-        render users as JSON
+        render userList as JSON
     }
 
     /**

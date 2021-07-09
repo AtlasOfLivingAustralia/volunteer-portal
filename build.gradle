@@ -153,7 +153,7 @@ dependencies {
     compile 'org.grails.plugins:cache-headers:2.0.2'
     compile 'org.grails.plugins:csv:1.0.ALA.3'
     compile 'org.grails.plugins:postgresql-extensions:5.2.0'
-    compile 'org.grails.plugins:mail:2.0.0.RC6'
+    compile 'org.grails.plugins:mail:2.0.1'
     compile 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
     compile 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
     compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?

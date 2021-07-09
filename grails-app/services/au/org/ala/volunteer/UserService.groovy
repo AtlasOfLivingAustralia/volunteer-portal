@@ -15,6 +15,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpServletRequest
+import java.security.MessageDigest
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Transactional
@@ -329,7 +330,7 @@ class UserService {
         }
 
         if (parameters.institution) {
-            clause.add("and i.id = :institutionId ")
+            clause.add("and (i.id = :institutionId or p.institution_id = :institutionId)")
             pValues.institutionId = parameters.institution
         }
 
@@ -339,11 +340,11 @@ class UserService {
             clause.add(" and (" + institutionClause + " OR " + projectClause + ")")
         }
 
-        if (!Strings.isNullOrEmpty(parameters.q)) {
+        if (!Strings.isNullOrEmpty(parameters.q as String)) {
             clause.add(" and p.name ilike '%${parameters.q}%' ")
         }
 
-        if (!Strings.isNullOrEmpty(parameters.userid)) {
+        if (!Strings.isNullOrEmpty(parameters.userid as String)) {
             clause.add(" and u.user_id = ${parameters.userid} ")
         }
 
@@ -373,8 +374,8 @@ class UserService {
         log.debug("Role query: ${query}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, pValues, parameters.offset, parameters.max) { row ->
-            UserRole userRole = UserRole.get(row.user_role_id)
+        sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int) { row ->
+            UserRole userRole = UserRole.get(row.user_role_id as long)
             results.add(userRole)
         }
 
@@ -719,5 +720,19 @@ class UserService {
                 expeditionCount: expeditions ? expeditions[0] : 0,
                 userPercent: userPercent
         ]
+    }
+
+    /**
+     * Generates a hash for encoding user information. Generates an MD5 hash.
+     * Returns null if no user exists or no hash suffix exists in the {@link User} class.
+     *
+     * @param user the User object
+     * @return the md5 hash
+     */
+    def getUserHash(User user) {
+        if (!user) return null
+        if (!User.HASH_SUFFIX) return null
+        def userHash = "${user.id}+${User.HASH_SUFFIX}".toString()
+        return MessageDigest.getInstance("MD5").digest(userHash.bytes).encodeHex().toString()
     }
 }

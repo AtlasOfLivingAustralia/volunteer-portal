@@ -43,8 +43,8 @@
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="${createLink(controller: 'project', action: 'mailingList', id: projectInstance.id)}"><i
-                                class="fa fa-envelope-o"></i>&nbsp;Mailing list</a>
+                        <a href="${createLink(controller: 'institutionMessage', action: 'create', params: [institution: projectInstance.institution.id])}"><i
+                                class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers</a>
                     </li>
                     <li>
                         <a href="${createLink(controller: 'picklist', id: projectInstance.id)}"><i
@@ -67,6 +67,10 @@
                     <li>
                         <a href="${createLink(controller: 'user', action: 'myStats', id: userInstance.id, params: ['projectId': projectInstance.id])}"><i
                                 class="fa fa-signal"></i>&nbsp;View my stats for this project</a>
+                    </li>
+                    <li>
+                        <a href="${createLink(controller: 'institution', action: 'index', id: projectInstance.institution.id)}"><i
+                                class="fa fa-building"></i>&nbsp;View Institution page</a>
                     </li>
                     <li class="divider"></li>
                     <li><a href="#" id="btnExportAll"><i class="fa fa-download"></i>&nbsp;Export all tasks</a></li>

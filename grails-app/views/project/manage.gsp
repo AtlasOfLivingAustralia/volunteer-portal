@@ -5,22 +5,21 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}">
     <g:set var="entityName" value="${message(code: 'project.name.label', default: 'Expedition')}"/>
-    <title><g:message code="default.list.label" args="[entityName]"/></title>
+    <title><cl:pageTitle title="${g.message(code:"project.manage.label", default:"Manage Expeditions")}" /></title>
 </head>
 
 <body class="admin">
 <cl:headerContent title="${message(code: 'project.manage.label', default: 'Manage Expeditions')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
+            [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
         ]
-
     %>
 
-    <cl:ifSiteAdmin>
+    <cl:ifAdmin>
         <a class="btn btn-success" href="${createLink(action: "create")}"><i
                 class="icon-plus icon-white"></i>&nbsp;Create Expedition</a>
-    </cl:ifSiteAdmin>
+    </cl:ifAdmin>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="panel panel-default">

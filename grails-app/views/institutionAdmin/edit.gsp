@@ -80,20 +80,6 @@
                     title: "Upload institution logo"
                 });
             });
-
-%{--            function isEmail(email) {--}%
-%{--                var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;--}%
-%{--                return regex.test(email);--}%
-%{--            }--}%
-
-%{--            $('.save').click(function() {--}%
-%{--                var emailValue = $('.inst-contact-email').val();--}%
-%{--                if (!isEmail(emailValue)) {--}%
-%{--                    --}%
-%{--                }--}%
-%{--            });--}%
-
-
         });
 
     </asset:script>

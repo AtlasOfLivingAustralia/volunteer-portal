@@ -99,7 +99,7 @@
                             </td>
                             <td>Manage tutorial files</td>
                         </tr>
-                        <cl:ifSiteAdmin>
+                    <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
@@ -107,16 +107,32 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'user', action: 'list')}">User List</a></td>
+                            <td>List of all User accounts on DigiVol</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'user', action: 'listOptOut')}">Users Opted-Out</a></td>
+                            <td>List of all Users who have opted-out of receiving Institution Messages</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'manageInstitutionAdmins')}">Manage Institution Admins</a>
                             </td>
                             <td>Manage Institution Admins</td>
                         </tr>
-                        </cl:ifSiteAdmin>
+                    </cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'admin', action: 'manageUserRoles')}">Manage User Roles</a>
                             </td>
                             <td>Manage User Roles, such as validators and forum moderators.</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-default bs3"
+                                   href="${createLink(controller: 'institutionMessage', action: 'index')}">Institution Messages</a>
+                            </td>
+                            <td>Create and send messages to volunteers of your institutions and projects.</td>
                         </tr>
                         <cl:ifSiteAdmin>
                         <tr>
@@ -128,7 +144,7 @@
                         <tr>
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'label', action: 'index')}">Manage Tags</a></td>
-                            <td>Manage Project Tags</td>
+                            <td>Manage Expedition Tags</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-default bs3"
@@ -139,9 +155,6 @@
                         <tr>
                             <td>Admin reports</td>
                             <td>
-                                <a class="btn btn-default bs3"
-                                   title="Display a list of email address for all volunteers"
-                                   href="${createLink(controller: 'admin', action: 'mailingList')}">Global mailing List</a>
                                 <a class="btn btn-default bs3"
                                    title="Users and their various counts and last activity etc..."
                                    href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}">User report</a>

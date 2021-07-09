@@ -13,6 +13,8 @@ class User {
 
     String displayName // computed
 
+    static final String HASH_SUFFIX = "cuxnzuqkqasqkdatlanipquugmabvofh"
+
     static hasMany = [userRoles:UserRole, achievementAwards: AchievementAward]
 
     static mapping = {

@@ -23,7 +23,9 @@
 
 <cl:headerContent crumbLabel="Volunteers" title="Volunteer transcribers"  selectedNavItem="bvpadmin">
     <%
-        pageScope.crumbs = []
+        pageScope.crumbs = [
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
+        ]
     %>
 </cl:headerContent>
 <div class="container">
