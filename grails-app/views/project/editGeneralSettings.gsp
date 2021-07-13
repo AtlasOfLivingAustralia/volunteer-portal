@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
+    <asset:stylesheet src="label-autocomplete"/>
 </head>
 
 <body>
@@ -208,6 +209,37 @@
     });
 
     jQuery(function($) {
+        var labelColourMap = <cl:json value="${labelColourMap}"/>;
+        var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
+
+        labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
+            //var obj = JSON.parse(item);
+            var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
+            //showSpinner();
+            $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
+                .done(function(data) {
+                    $( "<span>" )
+                        .addClass("label")
+                        .addClass(labelColourMap[item.category])
+                        .attr("title", item.category)
+                        .text(item.value)
+                        .append(
+                        $( "<i>" )
+                            .attr("data-label-id", item.id)
+                            .addClass("fa")
+                            .addClass("fa-times-circle")
+                            .addClass("delete-label")
+                        )
+                        .appendTo(
+                            $( "#labels" )
+                        );
+                    $("#label").val("");
+                })
+                .fail(function() { alert("Couldn't add label")});
+                //.always(hideSpinner);
+            return null;
+        });
+
         function onDeleteClick(e) {
             var deleteUrl = "${createLink(controller: 'project', action: 'removeLabel', id: projectInstance.id)}";
         //    showSpinner();
