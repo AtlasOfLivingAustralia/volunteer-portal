@@ -1,4 +1,31 @@
 <%@ page import="au.org.ala.volunteer.InstitutionMessage" %>
+<style type="text/css">
+.loader {
+    border: 4px solid #e0e0e0; /* Light grey */
+    border-top: 4px solid #000000;
+    border-radius: 50%;
+    width: 2.475rem;
+    height: 2.475rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.float-right {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    /*line-height: 2.375rem;*/
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+    right:40px;
+    top: 4px;
+}
+</style>
 
 <div class="form-group">
     <label class="control-label col-md-3" for="institution">
@@ -29,6 +56,11 @@
         <g:message code="institutionMessage.recipient.label" default="Recipient"/>
     </label>
     <div class="col-md-6">
+        <div class="clearfix loading-recipient hidden">
+            <div class="loader float-right" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
         <select name="recipient"
                 class="form-control selectpicker"
                 data-live-search="true"

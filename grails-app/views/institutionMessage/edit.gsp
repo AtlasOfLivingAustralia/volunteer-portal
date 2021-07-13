@@ -132,7 +132,7 @@
         });
 
         function getRecipientData(recipientType) {
-            console.log("getRecipientData");
+            $('.loading-recipient').removeClass('hidden');
             if (recipientType === 'user') {
                 getUserList();
             } else if (recipientType === 'project') {
@@ -203,14 +203,13 @@
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
                     .removeAttr("data-count-selected-text")
-                    .append("<option>- Select a recipient -</option>");
-
-                $('#recipient').selectpicker();
-                console.log("Disabling field for institution");
+                    .append("<option>- Institution; no recipient required -</option>");
                 $('#recipient').attr("disabled", true);
+                $('#recipient').selectpicker();
             }
 
             $('#recipient').selectpicker('refresh');
+            $('.loading-recipient').addClass('hidden');
         }
 
         function getUserList() {

@@ -68,7 +68,15 @@
             getRecipientData(this.value);
         });
 
+        $('.institution').change(function() {
+            const recipientType = $('.recipient-type').val();
+            $('#recipient option:selected').prop('selected', false)
+                .val("");
+            getRecipientData(recipientType);
+        });
+
         function getRecipientData(recipientType) {
+            $('.loading-recipient').removeClass('hidden');
             if (recipientType === 'user') {
                 getUserList();
             } else if (recipientType === 'project') {
@@ -136,13 +144,13 @@
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
                     .removeAttr("data-count-selected-text")
-                    .append("<option>- Select a recipient -</option>");
-
-                $('#recipient').selectpicker();
+                    .append("<option>- Institution; no recipient required -</option>");
                 $('#recipient').attr("disabled", true);
+                $('#recipient').selectpicker();
             }
 
             $('#recipient').selectpicker('refresh');
+            $('.loading-recipient').addClass('hidden');
         }
 
         function getUserList() {
