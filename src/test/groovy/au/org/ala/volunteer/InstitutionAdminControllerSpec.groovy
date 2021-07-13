@@ -1,13 +1,14 @@
 package au.org.ala.volunteer
 
-
-
+import grails.gsp.PageRenderer
 import grails.test.mixin.*
 import spock.lang.*
 
 @TestFor(InstitutionAdminController)
 @Mock([Institution, Project])
 class InstitutionAdminControllerSpec extends Specification {
+
+    boolean admin = true
 
     def populateValidParams(params) {
         assert params != null
@@ -26,6 +27,25 @@ class InstitutionAdminControllerSpec extends Specification {
         params['themeColour'] = '#000000'
     }
 
+    def setup() {
+        def userServiceStub = Stub(UserService) {
+            isInstitutionAdmin() >> admin
+            isInstitutionAdmin(_) >> admin
+            isSiteAdmin() >> false
+            getAdminInstitutionList() >> []
+        }
+        controller.userService = userServiceStub
+
+        def institutionServiceStub = Stub(InstitutionService)
+        controller.institutionService = institutionServiceStub
+        InstitutionService.metaClass.'static'.NOTIFICATION_APPLICATION = "foo"
+
+        def groovyPageRenderer
+        groovyPageRenderer = Mock(PageRenderer)
+        controller.groovyPageRenderer = groovyPageRenderer
+        groovyPageRenderer.render(_) >> "<html>foo</html>"
+    }
+
     void "Test the index action returns the correct model"() {
 
         when:"The index action is executed"
@@ -36,17 +56,10 @@ class InstitutionAdminControllerSpec extends Specification {
             model.institutionInstanceCount == 0
     }
 
-    void "Test the create action returns the correct model"() {
-        when:"The create action is executed"
-            controller.create()
-
-        then:"The model is correctly created"
-            model.institutionInstance!= null
-    }
-
     void "Test the save action correctly persists an instance"() {
 
         when:"The save action is executed with an invalid instance"
+            params['entry'] = 'APPLY'
             request.contentType = FORM_CONTENT_TYPE
             request.method = 'POST'
             def institution = new Institution()
@@ -65,7 +78,7 @@ class InstitutionAdminControllerSpec extends Specification {
             controller.save(institution)
 
         then:"A redirect is issued to the show action"
-            response.redirectedUrl == '/admin/institutions/edit/1'
+            response.redirectedUrl == '/institution/applyConfirm?id=1'
             Institution.count() == 1
     }
 
@@ -114,6 +127,31 @@ class InstitutionAdminControllerSpec extends Specification {
 
         then:"A redirect is issues to the show action"
             response.redirectedUrl == "/admin/institutions/edit/1"
+    }
+
+    void "Test the create action is not accessible by non-Site admins"() {
+        when:"The create action is executed"
+        controller.create()
+
+        then:"The model is correctly created"
+        response.redirectedUrl == '/institution/list'
+        flash.message != null
+    }
+
+    void "Test the create action returns the correct model"() {
+        given:"The user is a site admin"
+        def userServiceStub = Stub(UserService) {
+            isSiteAdmin() >> true
+        }
+
+        and:"The spy service is set on the controller"
+        controller.userService = userServiceStub
+
+        when:"The create action is executed"
+        controller.create()
+
+        then:"The model is correctly created"
+        model.institutionInstance!= null
     }
 
     void "Test that the delete action deletes an instance if it exists"() {

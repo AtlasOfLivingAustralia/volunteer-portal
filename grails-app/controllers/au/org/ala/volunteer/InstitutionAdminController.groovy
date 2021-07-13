@@ -30,7 +30,9 @@ class InstitutionAdminController {
 
         params.max = Math.min(params.max ? params.int('max') : 20, 100)
         if (!userService.isSiteAdmin()) {
-            respond userService.getAdminInstitutionList()
+            def institutionList = userService.getAdminInstitutionList()
+            respond institutionList,
+                model: [institutionInstanceCount: institutionList.size()]
         } else {
             if (!params.sort) params.sort = 'name'
             if (!params.order) params.order = 'asc'
