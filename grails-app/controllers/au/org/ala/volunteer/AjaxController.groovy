@@ -61,10 +61,6 @@ class AjaxController {
     private def statsCache = Suppliers.memoizeWithExpiration(this.&statsInternal, 1, TimeUnit.MINUTES)
 
     def stats() {
-        if (!userService.isAdmin()) {
-            render ("${UNAUTH_MSG}")
-            return
-        }
         setNoCache()
         log.debug("stats")
         def stats = statsCache.get()
@@ -75,7 +71,7 @@ class AjaxController {
 
         log.debug("statsInternal")
 
-        def stats = [:]
+        Map<String, ?> stats = [:]
 
         def projectTypes = ProjectType.list()
 
@@ -85,12 +81,11 @@ class AjaxController {
         }
 
         stats.volunteerCount = userService.countActiveUsers()
-        def topVolunteers = userService.getUserCounts([], 10)
-        stats.topTenVolunteers = topVolunteers
+        // def topVolunteers = userService.getUserCounts([], 10)
+        // stats.topTenVolunteers = topVolunteers
 
-//        def projects = Project.list();
         stats.expeditionCount = Project.count()
-        def inactiveCount = taskService.countInactiveProjects()
+        // def inactiveCount = taskService.countInactiveProjects()
         def projectCounts = taskService.getProjectTaskTranscribedCounts(true)
         def projectTranscribedCounts = taskService.getProjectTaskFullyTranscribedCounts(true)
 
@@ -102,20 +97,18 @@ class AjaxController {
 
         stats.activeExpeditionsCount = incompleteCount
         stats.completedExpeditionsCount = completedCount
-        stats.deactivatedExpeditionsCount = inactiveCount
+        // stats.deactivatedExpeditionsCount = inactiveCount
 
         return stats
     }
 
     def userReport() {
-
         setNoCache()
 
         if (!userService.isAdmin()) {
             render ("${UNAUTH_MSG}")
             return
         }
-
 
         // Pre-create the writer and write the headings straight away to prevent a read timeout.
         def writer
@@ -136,12 +129,14 @@ class AjaxController {
                 'projects_count' { it[8] }
                 'volunteer_since' { it[9] }
                 'is_admin' { it[10] }
-                'is_validator' { it[11] }
+                'is_institution_admin' { it[11] }
+                'is_ala_validator' { it[12] }
+                'is_validator' { it[13] }
+                'is_forum_mod' { it[14] }
             })
             writer.writeHeadings()
             response.flushBuffer()
         }
-
 
         def asyncCounts = Task.async.withStatelessSession {
             def sw1 = Stopwatch.createStarted()
@@ -226,9 +221,26 @@ class AjaxController {
             def roleObjs = userRoles*.role
             def roles = (roleObjs*.name + serviceResult?.roles).toSet()
             def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
-            def isValidator = !roles.intersect([validatorRole]).isEmpty()
+            def isAlaValidator = !roles.intersect([validatorRole]).isEmpty()
+            def isValidator = !roles.intersect([BVPRole.VALIDATOR]).isEmpty()
+            def isForumModerator = !roles.intersect([BVPRole.FORUM_MODERATOR]).isEmpty()
+            def isInstitutionAdmin = !roles.intersect([BVPRole.INSTITUTION_ADMIN]).isEmpty()
 
-            report.add([serviceResult?.userId ?: id, serviceResult?.userName ?: user.email, serviceResult?.displayName ?: user.displayName, serviceResult?.organisation ?: user.organisation ?: '', location, transcribedCount, validatedCount, lastActivity, projectCount, user.created, isAdmin, isValidator])
+            report.add([serviceResult?.userId ?: id,
+                        serviceResult?.userName ?: user.email,
+                        serviceResult?.displayName ?: user.displayName,
+                        serviceResult?.organisation ?: user.organisation ?: '',
+                        location,
+                        transcribedCount,
+                        validatedCount,
+                        lastActivity,
+                        projectCount,
+                        user.created,
+                        isAdmin,
+                        isInstitutionAdmin,
+                        isAlaValidator,
+                        isValidator,
+                        isForumModerator])
         }
         sw5.stop()
         log.debug("UserReport generate report took ${sw5}")
@@ -239,9 +251,7 @@ class AjaxController {
         sw5.stop()
         log.debug("UserReport sort took ${sw5.toString()}")
 
-
         if (params.wt && params.wt == 'csv') {
-
             for (def row : report) {
                 writer << row
             }
@@ -252,7 +262,7 @@ class AjaxController {
     }
 
     def loadProgress(long id) {
-        if (!userService.isAdmin()) {
+        if (!projectService.isAdminForProject(Project.get(id))) {
             render ("${UNAUTH_MSG}")
             return
         }
@@ -642,7 +652,7 @@ class AjaxController {
             return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
         }
 
-        if (!userService.isAdmin()) {
+        if (!projectService.isAdminForProject(Project.get(cmd.projectId))) {
             return render(status: request.userPrincipal ? SC_FORBIDDEN : SC_UNAUTHORIZED, text: 'Access denied')
         }
 

@@ -18,6 +18,10 @@ class Institution implements Serializable {
     String imageCaption // optional
     String themeColour // optional
     boolean disableNewsItems = false
+    boolean isInactive = true
+    boolean isApproved = false
+    boolean displayContact = true
+    User createdBy
 
     int version
 
@@ -25,8 +29,8 @@ class Institution implements Serializable {
     Date lastUpdated
 
     static constraints = {
-        contactName blank: true, nullable: true
-        contactEmail email: true, blank: true, nullable: true
+        contactName blank: false, nullable: false
+        contactEmail email: true, blank: false, nullable: false
         contactPhone blank: true, nullable: true
         collectoryUid nullable: true
         shortDescription nullable: true, blank: true, maxSize: 512
@@ -35,18 +39,39 @@ class Institution implements Serializable {
         websiteUrl blank: true, nullable: true
         imageCaption blank: true, nullable: true
         themeColour blank: true, nullable: true
+        createdBy nullable: true
     }
 
     static mapping = {
         description widget: 'textarea'
         disableNewsItems defaultValue: 'false'
+        isInactive defaultValue: true
+        isApproved defaultValue: false
+        displayContact defaultValue: true
     }
 
     String toString() {
-        return name
+        return name + (isInactive ? " (inactive)" : "")
     }
 
     String getKey () {
         return id?.toString()?:''
+    }
+
+    static List<Institution> listApproved(Map params) {
+        return findAllByIsApproved(true, params)
+    }
+
+    int getProjectCount() {
+        def result = Project.createCriteria().get {
+            'institution' {
+                eq('id', this.id)
+            }
+            projections {
+                rowCount()
+            }
+        }
+
+        result as int
     }
 }

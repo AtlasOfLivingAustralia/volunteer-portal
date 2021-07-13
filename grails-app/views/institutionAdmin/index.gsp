@@ -18,64 +18,118 @@
 
     %>
 
-    <a class="btn btn-success" href="${createLink(action: "create")}"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Institution</a>
-    <a id="quick-create" role="button" class="create btn btn-default" href="javascript:void(0)" data-target="#quick-create-modal"
-       data-toggle="modal"><g:message code="quick.new.label" default="Create from Atlas Collectory"
-                                      args="[entityName]"/></a>
+    <cl:ifSiteAdmin>
+        <div class="btn-group">
+            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-cog"></i> Tools
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="${createLink(action: "create")}"><i class="fa fa-plus"></i>&nbsp;Add Institution</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="${createLink(action: "applications")}"><i class="fa fa-inbox"></i>&nbsp;Manage Applications</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="${createLink(action: "apply")}" target="_blank"><i class="fa fa-share-square-o"></i>&nbsp;Application Form</a>
+                </li>
+            </ul>
+        </div>
+    </cl:ifSiteAdmin>
 </cl:headerContent>
 
 <div class="container">
     <div class="panel panel-default">
         <div class="panel-body">
+            <cl:ifSiteAdmin>
+            <div class="row">
+                <div class="col-md-3">
+                    <g:select class="form-control statusFilter" name="statusFilter" from="${[[key: 'active', value: 'Active Institutions'], [key: 'inactive', value: 'Inactive Institutions']]}"
+                              optionKey="key"
+                              optionValue="value"
+                              value="${params?.statusFilter}"
+                              noSelection="['':'- Filter by Status -']" />
+                </div>
+            </div>
+            </cl:ifSiteAdmin>
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
+                        <cl:ifSiteAdmin>
                         <tr>
-                            <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}" mapping="institutionAdmin"/>
+                            <g:sortableColumn property="name"
+                                              title="${message(code: 'institution.name.label', default: 'Name')}"
+                                              params="${params}"/>
                             <g:sortableColumn property="contactName"
-                                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}" mapping="institutionAdmin"/>
+                                              title="${message(code: 'institution.contactName.label', default: 'Contact Name')}"
+                                              params="${params}"/>
                             <g:sortableColumn property="contactEmail"
-                                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}" mapping="institutionAdmin"/>
+                                              title="${message(code: 'institution.contactEmail.label', default: 'Contact Email')}"
+                                              params="${params}"/>
                             <g:sortableColumn property="dateCreated"
-                                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}" mapping="institutionAdmin"/>
+                                              title="${message(code: 'institution.dateCreated.label', default: 'Date Created')}"
+                                              params="${params}"/>
                             <th/>
                         </tr>
+                        </cl:ifSiteAdmin>
+                        <cl:ifNotSiteAdmin>
+                            <tr>
+                                <th>${message(code: 'institution.name.label', default: 'Name')}</th>
+                                <th>${message(code: 'institution.contactName.label', default: 'Contact Name')}</th>
+                                <th>${message(code: 'institution.contactEmail.label', default: 'Contact Email')}</th>
+                                <th>${message(code: 'institution.dateCreated.label', default: 'Date Created')}</th>
+                            </tr>
+                        </cl:ifNotSiteAdmin>
                         </thead>
                         <tbody>
                         <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                                <td><g:link action="edit"
-                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link></td>
+                                <td width="35%"><g:link action="edit"
+                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link>
+                                    <g:if test="${institutionInstance.isInactive}"><i>(inactive)</i></g:if>
+                                </td>
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
 
                                 <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
 
-                                <td><g:formatDate date="${institutionInstance.dateCreated}"/></td>
+                                <td><g:formatDate format="yyyy-MM-dd" date="${institutionInstance.dateCreated}"/></td>
 
                                 <td>
-                                    <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <g:actionSubmit class="btn btn-danger delete-institution"
-                                                        value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                                        <a class="btn btn-default"
+                                    <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
+
+                                        <a class="btn btn-xs btn-default"
                                            href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                                                 class="fa fa-home"></i></a>
-                                        <a class="btn btn-default"
+                                        <a class="btn btn-xs btn-default"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
+                                        <cl:ifSiteAdmin>
+                                            <g:if test="${institutionInstance.getProjectCount() == 0}">
+                                                <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                                            </g:if>
+                                            <g:else>
+                                                <button class="btn btn-xs btn-danger delete-institution" alt="Delete" title="You cannot delete an institution that has projects." disabled>
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </g:else>
+                                        </cl:ifSiteAdmin>
                                     </g:form>
                                 </td>
                             </tr>
                         </g:each>
                         </tbody>
                     </table>
-
+                    <g:if test="${institutionInstanceCount > 20}">
                     <div class="pagination">
                         <g:paginate total="${institutionInstanceCount ?: 0}"/>
                     </div>
+                    </g:if>
                 </div>
             </div>
         </div>
@@ -107,47 +161,56 @@
     </div>
 </div>
 <asset:script>
-            $(function($) {
-                var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
-                $('#quick-create-modal').on('shown.bs.modal', function (e) {
-                    loadQuickCreateData();
-                })
-                $('#quick-create-button').click(function (e) {
-                    $('#quick-create-form').submit();
-                });
-                function loadQuickCreateData() {
-                    removeOptions(document.getElementById("cid"));
-                    $('#quick-create-button').button('loading');
-                    $.getJSON(api, function(data) {
-                        var cid = document.getElementById('cid')
-                        var i;
-                        for (i = 0; i < data.length; ++i) {
-                               var o = new Option(data[i].name,data[i].id);
-                               o.innerHTML = data[i].name; // required for IE 8
-                               cid.appendChild(o);
-                        }
-                        $('#quick-create-button').button('reset');
-                    });
-                };
-                function removeOptions(selectbox)
-                {
-                    var i;
-                    for(i=selectbox.options.length-1;i>=0;i--)
-                    {
-                        selectbox.remove(i);
-                    }
+    $(function($) {
+        var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
+        $('#quick-create-modal').on('shown.bs.modal', function (e) {
+            loadQuickCreateData();
+        })
+        $('#quick-create-button').click(function (e) {
+            $('#quick-create-form').submit();
+        });
+        function loadQuickCreateData() {
+            removeOptions(document.getElementById("cid"));
+            $('#quick-create-button').button('loading');
+            $.getJSON(api, function(data) {
+                var cid = document.getElementById('cid')
+                var i;
+                for (i = 0; i < data.length; ++i) {
+                       var o = new Option(data[i].name,data[i].id);
+                       o.innerHTML = data[i].name; // required for IE 8
+                       cid.appendChild(o);
                 }
-
-                $('.delete-institution').on('click', function(e) {
-                    e.preventDefault();
-                    var self = this;
-                    bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
-                        if (result) {
-                            $(self).closest('form').submit();
-                        }
-                    });
-                });
+                $('#quick-create-button').button('reset');
             });
+        };
+        function removeOptions(selectbox)
+        {
+            var i;
+            for(i=selectbox.options.length-1;i>=0;i--)
+            {
+                selectbox.remove(i);
+            }
+        }
+
+        $('.delete-institution').on('click', function(e) {
+            e.preventDefault();
+            var self = this;
+            bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
+                if (result) {
+                    $(self).closest('form').submit();
+                }
+            });
+        });
+
+        $('.statusFilter').change(function() {
+            let filter = $(this).val();
+
+            var url = "${createLink(controller: 'institutionAdmin', action: 'index')}" +
+
+                "?statusFilter=" + filter;
+            window.location = url;
+        });
+    });
 </asset:script>
 </body>
 </html>

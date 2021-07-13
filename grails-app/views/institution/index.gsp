@@ -45,14 +45,16 @@
             <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>" class="img-responsive institution-logo-main">
             <table class="table table-striped contact">
                 <tbody>
+                <g:if test="${institutionInstance?.displayContact}">
                 <tr>
                     <th scope="row">Email</th>
-                    <td><a href="mailto:${institutionInstance.contactEmail}">${institutionInstance.contactName}</td>
+                    <td><a href="mailto:${institutionInstance.contactEmail}">${institutionInstance.contactName}</a></td>
                 </tr>
                 <tr>
                     <th scope="row">Phone</th>
                     <td>${institutionInstance.contactPhone}</td>
                 </tr>
+                </g:if>
                 <tr>
                     <th scope="row">Website</th>
                     <td><a href="${(institutionInstance.websiteUrl?.startsWith("http")) ? "" : "http://"}${institutionInstance.websiteUrl}" target="_blank">${(institutionInstance.websiteUrl?.startsWith("http")) ? institutionInstance.websiteUrl?.substring(7) : institutionInstance.websiteUrl}</a></td>
@@ -62,6 +64,9 @@
         </div>
         <div class="col-sm-8 col-sm-pull-4">
             <h1 class="">${institutionInstance.name}</h1>
+            <g:if test="${institutionInstance.isInactive}">
+                <h2><small><span class="label label-info"><g:message code="status.inactive" /></span></small></h2>
+            </g:if>
             <p style="margin-top: 20px;"><%=institutionInstance.description%></p>
             <div class="cta-primary ">
                 <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">See our expeditions
@@ -71,6 +76,9 @@
                     <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
                             controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i
                             class="glyphicon glyphicon-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
+                    <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
+                            controller="admin" action="manageUserRoles" params="${[institution: institutionInstance?.id]}"><i
+                            class="fa fa-user"></i>&nbsp;User Permissions</g:link>&nbsp;
                 </cl:ifAdmin>
             </div>
         </div>

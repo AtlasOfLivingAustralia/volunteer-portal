@@ -5,34 +5,8 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
-
-    <asset:script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#searchButton").click(function (e) {
-                e.preventDefault();
-                doSearch();
-            });
-
-            $("#q").keypress(function (e) {
-                if (e.keyCode == 13) {
-                    e.preventDefault();
-                    doSearch();
-                }
-            });
-
-        });
-
-        function doSearch() {
-            var query = $("#q").val()
-            location.href = "?q=" + query;
-        }
-    </asset:script>
-
 </head>
-
 <body>
-
 <cl:headerContent title="Task List - ${projectInstance ? projectInstance?.featuredLabel : ''}"
                   selectedNavItem="expeditions">
     <%
@@ -45,21 +19,68 @@
     %>
 </cl:headerContent>
 
-<div class="container">
+<div class="container" role="main">
+    <div class="panel panel-default" style="margin-top: 2em;">
+        <div class="panel-body">
+            <h4>Expedition Statistics</h4>
+            <table class="table table-condensed">
+                <tr>
+                    <th style="text-align: center;"><g:message code="project.stats.total-tasks" default="Total Tasks"/></th>
+                    <th style="text-align: center;"><g:message code="project.stats.transcribed-tasks" default="Transcribed"/></th>
+                    <th style="text-align: center;"><g:message code="project.stats.validated-tasks" default="Validated"/></th>
+                    <th style="text-align: center;"><g:message code="project.stats.tasks-left" default="Tasks Left"/></th>
+                    <th style="text-align: center;"><g:message code="project.stats.disk-usage" default="Total Disk Usage"/></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">${taskInstanceTotal}</td>
+                    <td style="text-align: center;">${transcribedCount}</td>
+                    <td style="text-align: center;">${validatedCount}</td>
+                    <td style="text-align: center;">${taskInstanceTotal - transcribedCount}</td>
+                    <td style="text-align: center;"><cl:formatFileSize size="${projectSize}"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="alert alert-info">
-                        Total Tasks: ${taskInstanceTotal},
-                        <g:if test="${projectInstance}">
-                            Transcribed Tasks: ${Task.countByProjectAndTranscriptionsIsNotEmpty(projectInstance)},
-                                    Validated Tasks: ${Task.countByProjectAndFullyValidatedByIsNotNull(projectInstance)}
-                        </g:if>
-                        &nbsp;&nbsp;
-                        <input style="margin-bottom: 0px" type="text" name="q" id="q" value="${params.q}" size="40"/>
-                        <button class="btn" id="searchButton">search</button>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input class="form-control" style="height:32px" type="text" name="projectAdminSearch"
+                               id="projectAdminSearch" value="${params.q}"
+                               placeholder="Search tasks..."
+                               size="60"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-small btn-primary" id="searchButton">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <g:select class="form-control statusFilter" name="statusFilter" from="${statusFilterList}"
+                              optionKey="key" optionValue="value" style="height:32px"
+                              value="${params?.statusFilter}" noSelection="['':'All tasks']" />
+
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-default bs3"
+                       href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Reset</a>
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group btn-group-sm pull-right">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                            <i class="fa fa-th-list"></i>
+                        </g:link>
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-default ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                            <i class="fa fa-th"></i>
+                        </g:link>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
+                    ${taskQueryTotal ?: 0} Tasks found.
                 </div>
             </div>
 
@@ -76,8 +97,8 @@
                                               title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}"
                                               params="${[q: params.q]}"/>
 
-                            <g:each in="${extraFields}"
-                                    var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>
+%{--                            <g:each in="${extraFields}"--}%
+%{--                                    var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>--}%
 
                             <th><span class=""><g:message code="transcription.fullyTranscribedBy.label" default="Fully Transcribed By" /></span></th>
 
@@ -98,7 +119,7 @@
 
                                 <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
 
-                                <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>
+%{--                                <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>--}%
 
                             %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
 
@@ -139,5 +160,43 @@
         </div>
     </div>
 </div>
+
+<asset:script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#searchButton").click(function (e) {
+            e.preventDefault();
+            doSearch();
+        });
+
+        $("#projectAdminSearch").keyup(function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                doSearch();
+            }
+        });
+
+        $('.statusFilter').change(function() {
+            let filter = $(this).val();
+            var url = "${createLink(controller: 'task', action: 'list', id: projectInstance.id)}?";
+        <g:if test="${params.q}">
+            url += "q=${params.q}&";
+        </g:if>
+        <g:if test="${params.mode}">
+            url += "mode=${params.mode}&max=${params.max}&";
+        </g:if>
+            url += "statusFilter=" + filter;
+
+            window.location = url;
+        });
+
+});
+
+function doSearch() {
+var query = $("#projectAdminSearch").val();
+location.href = "?q=" + query;
+}
+</asset:script>
+
 </body>
 </html>

@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -25,12 +26,23 @@
                     </g:hasErrors>
                     <g:form action="save" class="form-horizontal">
                         <div class="form-group">
-                            <label for="projectOfTheDay" class="control-label col-md-3"><g:message code="frontPage.projectOfTheDay.label"
+                            <label for="randomProjectOfTheDay" class="control-label col-md-3">
+                                <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Project for the day" />
+                            </label>
+                            <div class="col-md-6">
+                                <g:checkBox name="randomProjectOfTheDay" class="form-control" id="randomProjectToggle" style="margin-top: 9px;" value="${frontPage.randomProjectOfTheDay}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectOfTheDay" class="control-label col-md-3">
+                                <g:message code="frontPage.projectOfTheDay.label"
                                     default="Project of the day"/></label>
                             <div class="col-md-6">
-                                <g:select name="projectOfTheDay" class="form-control" from="${au.org.ala.volunteer.Project.listOrderByName()}"
-                                          optionKey="id" optionValue="name" value="${frontPage.projectOfTheDay?.id}"/>
-
+                                <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
+                                    <option>- Select a Project -</option>
+                                    <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
+                                                             selectedProject="${frontPage.projectOfTheDay?.id}" />
+                                </select>
                             </div>
                             <div class="col-md-3">
                                 <button class="btn btn-default" id="btnFindProject">Find an expedition</button>
@@ -38,40 +50,6 @@
                                         id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                             </div>
                         </div>
-
-                        %{--<div class="form-group" ${hasErrors(bean: frontPage, field: 'useGlobalNewsItem', 'has-error')}>--}%
-                            %{--<label for="useGlobalNewsItem" class="control-label col-md-3"><g:message code="frontPage.useGlobalNewsItem.label"--}%
-                                                                                                   %{--default="Use global news item"/></label>--}%
-                            %{--<div class="col-md-6">--}%
-                                %{--<g:checkBox name="useGlobalNewsItem" class="form-control" value="${frontPage.useGlobalNewsItem}"/>--}%
-                                %{--<span class="help-block">(If unchecked the most recent project news item will be used instead)</span>--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
-                        %{--<div class="form-group" ${hasErrors(bean: frontPage, field: 'newsTitle', 'has-error')}>--}%
-                            %{--<label for="newsTitle" class="control-label col-md-3"><g:message code="frontPage.newsTitle.label"--}%
-                                                                                                     %{--default="News title"/></label>--}%
-                            %{--<div class="col-md-6">--}%
-                                %{--<g:textField class="form-control" name="newsTitle" value="${frontPage?.newsTitle}"/>--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
-                        %{--<div class="form-group" ${hasErrors(bean: frontPage, field: 'newsBody', 'has-error')}>--}%
-                            %{--<label for="newsBody" class="control-label col-md-3"><g:message code="frontPage.newsBody.label"--}%
-                                                                                             %{--default="News text"/></label>--}%
-                            %{--<div class="col-md-6">--}%
-                                %{--<g:textArea class="form-control" rows="4" name="newsBody"--}%
-                                            %{--value="${frontPage?.newsBody}"/>--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
-
-                        %{--<div class="form-group" ${hasErrors(bean: frontPage, field: 'newsCreated', 'has-error')}>--}%
-                            %{--<label for="newsCreated" class="control-label col-md-3"><g:message code="frontPage.newsCreated.label"--}%
-                                                                                            %{--default="News date"/></label>--}%
-                            %{--<div class="col-md-6 grails-date">--}%
-                                %{--<g:datePicker name="newsCreated" precision="day" value="${frontPage?.newsCreated}"/>--}%
-                            %{--</div>--}%
-                        %{--</div>--}%
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}>
                             <label for="systemMessage" class="control-label col-md-3"><g:message code="frontPage.systemMessage.label"
@@ -203,6 +181,22 @@
 <asset:script type="text/javascript">
 
     $(document).ready(function () {
+
+        function initForm() {
+            if ($('#randomProjectToggle').val() === 'on') {
+                $('#projectOfTheDay').prop('disabled', true);
+            }
+        }
+        initForm();
+
+        $('#randomProjectToggle').change(function() {
+            if (this.checked) {
+                $('#projectOfTheDay').prop('disabled', true);
+                $('#projectOfTheDay').val($("#projectOfTheDay option:first").val());
+            } else {
+                $('#projectOfTheDay').prop('disabled', false);
+            }
+        });
 
         $("#btnFindProject").click(function (e) {
             e.preventDefault();

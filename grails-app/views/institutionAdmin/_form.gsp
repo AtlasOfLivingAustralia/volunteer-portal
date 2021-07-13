@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
+<input type="hidden" name="entry" value="${entry}" />
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
     <label class="control-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
@@ -40,18 +41,20 @@
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'contactName', 'has-error')}">
     <label class="control-label col-md-3" for="contactName">
         <g:message code="institution.contactName.label" default="Contact Name"/>
+        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
-        <g:textField name="contactName" class="form-control" value="${institutionInstance?.contactName}"/>
+        <g:textField name="contactName" class="form-control" value="${institutionInstance?.contactName}" required=""/>
     </div>
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'contactEmail', 'has-error')}">
     <label class="control-label col-md-3" for="contactEmail">
         <g:message code="institution.contactEmail.label" default="Contact Email"/>
+        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
-        <g:field type="email" name="contactEmail" class="form-control" value="${institutionInstance?.contactEmail}"/>
+        <g:field type="email" name="contactEmail" class="form-control inst-contact-email" value="${institutionInstance?.contactEmail}" required=""/>
     </div>
 </div>
 
@@ -70,6 +73,16 @@
     </label>
     <div class="col-md-6">
         <g:textField name="websiteUrl" class="form-control" value="${institutionInstance?.websiteUrl}"/>
+    </div>
+</div>
+
+<g:if test="${entry == 'CREATE' || (mode == 'edit' && institutionInstance?.isApproved)}">
+<div class="form-group ${hasErrors(bean: institutionInstance, field: 'displayContact', 'has-error')}">
+    <label class="control-label col-md-3" for="isInactive">
+        <g:message code="institution.displayContact.label" default="Display Contact Details"/>
+    </label>
+    <div class="col-md-6">
+        <g:checkBox name="displayContact" class="form-control" value="${institutionInstance?.displayContact}" />
     </div>
 </div>
 
@@ -93,8 +106,8 @@
         </div>
     </div>
 </div>
-
-<g:if test="${institutionInstance.collectoryUid}">
+</g:if>
+<g:if test="${institutionInstance?.collectoryUid}">
     <div class="form-group ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'has-error')}">
         <label class="control-label col-md-3" for="collectoryUid">
             <g:message code="institution.collectoryUid.label" default="Collectory Uid"/>
@@ -104,10 +117,24 @@
         </div>
     </div>
 </g:if>
+<cl:ifSiteAdmin>
+    <g:if test="${mode == 'edit' && institutionInstance?.isApproved}">
+        <div class="form-group ${hasErrors(bean: institutionInstance, field: 'isInactive', 'has-error')}">
+            <label class="control-label col-md-3" for="isInactive">
+                <g:message code="institution.isInactive.label" default="Inactive"/>
+            </label>
+            <div class="col-md-6">
+                <g:checkBox name="isInactive" class="form-control" value="${institutionInstance?.isInactive}" />
+            </div>
+        </div>
+    </g:if>
+</cl:ifSiteAdmin>
 <asset:javascript src="bootstrap-colorpicker" asset-defer="" />
 <asset:javascript src="tinymce-simple" asset-defer=""/>
 <asset:script>
     jQuery(function ($) {
         $('.colpick').colorpicker();
     });
+
+
 </asset:script>

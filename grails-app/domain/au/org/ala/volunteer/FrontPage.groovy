@@ -3,6 +3,8 @@ package au.org.ala.volunteer
 class FrontPage {
 
     Project projectOfTheDay
+    Boolean randomProjectOfTheDay = false
+    Date randomProjectDateUpdated
     Integer numberOfContributors = 10
     Boolean useGlobalNewsItem = false
     
@@ -20,6 +22,7 @@ class FrontPage {
 
     static mapping = {
         numberOfContributors defaultValue: '10'
+        randomProjectOfTheDay column: 'random_project_otd', defaultValue: false
     }
 
     static constraints = {
@@ -34,10 +37,12 @@ class FrontPage {
         numberOfContributors nullable: false, min: 0, max: 20
         heroImage nullable: true
         heroImageAttribution nullable: true
+        randomProjectOfTheDay nullable: false
+        randomProjectDateUpdated nullable: true
     }
 
     static FrontPage instance() {
-        return FrontPage.list()[0];
+        return list().first();
     }
 
 }

@@ -38,6 +38,8 @@ class Project implements Serializable {
 
     Date dateCreated
     Date lastUpdated
+    // Project of the Day Last Selected Date
+    Date potdLastSelected
 
     Integer version
 
@@ -60,7 +62,6 @@ class Project implements Serializable {
         autoTimestamp true
         description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
-        projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         harvestableByAla defaultValue: false
         version defaultValue: '0'
@@ -86,7 +87,6 @@ class Project implements Serializable {
         featuredImageCopyright nullable: true
         backgroundImageAttribution nullable: true
         backgroundImageOverlayColour nullable: true
-        inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
@@ -99,6 +99,7 @@ class Project implements Serializable {
         extractImageExifData nullable: true
         transcriptionsPerTask nullable: true
         thresholdMatchingTranscriptions nullable: true
+        potdLastSelected nullable: true
     }
 
     /**
@@ -197,6 +198,33 @@ class Project implements Serializable {
 
     String getKey() {
         name ?: ''
+    }
+
+    static def getCloneableFields() {
+        // Don't include anything from hasMany. Do them manually.
+        return ['description',
+                'tutorialLinks',
+                'showMap',
+                'shortDescription',
+                'featuredOwner',
+                'institution',
+                'leaderIconIndex',
+                'featuredImageCopyright',
+                'backgroundImageAttribution',
+                'backgroundImageOverlayColour',
+                'collectionEventLookupCollectionCode',
+                'localityLookupCollectionCode',
+                'picklistInstitutionCode',
+                'mapInitZoomLevel',
+                'mapInitLatitude',
+                'mapInitLongitude',
+                'imageSharingEnabled',
+                'extractImageExifData',
+                'transcriptionsPerTask',
+                'thresholdMatchingTranscriptions',
+                'template',
+                'projectType'
+                ]
     }
 
 }

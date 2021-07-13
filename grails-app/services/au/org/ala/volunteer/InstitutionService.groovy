@@ -2,16 +2,31 @@ package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryDto
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
+import groovy.sql.Sql
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
 
 class InstitutionService {
 
+    def dataSource
     def grailsApplication
     def collectoryClient
     def grailsLinkGenerator
     def sessionFactory
     def taskService
+    def emailService
+
+    static final String NOTIFICATION_DEFAULT = "New Institution Notification"
+    static final String NOTIFICATION_APPLICATION = "New Institution Application"
+    static final String NOTIFICATION_APPLICATION_APPROVED = "New Institution Approved"
+
+    def emailNotification(String message, String title = NOTIFICATION_DEFAULT, String recipient = null) {
+        // Send email to grailsApplication.config.notifications.default.address
+        log.debug("Sending institution notification")
+        def to = recipient
+        if (!recipient) to = grailsApplication.config.notifications.default.address as String
+        emailService.sendMail(to, title, message)
+    }
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {
         if (url && localPath) {
@@ -25,27 +40,27 @@ class InstitutionService {
         return false
     }
 
-    public uploadImageFromUrl(Institution institution, String url) {
+    def uploadImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getImagePath(institution.id))
     }
 
-    public uploadBannerImageFromUrl(Institution institution, String url) {
+    def uploadBannerImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getBannerImagePath(institution.id))
     }
 
-    public uploadLogoImageFromUrl(Institution institution, String url) {
+    def uploadLogoImageFromUrl(Institution institution, String url) {
         uploadtoLocalPathFromUrl(url, getLogoImagePath(institution.id))
     }
 
-    public clearImage(Institution institution) {
+    def clearImage(Institution institution) {
         deleteLocalFile(getImagePath(institution.id))
     }
 
-    public clearLogo(Institution institution) {
+    def clearLogo(Institution institution) {
         deleteLocalFile(getLogoImagePath(institution.id))
     }
 
-    public clearBanner(Institution institution) {
+    def clearBanner(Institution institution) {
         deleteLocalFile(getBannerImagePath(institution.id))
     }
 
@@ -59,7 +74,6 @@ class InstitutionService {
         }
         return false
     }
-
 
     private boolean uploadToLocalPath(MultipartFile mpfile, String localFile) {
         if (!mpfile) {
@@ -80,34 +94,34 @@ class InstitutionService {
         }
     }
 
-    public uploadImage(Institution institution, MultipartFile mpfile) {
+    def uploadImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getImagePath(institution?.id))
     }
 
-    public uploadBannerImage(Institution institution, MultipartFile mpfile) {
+    def uploadBannerImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getBannerImagePath(institution.id))
     }
 
-    public uploadLogoImage(Institution institution, MultipartFile mpfile) {
+    def uploadLogoImage(Institution institution, MultipartFile mpfile) {
         uploadToLocalPath(mpfile, getLogoImagePath(institution.id))
     }
 
-    public boolean hasImage(Institution institution) {
+    boolean hasImage(Institution institution) {
         def f = new File(getImagePath(institution?.id))
         return f.exists()
     }
 
-    public boolean hasBannerImage(Institution institution) {
+    boolean hasBannerImage(Institution institution) {
         def f = new File(getBannerImagePath(institution?.id))
         return f.exists()
     }
 
-    public boolean hasLogoImage(Institution institution) {
+    boolean hasLogoImage(Institution institution) {
         def f = new File(getLogoImagePath(institution?.id))
         return f.exists()
     }
 
-    public String getImageUrl(Institution institution) {
+    String getImageUrl(Institution institution) {
         if (hasImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
         } else {
@@ -115,13 +129,13 @@ class InstitutionService {
         }
     }
 
-    public String getBannerImageUrl(Institution institution) {
+    String getBannerImageUrl(Institution institution) {
         if (hasBannerImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/banner-image.jpg"
         }
     }
 
-    public String getLogoImageUrl(Institution institution) {
+    String getLogoImageUrl(Institution institution) {
         if (institution && hasLogoImage(institution)) {
             return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
         } else {
@@ -142,7 +156,7 @@ class InstitutionService {
     }
 
 
-    public CollectoryProviderDto getCollectoryObjectFromUid(String uid) {
+    CollectoryProviderDto getCollectoryObjectFromUid(String uid) {
 
         CollectoryProviderDto provider = null
         if (uid?.toLowerCase()?.startsWith("in")) {
@@ -154,7 +168,7 @@ class InstitutionService {
         return provider
     }
 
-    public List<CollectoryDto> getCombinedInsitutionsAndCollections() {
+    List<CollectoryDto> getCombinedInsitutionsAndCollections() {
         def results = collectoryClient.getInstitutions().execute().body()
         def collections = collectoryClient.getCollections().execute().body()
         // Merge the two lists
@@ -163,7 +177,6 @@ class InstitutionService {
 
         return results
     }
-
 
     Institution findByIdOrName(Long id, String name) {
         Institution retVal
@@ -181,12 +194,30 @@ class InstitutionService {
     }
 
     /**
+     * Returns a simple count of projects within a given institution.
+     * @param institution the institution to query.
+     * @return the number of projects
+     */
+    def getProjectCount(Institution institution) {
+        if (!institution) return 0
+        def result = Project.createCriteria().get {
+            'institution' {
+                eq('id', institution.id)
+            }
+            projections {
+                count('id')
+            }
+        }
+
+        return result
+    }
+
+    /**
      * Returns a map of project counts, keyed by institution
      *
      * @param institutions
      */
     def getProjectCounts(List<Institution> institutions, boolean includeDeactivated = false) {
-
         if (!institutions) {
             return [:]
         }
@@ -236,15 +267,15 @@ class InstitutionService {
         // TODO Do this with Detached Criteria
         // see: https://jira.grails.org/browse/GRAILS-9223
         final String query = '''
-SELECT COUNT(p.id)
-FROM project p
-WHERE
-  p.institution_id = :instId
-  AND
-  EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
-  AND
-  NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_validated_by IS NULL)
-'''
+            SELECT COUNT(p.id)
+            FROM project p
+            WHERE
+              p.institution_id = :instId
+              AND
+              EXISTS (SELECT * FROM task t WHERE t.project_id = p.id)
+              AND
+              NOT EXISTS (SELECT * FROM task t WHERE t.project_id = p.id AND t.fully_validated_by IS NULL)
+            '''.stripIndent()
 
         // Create native SQL query.
         final sqlQuery = session.createSQLQuery(query)
@@ -255,6 +286,119 @@ WHERE
         }
 
         return results
+    }
+
+    /**
+     * Returns a list of active projects for a given institution. Return list includes project ID, name and it's
+     * status: open, completed (100% transcribed but < 100% validated) or finished (100% both transcribed and validated).
+     * List omits archived and inactive projects.
+     * @param institution the institution to query
+     * @return a list of maps containing id, name and status.
+     */
+    def getActiveProjectsForInstitution(Institution institution) {
+        if (!institution) return null
+
+        String query = """\
+            SELECT p.id,
+                p.name,
+                COUNT(ta.id) AS total, 
+                (COUNT(is_fully_transcribed) filter (where is_fully_transcribed = true)) as fully_transcribed, 
+                count(fully_validated_by) as validated,
+                case when archived = true then 's5'
+                     when inactive = true and archived = false then 's4'
+                     when (count(is_fully_transcribed) filter (where is_fully_transcribed = true)) < count(ta.id) then 's1'
+                     when ((count(is_fully_transcribed) filter (WHERE is_fully_transcribed = true)) = count(ta.id)
+                            AND count(fully_validated_by) < count(ta.id)) then 's2'
+                     else 's3' 
+                END as status_type
+            FROM project p
+            JOIN task ta ON ( ta.project_id = p.id )
+            WHERE p.institution_id = :institutionId
+            GROUP BY p.id, p.name
+            order by status_type """.stripIndent()
+
+        def sql = new Sql(dataSource)
+        def results = []
+        sql.eachRow(query, [institutionId: institution.id]) { row ->
+            def projectMap = [id: row.id, name: row.name]
+            switch (row.status_type) {
+                case 's1':
+                    projectMap.status = 'open'
+                    break
+                case 's2':
+                    projectMap.status = 'completed'
+                    break
+                case 's3':
+                    projectMap.status = 'finished'
+                    break
+                case 's4':
+                    projectMap.status = 'inactive'
+                    break
+                case 's5':
+                    projectMap.status = 'archived'
+                    break
+            }
+
+            results.add(projectMap)
+        }
+
+        sql.close()
+
+        results
+    }
+
+    /**
+     * Returns a list of all users that have been active for a given institution (transcribers AND validators)
+     * @param institution the institution to query
+     * @return a Map containing id, firstName, and lastName.
+     */
+    def getActiveUsersForInstitution(Institution institution) {
+        if (!institution) return null
+
+        String query = """\
+            select distinct u.id, 
+                case when o.date_created is not null then true
+                else false end as opt_out
+            from transcription tr
+            join task ta on (ta.id = tr.task_id)
+            join project p on (p.id = tr.project_id)
+            join vp_user u on (tr.fully_transcribed_by = u.user_id)
+            left join message_user_optout o on (o.user_id = u.id)
+            where tr.fully_transcribed_by is not null
+              and p.institution_id = :institutionId
+            union
+            select distinct u.id,
+                case when o.date_created is not null then true
+                else false end as opt_out
+            from transcription tr
+            join task ta on (ta.id = tr.task_id)
+            join project p on (p.id = tr.project_id)
+            join vp_user u on (tr.fully_validated_by = u.user_id)
+            left join message_user_optout o on (o.user_id = u.id)
+            where tr.fully_validated_by is not null
+              and p.institution_id = :institutionId """.stripIndent()
+
+        def sql = new Sql(dataSource)
+        def results = []
+
+        sql.eachRow(query, [institutionId: institution.id]) { row ->
+            User user = User.findById(row.id as long)
+            if (user) {
+                def attributes = [id: user.id,
+                                  firstName: user.firstName.capitalize(),
+                                  lastName: user.lastName.capitalize(),
+                                  optOut: (row.opt_out)]
+                results.add(attributes)
+            }
+        }
+
+        // Sort on name
+        results.sort { a, b ->
+            "${a.lastName}${a.firstName}" <=> "${b.lastName}${b.firstName}"
+        }
+
+        sql.close()
+        results as List<Map>
     }
 
     Map getTranscriberCounts(List<Institution> institutions, boolean includeDeactivated = false) {

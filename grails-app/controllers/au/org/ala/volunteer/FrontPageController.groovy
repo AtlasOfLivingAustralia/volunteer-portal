@@ -3,11 +3,14 @@ package au.org.ala.volunteer
 import grails.transaction.Transactional
 import org.springframework.web.multipart.MultipartFile
 
+import java.util.concurrent.TimeUnit
+
 class FrontPageController {
 
     def userService
     def fileUploadService
     def settingsService
+    def frontPageService
 
     def index() {
         redirect(action: "edit", params: params)
@@ -15,7 +18,7 @@ class FrontPageController {
 
     def edit() {
         if (userService.isAdmin()) {
-            ['frontPage':FrontPage.instance()]
+            ['frontPage': FrontPage.instance()]
         } else {
             redirect(uri: "/")
         }
@@ -26,7 +29,7 @@ class FrontPageController {
         if (userService.isAdmin()) {
             def frontPage = FrontPage.instance();
 
-            frontPage.projectOfTheDay = Project.get(Long.parseLong(params['projectOfTheDay']))
+            frontPage.randomProjectOfTheDay = params['randomProjectOfTheDay'] == 'on'
             frontPage.numberOfContributors = params.int('numberOfContributors') ?: 10
             frontPage.useGlobalNewsItem = params['useGlobalNewsItem'] == "on"
 
@@ -43,7 +46,23 @@ class FrontPageController {
 
             frontPage.heroImageAttribution = params['heroImageAttribution']
 
-            frontPage.save()
+            // If Random Project of the Day is selected, and it hasn't been updated today, then update.
+            if (frontPage.randomProjectOfTheDay &&
+                    frontPageService.isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated)) {
+                Project potd = frontPageService.selectRandomProject()
+                if (potd) {
+                    frontPage.projectOfTheDay = potd
+                    frontPage.randomProjectDateUpdated = new Date()
+                } else {
+                    flash.message = message(code: 'frontPage.randomProject.fail', default: 'Unable to select random project.') as String
+                    redirect(action: "edit", params: params)
+                    return
+                }
+            } else {
+                frontPage.projectOfTheDay = (params['projectOfTheDay'] ? Project.get(Long.parseLong(params['projectOfTheDay'])) : frontPage.projectOfTheDay)
+            }
+
+            frontPage.save(failOnError: true, flush: true)
 
             log.info("System Message update: $systemMessageUpdated and ${frontPage.systemMessage}")
             if (systemMessageUpdated) {
@@ -51,7 +70,8 @@ class FrontPageController {
                 notify(FrontPageService.ALERT_MESSAGE, frontPage.systemMessage)
             }
 
-            flash.message = "${message(code: 'default.updated.message', args: [message(code: 'frontPage.label', default: 'Front Page'), ''])}"
+            flash.message = message(code: 'default.updated.message',
+                        args: [message(code: 'frontPage.label', default: 'Front Page'), '']) as String
             redirect(action: "edit", params: params)
         } else {
             redirect(uri: "/")

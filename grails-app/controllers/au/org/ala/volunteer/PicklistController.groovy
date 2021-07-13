@@ -23,8 +23,9 @@ class PicklistController {
     }
 
     def uploadCsvData () {
-        if (userService.isAdmin()) {
-            picklistService.replaceItems(params.long('picklistId'), params.picklist.toCsvReader(), params.institutionCode?.toString())
+        if (userService.isInstitutionAdmin()) {
+            CSVReader csvReader = params.picklist.toCsvReader()
+            picklistService.replaceItems(params.long('picklistId'), csvReader, params.institutionCode?.toString())
             updatedCsvMessage("${Picklist.get(params.long('picklistId')).name}/${params.institutionCode}")
             redirect(action: "manage", params: [picklistId: params.picklistId])
         } else {
@@ -33,9 +34,10 @@ class PicklistController {
     }
 
     def uploadCsvFile() {
-        if (userService.isAdmin()) {
+        if (userService.isInstitutionAdmin()) {
             def f = request.getFile('picklistFile')
-            picklistService.replaceItems(Long.parseLong(params.picklistId), f.inputStream.toCsvReader(['charset': 'UTF-8']), params.institutionCode?.toString())
+            CSVReader csvReader = f.inputStream.toCsvReader(['charset': 'UTF-8'])
+            picklistService.replaceItems(params.long('picklistId'), csvReader, params.institutionCode?.toString())
             updatedCsvMessage("${Picklist.get(params.long('picklistId')).name}/${params.institutionCode}")
             redirect(action: "manage", params: [picklistId: params.picklistId])
         } else {
@@ -44,11 +46,12 @@ class PicklistController {
     }
 
     private void updatedCsvMessage(String msg) {
-        flash.message = "${message(code: 'default.updated.message', args: [message(code: 'picklist.label', default: 'Picklist'), msg])}"
+        flash.message = message(code: 'default.updated.message',
+                 args: [message(code: 'picklist.label', default: 'Picklist'), msg]) as String
     }
 
     def manage () {
-        if (userService.isAdmin()) {
+        if (userService.isInstitutionAdmin()) {
             def picklistInstitutionCodes = [""]
             picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
             [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
@@ -72,7 +75,7 @@ class PicklistController {
     }
 
     def images(Picklist picklistInstance) {
-        if (userService.isAdmin()) {
+        if (userService.isInstitutionAdmin()) {
             String inst = params.institution
 
             def items
@@ -85,13 +88,13 @@ class PicklistController {
         }
     }
 
-    def wildcount(Picklist picklistInstance) {
-        if (userService.isAdmin()) {
-            def inst = params.institutionCode
+    def wildcount(Picklist picklist) {
+        if (userService.isInstitutionAdmin()) {
+            def institutionCode = params.institutionCode?.toString()
 
             def items
-            if (inst) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklistInstance, inst)
-            else items = PicklistItem.findAllByPicklist(picklistInstance)
+            if (institutionCode) items = PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode)
+            else items = PicklistItem.findAllByPicklist(picklist)
 
             def imageIds = items.collect {
                 def o = JSON.parse(it.key)
@@ -100,14 +103,14 @@ class PicklistController {
 
             def imageMap = imageServiceService.getImageInfoForIds(imageIds)
 
-            respond picklistInstance, model: [picklistItems: items, institutionCode: inst, imageMap: imageMap]
+            respond picklist, model: [picklistItems: items, institutionCode: institutionCode, imageMap: imageMap]
         } else {
             redirect(uri: "/")
         }
     }
 
     def loadWildcount(Picklist picklistInstance) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -163,7 +166,6 @@ class PicklistController {
 
     private def wildcountImageArrayLookup(line) {
         def arr = wildcountLineToArray(line)
-
         def files = arr.findAll { !(it ==~ UUID_REGEX) }.collect { [sourceUrl: (it + '.jpg')] }
 
         def warnings = []
@@ -190,7 +192,7 @@ class PicklistController {
     }
 
     def loadcsv () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -205,7 +207,7 @@ class PicklistController {
         }
         def picklistInstitutionCodes = [""]
         picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
-        render(view: "manage", model: [picklistData:csvdata,
+        render(view: "manage", model: [picklistData: csvdata,
                                        picklistInstanceList: Picklist.list(params),
                                        name: picklist?.name,
                                        id: picklist?.id,
@@ -214,7 +216,7 @@ class PicklistController {
     }
 
     def download () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -231,7 +233,7 @@ class PicklistController {
     }
 
     def list () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
         }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -239,21 +241,22 @@ class PicklistController {
     }
 
     def create () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
-        def picklistInstance = new Picklist()
-        picklistInstance.properties = params
-        return [picklistInstance: picklistInstance]
+        def picklist = new Picklist()
+        // picklist.properties = params
+        bindData(picklist, params)
+        return [picklistInstance: picklist]
     }
 
     def save () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
-        def picklistInstance = new Picklist(params)
+        def picklist = new Picklist(params)
 
         def existing
         if (params.fieldTypeClassifier) {
@@ -265,127 +268,138 @@ class PicklistController {
         if (existing) {
             flash.message = "A picklist already exists with the name ${params.name}"
             if (params.clazz) flash.message += " and class ${params.clazz}"
-            render(view: "create", model: [picklistInstance: picklistInstance])
+            render(view: "create", model: [picklistInstance: picklist])
             return
         }
 
-        if (picklistInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'picklist.label', default: 'Picklist'), picklistInstance.id])}"
-            redirect(action: "show", id: picklistInstance.id)
+        if (picklist.save(flush: true)) {
+            flash.message = message(code: 'default.created.message',
+                     args: [message(code: 'picklist.label', default: 'Picklist'), picklist.id]) as String
+            redirect(action: "show", id: picklist.id)
         } else {
-            render(view: "create", model: [picklistInstance: picklistInstance])
+            render(view: "create", model: [picklistInstance: picklist])
         }
     }
 
     def show () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
 
-        def picklistInstance = Picklist.get(params.id)
-        if (!picklistInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+        def picklist = Picklist.get(params.long('id'))
+        if (!picklist) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
             redirect(action: "list")
-        }
-        else {
+        } else {
             params.max = Math.min(params.max ? params.int('max') : 100, 100)
-            def picklistItemInstanceList
-            def picklistItemInstanceTotal
+            def picklistItemList
+            def picklistItemTotal
 
             if (params.q) {
                 String searchQ = "%${params.q}%"
-                picklistItemInstanceList = PicklistItem.findAllByPicklistAndValueIlike(picklistInstance, searchQ, params)
-                picklistItemInstanceTotal = PicklistItem.countByPicklistAndValueIlike(picklistInstance, searchQ)
+                picklistItemList = PicklistItem.findAllByPicklistAndValueIlike(picklist, searchQ, params)
+                picklistItemTotal = PicklistItem.countByPicklistAndValueIlike(picklist, searchQ)
             } else {
-                picklistItemInstanceList = PicklistItem.findAllByPicklist(picklistInstance, params)
-                picklistItemInstanceTotal = PicklistItem.countByPicklist(picklistInstance)
+                picklistItemList = PicklistItem.findAllByPicklist(picklist, params)
+                picklistItemTotal = PicklistItem.countByPicklist(picklist)
             }
-            [picklistInstance: picklistInstance, picklistItemInstanceList: picklistItemInstanceList, picklistItemInstanceTotal: picklistItemInstanceTotal]
+            [picklistInstance: picklist, picklistItemInstanceList: picklistItemList, picklistItemInstanceTotal: picklistItemTotal]
         }
     }
 
     def edit () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
 
-        def picklistInstance = Picklist.get(params.long('id'))
-        if (!picklistInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+        def picklist = Picklist.get(params.long('id'))
+        if (!picklist) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
             redirect(action: "list")
         }
         else {
-            return [picklistInstance: picklistInstance]
+            return [picklistInstance: picklist]
         }
     }
 
     def update () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
 
-        def picklistInstance = Picklist.get(params.long('id'))
-        if (picklistInstance) {
+        def picklist = Picklist.get(params.long('id'))
+        if (picklist) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (picklistInstance.version > version) {
+                if (picklist.version > version) {
 
-                    picklistInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'picklist.label', default: 'Picklist')] as Object[], "Another user has updated this Picklist while you were editing")
-                    render(view: "edit", model: [picklistInstance: picklistInstance])
+                    picklist.errors.rejectValue("version",
+                            "default.optimistic.locking.failure",
+                            [message(code: 'picklist.label', default: 'Picklist')] as Object[],
+                            "Another user has updated this Picklist while you were editing")
+                    render(view: "edit", model: [picklistInstance: picklist])
                     return
                 }
             }
 
-            picklistInstance.properties = params
+            // picklistInstance.properties = params
+            bindData(picklist, params)
 
-            if (!picklistInstance.hasErrors() && picklistInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'picklist.label', default: 'Picklist'), picklistInstance.id])}"
-                redirect(action: "show", id: picklistInstance.id)
+            if (!picklist.hasErrors() && picklist.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message',
+                         args: [message(code: 'picklist.label', default: 'Picklist'), picklist.id]) as String
+                redirect(action: "show", id: picklist.id)
             } else {
-                render(view: "edit", model: [picklistInstance: picklistInstance])
+                render(view: "edit", model: [picklistInstance: picklist])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
             redirect(action: "list")
         }
     }
 
     def delete () {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
 
-        def picklistInstance = Picklist.get(params.long('id'))
-        if (picklistInstance) {
+        def picklist = Picklist.get(params.long('id'))
+        if (picklist) {
             try {
-                PicklistItem.executeUpdate("delete PicklistItem p where p.picklist = :picklist", [picklist: picklistInstance])
-                picklistInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+                PicklistItem.executeUpdate("delete PicklistItem p where p.picklist = :picklist", [picklist: picklist])
+                picklist.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message',
+                         args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
                 redirect(action: "list")
             } catch (DataIntegrityViolationException e) {
-                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+                String message = message(code: 'default.not.deleted.message',
+                          args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'picklist.label', default: 'Picklist'), params.id])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
             redirect(action: "list")
         }
     }
 
     def addCollectionCodeFragment() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
         }
     }
 
     def ajaxCreateNewCollectionCode() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render([status: 403, message: "Forbidden"] as JSON)
         } else {
             String code = params.code?.toString()

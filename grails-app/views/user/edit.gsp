@@ -10,10 +10,10 @@
 <body class="admin">
 
 <cl:headerContent crumbLabel="Edit User"
-                  title="Edit User ${userInstance.userId} - ${userDetails.displayName} (${userDetails.userName})" selectedNavItem="bvpadmin">
+                  title="Edit User ${userInstance.userId} - ${userDetails?.displayName} (${userDetails?.userName})" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = []
-        pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userDetails.displayName]
+        pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userInstance?.displayName]
     %>
 </cl:headerContent>
 
@@ -102,7 +102,7 @@
                                     </g:each>
                                 </ul>
                                 <a class="btn btn-sm btn-default"
-                                   href="${createLink(controller: 'user', action: 'editRoles', id: userInstance.id)}">Edit roles</a>
+                                   href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}">Edit roles</a>
                             </div>
                         </div>
 

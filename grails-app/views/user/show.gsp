@@ -161,8 +161,8 @@
                             &nbsp;<g:message code="user.email.label" />:&nbsp;<a href="mailto:${userInstance.email}">${userInstance.email}</a>
                         </div>
                         <br/>
-                        <g:link class="btn btn-success" controller="user" action="editRoles"
-                                id="${userInstance.id}"><g:message code="user.roles.manage.label" /></g:link>
+                        <g:link class="btn btn-success" controller="admin" action="manageUserRoles"
+                                params="[userid: userInstance.id]"><g:message code="user.roles.manage.label" /></g:link>
                         <g:link class="btn btn-success" controller="user" action="edit"
                                 id="${userInstance.id}"><g:message code="user.details.edit.label" /></g:link>
                     </div>

@@ -1,9 +1,11 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import com.google.common.hash.HashCode
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.FilenameUtils
+
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
@@ -23,16 +25,35 @@ class TemplateController {
     }
 
     def list() {
-        if (!userService.isAdmin()) {
+		if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [templateInstanceList: Template.list(params), templateInstanceTotal: Template.count()]
+        params.max = Math.min(params.max ? params.int('max') : 20, 100)
+        params.offset = (params.offset ? params.int('offset') : 0)
+        def allTemplates
+
+        // If no parameters and is an institution admin, default to that user's institution filter.
+        if ((Strings.isNullOrEmpty(params.institution?.toString())
+                && Strings.isNullOrEmpty(params.sort?.toString())
+                && Strings.isNullOrEmpty(params.q?.toString())
+                && Strings.isNullOrEmpty(params.viewName?.toString())) && (userService.isInstitutionAdmin() && !userService.isSiteAdmin())) {
+            params.institution = "${userService.getAdminInstitutionList().first().id}"
+        }
+
+        allTemplates = templateService.getTemplatesWithFilter(params)
+
+        def templateList = []
+        allTemplates.templateList.each { Template template ->
+            templateList.add(templateService.getTemplatePermissions(template))
+        }
+
+        [templateInstanceList: templateList, templateInstanceTotal: allTemplates.totalCount,
+         params: params, viewFilter: templateService.getTemplateViews()]
     }
 
     def create() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -42,7 +63,7 @@ class TemplateController {
     }
 
     def save() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -51,14 +72,13 @@ class TemplateController {
         if (templateInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
             redirect(action: "edit", id: templateInstance.id)
-        }
-        else {
+        } else {
             render(view: "create", model: [templateInstance: templateInstance])
         }
     }
 
     def edit() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -69,12 +89,25 @@ class TemplateController {
         }
         else {
             def availableViews = templateService.getAvailableTemplateViews()
-            return [templateInstance: templateInstance, availableViews: availableViews]
+            def projectUsageList = [:]
+            def projectList = templateInstance.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
+            def institutionName = ""
+
+            for (Project project in projectList) {
+                log.debug("Sorted project list: ${project}")
+
+                if (project.institution?.name != institutionName) {
+                    institutionName = project.institution?.name
+                    projectUsageList[institutionName] = []
+                }
+                projectUsageList[institutionName].add(project)
+            }
+            return [templateInstance: templateInstance, availableViews: availableViews, projectUsageList: projectUsageList]
         }
     }
 
     def update() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -116,7 +149,7 @@ class TemplateController {
     }
 
     def delete() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -148,7 +181,7 @@ class TemplateController {
     }
 
     def manageFields() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -161,7 +194,7 @@ class TemplateController {
     }
 
     def addTemplateFieldFragment() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -174,7 +207,7 @@ class TemplateController {
 
     @Transactional
     def moveFieldUp() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -197,7 +230,7 @@ class TemplateController {
 
     @Transactional
     def moveFieldDown() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -221,7 +254,7 @@ class TemplateController {
 
     @Transactional
     def moveFieldToPosition() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -247,7 +280,7 @@ class TemplateController {
 
     @Transactional
     def cleanUpOrdering() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -266,7 +299,7 @@ class TemplateController {
 
     @Transactional
     def addField() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -307,7 +340,7 @@ class TemplateController {
 
     @Transactional
     def deleteField() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -320,7 +353,7 @@ class TemplateController {
     }
 
     def preview() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -337,7 +370,7 @@ class TemplateController {
     }
 
     def exportFieldsAsCSV() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -350,7 +383,7 @@ class TemplateController {
     }
 
     def importFieldsFromCSV() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -373,7 +406,7 @@ class TemplateController {
     }
 
     def cloneTemplate() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -397,7 +430,7 @@ class TemplateController {
     }
 
     def cloneTemplateFragment() {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -406,7 +439,7 @@ class TemplateController {
     }
 
     def viewParamsForm(Template template) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -426,7 +459,7 @@ class TemplateController {
      * @return
      */
     def wildlifeTemplateConfig(long id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             redirect(uri: "/")
             return
         }
@@ -441,8 +474,8 @@ class TemplateController {
      */
     @Transactional
     def saveWildlifeTemplateConfig(long id) {
-        if (!userService.isAdmin()) {
-            respond status: SC_UNAUTHORIZED
+        if (!userService.isInstitutionAdmin()) {
+            respond status: SC_FORBIDDEN
             return
         }
 
@@ -457,8 +490,8 @@ class TemplateController {
      * Upload image for Wildlife Spotter template picklists
      */
     def uploadWildlifeImage() {
-        if (!userService.isAdmin()) {
-            respond status: SC_UNAUTHORIZED
+        if (!userService.isInstitutionAdmin()) {
+            respond status: SC_FORBIDDEN
             return
         }
 
@@ -473,6 +506,30 @@ class TemplateController {
             render([ hash: hash, format: ext ] as JSON)
         } else {
             render([ error: "One of animal or entry must be provided" ] as JSON, status: SC_BAD_REQUEST)
+        }
+    }
+
+    /**
+     * This is an AJAX endpoint for the project create form. Returns a list of available templates for the given
+     * institution ID. Returns status 401 if no institution parameter provided.
+     * Results include the category (global, available or unassigned) and sorted in that order.
+     * @param id the Institution ID.
+     * @return a list of available templates.
+     */
+    def templatesForInstitution(long id) {
+        log.debug("AJAX templatesForInstitution: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            def results = templateService.getTemplatesForInstitution(institution, userService.isSiteAdmin(), true)
+            render(results as JSON)
         }
     }
 }

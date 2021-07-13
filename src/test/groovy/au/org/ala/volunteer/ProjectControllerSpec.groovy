@@ -15,7 +15,12 @@ class ProjectControllerSpec extends Specification {
             isAdmin() >> admin
         }
 
+        def projectServiceStub = Stub(ProjectService) {
+            isAdminForProject(_) >> admin
+        }
+
         controller.userService = userServiceStub
+        controller.projectService = projectServiceStub
     }
 
     def "Test a user without Admin permission cannot update a project"() {

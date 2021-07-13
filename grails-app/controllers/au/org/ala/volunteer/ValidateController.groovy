@@ -39,14 +39,15 @@ class ValidateController {
             Template template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            log.debug(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
+            def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(project?.institution))
+            log.debug(currentUser + " has role: ADMIN = " + isAdmin + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
+            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(isAdmin || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
                 if (taskInstance.hasBeenTranscribedByUser(currentUser)) {
-                    if (userService.isAdmin()) {
+                    if (isAdmin) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
                         flash.message = "This task is read-only. You cannot validate your own tasks!"

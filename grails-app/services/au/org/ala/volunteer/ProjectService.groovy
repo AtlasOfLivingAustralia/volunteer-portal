@@ -1,17 +1,14 @@
 package au.org.ala.volunteer
 
-import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
 import grails.web.mapping.LinkGenerator
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.transform.Immutable
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.SimpleType
 import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.DSLContext
@@ -22,26 +19,23 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
-import java.security.Principal
 
 import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
 import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
 import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
-import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
-import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
-import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
 import static au.org.ala.volunteer.jooq.tables.Label.LABEL
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
+import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.condition
-import static org.jooq.impl.DSL.count
+import static org.jooq.impl.DSL.*
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
-import static org.jooq.impl.DSL.not
 import static org.jooq.impl.DSL.nvl as jNvl
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.sum as jSum
@@ -63,7 +57,6 @@ class ProjectService {
     private static final Condition getACTIVE_ONLY() { PROJECT.INACTIVE.eq(false) | PROJECT.INACTIVE.isNull() }
 
     def userService
-    def taskService
     LinkGenerator grailsLinkGenerator
     def projectTypeService
     def forumService
@@ -125,6 +118,17 @@ class ProjectService {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    /**
+     * Returns boolean if the user is an admin for the project or not.
+     * @param project the project in question
+     * @return true if user is admin, false if not.
+     */
+    def isAdminForProject(Project project) {
+        if (!project) return false
+        def currentUser = userService.currentUserId
+        return currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(project?.institution))
     }
 
     @Transactional(readOnly = true)
@@ -189,6 +193,27 @@ class ProjectService {
         projectInstance.save(flush: flush, failOnError: failOnError)
     }
 
+    def createProject(Project project) {
+        def user = userService.getCurrentUser()
+
+        try {
+            // Set inactive and created by
+            project.featuredLabel = project.name
+            project.featuredOwner = project.institution.name
+            project.inactive = true
+            project.createdBy = user
+            project.save(failOnError: true, flush: true)
+
+            // sign the creator up for project forum topic notifications
+            forumService.watchProject(user, project, true)
+        } catch (Exception ex) {
+            log.error("Unable to save Project: ${ex.getMessage()}", ex)
+            return false
+        }
+
+        true
+    }
+
     /**
      * Sends an email notification to the configured email with the included message. Project notifications are sent
      * to the configured address (notifications.project.address).
@@ -220,7 +245,7 @@ class ProjectService {
 
 
         if (!projectInstance) {
-            return;
+            return
         }
 
         // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
@@ -415,7 +440,7 @@ class ProjectService {
         )
     }
 
-    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
+    private def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
 
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
@@ -425,7 +450,17 @@ class ProjectService {
                 whereClauses += PROJECT.INACTIVE.eq(true)
                 break
             case ProjectActiveFilterType.showArchivedOnly:
-                whereClauses += PROJECT.ARCHIVED.eq(true)
+                // Note CD: removed static declaration off method to do this. I couldn't find any reason
+                // for it to remain static...
+                // This option is only given to Admins and IA's. IA's should only see their institutions archived projects.
+                if (!userService.isAdmin()) {
+                    log.debug("Project summary, Not an admin but has institution admin...")
+                    def institutionAdminList = userService.getAdminInstitutionList()
+                    def institutionAdminClause = [PROJECT.ARCHIVED.eq(true), PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                    whereClauses += institutionAdminClause
+                } else {
+                    whereClauses += PROJECT.ARCHIVED.eq(true)
+                }
                 break
         }
 
@@ -532,7 +567,8 @@ class ProjectService {
                 ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
-                orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
+                orderBy(coalesce(PROJECT.INACTIVE, false).sort(SortOrder.ASC),
+                        sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
         if (offset && max) return query.offset(offset).limit(max)
         else if (offset) return query.offset(offset)
         else if (max) return query.limit(max)
@@ -548,7 +584,15 @@ class ProjectService {
         if (userService.isAdmin()) {
             conditions = []
         } else {
-            conditions = [ACTIVE_ONLY]
+            //conditions = [ACTIVE_ONLY]
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions = [jOr(institutionAdminClause)]
+            } else {
+                conditions = [ACTIVE_ONLY]
+            }
         }
 
         //params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order
@@ -569,7 +613,14 @@ class ProjectService {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
         }
         if (!userService.isAdmin()) {
-            conditions += ACTIVE_ONLY
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions += jOr(institutionAdminClause)
+            } else {
+                conditions += ACTIVE_ONLY
+            }
         }
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
@@ -580,7 +631,7 @@ class ProjectService {
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
             def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-            def file = new File(filePath);
+            def file = new File(filePath)
             if (!file.exists()) {
                 return
             }
@@ -643,6 +694,27 @@ class ProjectService {
         }
     }
 
+    /**
+     * Checks if the current project is complete. Returns true if all tasks have been transcribed. Returns false if
+     * not or the project parameter is null.
+     * @param project The project to check
+     * @return true if project has been completed, false if not.
+     */
+    def isProjectComplete(Project project) {
+        if (!project) {
+            return true
+        } else {
+            def projectMap = calculateCompletion([project])
+            final projectCounts = projectMap[project.id]
+            if (projectCounts) {
+                def transcribed = (projectCounts.transcribed / projectCounts.total) * 100.0
+                return (transcribed == 100)
+            }
+        }
+
+        return false
+    }
+
     def writeArchive(Project project, OutputStream outputStream) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
@@ -677,12 +749,33 @@ class ProjectService {
         }
     }
 
+    def cloneProject(Project sourceProject, String newName) {
+        def newProject = new Project(name: newName, featuredLabel: newName, inactive: true,
+                createdBy: userService.getCurrentUser())
+
+        def cloneableFields = Project.getCloneableFields()
+        cloneableFields.each { field ->
+            newProject."${field}" = sourceProject."${field}"
+            log.debug("Source value: " + sourceProject."${field}")
+            log.debug("New value: " + newProject."${field}")
+        }
+
+        def sourceLabels = sourceProject.labels
+        sourceLabels.each { Label label ->
+            newProject.addToLabels(label)
+        }
+
+        newProject.save(failOnError: true, flush: true)
+
+        return newProject
+    }
+
     static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
-        String entryName = entryPath + path.getName();
+        String entryName = entryPath + path.getName()
 
         if (path.isFile()) {
-            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
-            zos.putArchiveEntry(zipEntry);
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName)
+            zos.putArchiveEntry(zipEntry)
             path.withInputStream { fis ->
                 zos << fis
             }

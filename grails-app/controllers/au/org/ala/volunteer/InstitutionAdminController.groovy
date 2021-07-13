@@ -1,72 +1,228 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
-import au.org.ala.web.AlaSecured
+import com.google.common.base.Strings
+import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import retrofit2.Call
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static org.springframework.http.HttpStatus.*
 
-@AlaSecured("ROLE_VP_ADMIN")
+// For Institution Admins (DigiVol role), the SpringSecurity role annotation '@AlaSecured("ROLE_VP_ADMIN")'
+// needed to be removed. Methods have been updated to do controller-level security checks.
 class InstitutionAdminController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", quickCreate: "POST"]
 
     def collectoryClient
     def institutionService
+    def userService
+    def groovyPageRenderer
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        respond Institution.list(params), model: [institutionInstanceCount: Institution.count()]
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        params.max = Math.min(params.max ? params.int('max') : 20, 100)
+        if (!userService.isSiteAdmin()) {
+            respond userService.getAdminInstitutionList()
+        } else {
+            if (!params.sort) params.sort = 'name'
+            if (!params.order) params.order = 'asc'
+            if (params.statusFilter && !Strings.isNullOrEmpty(params.statusFilter as String)) {
+                respond Institution.findAllByIsInactiveAndIsApproved((params.statusFilter == 'inactive'), true, params),
+                        model: [institutionInstanceCount: Institution.countByIsInactiveAndIsApproved((params.statusFilter == 'inactive'), true)]
+            } else {
+                respond Institution.findAllByIsApproved(true, params),
+                        model: [institutionInstanceCount: Institution.countByIsApproved(true)]
+            }
+        }
     }
 
-    def create() {
+    def applications() {
+        if (!userService.isSiteAdmin()) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+        if (!params.sort) params.sort = 'name'
+        if (!params.order) params.order = 'asc'
+        respond Institution.findAllByIsApproved(false, params),
+                model: [institutionInstanceCount: Institution.countByIsApproved(false)]
+    }
+
+    def apply() {
         respond new Institution(params)
     }
 
-    def save(Institution institutionInstance) {
-        if (institutionInstance == null) {
+    def create() {
+        if (!userService.isSiteAdmin()) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+        respond new Institution(params)
+    }
+
+    def applyConfirm(Institution institution) {
+        //Institution institution = Institution.get(params.long('institution'))
+        if (!institution) {
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+
+        respond institution
+    }
+
+    def save(Institution institution) {
+        if (params.entry != 'APPLY' && !userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+
+        if (institution == null) {
             notFound()
             return
         }
 
-        if (institutionInstance.hasErrors()) {
-            respond institutionInstance.errors, view: 'create'
+        if (institution.hasErrors()) {
+            respond institution.errors, view: 'create'
             return
         }
 
-        institutionInstance.save flush: true
+        institution.isApproved = (params.isApproved == 'true')
+        institution.createdBy = userService.getCurrentUser()
 
-        redirect(action: 'edit', id: institutionInstance.id)
+        institution.save(flush: true)
 
+        if (params.entry && params.entry == 'APPLY') {
+            // Email notification to admins notifying of application.
+            log.info("Sending email notification of new application: ${institution.name}")
+            sendApplicationNotification(institution)
+            redirect(action: 'applyConfirm', id: institution.id)
+        } else {
+            redirect(action: 'edit', id: institution.id)
+        }
+    }
+
+    private def sendApplicationNotification(Institution institution) {
+        if (!institution) return
+        def model = [institutionName: institution.name,
+                contactName: institution.contactName,
+                contactEmail: institution.contactEmail,
+                contactPhone: institution.contactPhone]
+        def title = institutionService.NOTIFICATION_APPLICATION + ": ${institution.name}"
+        def message = groovyPageRenderer.render(view: '/institutionAdmin/institutionApplicationNotification',
+                model: model)
+        institutionService.emailNotification(message, title)
+    }
+
+    private def sendApplicationApprovalNotification(Institution institution, String recipient) {
+        if (!institution) return
+        def model = [institutionName: institution.name,
+                     institutionId: institution.id,
+                     contactName: institution.contactName,
+                     contactEmail: institution.contactEmail,
+                     contactPhone: institution.contactPhone]
+        def title = institutionService.NOTIFICATION_APPLICATION_APPROVED + ": ${institution.name}"
+        def message = groovyPageRenderer.render(view: '/institutionAdmin/institutionApplicationApprovalNotification',
+                model: model)
+        institutionService.emailNotification(message, title, recipient)
     }
 
     def edit(Institution institutionInstance) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         respond institutionInstance
     }
 
-    def update(Institution institutionInstance) {
-        if (institutionInstance == null) {
+    def approve(Institution institution) {
+        if (institution == null) {
             notFound()
             return
         }
 
-        if (institutionInstance.hasErrors()) {
-            respond institutionInstance.errors, view: 'edit'
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
             return
         }
 
-        institutionInstance.save flush: true
+        institution.isApproved = true
+        institution.save(flush: true, failOnError: true)
 
-        redirect(action: 'edit', id: institutionInstance.id)
+        // Make creator Institution Admin
+        def creator = institution.createdBy
+        def currentUser = userService.getCurrentUser()
+        def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
+        def userRole = new UserRole(user: creator, role: role, institution: institution, createdBy: currentUser)
+        userRole.save(flush: true, failOnError: true)
 
+        // Email notification
+        if (creator.email) {
+            log.debug("Institution approved, Recipient: ${creator.email}")
+            sendApplicationApprovalNotification(institution, creator.email)
+        }
+
+        flash.message = message(code: 'institution.approved.message',
+                args: [institution.name]) as String
+        redirect(action: 'edit', id: institution.id)
+    }
+
+    def update(Institution institution) {
+        if (institution == null) {
+            notFound()
+            return
+        }
+
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+
+        if (institution.hasErrors()) {
+            respond institution.errors, view: 'edit'
+            return
+        }
+
+        institution.save flush: true
+
+        // If setting inactive = true, inactivate all child projects
+
+
+        flash.message = message(code: 'default.updated.message',
+                 args: [message(code: 'institution.label', default: 'Institution'), institution.name]) as String
+        redirect(action: 'edit', id: institution.id)
     }
 
     def delete(Institution institutionInstance) {
 
         if (institutionInstance == null) {
             notFound()
+            return
+        }
+
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
             return
         }
 
@@ -81,7 +237,8 @@ class InstitutionAdminController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Institution.label', default: 'Institution'), institutionInstance.id])
+                flash.message = message(code: 'default.deleted.message',
+                         args: [message(code: 'institution.label', default: 'Institution'), institutionInstance.name]) as String
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NO_CONTENT }
@@ -89,6 +246,12 @@ class InstitutionAdminController {
     }
 
     def quickCreate(String cid) {
+        if (!userService.isSiteAdmin()) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
         if (existing) {
             response.setHeader('Location', createLink(action: 'edit', id: existing[0]))
@@ -163,20 +326,44 @@ class InstitutionAdminController {
 
     def uploadBannerImageFragment() {
         def institution = Institution.get(params.int("id"))
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'banner'])
     }
 
     def uploadLogoImageFragment() {
         def institution = Institution.get(params.int("id"))
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'logo'])
     }
 
     def uploadInstitutionImageFragment() {
         def institution = Institution.get(params.int("id"))
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         [institutionInstance: institution, imageType: 'main']
     }
 
     def clearLogoImage(Institution institutionInstance) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         if (institutionInstance) {
             institutionService.clearLogo(institutionInstance)
         }
@@ -184,6 +371,12 @@ class InstitutionAdminController {
     }
 
     def clearBannerImage(Institution institutionInstance) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         if (institutionInstance) {
             institutionService.clearBanner(institutionInstance)
         }
@@ -191,6 +384,12 @@ class InstitutionAdminController {
     }
 
     def clearImage(Institution institutionInstance) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
         if (institutionInstance) {
             institutionService.clearImage(institutionInstance)
         }
@@ -199,6 +398,13 @@ class InstitutionAdminController {
 
     def uploadInstitutionImage() {
         def institution = Institution.get(params.int("id"))
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
+            log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
+            flash.message = "You do not have permission to view this page"
+            redirect(controller: 'institution', action: 'list')
+            return
+        }
+
         def imageType = params.imageType ?: 'banner'
 
         if (!["banner", "logo", "main"].contains(imageType)) {
@@ -247,4 +453,55 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
+    /**
+     * AJAX Endpoint returning a JSON list of active projects.
+     * @see {@link InstitutionService#getActiveProjectsForInstitution(Institution)}
+     */
+    def getActiveProjectsForInstitution(long id) {
+        log.debug("AJAX getActiveProjects: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            if (institution) {
+                def results = institutionService.getActiveProjectsForInstitution(institution)
+                render(results as JSON)
+            } else {
+                render status: 404
+            }
+        }
+    }
+
+    /**
+     * AJAX Endpoint for returning a JSON list of active users for a given institution.
+     * @see {@link InstitutionService#getActiveUsersForInstitution(Institution)}
+     * @param id the institution ID to query
+     * @return a List (in JSON format) of users.
+     */
+    def getUsersForInstitution(long id) {
+        log.debug("AJAX getActiveProjects: ${id}")
+        log.debug("Params: ${params}")
+        if (!userService.isInstitutionAdmin()) {
+            render status: SC_FORBIDDEN
+            return
+        }
+
+        if (id <= 0) {
+            render status: SC_BAD_REQUEST
+        } else {
+            Institution institution = Institution.get(id)
+            if (institution) {
+                def usersForInstitution = institutionService.getActiveUsersForInstitution(institution)
+                render(usersForInstitution as JSON)
+            } else {
+                render status: 404
+            }
+        }
+    }
 }
