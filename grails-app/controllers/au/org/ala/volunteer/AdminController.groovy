@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class AdminController {
 
@@ -276,11 +278,24 @@ class AdminController {
     def uploadTutorial() {
         checkAdminAccess(true)
         if (request instanceof MultipartHttpServletRequest) {
+            log.debug("Uploading file.")
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
             if (f != null) {
                 def allowedMimeTypes = ['application/pdf']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
-                    flash.message = "The file must be one of: ${allowedMimeTypes}"
+                    log.debug("invalid file type")
+                    flash.message = "The file must be one of the following file types: ${allowedMimeTypes}"
+                    redirect(action: 'tutorialManagement')
+                    return
+                }
+
+                //noinspection RegExpDuplicateCharacterInClass
+                Pattern special = Pattern.compile(/[@#$%*=<>;{}\\\\/]/);
+                Matcher matcher = special.matcher(f.originalFilename)
+                if (matcher.find()) {
+                    log.debug("invalid file name")
+                    flash.message = "The filename contains illegal characters (one or more of the following: @,#,\$,%,*,=,<,>,{,},\\,/)" +
+                            ". <br />Please rename the file and try again."
                     redirect(action: 'tutorialManagement')
                     return
                 }
@@ -292,7 +307,6 @@ class AdminController {
                     flash.message = "Failed to upload tutorial file: " + ex.message
                     log.error("Failed to upload tutorial file: " + ex.message, ex)
                 }
-
             }
         }
         redirect(action: 'tutorialManagement')
@@ -317,6 +331,24 @@ class AdminController {
         checkAdminAccess(true)
         def filename = params.tutorialFile?.toString()
         def newName = params.newName?.toString()
+
+        //noinspection RegExpDuplicateCharacterInClass
+        Pattern special = Pattern.compile(/[@#$%*=<>;{}\\\\/]/);
+        Matcher matcher = special.matcher(newName)
+        if (matcher.find()) {
+            log.debug("invalid file name")
+            flash.message = "The filename '${newName}' contains illegal characters (one or more of the following: @,#,\$,%,*,=,<,>,{,},\\,/)" +
+                    ". <br />Please rename the file and try again."
+            redirect(action: 'tutorialManagement')
+            return
+        }
+
+        if (!newName.contains('.pdf')) {
+            log.debug("No file extension")
+            flash.message = "The filename '${newName}' does not have a file extension. Please ensure it has a '.pdf' extension."
+            redirect(action: 'tutorialManagement')
+            return
+        }
 
         if (filename && newName) {
             try {

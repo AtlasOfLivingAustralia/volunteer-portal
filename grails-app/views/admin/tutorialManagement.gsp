@@ -104,16 +104,17 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label class="control-label col-md-2" for="oldName">Old Name</label>
-                        <div class="col-md-10">
+                        <label class="control-label col-md-3" for="oldName">Old Name</label>
+                        <div class="col-md-9">
                             <g:textField name="oldName" disabled="true" class="form-control"/>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="control-label col-md-2" for="oldName">New Name</label>
-                        <div class="col-md-10">
-                            <g:textField name="newName" class="form-control"/>
+                    <div class="form-group new-name-grp">
+                        <label class="control-label col-md-3" for="oldName">New Name</label>
+                        <div class="col-md-9">
+                            <g:textField name="newName" title="New Filename (no special characters)" class="form-control"/>
+                            <span class="help-block"></span>
                         </div>
                     </div>
                 </div>
@@ -167,6 +168,21 @@
             e.preventDefault();
             var oldName = $("#oldName").val();
             var newName = $("#newName").val();
+            // Validate input
+            const regexp = /^[-._()\]\[\w\s]*$/
+            if (!regexp.test(newName)) {
+                $('.new-name-grp').addClass('has-error');
+                $('.help-block').html('Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, +, [, ]');
+                return;
+            } else if (newName.indexOf('.pdf') < 0) {
+                $('.new-name-grp').addClass('has-error');
+                $('.help-block').html('Filename does not have a ".pdf" extension.');
+                return;
+            } else {
+                $('.new-name-grp').removeClass('has-error');
+                $('.help-block').html('');
+            }
+
             if (oldName && newName) {
                 window.location = "${createLink(controller: 'admin', action: 'renameTutorial')}?tutorialFile=" + oldName + "&newName=" + newName;
             }
