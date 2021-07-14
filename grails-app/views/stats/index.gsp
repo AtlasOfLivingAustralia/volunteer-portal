@@ -311,7 +311,6 @@
 <asset:javascript src="livestamp" asset-defer=""/>
 <asset:script type="text/javascript">
     google.charts.load('current', {packages: ['corechart', 'table', 'bar']});
-    google.charts.setOnLoadCallback(drawChart);
 </asset:script>
 <asset:javascript src="admin-stats" asset-defer=""/>
 <asset:script type="text/javascript">

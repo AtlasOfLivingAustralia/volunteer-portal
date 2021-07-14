@@ -5,9 +5,10 @@
 //= require angular/angular-google-charts
 //= require angular/angular-ui-bootstrap
 //= require_self
+
 function adminStats(config) {
 
-    let app = angular.module('statApp', ['digivol', 'ui.bootstrap', 'googlechart']);
+    var app = angular.module('statApp', ['digivol', 'ui.bootstrap', 'googlechart']);
 
     app.config(['$httpProvider', function ($httpProvider) {
         // enable http caching
@@ -16,7 +17,7 @@ function adminStats(config) {
 
     app.service('StatsService', ['$http', '$q', function($http, $q) {
         function toLocalDateString(value) {
-            let date = new Date(value.getTime());
+            var date = new Date(value.getTime());
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
             return date.toISOString().substring(0, 10);
         }
@@ -173,7 +174,7 @@ function adminStats(config) {
 
     app.controller('StatsCtrl', ['$scope', 'StatsService', '$log', function ($scope, StatsService, $log) {
 
-        let self = this;
+        var self = this;
 
         self.endDate = new Date();
         self.endDate.setHours(0,0,0,0);
@@ -196,9 +197,9 @@ function adminStats(config) {
         self.hourlyContributions = "";
         self.historicalHonourBoard = "";
 
-        const getNewVolunteerData = function () {
+        var getNewVolunteerData = function () {
             self.loadingVolunteerData = true;
-            const stats = StatsService.getVolunteer(self.startDate, self.endDate, self.institutionId);
+            var stats = StatsService.getVolunteer(self.startDate, self.endDate, self.institutionId);
             stats.then(function(data){
                 self.loadingVolunteerData = false;
                 if (self.institutionId > 0) {
@@ -217,7 +218,7 @@ function adminStats(config) {
 
         self.getActiveTranscribers = function () {
             self.loadingActiveTranscribers = true;
-            const stats = StatsService.getActiveTranscribers(self.startDate, self.endDate, self.institutionId);
+            var stats = StatsService.getActiveTranscribers(self.startDate, self.endDate, self.institutionId);
             return stats.then(function(data) {
                 self.loadingActiveTranscribers = false;
                 self.activeTranscribers = data;
@@ -231,7 +232,7 @@ function adminStats(config) {
 
         self.getTranscriptionsByVolunteerAndProject = function () {
             self.loadingTranscriptionsByVolunteerProject = true;
-            const stat = StatsService.getTranscriptionsByVolunteerAndProject(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getTranscriptionsByVolunteerAndProject(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.loadingTranscriptionsByVolunteerProject = false;
                 self.transcriptionsByVolunteerAndProject = data;
@@ -245,7 +246,7 @@ function adminStats(config) {
 
         self.getTranscriptionsByDay = function () {
             self.loadingTranscriptionsByDay = true;
-            const stat = StatsService.getTranscriptionsByDay(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getTranscriptionsByDay(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.loadingTranscriptionsByDay = false;
                 self.transcriptionsByDay = data;
@@ -259,7 +260,7 @@ function adminStats(config) {
 
         self.getValidationsByDay = function () {
             self.loadingValidationsByDay = true;
-            const stat = StatsService.getValidationsByDay(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getValidationsByDay(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.loadingValidationsByDay = false;
                 self.validationsByDay = data;
@@ -273,7 +274,7 @@ function adminStats(config) {
 
         self.getTranscriptionTimeByProjectType = function() {
             self.loadingTimeByProjectType = true;
-            const stat = StatsService.getTranscriptionTimeByProjectType(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getTranscriptionTimeByProjectType(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.loadingTimeByProjectType = false;
                 self.transcriptionTimeByProjectType = data;
@@ -286,7 +287,7 @@ function adminStats(config) {
         };
 
         self.getTranscriptionsByInstitution = function () {
-            const stat = StatsService.getTranscriptionsByInstitution();
+            var stat = StatsService.getTranscriptionsByInstitution();
             return stat.then(function(data) {
                 self.transcriptionsByInstitution = data;
                 return data;
@@ -297,7 +298,7 @@ function adminStats(config) {
         };
 
         self.getTranscriptionsByInstitutionByMonth = function () {
-            const stat = StatsService.getTranscriptionsByInstitutionByMonth();
+            var stat = StatsService.getTranscriptionsByInstitutionByMonth();
             return stat.then(function(data) {
                 self.transcriptionsByInstitutionByMonth = data;
                 return data;
@@ -308,7 +309,7 @@ function adminStats(config) {
         };
 
         self.getValidationsByInstitution = function () {
-            const stat = StatsService.getValidationsByInstitution();
+            var stat = StatsService.getValidationsByInstitution();
             return stat.then(function(data) {
                 self.validationsByInstitution = data;
                 return data;
@@ -320,7 +321,7 @@ function adminStats(config) {
 
         self.getHourlyContributions = function () {
             self.loadingHourlyContributions = true;
-            const stat = StatsService.getHourlyContributions(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getHourlyContributions(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.loadingHourlyContributions = false;
                 self.hourlyContributions = data;
@@ -334,7 +335,7 @@ function adminStats(config) {
 
         self.getHistoricalHonourBoard = function () {
             self.loadingHonourBoard = true;
-            const stat = StatsService.getHistoricalHonourBoard(self.startDate, self.endDate, self.institutionId);
+            var stat = StatsService.getHistoricalHonourBoard(self.startDate, self.endDate, self.institutionId);
             return stat.then(function(data) {
                 self.historicalHonourBoard = data;
                 self.loadingHonourBoard = false;
@@ -404,10 +405,10 @@ function adminStats(config) {
             //    var csv =  dt.toCSV();
             //    if (downloadCSV(csv, reportType) == "failed") {
             //request browser to trigger server api to download
-            const startParam = self.startDate != null ? self.startDate.toISOString() : '';
-            const endParam = self.endDate != null ? self.endDate.toISOString() : '';
-            const institutionParam = self.institutionId;
-            const url = config.exportCSVReport + "?reportType=" + reportType + "&startDate=" + encodeURIComponent(startParam) +
+            var startParam = self.startDate != null ? self.startDate.toISOString() : '';
+            var endParam = self.endDate != null ? self.endDate.toISOString() : '';
+            var institutionParam = self.institutionId;
+            var url = config.exportCSVReport + "?reportType=" + reportType + "&startDate=" + encodeURIComponent(startParam) +
                 "&endDate=" + encodeURIComponent(endParam) + "&institutionId=" + encodeURIComponent(institutionParam);
             window.open(url, '_blank', '');
             //    };
@@ -417,9 +418,9 @@ function adminStats(config) {
 
     function drawGoogleChart($scope, jsonString, $elm, type) {
         google.setOnLoadCallback(function() {
-            const data = new google.visualization.DataTable(jsonString);
-            let chart;
-            let options = {};
+            var data = new google.visualization.DataTable(jsonString);
+            var chart;
+            var options = {};
 
             if (type === 'table') {
                 // Set chart options
@@ -495,9 +496,9 @@ function adminStats(config) {
     }
 
     function downloadCSV (csv_out, reportType) {
-        const blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-        const fileName = reportType + ".csv";
-        let link = document.createElement('a');
+        var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
+        var fileName = reportType + ".csv";
+        var link = document.createElement('a');
 
         if (link.download !== undefined) {
             link.setAttribute("href", window.URL.createObjectURL(blob));
@@ -549,7 +550,7 @@ function adminStats(config) {
     });
 
     function DateRangeController() {
-        let ctrl = this;
+        var ctrl = this;
 
         ctrl.formats = ['dd/MM/yyyy', 'yyyy/MM/dd'];
         ctrl.format = ctrl.formats[0];
@@ -589,7 +590,7 @@ function adminStats(config) {
                         // Set timeout to prevent the code from being executed and
                         // wait till the current $digest complete
                         $timeout(function() {
-                            const p = $scope.getChartData();
+                            var p = $scope.getChartData();
                             p.then(function (resp) {
                                 draw.triggered = false;
                                 drawGoogleChart($scope, resp, $elm, 'table');
@@ -631,7 +632,7 @@ function adminStats(config) {
                     if(!draw.triggered){
                         draw.triggered=true;
                         $timeout(function() {
-                            const p = $scope.getChartData();
+                            var p = $scope.getChartData();
                             p.then(function (resp) {
                                 draw.triggered = false;
                                 drawGoogleChart($scope, resp, $elm, 'barchart');
@@ -673,7 +674,7 @@ function adminStats(config) {
                     if(!draw.triggered){
                         draw.triggered=true;
                         $timeout(function() {
-                            const p = $scope.getChartData();
+                            var p = $scope.getChartData();
                             p.then(function (resp) {
                                 draw.triggered = false;
                                 drawGoogleChart($scope, resp, $elm, 'linechart');
@@ -714,7 +715,7 @@ function adminStats(config) {
                     if(!draw.triggered){
                         draw.triggered=true;
                         $timeout(function() {
-                            const p = $scope.getChartData();
+                            var p = $scope.getChartData();
                             p.then(function (resp) {
                                 draw.triggered = false;
                                 drawGoogleChart($scope, resp, $elm, 'piechart');
