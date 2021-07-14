@@ -76,8 +76,8 @@ class AdminControllerSpec extends Specification {
         given:"Define file parameters"
         response.reset()
         def fileContentType = "application/pdf"
-        def fileName = "T:\\location\\directory\\Testfil/;{}e.pdf"
-        //def fileName = "Test<file>.pdf"
+        //def fileName = "T:\\location\\directory\\Testfil/;{}e.pdf"
+        def fileName = "`Testfile'.pdf"
         def fileContentBytes = '123' as byte[]
         def multipartFile = new GrailsMockMultipartFile('tutorialFile', fileName, fileContentType, fileContentBytes)
         request.addFile(multipartFile)
@@ -87,7 +87,7 @@ class AdminControllerSpec extends Specification {
 
         then:"User is redirected to the correct page"
         response.redirectedUrl == "/admin/tutorialManagement"
-        flash.message == "The filename contains illegal characters (one or more of the following: @,#,\$,%,*,=,<,>,{,},\\,/)" +
+        flash.message == "Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )" +
                 ". <br />Please rename the file and try again."
     }
 

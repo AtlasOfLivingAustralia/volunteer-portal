@@ -172,7 +172,7 @@
             const regexp = /^[-._()\]\[\w\s]*$/
             if (!regexp.test(newName)) {
                 $('.new-name-grp').addClass('has-error');
-                $('.help-block').html('Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, +, [, ]');
+                $('.help-block').html('Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )');
                 return;
             } else if (newName.indexOf('.pdf') < 0) {
                 $('.new-name-grp').addClass('has-error');

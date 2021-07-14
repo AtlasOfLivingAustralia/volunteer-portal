@@ -290,11 +290,11 @@ class AdminController {
                 }
 
                 //noinspection RegExpDuplicateCharacterInClass
-                Pattern special = Pattern.compile(/[@#$%*=<>;{}\\\\/]/);
+                Pattern special = Pattern.compile(/[@#$%*=+|`'<>:;{}\\\\/]/);
                 Matcher matcher = special.matcher(f.originalFilename)
                 if (matcher.find()) {
-                    log.debug("invalid file name")
-                    flash.message = "The filename contains illegal characters (one or more of the following: @,#,\$,%,*,=,<,>,{,},\\,/)" +
+                    log.debug("Invalid file name")
+                    flash.message = "Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )" +
                             ". <br />Please rename the file and try again."
                     redirect(action: 'tutorialManagement')
                     return
