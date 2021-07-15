@@ -1,13 +1,9 @@
 package au.org.ala.volunteer
 
-import com.google.common.base.Stopwatch
 import grails.converters.JSON
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class IndexController {
 
-    def frontPageService
     def projectService
     def volunteerStatsService
 
@@ -24,18 +20,17 @@ class IndexController {
         log.debug("Random project of the day?")
         if (frontPage?.randomProjectOfTheDay) {
             log.debug("Selecing random...")
-            projectToDisplay = frontPageService.checkProjectOfTheDay(frontPage)
+            projectToDisplay = projectService.checkProjectOfTheDay(frontPage)
         } else {
             log.debug("Project: ${frontPage?.projectOfTheDay}")
             projectToDisplay = frontPage?.projectOfTheDay
         }
+
         if (projectToDisplay) {
+            log.debug("Getting project summary for [${projectToDisplay.name}]")
             potdSummary = projectService.makeSummaryListFromProjectList([projectToDisplay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
-            log.debug("PotD Summary: ${potdSummary}")
         }
-//        if (frontPage?.projectOfTheDay) {
-//            potdSummary = projectService.makeSummaryListFromProjectList([frontPage?.projectOfTheDay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
-//        }
+
         render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
     }
 
