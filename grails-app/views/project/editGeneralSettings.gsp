@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,6 +24,7 @@
 <g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
     <g:hiddenField name="id" id="projectId" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
+    <g:hiddenField name="formType" value="${Project.EDIT_SECTION_GENERAL}" />
 
     <div class="form-group">
         <label class="control-label col-md-3" for="institutionId">Expedition institution</label>

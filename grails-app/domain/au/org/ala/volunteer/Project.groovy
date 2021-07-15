@@ -52,6 +52,14 @@ class Project implements Serializable {
     static final Integer DEFAULT_TRANSCRIPTIONS_PER_TASK = 1
     static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
 
+    static final String EDIT_SECTION_GENERAL = 'general'
+    static final String EDIT_SECTION_IMAGE = 'image'
+    static final String EDIT_SECTION_BG_IMAGE = 'bgImage'
+    static final String EDIT_SECTION_PICKLIST = 'picklist'
+    static final String EDIT_SECTION_TASK = 'task'
+    static final String EDIT_SECTION_MAP = 'map'
+    static final String EDIT_SECTION_TUTORIAL = 'tutorial'
+
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']

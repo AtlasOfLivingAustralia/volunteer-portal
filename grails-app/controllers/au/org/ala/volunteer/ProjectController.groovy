@@ -701,25 +701,27 @@ class ProjectController {
                     }
                 }
 
-                if (params.template) {
-                    Template newTemplate = Template.get(params.long('template'))
-                    if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
-                        project.errors.rejectValue("template", "project.template.notavailable",
-                                [newTemplate.name] as Object[],
-                                "Template is no longer available.")
+                if (params.formType == Project.EDIT_SECTION_GENERAL) {
+                    if (params.template) {
+                        Template newTemplate = Template.get(params.long('template'))
+                        if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
+                            project.errors.rejectValue("template", "project.template.notavailable",
+                                    [newTemplate.name] as Object[],
+                                    "Template is no longer available.")
+                            return false
+                        }
+                    }
+
+                    log.debug("Institution from edit: ${params.institutionId}")
+                    def inst = Institution.get(params.getLong('institutionId'))
+                    if (inst) {
+                        project.institution = inst
+                    } else {
+                        project.errors.rejectValue("institutionId", "project.institution.required",
+                                [message(code: 'project.label', default: 'Project')] as Object[],
+                                message(code: 'project.institution.required', default: 'Institution required') as String)
                         return false
                     }
-                }
-
-                log.debug("Institution from edit: ${params.institutionId}")
-                def inst = Institution.get(params.getLong('institutionId'))
-                if (inst) {
-                    project.institution = inst
-                } else {
-                    project.errors.rejectValue("institutionId", "project.institution.required",
-                            [message(code: 'project.label', default: 'Project')] as Object[],
-                            message(code: 'project.institution.required', default: 'Institution required') as String)
-                    return false
                 }
 
                 bindData(project, params)

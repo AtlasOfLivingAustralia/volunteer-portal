@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <!doctype html>
 <html>
 <head>
@@ -35,7 +36,7 @@
         class="form-horizontal">
 
     <g:hiddenField name="id" value="${projectInstance.id}"/>
-
+    <g:hiddenField name="formType" value="${Project.EDIT_SECTION_BG_IMAGE}" />
 
     <div class="form-group">
         <label class="control-label col-md-3" for="backgroundImage">Background Image</label>
