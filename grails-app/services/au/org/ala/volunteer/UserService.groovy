@@ -53,16 +53,22 @@ class UserService {
                 user.created = new Date()
                 user.firstName = firstName
                 user.lastName = lastName
-                def savedUser = user.save(flush: true)
-                // Notify admins that a new user has registered
-                notifyNewUser(savedUser, displayName)
+                user.save(flush: true)
             }
         }
     }
 
+    /**
+     * Sends email to list of users.
+     * Deprecated in favour of daily digest to DigiVol contact address.
+     * @param user
+     * @param displayName
+     * @see {@link au.org.ala.volunteer.NewUserDigestNotifierJob}
+     * @deprecated
+     */
     @NotTransactional
     private void notifyNewUser(User user, String displayName) {
-        def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
+        def interestedUsers = [] //getUsersWithRole(BVPRole.SITE_ADMIN)
         def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user, displayName: displayName])
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
@@ -188,29 +194,16 @@ class UserService {
     }
 
     boolean isSiteAdmin() {
-
         def userId = currentUserId
-
         if (!userId) {
             return false
         }
 
         // If  the user has been granted the ALA-AUTH ROLE_BVP_ADMIN....
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            return true
-        }
-
-        // TODO This role has been deprecated?
-        def user = User.findByUserId(userId)
-        if (user) {
-            def siteAdminRole = Role.findByNameIlike(BVPRole.SITE_ADMIN)
-            def userRole = user.userRoles.find { it.role.id == siteAdminRole.id }
-            if (userRole) {
-                return true
-            }
-        }
-
-        return false
+//        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
+//            return true
+//        }
+        return authService.userInRole(CASRoles.ROLE_ADMIN)
     }
 
     /**
@@ -231,7 +224,6 @@ class UserService {
     boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
 
         def userId = currentUserId
-
         if (!userId) {
             return false
         }
