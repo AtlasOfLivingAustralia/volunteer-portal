@@ -77,9 +77,9 @@
                                         <a href="${tute.url}">${tute.url}</a>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name}">Rename</button>
+                                        <button class="btn btn-sm btn-default btnRenameTutorial" tutorial="${tute.name.encodeAsHTML()}">Rename</button>
                                         <button class="btn btn-sm btn-danger btnDeleteTutorial"
-                                                tutorial="${tute.name}">Delete</button>
+                                                tutorial="${tute.name.encodeAsHTML()}">Delete</button>
                                     </td>
                                 </tr>
                             </g:each>
@@ -141,7 +141,7 @@
 
         $(".btnDeleteTutorial").click(function(e) {
             e.preventDefault();
-            var name = $(this).attr("tutorial");
+            var name = encodeURIComponent($(this).attr("tutorial"));
             var self = this;
             bootbox.confirm("Are you sure?", function (result) {
                 _result = result;
@@ -169,10 +169,10 @@
             var oldName = $("#oldName").val();
             var newName = $("#newName").val();
             // Validate input
-            const regexp = /^[-._()\]\[\w\s]*$/
+            const regexp = /^[&!-._()\]\[\w\s]*$/
             if (!regexp.test(newName)) {
                 $('.new-name-grp').addClass('has-error');
-                $('.help-block').html('Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )');
+                $('.help-block').html('Filename includes disallowed special characters. Allowed chars: a-z, 0-9, &, !, -, ., _, [, ], (, )');
                 return;
             } else if (newName.indexOf('.pdf') < 0) {
                 $('.new-name-grp').addClass('has-error');
@@ -184,7 +184,8 @@
             }
 
             if (oldName && newName) {
-                window.location = "${createLink(controller: 'admin', action: 'renameTutorial')}?tutorialFile=" + oldName + "&newName=" + newName;
+                window.location = "${createLink(controller: 'admin', action: 'renameTutorial')}?tutorialFile=" +
+                    encodeURIComponent(oldName) + "&newName=" + encodeURIComponent(newName);
             }
         });
 

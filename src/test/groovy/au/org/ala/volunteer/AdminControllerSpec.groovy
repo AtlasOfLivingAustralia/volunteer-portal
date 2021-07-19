@@ -87,7 +87,7 @@ class AdminControllerSpec extends Specification {
 
         then:"User is redirected to the correct page"
         response.redirectedUrl == "/admin/tutorialManagement"
-        flash.message == "Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )" +
+        flash.message == "Filename includes illegal characters (one or more of the following: @,#,\$,%,^,*,=,<,>,{,},\\,/,|,',\",;,:,?)" +
                 ". <br />Please rename the file and try again."
     }
 

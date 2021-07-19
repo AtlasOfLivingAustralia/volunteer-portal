@@ -294,7 +294,7 @@ class AdminController {
                 Matcher matcher = special.matcher(f.originalFilename)
                 if (matcher.find()) {
                     log.debug("Invalid file name")
-                    flash.message = "Filename includes disallowed special characters. Allowed chars: a-z, 0-9, -, ., _, [, ], (, )" +
+                    flash.message = "Filename includes illegal characters (one or more of the following: @,#,\$,%,^,*,=,<,>,{,},\\,/,|,',\",;,:,?)" +
                             ". <br />Please rename the file and try again."
                     redirect(action: 'tutorialManagement')
                     return
@@ -315,6 +315,7 @@ class AdminController {
     def deleteTutorial() {
         checkAdminAccess(true)
         def filename = params.tutorialFile?.toString()
+        log.debug("Filename: ${filename}")
         if (filename) {
             try {
                 tutorialService.deleteTutorial(filename)
@@ -332,12 +333,15 @@ class AdminController {
         def filename = params.tutorialFile?.toString()
         def newName = params.newName?.toString()
 
+        log.debug("Filename: ${filename}")
+        log.debug("New name: ${newName}")
+
         //noinspection RegExpDuplicateCharacterInClass
-        Pattern special = Pattern.compile(/[@#$%*=<>;{}\\\\/]/);
+        Pattern special = Pattern.compile(/[@#$%*=+|`'<>:;{}\\\\/]/);
         Matcher matcher = special.matcher(newName)
         if (matcher.find()) {
             log.debug("invalid file name")
-            flash.message = "The filename '${newName}' contains illegal characters (one or more of the following: @,#,\$,%,*,=,<,>,{,},\\,/)" +
+            flash.message = "The filename '${newName}' contains illegal characters (one or more of the following: @,#,\$,%,^,*,=,<,>,{,},\\,/,|,',\",;,:,?)" +
                     ". <br />Please rename the file and try again."
             redirect(action: 'tutorialManagement')
             return
