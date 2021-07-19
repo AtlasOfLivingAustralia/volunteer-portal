@@ -64,7 +64,7 @@
         <select name="recipient"
                 class="form-control selectpicker"
                 data-live-search="true"
-                id="recipient"><option>- Select a recipient -</option></select>
+                id="recipient"><option value="">- Select a recipient -</option></select>
     </div>
 </div>
 <div class="form-group">

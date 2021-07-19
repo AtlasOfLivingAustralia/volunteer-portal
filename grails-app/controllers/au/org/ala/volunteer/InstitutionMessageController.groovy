@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.converters.JSON
 
 class InstitutionMessageController {
@@ -150,10 +151,14 @@ class InstitutionMessageController {
             def errors = []
 
             def messageBody = params.body as String
-            if (checkMessageBody(messageBody)) {
-                iMessage.body = messageBody
+            if (Strings.isNullOrEmpty(messageBody)) {
+                errors << "You didn't enter a message body. You cannot send an empty message."
             } else {
-                errors << "The Message Body text is too long. It needs to be less than ${getMaxBodyLength()} characters"
+                if (checkMessageBody(messageBody)) {
+                    iMessage.body = messageBody
+                } else {
+                    errors << "The Message Body text is too long. It needs to be less than ${getMaxBodyLength()} characters"
+                }
             }
 
             iMessage.subject = params.subject as String
@@ -314,10 +319,14 @@ class InstitutionMessageController {
             }
 
             def messageBody = params.body as String
-            if (checkMessageBody(messageBody)) {
-                iMessage.body = messageBody
+            if (Strings.isNullOrEmpty(messageBody)) {
+                errors << "You didn't enter a message body. You cannot send an empty message."
             } else {
-                errors << "The Message Body text is too long. It needs to be less than ${getMaxBodyLength()} characters"
+                if (checkMessageBody(messageBody)) {
+                    iMessage.body = messageBody
+                } else {
+                    errors << "The Message Body text is too long. It needs to be less than ${getMaxBodyLength()} characters"
+                }
             }
 
             iMessage.subject = params.subject as String

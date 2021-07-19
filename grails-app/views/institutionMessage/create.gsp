@@ -87,7 +87,7 @@
         }
 
         function updateRecipient(type, data) {
-            const emptyOption = "<option>- Select a recipient -</option>";
+            const emptyOption = "<option value=''>- Select a recipient -</option>";
             let selectList = "";
 
             if (type === 'user') {
