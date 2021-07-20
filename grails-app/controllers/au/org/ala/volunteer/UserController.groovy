@@ -198,7 +198,7 @@ class UserController {
 
         // Don't divulge email addresses.
         def userList = users.collect { user ->
-            [id: user.id, userId: user.userId, displayName: user.displayName]
+            [id: user.id, userId: user.userId, displayName: "${user.displayName} (${user.id})"]
         }
 
         render userList as JSON

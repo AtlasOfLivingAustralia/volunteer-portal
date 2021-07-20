@@ -105,7 +105,7 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Project..."/>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" id="user-searchbox" class="form-control" value="" placeholder="Filter by User..." autocomplete="off"/>
+                    <input type="text" id="user-searchbox" class="form-control" value="${displayUserFilter}" placeholder="Filter by User..." autocomplete="off"/>
                     <input id="filter-userId" name="filterUserId" type="hidden" value="${filterUserId}"/>
                     <i id="ajax-filter-spinner" class="fa fa-cog fa-spin hidden"></i>
                 </div>
@@ -117,7 +117,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
-                    <small>${userRoleTotalCount ?: 0} Users found.</small>
+                    <small>${userRoleTotalCount ?: 0} User roles found.</small>
                 </div>
             </div>
             <div class="row">
@@ -138,7 +138,7 @@
                         <g:each in="${userRoleList}" var="userRole" status="i">
                             <tr id="userRole_${userRole.id}">
 
-                                <td>${userRole.user?.displayName}</td>
+                                <td style="white-space: nowrap;">${userRole.user?.displayName} <span style="color: #bbbbbb;">(${userRole.user?.id})</span></td>
                                 <td><g:if test="${userRole.role.name == BVPRole.FORUM_MODERATOR}">Forum Moderator</g:if><g:else>Validator</g:else></td>
                                 <td><g:if test="${userRole.project}">Project</g:if><g:else>Institution</g:else></td>
                                 <td>
@@ -149,8 +149,8 @@
                                         <g:link controller="institutionAdmin" action="edit" id="${userRole.institution.id}">${userRole.institution.name}</g:link>
                                     </g:elseif>
                                 </td>
-                                <td>${userRole.createdBy?.displayName}</td>
-                                <td><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
+                                <td style="white-space: nowrap;">${userRole.createdBy?.displayName}</td>
+                                <td style="white-space: nowrap;"><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td>
                                     <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
                                         <i class="fa fa-times" title="Delete Role from User"></i>

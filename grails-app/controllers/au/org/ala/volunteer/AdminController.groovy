@@ -203,8 +203,24 @@ class AdminController {
 
         def userRole
         if (level == 1) {
+            def roleCheck = UserRole.findAllByRoleAndInstitution(role, institution)
+            if (roleCheck) {
+                log.error("Role already exists: ${params.userRole_role} for institution: ${institution}")
+                flash.message = message(code: 'admin.user.role.not.created',
+                        args: [message(code: 'user.role.label', default: 'User Role'), ' role for user already exists']) as String
+                redirect(action: 'manageUserRoles')
+                return
+            }
             userRole = new UserRole(user: user, role: role, institution: institution, createdBy: currentUser)
         } else {
+            def roleCheck = UserRole.findAllByRoleAndProject(role, project)
+            if (roleCheck) {
+                log.error("Role already exists: ${params.userRole_role} for project: ${project}")
+                flash.message = message(code: 'admin.user.role.not.created',
+                        args: [message(code: 'user.role.label', default: 'User Role'), ' role for user already exists.']) as String
+                redirect(action: 'manageUserRoles')
+                return
+            }
             userRole = new UserRole(user: user, role: role, project: project, createdBy: currentUser)
         }
 
@@ -223,6 +239,7 @@ class AdminController {
     def manageUserRoles() {
         checkAdminAccess(true)
         def parameters = [:]
+        def displayUserFilter = ""
 
         def institutionId = params.long('institution')
         def institution = Institution.get(institutionId)
@@ -258,6 +275,13 @@ class AdminController {
             parameters.userid = params.userid
         }
 
+        if (params.userid) {
+            def userFilter = User.findByUserId(params.userid as String)
+            if (userFilter) {
+                displayUserFilter = userFilter.displayName
+            }
+        }
+
         Map userRoles = userService.listUserRoles(parameters)
         List userRoleList = userRoles.userRoleList
         log.debug("userRoleList.size(): ${userRoleList.size()}")
@@ -265,6 +289,7 @@ class AdminController {
         render(view: 'manageUserRoles', model: [institutionList: institutionList,
                                                 projectList: projectList,
                                                 userRoleList: userRoleList,
+                                                displayUserFilter: displayUserFilter,
                                                 userRoleTotalCount: userRoles.totalCount])
     }
 
