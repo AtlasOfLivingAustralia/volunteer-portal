@@ -43,7 +43,7 @@
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="${createLink(controller: 'institutionMessage', action: 'create', params: [institution: projectInstance.institution.id])}"><i
+                        <a href="${createLink(controller: 'institutionMessage', action: 'create', params: [projectId: projectInstance.id])}"><i
                                 class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers</a>
                     </li>
                     <li>
