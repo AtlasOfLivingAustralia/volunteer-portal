@@ -36,6 +36,8 @@ class TemplateService {
             newField.template = newTemplate
             newField
         })
+
+        return newTemplate
     }
 
     /**

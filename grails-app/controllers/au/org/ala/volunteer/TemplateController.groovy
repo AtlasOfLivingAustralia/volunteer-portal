@@ -77,9 +77,12 @@ class TemplateController {
         params.author = userService.currentUserId
         def templateInstance = new Template(params)
         if (templateInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
+            flash.message = message(code: 'default.created.message',
+                    args: [message(code: 'template.label', default: 'Template'), templateInstance.name]) as String
             redirect(action: "edit", id: templateInstance.id)
         } else {
+            flash.message = message(code: 'default.not.created.message',
+                    args: [message(code: 'template.label', default: 'Template'), templateInstance.name]) as String
             render(view: "create", model: [templateInstance: templateInstance])
         }
     }
@@ -91,7 +94,8 @@ class TemplateController {
         }
         def templateInstance = Template.get(params.long('id'))
         if (!templateInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'template.label', default: 'Template'), params.id as String]) as String
             redirect(action: "list")
         }
         else {
@@ -124,7 +128,9 @@ class TemplateController {
                 def version = params.version.toLong()
                 if (templateInstance.version > version) {
                     
-                    templateInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'template.label', default: 'Template')] as Object[], "Another user has updated this Template while you were editing")
+                    templateInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: 'template.label', default: 'Template')] as Object[],
+                            "Another user has updated this Template while you were editing")
                     render(view: "edit", model: [templateInstance: templateInstance])
                     return
                 }
@@ -144,13 +150,15 @@ class TemplateController {
             templateInstance.viewParams = newViewParams
 
             if (!templateInstance.hasErrors() && templateInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'template.label', default: 'Template'), templateInstance.id])}"
+                flash.message = message(code: 'default.updated.message',
+                         args: [message(code: 'template.label', default: 'Template'), templateInstance.name]) as String
                 redirect(action: "edit", id: templateInstance.id)
             } else {
                 render(view: "edit", model: [templateInstance: templateInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'template.label', default: 'Template'), params.id as String]) as String
             redirect(action: "list")
         }
     }
@@ -424,16 +432,23 @@ class TemplateController {
             def existing = Template.findByName(newName)
             if (existing) {
                 flash.message = "Failed to clone template - a template with the name " + newName + " already exists!"
-                redirect(action:'list')
+                redirect(action: 'list')
                 return
             }
         }
 
+        Template newTemplate = null
         if (template && newName) {
-            templateService.cloneTemplate(template, newName)
+            newTemplate = templateService.cloneTemplate(template, newName)
         }
 
-        redirect(action:'list')
+        if (!newTemplate) {
+            flash.message = "Failed to clone template due to an unknown error! Please contact the DigiVol Admins."
+            redirect(action: 'list')
+            return
+        }
+
+        redirect(action:'edit', id: newTemplate.id)
     }
 
     def cloneTemplateFragment() {
