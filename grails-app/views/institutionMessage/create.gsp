@@ -48,16 +48,31 @@
 
 <asset:script type="text/javascript">
     $(document).ready(function() {
+        const _params = new URLSearchParams(window.location.search);
+
         function initForm() {
-        <g:if test="${params.institution}">
-            $('.institution').val("${params.institution}");
+            $('#recipient').prop('disabled', false);
+
+        <g:if test="${params.projectId}">
+            $('.institution').val(${institutionId});
+            const recipientType = "${InstitutionMessage.RECIPIENT_TYPE_PROJECT}";
+            $('.recipient-type').val(recipientType);
         </g:if>
+        <g:else>
+            if (getQueryStringParam('institution')) {
+                $('.institution').val(getQueryStringParam('institution'));
+            }
 
             const recipientType = "${institutionMessageInstance?.getRecipientType() ?: InstitutionMessage.RECIPIENT_TYPE_USER}";
-            $('#recipient').prop('disabled', false);
+        </g:else>
+
             console.log("Init recipient");
             getRecipientData(recipientType);
             $('#recipient').selectpicker();
+        }
+
+        function getQueryStringParam(key) {
+            return _params.get(key);
         }
 
         initForm();
@@ -118,7 +133,13 @@
 
             } else if (type === 'project') {
                 // build project select
-                const selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : ""}";
+                let selectedValues = "";
+                if (getQueryStringParam('projectId')) {
+                    selectedValues = getQueryStringParam('projectId');
+                } else {
+                    selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : ""}";
+                }
+
                 console.log("Selected Value: " + selectedValues);
                 $.each(data, function(idx, p) {
                     selectList += "<option value='" + p.id + "'>" + p.name + "</option>";

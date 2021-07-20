@@ -57,10 +57,20 @@ class InstitutionMessageController {
     def create() {
         if (checkAdminAccess(true)) {
             def formInfo = getFormInfo()
-
-            render(view: 'create', model: [recipientTypeList: formInfo.recipientTypeList,
-                                           institutionList  : formInfo.institutionSelectList,
-                                           institutionId    : (params.institution ? params.long('institution') : 0)])
+            def institutionId = 0
+            if (params.long('projectId')) {
+                Project project = Project.get(params.long('projectId'))
+                if (project) {
+                    institutionId = project.institution.id
+                    params.institution = institutionId
+                }
+            } else if (params.long('institution')) {
+                institutionId = params.long('institution')
+            }
+            log.debug("institution: ${institutionId}")
+            render(view: 'create', params: params, model: [recipientTypeList: formInfo.recipientTypeList,
+                                                           institutionList  : formInfo.institutionSelectList,
+                                                           institutionId    : institutionId])
         }
     }
 
