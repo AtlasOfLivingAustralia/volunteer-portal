@@ -76,7 +76,7 @@
                 var url = "${createLink(controller: 'forum', action: 'ajaxProjectTaskTopicList', params: [projectId: projectInstance.id])}";
 
                 function displayTaskTopicsSpinner() {
-                    $("#tabTaskTopics").html('<div>Searching for task topics in this project... <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
+                    $("#tabTaskTopics").html('<div>Searching for task topics in this expedition... <img src="${asset.assetPath(src: 'spinner.gif')}"/></div>');
                 }
 
                 function activateTaskTopics(jqElem, params) {

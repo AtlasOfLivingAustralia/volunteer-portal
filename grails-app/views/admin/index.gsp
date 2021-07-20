@@ -132,7 +132,7 @@
                             <td><a class="btn btn-default bs3"
                                    href="${createLink(controller: 'institutionMessage', action: 'index')}">Institution Messages</a>
                             </td>
-                            <td>Create and send messages to volunteers of your institutions and projects.</td>
+                            <td>Create and send messages to volunteers of your institutions and expeditions.</td>
                         </tr>
                         <cl:ifSiteAdmin>
                         <tr>

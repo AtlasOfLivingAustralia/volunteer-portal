@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
+    <g:set var="entityName" value="${message(code: 'project.label', default: 'Expedition')}"/>
     <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
     <g:set var="bgurl" value="${landingPageInstance.landingPageImage ? cl.imageUrlPrefix(type: 'landingPage', name: landingPageInstance.landingPageImage) : asset.assetPath(src: 'wildlifespotter.jpg')}" />
