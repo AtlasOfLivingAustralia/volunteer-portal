@@ -269,7 +269,9 @@ class UserController {
         def isValidator = userService.isValidator(project)
 
         results.viewList.each { Map it ->
-            it['isValidator'] = userService.isValidatorForProjectId(it.projectId as long, it.institutionId as long)
+            long projectId = it.projectId != null ? it.projectId as long : 0L
+            long institutionId = it.institutionId != null ? it.institutionId as long : 0L
+            it['isValidator'] = userService.isValidatorForProjectId(projectId, institutionId)
         }
 
         def result = new TaskListResult(
