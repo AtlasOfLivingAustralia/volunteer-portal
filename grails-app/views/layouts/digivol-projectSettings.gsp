@@ -81,6 +81,19 @@
                                         </li>
                                         <li class="divider"></li>
                                         <li>
+                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-share"></i>&nbsp;Expedition administration</g:link>
+                                        </li>
+                                        <li>
+                                            <g:link controller="project" action="index" id="${projectInstance.id}"><i class="fa fa-home"></i>&nbsp;Expedition home page</g:link>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <g:link controller="institutionMessage" action="create" params="${[projectId: projectInstance.id]}">
+                                                <i class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers
+                                            </g:link>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
                                             <a id="btnDeleteProject" href="#"><i class="fa fa-trash-o"></i>&nbsp;Delete expedition</a>
                                         </li>
                                     </ul>
