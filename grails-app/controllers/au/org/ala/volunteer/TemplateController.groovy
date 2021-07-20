@@ -44,12 +44,19 @@ class TemplateController {
         allTemplates = templateService.getTemplatesWithFilter(params)
 
         def templateList = []
-        allTemplates.templateList.each { Template template ->
+        allTemplates.templateList.each { template ->
             templateList.add(templateService.getTemplatePermissions(template))
         }
 
-        [templateInstanceList: templateList, templateInstanceTotal: allTemplates.totalCount,
-         params: params, viewFilter: templateService.getTemplateViews()]
+        def statusFilter = [[key: 'hidden', value: 'Hidden templates'],
+                            [key: 'global', value: 'Global templates'],
+                            [key: 'unassigned', value: 'Unassigned templates']]
+
+        [templateInstanceList: templateList,
+         templateInstanceTotal: allTemplates.totalCount,
+         params: params,
+         statusFilter: statusFilter,
+         viewFilter: templateService.getTemplateViews()]
     }
 
     def create() {

@@ -38,17 +38,37 @@
                               optionKey="id"
                               value="${params?.institution}" noSelection="['all':'- View ALL Institutions -']" />
                 </div>
-                <div class="col-md-3">
-                    <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Project..."/>
+                <cl:ifSiteAdmin>
+                    <g:set var="searchWidth" value="2" />
+                    <g:set var="viewFilterWidth" value="2" />
+                </cl:ifSiteAdmin>
+                <cl:ifNotSiteAdmin>
+                    <g:set var="searchWidth" value="3" />
+                    <g:set var="viewFilterWidth" value="3" />
+                </cl:ifNotSiteAdmin>
+                <div class="col-md-${searchWidth}">
+                    <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by template name ..."/>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-${viewFilterWidth}">
                     <g:select class="form-control" name="viewName" id="viewName" from="${viewFilter}"
                               value="${params?.viewName}" noSelection="['':'- View ALL views -']" />
                 </div>
+                <cl:ifSiteAdmin>
+                <div class="col-md-2">
+                    <g:select class="form-control" name="status" id="status" from="${statusFilter}"
+                        optionKey="key" optionValue="value"
+                              value="${params?.status}" noSelection="['':'- View ALL templates -']" />
+                </div>
+                </cl:ifSiteAdmin>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-default bs3" id="apply-filter">Apply</button>
                     <a class="btn btn-default bs3"
                        href="${createLink(controller: 'template', action: 'list')}">Reset</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
+                    ${templateInstanceTotal ?: 0} Templates found.
                 </div>
             </div>
             <div class="row">
@@ -75,7 +95,10 @@
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}" templateId="${templateInstance.id}"
                                 templateName="${templateInstance.name}">
 
-                                <td>${fieldValue(bean: templateInstance, field: "name")}</td>
+                                <td>
+                                    ${fieldValue(bean: templateInstance, field: "name")}&nbsp;
+                                    <cl:ifSiteAdmin><span style="color: #bbbbbb">(${templateListItem.projectCount} Projects)</span></cl:ifSiteAdmin>
+                                </td>
                                 <td style="text-align: center"><span>
                                 <g:if test="${templateInstance.isGlobal}">
                                     <i class="fa fa-globe" title="Global Template"></i></span>
@@ -84,10 +107,10 @@
                                     <i class="fa fa-eye-slash" title="Hidden; only visible to Site Admins"></i></span>
                                 </g:if>
                                 </td>
-                                <td>${cl.displayNameForUserId(id: templateInstance.author)}</td>
+                                <td style="white-space: nowrap;">${cl.displayNameForUserId(id: templateInstance.author)}</td>
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
-                                <td>
+                                <td style="white-space: nowrap;">
                                     <a class="btn btn-xs btn-default btnCloneTemplate" alt="Clone" title="Clone Template"><i class="fa fa-clone"></i></a>
                             <g:if test="${templateListItem.canEdit}">
                                     <a class="btn btn-xs btn-default" alt="Edit" title="Edit"
@@ -116,7 +139,7 @@
                 </div>
 
                 <div class="text-center">
-                    <g:paginate total="${templateInstanceTotal}"/>
+                    <g:paginate total="${templateInstanceTotal}" params="${params}"/>
                 </div>
             </div>
         </div>
@@ -162,6 +185,18 @@
             }
         });
 
+        $('#institution').change(function() {
+            doSearch();
+        });
+
+        $('#viewName').change(function() {
+            doSearch();
+        });
+
+        $('#status').change(function() {
+            doSearch();
+        });
+
         $('#apply-filter').click(function(e) {
             e.preventDefault();
             doSearch();
@@ -173,6 +208,7 @@
             let institutionId = params.get('institution');
             let viewName = params.get('viewName');
             let q = params.get('q');
+            let status = params.get('status');
             let sort = params.get('sort');
             let order = params.get('order');
 
@@ -180,41 +216,56 @@
                 return string + "&";
             }
 
+            function addParam(url, param, value, addAmpersandToUrl = false) {
+                if (addAmpersandToUrl) url = addAmpersand(url);
+                return url + param + "=" + value;
+            }
+
             institutionId = $('#institution').val();
             q = encodeURIComponent($('#searchbox').val());
             viewName = $('#viewName').val();
+            status = $('#status').val();
             console.log();
 
             let hasParams = false;
             let url = "${createLink(controller: 'template', action: 'list')}?";
 
             if (institutionId) {
-                url += "institution=" + institutionId;
+                //url += "institution=" + institutionId;
+                url = addParam(url, 'institution', institutionId, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (viewName) {
-                if (hasParams) {
-                    //url += "&";
-                    url = addAmpersand(url);
-                }
-                url += "viewName=" + viewName;
+                // if (hasParams) {
+                //     url = addAmpersand(url);
+                // }
+                // url += "viewName=" + viewName;
+                url = addParam(url, 'viewName', viewName, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (q) {
-                if (hasParams) {
-                    //url += "&";
-                    url = addAmpersand(url);
-                }
-                url += "q=" + q;
+                // if (hasParams) {
+                //     url = addAmpersand(url);
+                // }
+                // url += "q=" + q;
+                url = addParam(url, 'q', encodeURIComponent(q), hasParams);
+                if (!hasParams) hasParams = true;
+            }
+            if (status) {
+                // if (hasParams) {
+                //     url = addAmpersand(url);
+                // }
+                // url += "status=" + status;
+                url = addParam(url, 'status', status, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (sort) {
-                if (hasParams) {
-                    //url += "&";
-                    url = addAmpersand(url);
-                }
-                url += "sort=" + sort + "&order=" + order;
-                if (!hasParams) hasParams = true;
+                // if (hasParams) {
+                //     url = addAmpersand(url);
+                // }
+                // url += "sort=" + sort + "&order=" + order;
+                url = addParam(url, 'sort', sort, hasParams);
+                url = addParam(url, 'order', order, hasParams);
             }
 
             console.log(url);

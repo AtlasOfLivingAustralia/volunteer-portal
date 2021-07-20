@@ -88,7 +88,7 @@ class TemplateService {
      * @return true if the user can edit the template.
      */
     def getTemplatePermissions(Template template) {
-        def templatePermissions = [template: template, canEdit: userService.isSiteAdmin()]
+        def templatePermissions = [template: template, canEdit: userService.isSiteAdmin(), projectCount: 0]
 
         if (!userService.isSiteAdmin()) {
             // List of Institutions user is Institution Admin for
@@ -103,6 +103,10 @@ class TemplateService {
             } else {
                 templatePermissions.canEdit = false
             }
+        }
+
+        if (template.projects.size() > 0) {
+            templatePermissions.projectCount = template.projects.size()
         }
         log.debug("Can edit: ${templatePermissions.canEdit}")
         return templatePermissions
@@ -184,47 +188,58 @@ class TemplateService {
                 t.view_name,
                 t.is_global
             from template t 
-            left outer join project p on (p.template_id = t.id) 
+            left outer join project p on (p.template_id = t.id)             
             left outer join institution i on (i.id = p.institution_id) 
             left join vp_user u on (u.user_id = t.author) """.stripIndent()
 
         def clause = []
         def parameters = [:]
 
-        // If the institution filter parameter isn't set, check if user is an institution admin and default to their
-        // institution
-//        if (Strings.isNullOrEmpty(params.institution) && (userService.isInstitutionAdmin() && !userService.isSiteAdmin())) {
-//            institution = userService.getAdminInstitutionList().first()
-//        }
-
         // Add the institution filter, if present
-        if (!Strings.isNullOrEmpty(params.institution?.toString()) && params.institution != 'all') {
+        if (!Strings.isNullOrEmpty(params.institution as String) && params.institution != 'all') {
             institution = Institution.get(Long.parseLong(params.institution?.toString()))
-            clause.add(" i.id = :institutionId ")
+            clause.add(" (i.id = :institutionId or t.is_global = true) ")
             parameters.institutionId = institution.id
         }
 
         // Add the project search filter, if present
-        if (!Strings.isNullOrEmpty(params.q?.toString())) {
-            clause.add(" p.name ilike '%${params.q}%' ")
+        if (!Strings.isNullOrEmpty(params.q as String)) {
+            clause.add(" t.name ilike '%${params.q}%' ")
         }
 
         // Add the view name filter, if present
-        if (!Strings.isNullOrEmpty(params.viewName?.toString())) {
+        if (!Strings.isNullOrEmpty(params.viewName as String)) {
             clause.add(" t.view_name = :viewName ")
             parameters.viewName = params.viewName
         }
 
+        // Add status filter, if present
         if (!userService.isSiteAdmin()) {
             clause.add(" t.is_hidden = false ")
+        } else {
+            if (!Strings.isNullOrEmpty(params.status as String)) {
+                switch(params.status) {
+                    case 'hidden':
+                        clause.add(" t.is_hidden = true ")
+                        break
+                    case 'global':
+                        clause.add(" t.is_global = true ")
+                        break
+                    case 'unassigned':
+                        clause.add(" p.id is null ")
+                        break
+                }
+            }
         }
 
+        // Add the clauses
         clause.eachWithIndex { line, idx ->
             if (idx == 0) query += " where "
             else query += " and "
             query += "${line}"
         }
 
+        // Add the sort order
         if (!Strings.isNullOrEmpty(params.sort?.toString())) {
             String sort
             switch (params.sort) {
@@ -241,11 +256,12 @@ class TemplateService {
         } else {
             query += " order by is_global desc, t.id asc"
         }
+        log.debug("Template list query: ${query}")
 
         def sql = new Sql(dataSource)
         sql.eachRow(query, parameters, params.offset as int, params.max as int) { row ->
             Template template = Template.get(row.template_id as long)
-            results.add(template)
+            if (template) results.add(template)
         }
 
         def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
