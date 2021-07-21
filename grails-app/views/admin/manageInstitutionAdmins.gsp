@@ -20,6 +20,12 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <h3>Add new Institution Admin</h3>
+            <p>
+                Select the institution and enter the user's name or email address. The system will search for a users
+                that match the search. <br>
+                If no users appear, enter the email address and click the 'Add' button to search the ALA's CAS
+                Authorisation system and import them into DigiVol.
+            </p>
             <g:form controller="admin" action="addInstituionAdmin" method="POST">
             <div class="form-group">
                 <div class="col-md-4">
@@ -28,7 +34,7 @@
                                   value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                 </div>
                 <div class="col-md-4">
-                    <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required autocomplete="off"/>
+                    <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search user..." value="${displayName}" required autocomplete="new-password"/>
                     <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>

@@ -91,15 +91,37 @@ class AdminController {
      */
     def addInstituionAdmin() {
         checkAdminAccess(false)
-        def currentUser = userService.getCurrentUser()
-        def userId = params.userId?.toString()
-        def user = User.findByUserId(userId)
+        log.debug("Params: ${params}")
+        User user = null
 
-        if (!user) {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'user.label', default: 'User'), userId]) as String
-            redirect(action: 'manageInstitutionAdmins')
-            return
+        // If params.userId is empty and params.userSearch isn't, search CAS.
+        if (Strings.isNullOrEmpty(params.userId as String) && !Strings.isNullOrEmpty(params.userSearch as String)) {
+            log.debug("Locating user in CAS Auth: ${params.userSearch}")
+            def userDetails = userService.findAuthUserByEmail(params.userSearch as String)
+            log.debug("User Details: ${userDetails}")
+            if (!userDetails) {
+                flash.message = "Unable to find a registered user with a name or email of ${params.userSearch}."
+                redirect(action: 'manageInstitutionAdmins')
+                return
+            } else {
+                // Search DigiVol users for existing account.
+                user = User.findByEmail(userDetails.email)
+                if (!user) {
+                    // User not xferred from CAS Auth to DigiVol yet.
+                    // Create a user and save.
+                    user = userService.registerUserFromDetails(userDetails)
+                }
+            }
+        } else {
+            def userId = params.userId?.toString()
+            user = User.findByUserId(userId)
+
+            if (!user) {
+                flash.message = message(code: 'default.not.found.message',
+                        args: [message(code: 'user.label', default: 'User'), userId]) as String
+                redirect(action: 'manageInstitutionAdmins')
+                return
+            }
         }
 
         def institutionId = params.long('institution')
@@ -112,10 +134,31 @@ class AdminController {
         }
 
         def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
-        def userRole = new UserRole(user: user, role: role, institution: institution, createdBy: currentUser)
-        userRole.save(flush: true, failOnError: true)
-        flash.message = "Successfully added Institution Admin role to ${user.displayName}".toString()
+        createUserRole(user, role, [institution: institution])
+
+        // User.displayName doesn't work here if the user was just imported from CAS.
+        flash.message = "Successfully added Institution Admin role to ${user.firstName} ${user.lastName}".toString()
         redirect(action: 'manageInstitutionAdmins')
+    }
+
+    /**
+     * Creates a user role object
+     * @param user the user to add to the role
+     * @param role the role to grant to the user.
+     * @param props the properties for the role (i.e. institution, project, both or null).
+     * @return
+     */
+    private def createUserRole(User user, Role role, def props) {
+        if (!user || !role) return null
+
+        def userRole = new UserRole(user: user, role: role, createdBy: userService.getCurrentUser())
+        if (props?.institution) {
+            userRole.institution = props.institution
+        } else if (props?.project) {
+            userRole.project = props.project
+        }
+
+        userRole.save(flush: true, failOnError: true)
     }
 
     /**
@@ -211,7 +254,7 @@ class AdminController {
                 redirect(action: 'manageUserRoles')
                 return
             }
-            userRole = new UserRole(user: user, role: role, institution: institution, createdBy: currentUser)
+            userRole = createUserRole(user, role, [institution: institution])
         } else {
             def roleCheck = UserRole.findAllByRoleAndProject(role, project)
             if (roleCheck) {
@@ -221,11 +264,10 @@ class AdminController {
                 redirect(action: 'manageUserRoles')
                 return
             }
-            userRole = new UserRole(user: user, role: role, project: project, createdBy: currentUser)
+            userRole = createUserRole(user, role, [project: project])
         }
 
         if (userRole) {
-            userRole.save(flush: true, failOnError: true)
             log.debug("Saved User Role: ${userRole}")
             flash.message = "Successfully added User role to ${user.displayName}".toString()
         }

@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
+import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
@@ -29,6 +30,7 @@ class UserService {
     def messageSource
     def freemarkerService
     def fullTextIndexService
+    UserDetailsClient userDetailsClient
 
     /** Recorded as the user id when changes are made automatically */
     public static final String SYSTEM_USER = "system"
@@ -56,6 +58,62 @@ class UserService {
                 user.save(flush: true)
             }
         }
+    }
+
+    /**
+     * Registers a new user within DigiVol for the user provided. All fields must exist and must not already exist in the
+     * user table.
+     * @param userDetails the details of the user.
+     * @return the new user.
+     */
+    def registerUserFromDetails(def userDetails) {
+        if (isSiteAdmin()) {
+            if (userDetails && userDetails.userId && userDetails.email && userDetails.firstName && userDetails.lastName) {
+                if (User.findByUserId(userDetails.userId as String) == null) {
+                    log.debug("Registering new user: ${userDetails.firstName} ${userDetails.lastName} (UserId=${userDetails.userId})")
+                    User user = new User()
+                    user.userId = userDetails.userId
+                    user.email = userDetails.email
+                    user.created = new Date()
+                    user.firstName = userDetails.firstName
+                    user.lastName = userDetails.lastName
+                    user.save(flush: true)
+                }
+            }
+        }
+    }
+
+    def findAuthUserByEmail(String email) {
+        if (Strings.isNullOrEmpty(email)) {
+            return null
+        }
+        log.debug("Calling CAS Auth Service, looking for user: ${email}")
+        def user = getAuthUserForUserId(email, true)
+        log.debug("user: ${user}")
+        if (user) {
+            log.debug("Found! ${user}")
+            return [userId: user.userId, firstName: user.firstName, lastName: user.lastName, email: user.userName]
+        } else {
+            return null
+        }
+    }
+
+    UserDetails getAuthUserForUserId(String userId, boolean includeProps = true) {
+        if (!userId) return null // this would have failed anyway
+        def call = userDetailsClient.getUserDetails(userId, includeProps)
+        try {
+            def response = call.execute()
+            log.debug("Response: ${response}")
+
+            if (response.successful) {
+                return response.body()
+            } else {
+                log.warn("Failed to retrieve user details for userId: $userId, includeProps: $includeProps. Error was: ${response.message()}")
+            }
+        } catch (Exception ex) {
+            log.error("Exception caught trying get find user details for $userId.", ex)
+        }
+        return null
     }
 
     /**
