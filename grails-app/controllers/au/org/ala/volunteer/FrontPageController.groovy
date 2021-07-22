@@ -10,7 +10,7 @@ class FrontPageController {
     def userService
     def fileUploadService
     def settingsService
-    def frontPageService
+    def projectService
 
     def index() {
         redirect(action: "edit", params: params)
@@ -48,8 +48,8 @@ class FrontPageController {
 
             // If Random Project of the Day is selected, and it hasn't been updated today, then update.
             if (frontPage.randomProjectOfTheDay &&
-                    frontPageService.isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated)) {
-                Project potd = frontPageService.selectRandomProject()
+                    projectService.isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated)) {
+                Project potd = projectService.selectRandomProject()
                 if (potd) {
                     frontPage.projectOfTheDay = potd
                     frontPage.randomProjectDateUpdated = new Date()
