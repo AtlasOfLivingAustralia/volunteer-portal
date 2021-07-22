@@ -53,6 +53,13 @@
                               value="${params?.statusFilter}"
                               noSelection="['':'- Filter by Status -']" />
                 </div>
+                <div class="col-md-3">
+                    <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Institution..."/>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-default bs3"
+                        href="${createLink(controller: 'institutionAdmin', action: 'index')}">Reset</a>
+                </div>
             </div>
             </cl:ifSiteAdmin>
             <div class="row">
@@ -160,15 +167,18 @@
         </div>
     </div>
 </div>
-<asset:script>
+<asset:script type="text/javascript">
     $(function($) {
         var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
+
         $('#quick-create-modal').on('shown.bs.modal', function (e) {
             loadQuickCreateData();
-        })
+        });
+
         $('#quick-create-button').click(function (e) {
             $('#quick-create-form').submit();
         });
+
         function loadQuickCreateData() {
             removeOptions(document.getElementById("cid"));
             $('#quick-create-button').button('loading');
@@ -183,8 +193,8 @@
                 $('#quick-create-button').button('reset');
             });
         };
-        function removeOptions(selectbox)
-        {
+
+        function removeOptions(selectbox) {
             var i;
             for(i=selectbox.options.length-1;i>=0;i--)
             {
@@ -203,13 +213,42 @@
         });
 
         $('.statusFilter').change(function() {
-            let filter = $(this).val();
-
-            var url = "${createLink(controller: 'institutionAdmin', action: 'index')}" +
-
-                "?statusFilter=" + filter;
-            window.location = url;
+            doSearch();
         });
+
+        $("#searchbox").keydown(function(e) {
+            if (e.keyCode == 13) {
+                doSearch();
+            }
+        });
+
+        function doSearch() {
+            console.log(window.location.search);
+            const params = new URLSearchParams(window.location.search);
+            let statusFilter = params.get('statusFilter');
+            let q = params.get('q');
+
+            statusFilter = $('.statusFilter').val();
+            q = encodeURIComponent($('#searchbox').val());
+            console.log(q);
+
+            let hasParams = false;
+            let url = "${createLink(controller: 'institutionAdmin', action: 'index')}?";
+
+            if (statusFilter) {
+                url += "statusFilter=" + statusFilter;
+                if (!hasParams) hasParams = true;
+            }
+            if (q) {
+                if (hasParams) {
+                    url += "&";
+                }
+                url += "q=" + q;
+            }
+
+            console.log(url);
+            window.location = url;
+        }
     });
 </asset:script>
 </body>

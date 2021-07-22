@@ -36,12 +36,17 @@ class InstitutionAdminController {
         } else {
             if (!params.sort) params.sort = 'name'
             if (!params.order) params.order = 'asc'
+
+            def searchQ = "%";
+            if (params.q) {
+                searchQ += "${params.q as String}%"
+            }
             if (params.statusFilter && !Strings.isNullOrEmpty(params.statusFilter as String)) {
-                respond Institution.findAllByIsInactiveAndIsApproved((params.statusFilter == 'inactive'), true, params),
-                        model: [institutionInstanceCount: Institution.countByIsInactiveAndIsApproved((params.statusFilter == 'inactive'), true)]
+                respond Institution.findAllByIsInactiveAndIsApprovedAndNameIlike((params.statusFilter == 'inactive'), true, searchQ, params),
+                        model: [institutionInstanceCount: Institution.countByIsInactiveAndIsApprovedAndNameIlike((params.statusFilter == 'inactive'), true, searchQ)]
             } else {
-                respond Institution.findAllByIsApproved(true, params),
-                        model: [institutionInstanceCount: Institution.countByIsApproved(true)]
+                respond Institution.findAllByIsApprovedAndNameIlike(true, searchQ, params),
+                        model: [institutionInstanceCount: Institution.countByIsApprovedAndNameIlike(true, searchQ)]
             }
         }
     }

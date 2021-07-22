@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="create" class="save btn btn-primary"
-                                                value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                                                value="${message(code: 'institution.apply.submit.label', default: 'Submit')}"/>
                             </div>
                         </div>
                     </g:form>
