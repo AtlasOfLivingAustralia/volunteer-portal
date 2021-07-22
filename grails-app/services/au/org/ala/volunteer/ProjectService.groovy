@@ -348,16 +348,15 @@ class ProjectService {
     }
 
     private static ProjectType guessProjectType(Project project) {
-
         def viewName = project.template.viewName.toLowerCase()
 
         if (viewName.contains("journal") || viewName.contains("fieldnotebook") || viewName.contains("observationDiary")) {
-            return ProjectType.findByName("fieldnotes")
+            return ProjectType.findByName(ProjectType.PROJECT_TYPE_FIELDNOTES)
         } else if (viewName.contains('camera trap') || viewName.contains('wild count') || viewName.contains('wildcount')) {
-            return ProjectType.findByName("cameratraps")
+            return ProjectType.findByName(ProjectType.PROJECT_TYPE_CAMERATRAP)
         }
 
-        return ProjectType.findByName("specimens")
+        return ProjectType.findByName(ProjectType.PROJECT_TYPE_SPECIMEN)
     }
 
     private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number transcriberCount, Number validatorCount) {
