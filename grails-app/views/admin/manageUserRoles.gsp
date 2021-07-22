@@ -58,7 +58,7 @@
 
                         <label for="byProject">
                             <input name="opt" id="byProject" type="radio" value="byproj"/>
-                            Project</label>
+                            Expedition</label>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -71,7 +71,7 @@
                         <g:select name="project" from="${projectList}" id="byproj"
                                   optionKey="id" class="form-control"
                                   optionValue="featuredLabel" data-live-search="true"
-                                  noSelection="${['': '- Select a Project -']}" />
+                                  noSelection="${['': '- Select an Expedition -']}" />
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -102,7 +102,7 @@
                               value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
                 </div>
                 <div class="col-md-3">
-                    <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Project..."/>
+                    <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Expedition..."/>
                 </div>
                 <div class="col-md-3">
                     <input type="text" id="user-searchbox" class="form-control" value="${displayUserFilter}" placeholder="Filter by User..." autocomplete="off"/>
@@ -128,7 +128,7 @@
                             <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.name.label" default="Name" /></span></th>
                             <th><span><g:message code="admin.user.role.role.label" default="Role" /></span></th>
                             <th><span><g:message code="admin.user.role.level.label" default="Role Level" /></span></th>
-                            <th style="width: 45%;"><span><g:message code="admin.user.role.level.name.label" default="Institution/Project" /></span></th>
+                            <th style="width: 45%;"><span><g:message code="admin.user.role.level.name.label" default="Institution/Expedition" /></span></th>
                             <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.createdby.label" default="Added By" /></span></th>
                             <th style="width: 12%; text-wrap: none !important;"><span><g:message code="admin.user.role.dateadded.label" default="Date Added" /></span></th>
                             <th>Action</th>
@@ -138,10 +138,10 @@
                         <g:each in="${userRoleList}" var="userRole" status="i">
                             <tr id="userRole_${userRole.id}">
 
-                                <td style="white-space: nowrap;">${userRole.user?.displayName} <span style="color: #bbbbbb;">(${userRole.user?.id})</span></td>
-                                <td><g:if test="${userRole.role.name == BVPRole.FORUM_MODERATOR}">Forum Moderator</g:if><g:else>Validator</g:else></td>
-                                <td><g:if test="${userRole.project}">Project</g:if><g:else>Institution</g:else></td>
-                                <td>
+                                <td class="role-user" style="white-space: nowrap;">${userRole.user?.displayName} <span style="color: #bbbbbb;">(${userRole.user?.id})</span></td>
+                                <td class="role-name"><g:if test="${userRole.role.name == BVPRole.FORUM_MODERATOR}">Forum Moderator</g:if><g:else>Validator</g:else></td>
+                                <td class="role-level"><g:if test="${userRole.project}">Expedition</g:if><g:else>Institution</g:else></td>
+                                <td class="role-level-name">
                                     <g:if test="${userRole.project}">
                                         <g:link controller="project" action="editGeneralSettings" id="${userRole.project.id}">${userRole.project.name}</g:link>
                                     </g:if>
@@ -152,7 +152,8 @@
                                 <td style="white-space: nowrap;">${userRole.createdBy?.displayName}</td>
                                 <td style="white-space: nowrap;"><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td>
-                                    <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
+                                    <button class="btn btn-danger deleteRole"
+                                            userRoleId="${userRole.id}">
                                         <i class="fa fa-times" title="Delete Role from User"></i>
                                     </button>
                                 </td>
@@ -172,7 +173,7 @@
 </body>
 
 <asset:javascript src="label-autocomplete" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 $(function($) {
     var url = "${createLink(controller: 'user', action: 'listUsersForJson')}";
 
@@ -190,34 +191,55 @@ $(function($) {
 
     $(".deleteRole").click(function (e) {
         e.preventDefault();
-        var id = $(this).attr("userRoleId");
+        let id = $(this).attr("userRoleId");
+        const roleLevel = $(this).closest('tr').find('.role-level').html().trim();
+        let roleUser = $(this).closest('tr').find('.role-user').clone();
+        roleUser = $.trim($("span", roleUser).remove().end().html());
+        const roleName = $(this).closest('tr').find('.role-name').html().trim();
+        let roleLevelName = $(this).closest('tr').find('.role-level-name').find('a').html();
 
-        $.ajax({
-            url: "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id,
-            success: function (data) {
-                if (data.status == "success") {
-                    $("#userRole_" + id).remove();
-                    var alert = $('#maintain-message');
-                    $('<div class="alert alert-info" style="margin-top:10px">User Role successfully deleted.</div>').insertBefore(alert)
-                        .delay(4000).fadeOut();
-                } else if (data.status == "error") {
-                    var alert = $('#maintain-message');
-                    $('<div class="alert alert-danger" style="margin-top:10px">' + data.message + '</div>').insertBefore(alert)
-                        .delay(4000).fadeOut();
+
+        if (id) {
+            let confirmMsg = 'Are you sure you wish to delete the '+ roleLevel +' '+ roleName +' role for ' +
+                roleUser + (roleLevelName ? ' and the '+ roleLevel + ' "' + roleLevelName + '"?' : '');
+
+            bootbox.confirm(confirmMsg, function(result) {
+                if (result) {
+                    $.ajax({
+                        url: "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id,
+                        success: function (data) {
+                            if (data.status === "success") {
+                                $("#userRole_" + id).remove();
+                                var alert = $('#maintain-message');
+                                $('<div class="alert alert-info" style="margin-top:10px">User Role successfully deleted.</div>').insertBefore(alert)
+                                    .delay(4000).fadeOut();
+                            } else if (data.status === "error") {
+                                var alert = $('#maintain-message');
+                                $('<div class="alert alert-danger" style="margin-top:10px">' + data.message + '</div>').insertBefore(alert)
+                                    .delay(4000).fadeOut();
+                            }
+                        }
+                    });
                 }
-            }
-        });
+            });
+        } else {
+            var alert = $('#maintain-message');
+            $('<div class="alert alert-danger" style="margin-top:10px">Unable to delete User Role due to missing ' +
+'                       information. Please contact DigiVol Admins.</div>').insertBefore(alert)
+                .delay(4000).fadeOut();
+        }
+
     });
 
     $("#searchbox").keydown(function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             doSearch();
         }
     });
 
     $("#user-searchbox").keydown(function(e) {
-        if (e.keyCode == 13) {
-            doUserSearch();
+        if (e.keyCode === 13) {
+            doSearch();
         }
     });
 

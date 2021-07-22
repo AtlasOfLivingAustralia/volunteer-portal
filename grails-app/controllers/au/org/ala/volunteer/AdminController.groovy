@@ -93,10 +93,12 @@ class AdminController {
         checkAdminAccess(false)
         log.debug("Params: ${params}")
         User user = null
+        def addType = "added"
 
         // If params.userId is empty and params.userSearch isn't, search CAS.
         if (Strings.isNullOrEmpty(params.userId as String) && !Strings.isNullOrEmpty(params.userSearch as String)) {
             log.debug("Locating user in CAS Auth: ${params.userSearch}")
+            addType = "imported"
             def userDetails = userService.findAuthUserByEmail(params.userSearch as String)
             log.debug("User Details: ${userDetails}")
             if (!userDetails) {
@@ -134,10 +136,22 @@ class AdminController {
         }
 
         def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
+
+        // Check for pre-existing role
+        def roleCheck = UserRole.findAllByUserAndRoleAndInstitution(user, role, institution)
+        if (roleCheck.size() > 0) {
+            flash.message = message(code: 'admin.user.role.not.created',
+                     args: [message(code: 'user.role.label', default: 'User Role'),
+                           " an existing ${role.name} role for ${user.firstName} ${user.lastName} and ${institution.name}"]) as String
+            redirect(action: 'manageInstitutionAdmins')
+            return
+        }
+
         createUserRole(user, role, [institution: institution])
 
         // User.displayName doesn't work here if the user was just imported from CAS.
-        flash.message = "Successfully added Institution Admin role to ${user.firstName} ${user.lastName}".toString()
+        flash.message = """Successfully ${addType} Institution Admin role to 
+            ${user.firstName} ${user.lastName} for ${institution.name}.""".stripIndent().toString()
         redirect(action: 'manageInstitutionAdmins')
     }
 
@@ -163,6 +177,7 @@ class AdminController {
 
     /**
      * Deletes the selected Institution Admin {@link UserRole}.
+     * Called via AJAX (Returns JSON).
      */
     def deleteUserRole() {
         checkAdminAccess(true)
@@ -172,24 +187,25 @@ class AdminController {
 
         if (!userRole) {
             render ([status: "error",
-                     message: message(code: 'default.not.found.message', args: [message(code: 'user.role.label', default: 'User Role'), userRoleId])] as JSON)
+                     message: message(code: 'default.not.found.message',
+                             args: [message(code: 'user.role.label', default: 'User Role'), userRoleId])] as JSON)
             return
         }
 
         // Because this action is run by both Site admins (for IA's) and IA's (for user roles), check that that user
         // has permission to delete the selected role
         // Also check, in the case of IA's, that they are not deleting another institution's role.
+        def institution = (userRole.institution ? userRole.institution : userRole.project.institution)
+
         if (userRole.role.name == BVPRole.INSTITUTION_ADMIN && !userService.isAdmin()) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of Institution Admin role " +
                     "${userRole} without permission: ${userRole}")
-            flash.message = "You do not have permission to delete role ${userRole.role.name} (held by ${userRole.user.displayName})."
-            redirect(action: 'manageInstitutionAdmins')
+            render status: 403
             return
         } else if (!userService.isAdmin() && !userService.isInstitutionAdmin(userRole.getInstitution())) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of user role ${userRole} " +
                     "without permission: ${userRole}")
-            flash.message = "You do not have permission to delete role ${userRole.role.name} (held by ${userRole.user.displayName})."
-            redirect(action: 'manageUserRoles')
+            render status: 403
             return
         }
 
@@ -219,6 +235,15 @@ class AdminController {
         def projectId = params.long('project')
         def project = Project.get(projectId)
 
+        if (!institution && !project) {
+            log.error("Add user role: No project or institution found: project ID: ${params.projectId}, " +
+                    "institution ID: ${params.institutionId}")
+            flash.message = message(code: 'admin.user.role.not.created',
+                    args: [message(code: 'user.role.label', default: 'User Role'), 'a missing Institution or Project']) as String
+            redirect(action: 'manageUserRoles')
+            return
+        }
+
         def level
         if (levelOption == "byinst") {
             level = 1
@@ -228,7 +253,7 @@ class AdminController {
             log.error("Add user role: No project or institution found: project ID: ${params.projectId}, " +
                     "institution ID: ${params.institutionId}")
             flash.message = message(code: 'admin.user.role.not.created',
-                     args: [message(code: 'user.role.label', default: 'User Role'), 'missing Institution or Project ID']) as String
+                     args: [message(code: 'user.role.label', default: 'User Role'), 'a missing Institution or Project']) as String
             redirect(action: 'manageUserRoles')
             return
         }
@@ -237,7 +262,7 @@ class AdminController {
         if (!role) {
             log.error("Add user role: No role found: ${params.userRole_role}")
             flash.message = message(code: 'admin.user.role.not.created',
-                     args: [message(code: 'user.role.label', default: 'User Role'), 'missing role type']) as String
+                     args: [message(code: 'user.role.label', default: 'User Role'), 'a missing role type']) as String
             redirect(action: 'manageUserRoles')
             return
         }
@@ -246,21 +271,37 @@ class AdminController {
 
         def userRole
         if (level == 1) {
-            def roleCheck = UserRole.findAllByRoleAndInstitution(role, institution)
-            if (roleCheck) {
+            def roleCheck = UserRole.findAllByRoleAndInstitutionAndUser(role, institution, user)
+            if (roleCheck.size() > 0) {
+                log.debug("Existing roles: ${roleCheck}")
                 log.error("Role already exists: ${params.userRole_role} for institution: ${institution}")
                 flash.message = message(code: 'admin.user.role.not.created',
-                        args: [message(code: 'user.role.label', default: 'User Role'), ' role for user already exists']) as String
+                        args: [message(code: 'user.role.label', default: 'User Role'),
+                               " an existing ${role.name} role for ${user.displayName} and ${institution.name}"]) as String
                 redirect(action: 'manageUserRoles')
                 return
             }
             userRole = createUserRole(user, role, [institution: institution])
         } else {
-            def roleCheck = UserRole.findAllByRoleAndProject(role, project)
-            if (roleCheck) {
+            def roleCheck = UserRole.findAllByRoleAndProjectAndUser(role, project, user)
+            if (roleCheck.size() > 0) {
+                log.debug("Existing roles: ${roleCheck}")
                 log.error("Role already exists: ${params.userRole_role} for project: ${project}")
                 flash.message = message(code: 'admin.user.role.not.created',
-                        args: [message(code: 'user.role.label', default: 'User Role'), ' role for user already exists.']) as String
+                        args: [message(code: 'user.role.label', default: 'User Role'),
+                               " an existing ${role.name} role for ${user.displayName} and ${institution.name}"]) as String
+                redirect(action: 'manageUserRoles')
+                return
+            }
+
+            // Check if they have an institution role already.
+            roleCheck = UserRole.findByUserAndRoleAndInstitution(user, role, project.institution)
+            if (roleCheck) {
+                log.debug("Existing roles: ${roleCheck}")
+                log.error("Role already exists: ${params.userRole_role} for project: ${project} at institution-level.")
+                flash.message = message(code: 'admin.user.role.not.created',
+                        args: [message(code: 'user.role.label', default: 'User Role'),
+                               " a ${role.name} role for ${user.displayName} already existing for that project's institution"]) as String
                 redirect(action: 'manageUserRoles')
                 return
             }
@@ -269,7 +310,7 @@ class AdminController {
 
         if (userRole) {
             log.debug("Saved User Role: ${userRole}")
-            flash.message = "Successfully added User role to ${user.displayName}".toString()
+            flash.message = "Successfully added ${role.name} role to ${user.displayName}".toString()
         }
 
         def reloadParams = [:]
