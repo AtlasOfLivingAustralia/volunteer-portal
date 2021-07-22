@@ -1105,15 +1105,19 @@ function notify() {
             }
 
             def mb = new MarkupBuilder(out)
-            mb.p {
-                transcribers.eachWithIndex { transcriberUserId, idx ->
-                    User user = User.findByUserId(transcriberUserId as String)
-                    mkp.yieldUnescaped(g.link(controller: 'user', action: 'show', id: user?.id) {
-                        cl.userDetails(id: transcriberUserId, displayName: true)
-                    })
-
-                    if (idx < transcribers.size()) mkp.yieldUnescaped('<br />')
+            def transcribeUsers = transcribers ? User.findAllByUserIdInList(transcribers.toList()) : []
+            if (transcribeUsers.size() > 1) {
+                mb.p {
+                    transcribeUsers.eachWithIndex { user, idx ->
+                        mkp.yieldUnescaped(g.link(controller: 'user', action: 'show', id: user.id) {
+                            cl.userDetails(id: user.userId, displayName: true)
+                        })
+                        if (idx + 1 < transcribeUsers.size()) mkp.yieldUnescaped('<br />')
+                    }
                 }
+            } else if (transcribeUsers.size() > 0) {
+                def user = transcribeUsers.first()
+                out << "<a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a>"
             }
         }
     }
