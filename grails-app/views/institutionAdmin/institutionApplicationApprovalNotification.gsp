@@ -37,7 +37,7 @@
     </table>
     <p>
         You have been granted the Institution Admin role for this Institution. Click
-        <a href="${createLink(controller: "institutionAdmin", action: "edit", id: institutionId)}">here</a> to access
+        <a href="${createLink(controller: "institutionAdmin", action: "edit", id: institutionId, absolute: true)}">here</a> to access
         the Institution administration page.
     </p>
 </body>

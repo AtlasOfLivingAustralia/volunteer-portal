@@ -25,7 +25,8 @@ class InstitutionService {
         log.debug("Sending institution notification")
         def to = recipient
         if (!recipient) to = grailsApplication.config.notifications.default.address as String
-        emailService.sendMail(to, title, message)
+        DetailedEmailMessage email = new DetailedEmailMessage(emailAddress: to, subject: title, message: message)
+        emailService.sendMail(email)
     }
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {

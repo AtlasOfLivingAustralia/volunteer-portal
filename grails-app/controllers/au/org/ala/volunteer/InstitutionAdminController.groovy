@@ -116,10 +116,33 @@ class InstitutionAdminController {
             // Email notification to admins notifying of application.
             log.info("Sending email notification of new application: ${institution.name}")
             sendApplicationNotification(institution)
+
+            // Email user submitting application for record keeping
+            log.info("Sending applicant of new application: ${institution.createdBy}")
+            sendApplicantNotification(institution.createdBy, institution)
+
             redirect(action: 'applyConfirm', id: institution.id)
         } else {
             redirect(action: 'edit', id: institution.id)
         }
+    }
+
+    private def sendApplicantNotification(User recipient, Institution institution) {
+        if (!recipient || !institution) {
+            log.error("Cannot send institution applicant notification as there's no recipient or no institution.")
+            return
+        }
+
+        // send!
+        def model = [institutionName: institution.name,
+                     contactName: institution.contactName,
+                     contactEmail: institution.contactEmail,
+                     contactPhone: institution.contactPhone,
+                     returnEmail: grailsApplication.config.grails.contact.emailAddress]
+        def title = institutionService.NOTIFICATION_APPLICATION + ": ${institution.name}"
+        def message = groovyPageRenderer.render(view: '/institutionAdmin/institutionApplicantNotification',
+                model: model)
+        institutionService.emailNotification(message, title)
     }
 
     private def sendApplicationNotification(Institution institution) {
