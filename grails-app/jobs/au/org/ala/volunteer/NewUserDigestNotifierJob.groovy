@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.util.Environment
 import grails.util.Holders
 import groovy.sql.Sql
@@ -25,16 +26,19 @@ class NewUserDigestNotifierJob {
     }
 
     def execute() {
+        // TODO Replace this with EmailService code (code duplication)
         if (grailsApplication.config.getProperty('digest.enabled', Boolean, false)) {
             /* Configure properties file like this: digest.address=email1,email2 */
             List recipient = grailsApplication.config.getProperty('digest.address', List, [])
             int threshold = 1 // day
             String fromAddress = grailsApplication.config.getProperty('grails.mail.default.from',
                     "DigiVol <noreply@volunteer.ala.org.au>")
+
             if (!recipient) {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but no email address " +
                         "(digest.address) was specified")
             }
+
             if (threshold <= 0) {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but threshold " +
                         "(digest.threshold) has been configured with an invalid value")
@@ -58,13 +62,19 @@ class NewUserDigestNotifierJob {
                     }
                 }
 
+                def subj = "DigiVol: New Transcribers"
+                def subjPrefix = grailsApplication.config.getProperty('grails.mail.subjectPrefix', String, '') as String
+                log.debug("subjPrefix: ${subjPrefix}")
+                log.info("Emailing ${Environment.current} user digest.")
+                def subjectToSend = (!Strings.isNullOrEmpty(subjPrefix) || !Environment.PRODUCTION) ? "[${subjPrefix}] ${subj}" : subj
+
                 if (userList) {
                     log.info("Found ${userList.size()} user ids for new user digest")
                     log.debug("Emailling $recipient with new user digest.")
                     mailService.sendMail {
                         from fromAddress
                         to recipient
-                        subject "DigiVol: New Transcribers"
+                        subject subjectToSend
                         body(view:"/mail/newTranscribers",
                                 model: [newTranscribers: userList, threshold: threshold])
                     }
