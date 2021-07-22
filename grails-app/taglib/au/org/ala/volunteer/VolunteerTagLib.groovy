@@ -1139,7 +1139,7 @@ function notify() {
             if (!template.isHidden || userService.isSiteAdmin()) {
                 output += "<option value='${template.id}' ${(attrs.currentTemplateId == template.id ? 'selected' : '')}>${template}${(attrs.currentTemplateId == template.id ? ' (Current)' : '')}</option>"
             } else if (template.isHidden && attrs.currentTemplateId == template.id) {
-                output += "<option value='${template.id}' selected>${template}</option>"
+                output += "<option value='${template.id}' selected>${template} (Current)</option>"
             }
         }
 

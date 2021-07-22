@@ -1,6 +1,6 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title><cl:pageTitle title="Edit Project ${projectInstance?.name}"/></title>
+    <title><cl:pageTitle title="Edit Expedition ${projectInstance?.name}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
@@ -9,11 +9,11 @@
 <body class="admin">
 <div class="container">
 
-    <cl:headerContent hideTitle="${true}" title="${message(code: 'default.project.label', default: 'Edit Project')}" selectedNavItem="bvpadmin">
+    <cl:headerContent hideTitle="${true}" title="${message(code: 'default.project.label', default: 'Edit Expedition')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
-                    [link: createLink(controller: 'project', action: 'manage'), label: message(code: 'default.project.manage', default: 'Manage projects')],
+                    [link: createLink(controller: 'project', action: 'manage'), label: message(code: 'default.project.manage', default: 'Manage expeditions')],
                     [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel ?: ""]
             ]
         %>

@@ -466,7 +466,7 @@ class ProjectController {
     def getGeneralProjectLists(Project project) {
         final insts = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
         final labelCats = Label.withCriteria { projections { distinct 'category' } }
-        final templates = templateService.getTemplatesForInstitution(project.institution, userService.isSiteAdmin())
+        final templates = templateService.getTemplatesForProject(project, userService.isSiteAdmin())
 
         final sortedLabels = project.labels.sort { a,b ->
             def x = a.category?.compareTo(b.category)

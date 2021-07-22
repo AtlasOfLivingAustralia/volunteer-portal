@@ -115,15 +115,45 @@ class TemplateService {
     }
 
     /**
+     * Returns a list of templates available for an project's institution. Includes templates previously used by the institution
+     * and any global templates.
+     * @param project the project in question
+     * @param includeHidden when set to true, includes hidden templates, when set to false, hidden templates are ignored.
+     * @param concise when set to true, reduces the amount of data returned (i.e. for AJAX purposes). A false value will
+     * return full template domain objects.
+     * @return the list of templates.
+     */
+    def getTemplatesForProject(Project project, boolean includeHidden = false, boolean concise = false) {
+        return getTemplatesForInstitution(project.institution, project.template.id, includeHidden, concise)
+    }
+
+    /**
      * Returns a list of templates available for an institution. Includes templates previously used by the institution
      * and any global templates.
      * @param institution the institution
-     * @param includeHidden determines if the query excludes hidden templates.
+     * @param includeHidden when set to true, includes hidden templates, when set to false, hidden templates are ignored.
+     * @param concise when set to true, reduces the amount of data returned (i.e. for AJAX purposes). A false value will
+     * return full template domain objects.
      * @return a list of available templates
      */
     def getTemplatesForInstitution(Institution institution, boolean includeHidden = false, boolean concise = false) {
+        return getTemplatesForInstitution(institution, 0L, includeHidden, concise)
+    }
+
+    /**
+     * Returns a list of templates available for an institution. Includes templates previously used by the institution
+     * and any global templates.
+     * @param institution the institution
+     * @param selectedTemplate the ID of the selected template (in case it's hidden and includeHidden is false)
+     * @param includeHidden when set to true, includes hidden templates, when set to false, hidden templates are ignored.
+     * @param concise when set to true, reduces the amount of data returned (i.e. for AJAX purposes). A false value will
+     * return full template domain objects.
+     * @return
+     */
+    def getTemplatesForInstitution(Institution institution, long selectedTemplate, boolean includeHidden = false, boolean concise = false) {
         def results = []
-        def includeHiddenClause = (!includeHidden ? " and template.is_hidden = false " : "")
+        def includeHiddenClause = (!includeHidden ? " and (template.is_hidden = false " +
+                "OR template.id = ${selectedTemplate > 0L ? selectedTemplate : 0L}) " : "")
 
         def query = """\
             select distinct template.id, 
