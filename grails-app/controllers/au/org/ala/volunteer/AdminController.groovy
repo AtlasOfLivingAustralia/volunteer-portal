@@ -221,7 +221,13 @@ class AdminController {
         if (params.institution)  reloadParams.institution = params.institution
 
         flash.message = "User Role successfully deleted."
-        redirect(action: 'manageUserRoles', params: reloadParams)
+
+        if (userRole.role.name == BVPRole.INSTITUTION_ADMIN) {
+            redirect(action: 'manageInstitutionAdmins', params: reloadParams)
+        } else {
+            redirect(action: 'manageUserRoles', params: reloadParams)
+        }
+
     }
 
     def addUserRole() {

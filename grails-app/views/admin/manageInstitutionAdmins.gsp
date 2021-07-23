@@ -78,13 +78,13 @@
                         <g:each in="${institutionAdminRoles}" var="userRole" status="i">
                             <tr id="userRole_${userRole.id}">
 
-                                <td width="20%">${userRole.user?.displayName}</td>
+                                <td class="role-user" width="20%">${userRole.user?.displayName}</td>
                                 <td width="40%">${userRole.institution?.name}</td>
                                 <td width="20%">${userRole.createdBy?.displayName}</td>
                                 <td width="20%"><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td witdth="10%">
                                     <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
-                                        <i class="icon-remove icon-white"></i>&nbsp;Delete
+                                        <i class="fa fa-times"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -99,7 +99,7 @@
 </body>
 
 <asset:javascript src="label-autocomplete" asset-defer=""/>
-<asset:script>
+<asset:script type="text/javascript">
 $(function($) {
     var url = "${createLink(controller: 'user', action: 'listUsersForJson')}";
 
@@ -111,22 +111,23 @@ $(function($) {
     $(".deleteRole").click(function (e) {
         e.preventDefault();
         var id = $(this).attr("userRoleId");
+        const roleUser = $(this).closest('tr').find('.role-user').html().trim();
 
-        $.ajax({
-            url: "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id,
-            success: function (data) {
-                if (data.status == "success") {
-                    $("#userRole_" + id).remove();
-                    var alert = $('#maintain-message');
-                    $('<div class="alert alert-info" style="margin-top:10px">User Role successfully deleted.</div>').insertBefore(alert)
-                        .delay(4000).fadeOut();
-                } else if (data.status == "error") {
-                    var alert = $('#maintain-message');
-                    $('<div class="alert alert-danger" style="margin-top:10px">' + data.message + '</div>').insertBefore(alert)
-                        .delay(4000).fadeOut();
+        if (id) {
+            let confirmMsg = 'Are you sure you wish to delete the Institution Admin role for ' + roleUser + '?';
+
+            bootbox.confirm(confirmMsg, function(result) {
+                if (result) {
+                    const url = "${createLink(controller: 'admin', action: 'deleteUserRole', params: params).encodeAsJavaScript()}" + "?userRoleId=" + id;
+                    window.location = url;
                 }
-            }
-        });
+            });
+        } else {
+            var alert = $('#maintain-message');
+            $('<div class="alert alert-danger" style="margin-top:10px">Unable to delete User Role due to missing ' +
+'                       information. Please contact DigiVol Admins.</div>').insertBefore(alert)
+                .delay(4000).fadeOut();
+        }
     });
 
 
