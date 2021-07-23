@@ -179,7 +179,7 @@ class TemplateService {
             left outer join institution on (institution.id = project.institution_id)
             where (institution.id = :institutionId
                 or template.is_global = true
-                or institution.id is null)
+                or project.template_id is null)
                 ${includeHiddenClause}
             group by template.id, template.name, template.is_global, template.is_hidden
             order by category ASC, template.name ASC """.stripIndent()

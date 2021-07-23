@@ -152,16 +152,17 @@
 
         $(".btnDeleteTemplate").click(function(e) {
             e.preventDefault();
+            console.log("deleting template");
             var templateId = $(this).parents("[templateId]").attr("templateId");
             var templateName = $(this).parents("[templateName]").attr("templateName");
             var linkCount = $(this).data('link-count');
             if (linkCount === null || linkCount === undefined) linkCount = 0;
-            if (templateId && templateName) {
+            if (templateId) {
                 let linkMsg = "";
                 if (linkCount > 0) linkMsg = "<br />There are <b>" + linkCount + "</b> expeditions linked to this template.";
                 let confirmMsg = "Are you sure you wish to delete template " + templateName + "? " + linkMsg
                 bootbox.confirm(confirmMsg, function(result) {
-                    if (result) window.location = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                    if (result) window.location = "${createLink(controller: 'template', action: 'delete', params: params)}/" + templateId;
                 });
             }
         });

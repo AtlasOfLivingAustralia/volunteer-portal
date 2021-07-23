@@ -185,7 +185,7 @@
                 break;
             case 'c2': category = "Hidden Templates";
                 break;
-            case 'c4': category = "Unassigned Templates";
+            case 'c4': category = "Unassigned Templates (templates not assigned to an expedition)";
                 break;
             default: category = "Available Templates";
         }

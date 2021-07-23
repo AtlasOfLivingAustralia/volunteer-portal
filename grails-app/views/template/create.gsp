@@ -31,7 +31,7 @@
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
                             <label for="name" class="col-md-2 control-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                         </div>
 

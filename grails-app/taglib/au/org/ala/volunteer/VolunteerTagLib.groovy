@@ -1133,7 +1133,7 @@ function notify() {
         def output = ""
         log.debug("Template count: ${attrs.templateList?.size()}")
         attrs.templateList.each { Map row ->
-            Template template = row.template
+            Template template = row.template as Template
             if (category != row.category) {
                 category = row.category
                 if (output.length() > 0) output += "</optgroup>"
@@ -1163,7 +1163,7 @@ function notify() {
                 break
             case 'c2': category = "Hidden Templates"
                 break
-            case 'c4': category = "Unassigned Templates"
+            case 'c4': category = "Unassigned Templates (templates not assigned to an expedition)"
                 break
             default: category = "Available Templates"
 

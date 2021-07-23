@@ -180,7 +180,7 @@ class TemplateController {
                 templateInstance.delete(flush: true)
 
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-                redirect(action: "list")
+                redirect(action: "list", params: params)
             }
             catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
@@ -191,7 +191,7 @@ class TemplateController {
         }
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-            redirect(action: "list")
+            redirect(action: "list", params: params)
         }
     }
 
