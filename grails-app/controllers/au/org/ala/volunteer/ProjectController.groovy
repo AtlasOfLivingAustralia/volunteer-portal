@@ -18,7 +18,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST",
-                             archive: "POST",
+                             archive: "POST", toggleProjectInactivity: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero", "One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven',
@@ -439,6 +439,37 @@ class ProjectController {
         }
     }
 
+    def toggleProjectInactivity(Project project) {
+        if (!project) {
+            render status: 404
+            return
+        }
+
+        if (!projectService.isAdminForProject(project)) {
+            redirect(uri: "/")
+            return
+        }
+
+        if (!params.verifyId || params.verifyId as long != project.id) {
+            flash.message = "You do not have permission to view this page"
+            redirect(uri: request?.getHeader("referer") ?: "/")
+            return
+        }
+
+        // inactive == true, sets false, inactive == false, sets true
+        project.inactive = (!project.inactive)
+        if (!project.save(flush: true, failOnError: true)) {
+            flash.message = "The expedition status was not able to be updated."
+            redirect(uri: request?.getHeader("referer") ?: "/")
+        } else {
+            if (!project.inactive) {
+                generateActivationNotification(project)
+            }
+            flash.message = "The expedition status has been updated."
+            redirect(uri: request?.getHeader("referer") ?: createLink(controller: 'project', action: 'editGeneralSettings', id: project.id))
+        }
+    }
+
     def editGeneralSettings() {
         Project project = Project.get(params.long("id"))
 
@@ -736,8 +767,7 @@ class ProjectController {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
                 if (((oldInactiveFlag != newInactive) && (!newInactive))) {
                     log.info("Project was activated Sending project activation notification")
-                    def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: project.name])
-                    projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
+                    generateActivationNotification(project)
                 }
                 if (project.template.isHidden) {
                     flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
@@ -750,6 +780,11 @@ class ProjectController {
             }
         }
         return false
+    }
+
+    private def generateActivationNotification(Project project) {
+        def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: project.name])
+        projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
     }
 
     def updatePicklistSettings() {

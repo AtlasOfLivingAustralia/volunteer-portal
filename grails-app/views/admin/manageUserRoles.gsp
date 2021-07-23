@@ -294,7 +294,6 @@ $(function($) {
     });
 
     function doSearch() {
-        console.log(window.location.search);
         const params = new URLSearchParams(window.location.search);
         let institutionId = params.get('institution');
         let userId = params.get('userid');
