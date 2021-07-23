@@ -111,9 +111,11 @@
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
 
                                         <a class="btn btn-xs btn-default"
+                                            title="View institution home page"
                                            href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                                                 class="fa fa-home"></i></a>
                                         <a class="btn btn-xs btn-default"
+                                            title="Institution settings"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
                                         <cl:ifSiteAdmin>
