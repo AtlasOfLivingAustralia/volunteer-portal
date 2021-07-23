@@ -112,6 +112,12 @@ class InstitutionMessageService {
                 users.each { user ->
                     recipientList.add(user)
                 }
+
+                // Get users from user roles (may not have transcribed/validated).
+                //def userRoles = UserRole.findAllByProjectOrInstitution(it, it.institution)
+                //userRoles?.each {userRole ->
+                //    recipientList.add(userRole.user)
+                //}
             }
 
             // Remove duplicates

@@ -28,8 +28,8 @@
             <div class="panel-body">
                 <p>
                     Welcome to the DigiVol Institution messaging system. This system allows institutions to contact individual
-                    volunteers directly, via email, through DigiVol. Institutions can contact individuals, a group of individuals
-                    based on contribution to an expedition or multiple expeditions, or all people who have contributed to an institutions
+                    volunteers directly, via email, through DigiVol. Institutions can contact individuals, or a group of individuals
+                    based on contribution to an expedition or multiple expeditions, or all people who have contributed to an institution's
                     activities.
                 </p>
                 <p>
