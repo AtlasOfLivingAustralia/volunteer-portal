@@ -186,9 +186,9 @@ class AdminController {
         def userRole = UserRole.get(userRoleId)
 
         if (!userRole) {
-            render ([status: "error",
-                     message: message(code: 'default.not.found.message',
-                             args: [message(code: 'user.role.label', default: 'User Role'), userRoleId])] as JSON)
+            flash.message = message(code: 'default.not.found.message',
+                                args: [message(code: 'user.role.label', default: 'User Role'), userRoleId]) as String
+            redirect(action: 'manageUserRoles')
             return
         }
 
@@ -200,19 +200,28 @@ class AdminController {
         if (userRole.role.name == BVPRole.INSTITUTION_ADMIN && !userService.isAdmin()) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of Institution Admin role " +
                     "${userRole} without permission: ${userRole}")
-            render status: 403
+            flash.message = message(code: 'default.not.permitted.message', args: ["delete this role"]) as String
+                    //"You do not have permission to delete that role."
+            redirect(action: 'manageUserRoles')
             return
-        } else if (!userService.isAdmin() && !userService.isInstitutionAdmin(userRole.getInstitution())) {
+        } else if (!userService.isAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of user role ${userRole} " +
                     "without permission: ${userRole}")
-            render status: 403
+            flash.message = message(code: 'default.not.permitted.message', args: ["delete this role"]) as String
+            //"You do not have permission to delete that role."
+            redirect(action: 'manageUserRoles')
             return
         }
 
         // TODO Do we log this somewhere for auditing?
         userRole.delete(flush: true)
         log.info("Institution Admin role held by ${userRole.user} was deleted by ${currentUser}")
-        render ([status: "success"] as JSON)
+
+        def reloadParams = [:]
+        if (params.institution)  reloadParams.institution = params.institution
+
+        flash.message = "User Role successfully deleted."
+        redirect(action: 'manageUserRoles', params: reloadParams)
     }
 
     def addUserRole() {
@@ -289,7 +298,7 @@ class AdminController {
                 log.error("Role already exists: ${params.userRole_role} for project: ${project}")
                 flash.message = message(code: 'admin.user.role.not.created',
                         args: [message(code: 'user.role.label', default: 'User Role'),
-                               " an existing ${role.name} role for ${user.displayName} and ${institution.name}"]) as String
+                               " an existing ${role.name} role for ${user.displayName} and ${project.name}"]) as String
                 redirect(action: 'manageUserRoles')
                 return
             }
