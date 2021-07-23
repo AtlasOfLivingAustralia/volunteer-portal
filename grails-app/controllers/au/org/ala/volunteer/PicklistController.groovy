@@ -54,7 +54,7 @@ class PicklistController {
         if (userService.isInstitutionAdmin()) {
             def picklistInstitutionCodes = [""]
             picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
-            [picklistInstanceList: Picklist.list(), collectionCodes: picklistInstitutionCodes]
+            [picklistInstanceList: Picklist.list([sort: 'name', order: 'asc']), collectionCodes: picklistInstitutionCodes]
         } else {
             redirect(uri: "/")
         }
@@ -205,6 +205,7 @@ class PicklistController {
             writeItemsCsv(sw, picklist, institutionCode)
             csvdata = sw.toString()
         }
+        params.putAll([sort: 'name', order: 'asc'])
         def picklistInstitutionCodes = [""]
         picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
         render(view: "manage", model: [picklistData: csvdata,

@@ -29,7 +29,10 @@
                             <label class="col-md-2 control-label" for="picklistId">Picklist</label>
 
                             <div class="col-md-4">
-                                <g:select name="picklistId" class="form-control" from="${picklistInstanceList}" optionKey="id" optionValue="uiLabel"
+                                <g:select name="picklistId" class="form-control"
+                                          from="${picklistInstanceList}"
+                                          optionKey="id" optionValue="uiLabel"
+                                          noSelection="['':'- Select a Picklist -']"
                                           value="${params.picklistId}"/>
                             </div>
                             <div class="col-md-6">
@@ -44,7 +47,10 @@
                             <label class="control-label col-md-2" for="institutionCode">Collection Code</label>
 
                             <div class="col-md-4">
-                                <g:select name="institutionCode" class="form-control" from="${collectionCodes}" value="${institutionCode}"/>
+                                <g:select name="institutionCode" class="form-control"
+                                          from="${collectionCodes}"
+                                          noSelection="['':'- Select a Collection Code -']"
+                                          value="${institutionCode}"/>
                             </div>
                             <div class="col-md-6">
                                 <button id="btnAddCollectionCode" type="button" class="btn btn-success"><i
