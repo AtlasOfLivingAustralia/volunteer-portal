@@ -61,7 +61,7 @@ class VolunteerStatsService {
         } else if (projectsInLabels?.size() >= 0) {
             totalTasks = projectService.countTasksForTag(projectsInLabels)
             completedTasks = projectService.countTranscribedTasksForTag(projectsInLabels)
-            transcriberCount = projectService.getTranscriberCountForTag(projectsInLabels)
+            transcriberCount = getTranscriberCountForTag(projectsInLabels)
         } else { // TODO Project stats, not needed for v2.3
             totalTasks = Task.count()
             completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
@@ -255,6 +255,31 @@ class VolunteerStatsService {
 
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)
         return contributors
+    }
+
+    def getTranscriberCountForTag(def projectsInLabels = null) {
+
+        if (projectsInLabels?.size() > 0) {
+            def result = Task.createCriteria().list {
+                if (projectsInLabels) {
+                    project {
+                        'in' 'id', projectsInLabels
+                    }
+                }
+                transcriptions {
+                    isNotNull('fullyTranscribedBy')
+                }
+                projections {
+                    transcriptions {
+                        countDistinct 'fullyTranscribedBy'
+                    }
+                }
+            }
+
+            return result[0]
+        } else {
+            return 0
+        }
     }
 
 }

@@ -852,6 +852,12 @@ class ProjectService {
         }
     }
 
+    /**
+     * @deprecated countDistinct projection for createCriteria() clashes with Jooq. Moved this method to
+     * VolunteerStatsService.
+     * @param projectsInLabels
+     * @return
+     */
     def getTranscriberCountForTag(def projectsInLabels = null) {
 
         if (projectsInLabels?.size() > 0) {
