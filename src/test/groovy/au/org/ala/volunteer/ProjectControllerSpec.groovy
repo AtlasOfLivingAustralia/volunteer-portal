@@ -31,7 +31,7 @@ class ProjectControllerSpec extends Specification {
             controller.update()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot delete a project"() {
@@ -42,7 +42,7 @@ class ProjectControllerSpec extends Specification {
             controller.delete()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without admin permission cannot call WizardAutosave"() {

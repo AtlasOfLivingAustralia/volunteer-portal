@@ -26,7 +26,7 @@ class TemplateControllerSpec extends Specification {
             controller.save()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot update a template"() {
@@ -37,7 +37,7 @@ class TemplateControllerSpec extends Specification {
             controller.update()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot clone a template"() {
@@ -48,6 +48,6 @@ class TemplateControllerSpec extends Specification {
             controller.cloneTemplate()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 }
