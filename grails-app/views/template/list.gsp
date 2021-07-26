@@ -49,10 +49,11 @@
                         cloned for your own institutions/expeditions.<br/>
                         To view templates that are not yet assigned to an expedition, select 'View all institutions' and filter by
                         'Unassigned templates'.<br/>
+                    <cl:ifSiteAdmin>
                         <b>Deleting:</b><br/>
                         Deleting is only available when the template is not assigned to an expedition. Please be aware
                         that this action is final and not reversable.
-
+                    </cl:ifSiteAdmin>
                     </p>
                 </div>
             </div>
@@ -151,12 +152,14 @@
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
                                         <i class="fa fa-tv"></i>
                                     </a>
+                            <cl:ifSiteAdmin>
                             <g:if test="${templateListItem.canEdit && templateInstance.projects?.size() == 0}">
                                     <a class="btn btn-xs btn-danger btnDeleteTemplate" data-link-count="${templateInstance.projects?.size()}" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                             </g:if>
                             <g:else>
                                     <button class="btn btn-xs btn-danger" alt="Delete" title="You cannot delete this template" disabled><i class="fa fa-times"></i></button>
                             </g:else>
+                            </cl:ifSiteAdmin>
                                 </td>
                             </tr>
                         </g:each>
