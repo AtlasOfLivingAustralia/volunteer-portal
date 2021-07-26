@@ -207,7 +207,7 @@ class TaskController {
         if (project && currentUser && userService.isValidator(project)) {
             renderProjectListWithSearch(params, VIEW_TASK_LIST)
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -224,7 +224,7 @@ class TaskController {
             // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
             [taskInstance: taskInstance, fields: fields]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -511,7 +511,7 @@ class TaskController {
         def projectId = params.int("projectId")
         def project = Project.get(projectId)
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -532,7 +532,7 @@ class TaskController {
     def stagedImages() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -555,7 +555,7 @@ class TaskController {
     def editStagingFieldFragment() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -574,7 +574,7 @@ class TaskController {
     def uploadDataFileFragment() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -584,7 +584,7 @@ class TaskController {
     def uploadStagingDataFile() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -614,7 +614,7 @@ class TaskController {
     def uploadTaskDataFile() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

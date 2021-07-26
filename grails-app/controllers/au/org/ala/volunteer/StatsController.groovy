@@ -16,7 +16,7 @@ class StatsController {
 
     def index() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -253,7 +253,7 @@ class StatsController {
 
     def institutionStatsDownload() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

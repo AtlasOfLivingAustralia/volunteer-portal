@@ -26,7 +26,7 @@ class TemplateController {
 
     def list() {
 		if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         params.max = Math.min(params.max ? params.int('max') : 20, 100)
@@ -61,7 +61,7 @@ class TemplateController {
 
     def create() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = new Template()
@@ -71,7 +71,7 @@ class TemplateController {
 
     def save() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         params.author = userService.currentUserId
@@ -89,7 +89,7 @@ class TemplateController {
 
     def edit() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.long('id'))
@@ -119,7 +119,7 @@ class TemplateController {
 
     def update() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.long('id'))
@@ -165,7 +165,7 @@ class TemplateController {
 
     def delete() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.long('id'))
@@ -197,7 +197,7 @@ class TemplateController {
 
     def manageFields() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -210,7 +210,7 @@ class TemplateController {
 
     def addTemplateFieldFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -223,7 +223,7 @@ class TemplateController {
     @Transactional
     def moveFieldUp() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def field = TemplateField.get(params.int("fieldId"))
@@ -246,7 +246,7 @@ class TemplateController {
     @Transactional
     def moveFieldDown() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def field = TemplateField.get(params.int("fieldId"))
@@ -270,7 +270,7 @@ class TemplateController {
     @Transactional
     def moveFieldToPosition() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -296,7 +296,7 @@ class TemplateController {
     @Transactional
     def cleanUpOrdering() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -315,7 +315,7 @@ class TemplateController {
     @Transactional
     def addField() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         Template templateInstance = Template.get(params.int("id"))
@@ -356,7 +356,7 @@ class TemplateController {
     @Transactional
     def deleteField() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -369,7 +369,7 @@ class TemplateController {
 
     def preview() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -386,7 +386,7 @@ class TemplateController {
 
     def exportFieldsAsCSV() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateInstance = Template.get(params.int("id"))
@@ -399,7 +399,7 @@ class TemplateController {
 
     def importFieldsFromCSV() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -422,7 +422,7 @@ class TemplateController {
 
     def cloneTemplate() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def template = Template.get(params.int("templateId"))
@@ -453,7 +453,7 @@ class TemplateController {
 
     def cloneTemplateFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def template = Template.get(params.int("sourceTemplateId"))
@@ -462,7 +462,7 @@ class TemplateController {
 
     def viewParamsForm(Template template) {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def view = (params?.view ?: '') + 'Params'
@@ -482,7 +482,7 @@ class TemplateController {
      */
     def wildlifeTemplateConfig(long id) {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def template = Template.get(id)

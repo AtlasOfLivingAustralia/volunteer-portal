@@ -29,7 +29,7 @@ class PicklistController {
             updatedCsvMessage("${Picklist.get(params.long('picklistId')).name}/${params.institutionCode}")
             redirect(action: "manage", params: [picklistId: params.picklistId])
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -41,7 +41,7 @@ class PicklistController {
             updatedCsvMessage("${Picklist.get(params.long('picklistId')).name}/${params.institutionCode}")
             redirect(action: "manage", params: [picklistId: params.picklistId])
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -56,7 +56,7 @@ class PicklistController {
             picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
             [picklistInstanceList: Picklist.list([sort: 'name', order: 'asc']), collectionCodes: picklistInstitutionCodes]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -84,7 +84,7 @@ class PicklistController {
 
             respond picklistInstance, model: [picklistItems: items]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -105,13 +105,13 @@ class PicklistController {
 
             respond picklist, model: [picklistItems: items, institutionCode: institutionCode, imageMap: imageMap]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
     def loadWildcount(Picklist picklistInstance) {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -193,7 +193,7 @@ class PicklistController {
 
     def loadcsv () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -218,7 +218,7 @@ class PicklistController {
 
     def download () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -235,7 +235,7 @@ class PicklistController {
 
     def list () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [picklistInstanceList: Picklist.list(params), picklistInstanceTotal: Picklist.count()]
@@ -243,7 +243,7 @@ class PicklistController {
 
     def create () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def picklist = new Picklist()
@@ -254,7 +254,7 @@ class PicklistController {
 
     def save () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def picklist = new Picklist(params)
@@ -284,7 +284,7 @@ class PicklistController {
 
     def show () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -312,7 +312,7 @@ class PicklistController {
 
     def edit () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -329,7 +329,7 @@ class PicklistController {
 
     def update () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -367,7 +367,7 @@ class PicklistController {
 
     def delete () {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -395,7 +395,7 @@ class PicklistController {
 
     def addCollectionCodeFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 

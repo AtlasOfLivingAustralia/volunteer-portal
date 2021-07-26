@@ -10,7 +10,7 @@ class TemplateFieldController {
 
     def save() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateField = new TemplateField(params)
@@ -26,7 +26,7 @@ class TemplateFieldController {
 
     def edit() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateField = TemplateField.get(params.long('id'))
@@ -45,7 +45,7 @@ class TemplateFieldController {
 
     def update() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateField = TemplateField.get(params.long('id'))
@@ -78,7 +78,7 @@ class TemplateFieldController {
 
     def delete() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def templateField = TemplateField.get(params.long('id'))

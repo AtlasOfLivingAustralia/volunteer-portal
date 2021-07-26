@@ -20,7 +20,7 @@ class FrontPageController {
         if (userService.isAdmin()) {
             ['frontPage': FrontPage.instance()]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -74,7 +74,7 @@ class FrontPageController {
                         args: [message(code: 'frontPage.label', default: 'Front Page'), '']) as String
             redirect(action: "edit", params: params)
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -96,7 +96,7 @@ class FrontPageController {
             }
             redirect(action: 'edit')
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -105,7 +105,7 @@ class FrontPageController {
             def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
             respond logos
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -127,7 +127,7 @@ class FrontPageController {
                 redirect(action: 'edit')
             }
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -143,7 +143,7 @@ class FrontPageController {
                 response.sendError(400)
             }
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 

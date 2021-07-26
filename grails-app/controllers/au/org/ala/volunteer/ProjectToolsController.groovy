@@ -8,7 +8,7 @@ class ProjectToolsController {
     def matchRecordedByIdFromPicklist() {
         def project = Project.get(params.long('id'))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -22,7 +22,7 @@ class ProjectToolsController {
     def reindexProjectTasks() {
         def project = Project.get(params.long('id'))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

@@ -89,7 +89,7 @@ class UserController {
      */
     def listOptOut() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         params.max = Math.min(params.max ? params.int('max') : 20, 100)
@@ -106,7 +106,7 @@ class UserController {
      */
     def deleteOptOut(UserOptOut userOptOut) {
         if (!userOptOut || !userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def name = userOptOut.user.displayName
@@ -120,7 +120,7 @@ class UserController {
      */
     def addUserOptOut() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

@@ -25,21 +25,28 @@ class AdminController {
     def eventSourceService
 
     def index() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         render(view: 'index')
     }
 
     def mailingList() {
-        if (checkAdminAccess(false)) {
-            def userIds = User.withCriteria {
-                projections {
-                    property('userId', 'userId')
-                }
-            }
-            def emails = userService.getEmailAddressesForIds(userIds as List<String>)
-            def list = emails.join(";\n")
-            render(text:list, contentType: "text/plain")
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
         }
+
+        def userIds = User.withCriteria {
+            projections {
+                property('userId', 'userId')
+            }
+        }
+        def emails = userService.getEmailAddressesForIds(userIds as List<String>)
+        def list = emails.join(";\n")
+        render(text:list, contentType: "text/plain")
     }
 
     /**
@@ -49,13 +56,15 @@ class AdminController {
      * @return true if access allowed. Redirects to home page with flash message if no access.
      */
     boolean checkAdminAccess(Boolean includeInstitutionAdmin) {
-        if (userService.isAdmin() || (includeInstitutionAdmin && userService.isInstitutionAdmin())) {
+        log.debug("User: ${userService.getCurrentUser()}")
+        if (userService.getCurrentUser() && (userService.isAdmin() || (includeInstitutionAdmin && userService.isInstitutionAdmin()))) {
             log.info("Admin access allowed.")
             return true
         } else {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
-            flash.message = "You do not have permission to view this page"
-            redirect(uri: grailsApplication.config.grails.serverURL)
+            //flash.message = "You do not have permission to view this page"
+            //redirect(uri: grailsApplication.config.grails.serverURL)
+            //respond status: 403
             return false
         }
     }
@@ -64,7 +73,11 @@ class AdminController {
      * Main page request for managing Institution Admins.
      */
     def manageInstitutionAdmins() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def institutionId = params.long('institution')
         def institution = Institution.get(institutionId)
         def institutionAdminRoles
@@ -90,7 +103,11 @@ class AdminController {
      * Adds a new {@link UserRole} for an Institution Admin.
      */
     def addInstituionAdmin() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         log.debug("Params: ${params}")
         User user = null
         def addType = "added"
@@ -180,7 +197,11 @@ class AdminController {
      * Called via AJAX (Returns JSON).
      */
     def deleteUserRole() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def currentUser = userService.getCurrentUser()
         def userRoleId = params.long('userRoleId')
         def userRole = UserRole.get(userRoleId)
@@ -231,7 +252,11 @@ class AdminController {
     }
 
     def addUserRole() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def currentUser = userService.getCurrentUser()
         def userId = params.userId?.toString()
         def user = User.findByUserId(userId)
@@ -335,7 +360,11 @@ class AdminController {
     }
 
     def manageUserRoles() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def parameters = [:]
         def displayUserFilter = ""
 
@@ -392,14 +421,22 @@ class AdminController {
     }
 
     def tutorialManagement() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def searchTerm = (params.q) ? params.q : null
         def tutorials = tutorialService.listTutorials(searchTerm)
         render (view: 'tutorialManagement', model: [tutorials: tutorials])
     }
 
     def uploadTutorial() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         if (request instanceof MultipartHttpServletRequest) {
             log.debug("Uploading file.")
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('tutorialFile')
@@ -436,7 +473,11 @@ class AdminController {
     }
 
     def deleteTutorial() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def filename = params.tutorialFile?.toString()
         log.debug("Filename: ${filename}")
         if (filename) {
@@ -452,7 +493,11 @@ class AdminController {
     }
 
     def renameTutorial() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def filename = params.tutorialFile?.toString()
         def newName = params.newName?.toString()
 
@@ -496,7 +541,10 @@ class AdminController {
      * It is entirely possible that not collector id can be found, in which case the field value is cleared
      */
     def fixRecordedByID() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
 
         // First find the candidate fields
         def fields = Field.findAllByNameAndValueLikeAndSuperceded('recordedByID', '%String%', false)
@@ -568,7 +616,10 @@ class AdminController {
     }
 
     def fixUserCounts() {
-        checkAdminAccess(true)
+        if (!checkAdminAccess(true)) {
+            render(view: '/notPermitted')
+            return
+        }
 
         def users = User.list()
         int count = 0
@@ -596,7 +647,11 @@ class AdminController {
     }
 
     def currentUsers() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         render(view: 'currentUsers')
     }
 
@@ -626,17 +681,26 @@ class AdminController {
     }
 
     def tools() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
         render(view: 'tools')
     }
 
     def mappingTool() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
         render(view: 'mappingTool')
     }
 
     def migrateProjectsToInstitutions() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
         final projectsWithOwners = Project.executeQuery("select new map (id as id, name as name, featuredOwner as featuredOwner) from Project where institution is null order by ${params.sort ?: 'featuredOwner'} ${params.order ?: 'asc'}").each { it.put('lowerFeaturedOwner', it?.featuredOwner?.replaceAll('\\s', '')?.toLowerCase()) }
         final insts = Institution.executeQuery("select new map(id as id, name as name) from Institution").each { it.put('lowerName', it?.name?.replaceAll('\\s', '')?.toLowerCase()) }
 
@@ -667,7 +731,10 @@ class AdminController {
     }
 
     def projectSummaryReport() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
 
         def projects = Project.list([sort:'id'])
         def dates = taskService.getProjectDates()
@@ -727,7 +794,11 @@ class AdminController {
     }
 
     def reindexAllTasks() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def c = Task.createCriteria()
         def results = c.list() {
             projections {
@@ -744,7 +815,10 @@ class AdminController {
     }
 
     def rebuildIndex() {
-        checkAdminAccess(false)
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
         fullTextIndexService.reinitialiseIndex()
         redirect(action: 'tools')
     }
@@ -763,10 +837,10 @@ class AdminController {
 
     // clear the grails gsp caches
     def clearPageCaches() {
-        if (!userService.isAdmin()) {
-            render status: 403
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
             return
-		}
+        }
 		
 		grailsCacheAdminService.clearTemplatesCache()
 		grailsCacheAdminService.clearBlocksCache()
@@ -775,20 +849,20 @@ class AdminController {
     }
 
     def clearAllCaches() {
-        if (!userService.isAdmin()) {
-            render status: 403
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
             return
-		}
+        }
 		grailsCacheAdminService.clearAllCaches()
 		flash.message = "All caches cleared"
 		redirect action: 'tools'
     }
 
     def updateUsers() {
-        if (!userService.isAdmin()) {
-            render status: 403
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
             return
-		}
+        }
         userService.updateAllUsers()
         redirect(controller: 'user', action: 'list')
     }

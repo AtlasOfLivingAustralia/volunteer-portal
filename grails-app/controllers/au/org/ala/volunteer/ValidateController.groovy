@@ -91,7 +91,7 @@ class ValidateController {
         def taskInstance = Task.get(params.long('id'))
         if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
             log.warn("User requesting unauthed url: ${userService.currentUserId}")
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -132,7 +132,7 @@ class ValidateController {
     def dontValidate() {
         def taskInstance = Task.get(params.long('id'))
         if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -169,7 +169,7 @@ class ValidateController {
             redirect(action: 'showNextFromProject', id: taskInstance.project.id)
         } else {
             flash.message = "No task id supplied!"
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -179,7 +179,7 @@ class ValidateController {
         def project = Project.get(params.long('id'))
 
         if (!userService.isValidator(project) || !project) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

@@ -457,7 +457,7 @@ class AjaxController {
             achievementService.markAchievementsViewed(cu, longIds)
             render status: 204
         } else {
-            render status: 500
+            render status: 403
         }
     }
 

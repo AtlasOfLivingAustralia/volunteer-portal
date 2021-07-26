@@ -13,7 +13,7 @@ class LabelController {
             params.max = Math.min(max ?: 25, 100)
             respond Label.list(params), model: [labelInstanceCount: Label.count()]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 

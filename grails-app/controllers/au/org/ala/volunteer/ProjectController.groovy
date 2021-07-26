@@ -180,7 +180,7 @@ class ProjectController {
     def mailingList() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -218,7 +218,7 @@ class ProjectController {
     def exportCSV() {
         def project = Project.get(params.long('id'))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -271,7 +271,7 @@ class ProjectController {
     def deleteTasks() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         projectService.deleteTasksForProject(project, true)
@@ -380,7 +380,7 @@ class ProjectController {
 
     def create() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -392,7 +392,7 @@ class ProjectController {
 
     def save() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -446,7 +446,7 @@ class ProjectController {
         }
 
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -474,7 +474,7 @@ class ProjectController {
         Project project = Project.get(params.long("id"))
 
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -527,7 +527,7 @@ class ProjectController {
     def editTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -543,7 +543,7 @@ class ProjectController {
     def editPicklistSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -573,7 +573,7 @@ class ProjectController {
     def editMapSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -583,7 +583,7 @@ class ProjectController {
     def editBannerImageSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -593,7 +593,7 @@ class ProjectController {
     def editBackgroundImageSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -603,7 +603,7 @@ class ProjectController {
     def editTaskSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def projectId = params.long("id")
@@ -621,7 +621,7 @@ class ProjectController {
     def updateGeneralSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -651,7 +651,7 @@ class ProjectController {
     def update() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -671,7 +671,7 @@ class ProjectController {
     def updateTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -691,7 +691,7 @@ class ProjectController {
     def deleteAllTasksFragment() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def taskCount = Task.countByProject(project)
@@ -701,7 +701,7 @@ class ProjectController {
     def deleteProjectFragment() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def taskCount = Task.countByProject(project)
@@ -790,7 +790,7 @@ class ProjectController {
     def updatePicklistSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -810,7 +810,7 @@ class ProjectController {
     def delete() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -837,7 +837,7 @@ class ProjectController {
     def uploadFeaturedImage() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -876,7 +876,7 @@ class ProjectController {
     def uploadBackgroundImage() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -920,7 +920,7 @@ class ProjectController {
     def clearBackgroundImageSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -937,7 +937,7 @@ class ProjectController {
     def updateMapSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -963,7 +963,7 @@ class ProjectController {
 
     def findProjectFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         render(view: 'findProjectFragment')
@@ -971,7 +971,7 @@ class ProjectController {
 
     def findProjectResultsFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -992,7 +992,7 @@ class ProjectController {
 
     def addLabel(Project project) {
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -1013,7 +1013,7 @@ class ProjectController {
 
     def removeLabel(Project project) {
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -1034,7 +1034,7 @@ class ProjectController {
 
     def newLabels(Project project) {
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -1068,7 +1068,7 @@ class ProjectController {
      */
     def wizard(String id) {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         if (!id) {
