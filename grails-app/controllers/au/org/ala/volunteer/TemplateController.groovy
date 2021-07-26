@@ -45,12 +45,14 @@ class TemplateController {
 
         def templateList = []
         allTemplates.templateList.each { template ->
-            templateList.add(templateService.getTemplatePermissions(template))
+            templateList.add(templateService.getTemplatePermissions(template as Template))
         }
 
-        def statusFilter = [[key: 'hidden', value: 'Hidden templates'],
-                            [key: 'global', value: 'Global templates'],
+        def statusFilter = [[key: 'global', value: 'Global templates'],
                             [key: 'unassigned', value: 'Unassigned templates']]
+        if (userService.isSiteAdmin()) {
+            statusFilter.add([key: 'hidden', value: 'Hidden templates'])
+        }
 
         [templateInstanceList: templateList,
          templateInstanceTotal: allTemplates.totalCount,

@@ -19,7 +19,7 @@
 
 <body class="admin">
 <div class="container">
-    <cl:headerContent title="${message(code: 'default.list.label', args: [entityName])}" selectedNavItem="bvpadmin">
+    <cl:headerContent title="${message(code: 'template.manage.label', default: "Manage Templates")}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration']
@@ -30,6 +30,34 @@
         </div>
     </cl:headerContent>
 
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <p>
+                This tool allows Administrators to manage the templates for transcriptions in expeditions. <br/>
+                <a data-toggle="collapse" href="#collapseInformation" aria-expanded="false"
+                   aria-controls="collapseInformation">Click here for more information</a>.
+            </p>
+            <div class="collapse" id="collapseInformation">
+                <div class="panel panel-default panel-body">
+                    <p>
+                        <b>Global Templates:</b><br/>
+                        Global Templates (marked with the <i class="fa fa-globe" title="Global Template"></i> icon) are read-only
+                        templates available to all expeditions.<br/>
+                        <b>Editing:</b><br/>
+                        Editing is restricted to only those templates that are assigned to expeditions for your institution(s)
+                        or templates that are not yet assigned to an expedition. All other templates are viewable and may be
+                        cloned for your own institutions/expeditions.<br/>
+                        To view templates that are not yet assigned to an expedition, select 'View all institutions' and filter by
+                        'Unassigned templates'.<br/>
+                        <b>Deleting:</b><br/>
+                        Deleting is only available when the template is not assigned to an expedition. Please be aware
+                        that this action is final and not reversable.
+
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
@@ -53,13 +81,11 @@
                     <g:select class="form-control" name="viewName" id="viewName" from="${viewFilter}"
                               value="${params?.viewName}" noSelection="['':'- View ALL views -']" />
                 </div>
-                <cl:ifSiteAdmin>
                 <div class="col-md-2">
                     <g:select class="form-control" name="status" id="status" from="${statusFilter}"
                         optionKey="key" optionValue="value"
                               value="${params?.status}" noSelection="['':'- View ALL templates -']" />
                 </div>
-                </cl:ifSiteAdmin>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-default bs3" id="apply-filter">Apply</button>
                     <a class="btn btn-default bs3"

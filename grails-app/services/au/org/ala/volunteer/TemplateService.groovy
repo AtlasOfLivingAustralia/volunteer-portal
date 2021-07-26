@@ -90,6 +90,7 @@ class TemplateService {
      * @return true if the user can edit the template.
      */
     def getTemplatePermissions(Template template) {
+        // Site Admin can edit all templates.
         def templatePermissions = [template: template, canEdit: userService.isSiteAdmin(), projectCount: 0]
 
         if (!userService.isSiteAdmin()) {
@@ -99,11 +100,24 @@ class TemplateService {
             def projectInstitutionList = template.projects*.institution?.id?.unique()
             log.debug("template permissions: project institution ID list: ${projectInstitutionList}")
 
-            // If an existing template is used by multiple institutions, it can no longer be edited.
-            if (projectInstitutionList.size() == 1) {
-                templatePermissions.canEdit = !institutionAdminList.intersect(projectInstitutionList).isEmpty()
-            } else {
+            /*
+            Institution Edit permission:
+            * If the template is used by projects in a single institution and the user is assigned to that institution,
+              then they can edit.
+            * If the template is not assigned at all (not used), it can be edited by anyone.
+            * Use by a different institution or multiple institutions, it cannot be edited.
+            * Global cannot be edited by Institution Admin.
+            */
+            if (template.isGlobal) {
                 templatePermissions.canEdit = false
+            } else {
+                if (projectInstitutionList.size() == 1) {
+                    templatePermissions.canEdit = !institutionAdminList.intersect(projectInstitutionList).isEmpty()
+                } else if (projectInstitutionList.size() == 0) {
+                    templatePermissions.canEdit = true
+                } else {
+                    templatePermissions.canEdit = false
+                }
             }
         }
 
@@ -248,21 +262,22 @@ class TemplateService {
         // Add status filter, if present
         if (!userService.isSiteAdmin()) {
             clause.add(" t.is_hidden = false ")
-        } else {
-            if (!Strings.isNullOrEmpty(params.status as String)) {
-                switch(params.status) {
-                    case 'hidden':
-                        clause.add(" t.is_hidden = true ")
-                        break
-                    case 'global':
-                        clause.add(" t.is_global = true ")
-                        break
-                    case 'unassigned':
-                        clause.add(" p.id is null ")
-                        break
-                }
+        }
+
+        if (!Strings.isNullOrEmpty(params.status as String)) {
+            switch(params.status) {
+                case 'hidden':
+                    clause.add(" t.is_hidden = true ")
+                    break
+                case 'global':
+                    clause.add(" t.is_global = true ")
+                    break
+                case 'unassigned':
+                    clause.add(" p.id is null ")
+                    break
             }
         }
+
 
         // Add the clauses
         clause.eachWithIndex { line, idx ->
@@ -289,9 +304,10 @@ class TemplateService {
             query += " order by is_global desc, t.id asc"
         }
         log.debug("Template list query: ${query}")
+        log.debug("Offset: ${params.offset as int}, max: ${params.max as int}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, parameters, params.offset as int, params.max as int) { row ->
+        sql.eachRow(query, parameters, (params.offset as int) + 1, params.max as int) { row ->
             Template template = Template.get(row.template_id as long)
             if (template) results.add(template)
         }
