@@ -55,7 +55,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin()) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         if (!params.sort) params.sort = 'name'
@@ -72,7 +72,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin()) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         respond new Institution(params)
@@ -82,7 +82,7 @@ class InstitutionAdminController {
         //Institution institution = Institution.get(params.long('institution'))
         if (!institution) {
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 
@@ -93,7 +93,7 @@ class InstitutionAdminController {
         if (params.entry != 'APPLY' && !userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 
@@ -174,7 +174,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         respond institutionInstance
@@ -189,7 +189,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 
@@ -223,7 +223,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 
@@ -252,7 +252,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 
@@ -279,7 +279,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin()) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         def existing = Institution.executeQuery("select id from Institution where collectoryUid = :cid", [cid: cid])
@@ -359,7 +359,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'banner'])
@@ -370,7 +370,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         render(view: 'uploadInstitutionImageFragment', model: [institutionInstance: institution, imageType: 'logo'])
@@ -381,7 +381,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         [institutionInstance: institution, imageType: 'main']
@@ -391,7 +391,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         if (institutionInstance) {
@@ -404,7 +404,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         if (institutionInstance) {
@@ -417,7 +417,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
         if (institutionInstance) {
@@ -431,7 +431,7 @@ class InstitutionAdminController {
         if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(controller: 'institution', action: 'list')
+            render(view: '/notPermitted')
             return
         }
 

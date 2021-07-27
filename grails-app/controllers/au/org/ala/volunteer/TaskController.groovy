@@ -638,7 +638,7 @@ class TaskController {
     def clearTaskDataFile() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -652,7 +652,7 @@ class TaskController {
     def clearStagedDataFile() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -666,7 +666,7 @@ class TaskController {
     def deleteAllStagedImages() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -680,7 +680,7 @@ class TaskController {
     def unstageImage() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -703,7 +703,7 @@ class TaskController {
     def saveFieldDefinition() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -737,7 +737,7 @@ class TaskController {
     def updateFieldDefinitionType() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -753,7 +753,7 @@ class TaskController {
     def updateFieldDefinitionFormat() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -769,7 +769,7 @@ class TaskController {
     def deleteFieldDefinition() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -784,7 +784,7 @@ class TaskController {
     def loadStagedTasks() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -802,7 +802,7 @@ class TaskController {
     def exportStagedTasksCSV() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -836,7 +836,7 @@ class TaskController {
     def loadTaskData() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -863,7 +863,7 @@ class TaskController {
     def processTaskDataLoad() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -878,7 +878,7 @@ class TaskController {
     def exportOptionsFragment() {
         def project = Project.get(params.long('projectId'))
         if (!projectService.isAdminForProject(project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -889,7 +889,7 @@ class TaskController {
         def viewedTask = ViewedTask.get(params.int("viewedTaskId"))
         def project = viewedTask?.task?.project
         if (!projectService.isAdminForProject(project) && !userService.isValidator(viewedTask?.task?.project)) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

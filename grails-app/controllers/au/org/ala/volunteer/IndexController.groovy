@@ -168,4 +168,8 @@ class IndexController {
         def contributors = (messages + transcribers).sort { -it.timestamp }.take(maxContributors)
         return contributors
     } */
+
+    def notPermitted() {
+        render(view: '/notPermitted')
+    }
 }

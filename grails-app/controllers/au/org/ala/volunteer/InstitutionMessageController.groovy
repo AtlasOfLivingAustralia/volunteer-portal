@@ -23,7 +23,7 @@ class InstitutionMessageController {
         } else {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
-            redirect(uri: grailsApplication.config.grails.serverURL)
+            render(view: '/notPermitted')
             return false
         }
     }

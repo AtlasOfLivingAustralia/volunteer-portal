@@ -53,7 +53,7 @@ class InstitutionMessageControllerSpec extends Specification {
         controller.save()
 
         then: "User is redirected to the home page"
-        response.redirectedUrl == "/"
+        view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot access the message admin"() {
@@ -61,7 +61,7 @@ class InstitutionMessageControllerSpec extends Specification {
             controller.index()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+        view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot update a message"() {
@@ -72,7 +72,7 @@ class InstitutionMessageControllerSpec extends Specification {
             controller.update()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+        view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot delete a message"() {
@@ -80,7 +80,7 @@ class InstitutionMessageControllerSpec extends Specification {
         controller.delete()
 
         then: "User is redirected to the home page"
-        response.redirectedUrl == "/"
+        view == "/notPermitted"
     }
 
 }

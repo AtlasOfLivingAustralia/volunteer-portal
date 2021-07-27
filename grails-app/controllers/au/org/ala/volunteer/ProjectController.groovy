@@ -452,7 +452,7 @@ class ProjectController {
 
         if (!params.verifyId || params.verifyId as long != project.id) {
             flash.message = "You do not have permission to view this page"
-            redirect(uri: request?.getHeader("referer") ?: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -460,7 +460,7 @@ class ProjectController {
         project.inactive = (!project.inactive)
         if (!project.save(flush: true, failOnError: true)) {
             flash.message = "The expedition status was not able to be updated."
-            redirect(uri: request?.getHeader("referer") ?: "/")
+            render(view: '/notPermitted')
         } else {
             if (!project.inactive) {
                 generateActivationNotification(project)
@@ -1387,7 +1387,7 @@ class ProjectController {
 
     def cloneProjectFragment() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def project = Project.get(params.int("sourceProjectId"))
@@ -1396,7 +1396,7 @@ class ProjectController {
 
     def cloneProject() {
         if (!userService.isInstitutionAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -1549,7 +1549,7 @@ class ProjectController {
     def archive(Project project) {
         if (!projectService.isAdminForProject(project)) {
             log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

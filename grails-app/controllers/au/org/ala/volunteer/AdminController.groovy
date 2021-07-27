@@ -721,10 +721,12 @@ class AdminController {
     def doMigrateProjectsToInstitutions() {
         if (userService.isAdmin()) {
             def cmd = request.JSON
+            log.debug("cmd: ${cmd}")
             cmd.each {
                 def proj = Project.get(new Long(it.id?.toString()).longValue())
                 proj.institution = Institution.get(new Long(it.inst?.toString()).longValue())
-                proj.save()
+                log.debug("updated project: ${proj} to institution: ${proj.institution}")
+                proj.save(flush: true, failOnError: true)
             }
             render status: 205
         } else {

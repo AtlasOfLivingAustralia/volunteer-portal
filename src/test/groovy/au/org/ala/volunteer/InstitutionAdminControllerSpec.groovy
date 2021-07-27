@@ -134,8 +134,7 @@ class InstitutionAdminControllerSpec extends Specification {
         controller.create()
 
         then:"The model is correctly created"
-        response.redirectedUrl == '/institution/list'
-        flash.message != null
+            view == '/notPermitted'
     }
 
     void "Test the create action returns the correct model"() {

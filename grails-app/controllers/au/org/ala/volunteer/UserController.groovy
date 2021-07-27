@@ -146,7 +146,7 @@ class UserController {
 
     def list() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -210,7 +210,7 @@ class UserController {
      */
     def project() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -429,7 +429,7 @@ class UserController {
 
         if (!userService.isAdmin()) {
             flash.message = "You have insufficient priviliges to manage the roles for this user!"
-            redirect(action: "show")
+            render(view: '/notPermitted')
         }
 
         [userInstance: user,
@@ -468,7 +468,7 @@ class UserController {
         def currentUser = userService.getCurrentUser()
 
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
