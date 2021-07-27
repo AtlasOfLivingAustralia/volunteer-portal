@@ -85,10 +85,10 @@
                     <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">review</g:link>
                 </g:if>
                 <g:elseif test="${taskInstance.isFullyTranscribed}">
-                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}" params="${params.clone()}">validate</g:link>
+                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">validate</g:link>
                 </g:elseif>
                 <g:else>
-                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id}" params="${params.clone()}">transcribe</g:link>
+                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id}">transcribe</g:link>
                 </g:else>
             </td>
 

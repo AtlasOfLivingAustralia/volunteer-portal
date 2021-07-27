@@ -33,7 +33,7 @@ class FieldService {
      * @param fieldNames
      * @return
      */
-    def findAllTasksByFieldValues(Project projectInstance, String query, Map params, List fieldNames = []) {
+    def findAllTasksByFieldValues(Project projectInstance, String query, Map params, def fieldNames = []) {
         query = query?.toLowerCase()
         def queryParams = [projectId: projectInstance.id, query: '%' + query + '%']
 
@@ -72,18 +72,21 @@ class FieldService {
             select distinct task.id, 
                 task.is_valid, 
                 task.number_of_matching_transcriptions,
-                task.external_identifier
+                task.external_identifier,
+                task.fully_validated_by
             from field f
             join task on (f.task_id = task.id)
             left join transcription on (transcription.task_id = task.id)
             left join vp_user u1 on (transcription.fully_transcribed_by = u1.user_id)
+            left join vp_user v1 on (task.fully_validated_by = v1.user_id)
             where f.superceded = false
             ${fieldClause}
             and task.project_id = :projectId
             ${statusFilterClause}
             and (lower(f.value) like :query  
                 or lower(task.external_identifier) like :query 
-                or lower(concat(u1.first_name, ' ', u1.last_name)) like :query) """.stripIndent()
+                or lower(concat(u1.first_name, ' ', u1.last_name)) like :query
+                or lower(concat(v1.first_name, ' ', v1.last_name)) like :query) """.stripIndent()
 
         def sortClause = " order by "
         switch (params.sort) {
