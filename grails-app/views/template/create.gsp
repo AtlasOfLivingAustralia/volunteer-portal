@@ -13,7 +13,7 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'template.manage.label', default: "Manage Templates")]
             ]
         %>
     </cl:headerContent>

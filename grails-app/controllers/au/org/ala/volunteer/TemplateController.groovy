@@ -94,16 +94,22 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.long('id'))
-        if (!templateInstance) {
+        def template = Template.get(params.long('id'))
+        if (!template) {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'template.label', default: 'Template'), params.id as String]) as String
             redirect(action: "list")
-        }
-        else {
+        } else {
+            // Is the user allowed to edit this template?
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
             def availableViews = templateService.getAvailableTemplateViews()
             def projectUsageList = [:]
-            def projectList = templateInstance.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
+            def projectList = template.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
             def institutionName = ""
 
             for (Project project in projectList) {
@@ -115,7 +121,7 @@ class TemplateController {
                 }
                 projectUsageList[institutionName].add(project)
             }
-            return [templateInstance: templateInstance, availableViews: availableViews, projectUsageList: projectUsageList]
+            return [templateInstance: template, availableViews: availableViews, projectUsageList: projectUsageList]
         }
     }
 
@@ -124,22 +130,28 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.long('id'))
-        if (templateInstance) {
+        def template = Template.get(params.long('id'))
+        if (template) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
             if (params.version) {
                 def version = params.version.toLong()
-                if (templateInstance.version > version) {
+                if (template.version > version) {
                     
-                    templateInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+                    template.errors.rejectValue("version", "default.optimistic.locking.failure",
                             [message(code: 'template.label', default: 'Template')] as Object[],
                             "Another user has updated this Template while you were editing")
-                    render(view: "edit", model: [templateInstance: templateInstance])
+                    render(view: "edit", model: [templateInstance: template])
                     return
                 }
             }
 
             // This is to stop an IDE warning about incompatible objects
-            bindData(templateInstance, params)
+            bindData(template, params)
 
             def viewParams = JSON.parse(params.viewParamsJSON as String) as Map
 
@@ -149,14 +161,14 @@ class TemplateController {
                     newViewParams[it.toString()] = viewParams[it]?.toString()
                 }
             }
-            templateInstance.viewParams = newViewParams
+            template.viewParams = newViewParams
 
-            if (!templateInstance.hasErrors() && templateInstance.save(flush: true)) {
+            if (!template.hasErrors() && template.save(flush: true)) {
                 flash.message = message(code: 'default.updated.message',
-                         args: [message(code: 'template.label', default: 'Template'), templateInstance.name]) as String
-                redirect(action: "edit", id: templateInstance.id)
+                         args: [message(code: 'template.label', default: 'Template'), template.name]) as String
+                redirect(action: "edit", id: template.id)
             } else {
-                render(view: "edit", model: [templateInstance: templateInstance])
+                render(view: "edit", model: [templateInstance: template])
             }
         } else {
             flash.message = message(code: 'default.not.found.message',
@@ -166,32 +178,32 @@ class TemplateController {
     }
 
     def delete() {
-        if (!userService.isInstitutionAdmin()) {
+        // Only Site Admins can delete templates.
+        if (!userService.isSiteAdmin()) {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.long('id'))
-        if (templateInstance) {
+
+        def template = Template.get(params.long('id'))
+        if (template) {
             try {
                 // First got to delete all the template_fields...
-                def fields = TemplateField.findAllByTemplate(templateInstance)
+                def fields = TemplateField.findAllByTemplate(template)
                 if (fields) {
                     fields.each { it.delete(flush: true) }
                 }
                 // Now can delete template proper
-                templateInstance.delete(flush: true)
+                template.delete(flush: true)
 
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 redirect(action: "list", params: params)
-            }
-            catch (DataIntegrityViolationException e) {
+            } catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "edit", id: params.id)
             }
-        }
-        else {
+        } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
             redirect(action: "list", params: params)
         }
@@ -202,11 +214,17 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
-        if (templateInstance) {
-            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+        def template = Template.get(params.int("id"))
+        if (template) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
 
-            [templateInstance: templateInstance, fields: fields]
+            def fields = TemplateField.findAllByTemplate(template)?.sort { it.displayOrder }
+
+            [templateInstance: template, fields: fields]
         }
     }
 
@@ -215,10 +233,16 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
-        if (templateInstance) {
-            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
-            [templateInstance: templateInstance, fields: fields]
+        def template = Template.get(params.int("id"))
+        if (template) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
+            def fields = TemplateField.findAllByTemplate(template)?.sort { it.displayOrder }
+            [templateInstance: template, fields: fields]
         }
     }
 
@@ -230,6 +254,12 @@ class TemplateController {
         }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
+            def permissions = templateService.getTemplatePermissions(field.template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
             if (field.displayOrder > 1) {
                 def predecessor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder - 1)
                 if (predecessor) {
@@ -253,6 +283,12 @@ class TemplateController {
         }
         def field = TemplateField.get(params.int("fieldId"))
         if (field) {
+            def permissions = templateService.getTemplatePermissions(field.template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
             def max = getLastDisplayOrder(field.template)
             if (field.displayOrder < max ) {
                 def successor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder + 1)
@@ -275,11 +311,18 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
-        def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
+
+        def template = Template.get(params.int("id"))
+        def field = TemplateField.findByTemplateAndId(template, params.int("fieldId"))
         def newOrder = params.int("newOrder")
-        if (templateInstance && field && newOrder) {
-            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+        if (template && field && newOrder) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
+            def fields = TemplateField.findAllByTemplate(template)?.sort { it.displayOrder }
             if (newOrder >= 0 && newOrder <= fields.size()) {
                 fields.each {
                     if (it.displayOrder >= newOrder) {
@@ -287,7 +330,7 @@ class TemplateController {
                     }
                 }
                 field.displayOrder = newOrder
-                redirect(action:'cleanUpOrdering', id:templateInstance.id)
+                redirect(action:'cleanUpOrdering', id:template.id)
                 return
             }
         }
@@ -301,9 +344,15 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
-        if (templateInstance) {
-            def fields = TemplateField.findAllByTemplate(templateInstance)?.sort { it.displayOrder }
+        def template = Template.get(params.int("id"))
+        if (template) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+
+            def fields = TemplateField.findAllByTemplate(template)?.sort { it.displayOrder }
             int i = 1
             fields.each {
                 it.displayOrder = i++
@@ -311,7 +360,7 @@ class TemplateController {
             TemplateField.saveAll(fields)
         }
 
-        redirect(action:'manageFields', id: templateInstance?.id)
+        redirect(action:'manageFields', id: template?.id)
     }
 
     @Transactional
@@ -320,26 +369,31 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        Template templateInstance = Template.get(params.int("id"))
+        Template template = Template.get(params.int("id"))
         String fieldType = params.fieldType
         String classifier = params.fieldTypeClassifier
 
-        if (templateInstance && fieldType) {
+        if (template && fieldType) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
 
-            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(templateInstance, fieldType as DarwinCoreField, classifier)
+            def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(template, fieldType as DarwinCoreField, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
                 flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
             } else {
-                def displayOrder = getLastDisplayOrder(templateInstance) + 1
+                def displayOrder = getLastDisplayOrder(template) + 1
                 FieldCategory category = params.category ?: FieldCategory.none
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
-                def field = new TemplateField(template: templateInstance, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
+                def field = new TemplateField(template: template, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(failOnError: true)
             }
         }
 
-        redirect(action:'manageFields', id: templateInstance?.id)
+        redirect(action:'manageFields', id: template?.id)
     }
 
     private int getLastDisplayOrder(Template template) {
@@ -361,12 +415,18 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
-        def field = TemplateField.findByTemplateAndId(templateInstance, params.int("fieldId"))
-        if (field && templateInstance) {
+        def template = Template.get(params.int("id"))
+        def permissions = templateService.getTemplatePermissions(template)
+        if (!permissions.canEdit) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        def field = TemplateField.findByTemplateAndId(template, params.int("fieldId"))
+        if (field && template) {
             field.delete()
         }
-        redirect(action:'manageFields', id: templateInstance?.id)
+        redirect(action:'manageFields', id: template?.id)
     }
 
     def preview() {
@@ -374,16 +434,26 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
+        def template = Template.get(params.int("id"))
 
-        def projectInstance = new Project(template: templateInstance, featuredLabel: "PreviewProject", featuredOwner: "ALA", name: "${templateInstance.name} Preview (${templateInstance.viewName})")
-        def taskInstance = new Task(project: projectInstance)
+        def project = new Project(template: template, featuredLabel: "PreviewProject", featuredOwner: "ALA",
+                name: "${template.name} Preview (${template.viewName})")
+        def taskInstance = new Task(project: project)
         def multiMedia = new Multimedia(id: 0)
         taskInstance.addToMultimedia(multiMedia)
         def recordValues = [:]
         def imageMetaData = [0: [width: 2048, height: 1433]]
 
-        render(view: '/transcribe/templateViews/' + templateInstance.viewName, model: [taskInstance: taskInstance, recordValues: recordValues, isReadonly: null, template: templateInstance, nextTask: null, prevTask: null, sequenceNumber: 0, imageMetaData: imageMetaData, isPreview: true])
+        render(view: '/transcribe/templateViews/' + template.viewName,
+                model: [taskInstance: taskInstance,
+                        recordValues: recordValues,
+                        isReadonly: null,
+                        template: template,
+                        nextTask: null,
+                        prevTask: null,
+                        sequenceNumber: 0,
+                        imageMetaData: imageMetaData,
+                        isPreview: true])
     }
 
     def exportFieldsAsCSV() {
@@ -391,12 +461,16 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
-        def templateInstance = Template.get(params.int("id"))
 
-        if (templateInstance) {
-            templateFieldService.exportFieldToCSV(templateInstance, response)
+        def template = Template.get(params.int("id"))
+        if (template) {
+            def permissions = templateService.getTemplatePermissions(template)
+            if (!permissions.canEdit) {
+                render(view: '/notPermitted')
+                return
+            }
+            templateFieldService.exportFieldToCSV(template, response)
         }
-
     }
 
     def importFieldsFromCSV() {
@@ -410,10 +484,15 @@ class TemplateController {
         if (!f || f.isEmpty()) {
             flash.message = "File missing or invalid. Make sure you select an upload file first!"
         } else {
+            def template = Template.get(params.int("id"))
+            if (template) {
+                def permissions = templateService.getTemplatePermissions(template)
+                if (!permissions.canEdit) {
+                    render(view: '/notPermitted')
+                    return
+                }
 
-            def templateInstance = Template.get(params.int("id"))
-            if (templateInstance) {
-                templateFieldService.importFieldsFromCSV(templateInstance, f)
+                templateFieldService.importFieldsFromCSV(template, f)
             } else {
                 flash.message = "Missing/invalid template id specified in request!"
             }
@@ -427,6 +506,7 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
+
         def template = Template.get(params.int("templateId"))
         String newName = params.newName
 
@@ -458,7 +538,14 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
+
         def template = Template.get(params.int("sourceTemplateId"))
+        def permissions = templateService.getTemplatePermissions(template)
+        if (!permissions.canEdit) {
+            render(view: '/notPermitted')
+            return
+        }
+
         [templateInstance: template]
     }
 
@@ -467,6 +554,13 @@ class TemplateController {
             render(view: '/notPermitted')
             return
         }
+
+        def permissions = templateService.getTemplatePermissions(template)
+        if (!permissions.canEdit) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def view = (params?.view ?: '') + 'Params'
         try {
             def model = [templateInstance: template]
@@ -488,6 +582,13 @@ class TemplateController {
             return
         }
         def template = Template.get(id)
+
+        def permissions = templateService.getTemplatePermissions(template)
+        if (!permissions.canEdit) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def viewParams2 = template.viewParams2 ?: [ categories: [], animals: [] ]
         [id: id, templateInstance: template, viewParams2: viewParams2]
     }
@@ -504,6 +605,13 @@ class TemplateController {
         }
 
         def template = Template.get(id)
+
+        def permissions = templateService.getTemplatePermissions(template)
+        if (!permissions.canEdit) {
+            render(view: '/notPermitted')
+            return
+        }
+
         template.viewParams2 = request.getJSON() as Map
         template.save()
 

@@ -29,7 +29,7 @@
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
-                [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [templateEntityName])],
+                [link: createLink(controller: 'template', action: 'list'), label: message(code: 'template.manage.label', default: "Manage Templates")],
                 [link: createLink(controller: 'template', action: 'edit', id: templateInstance.id), label: "${message(code: 'default.edit.label', args: [templateEntityName])} - ${templateInstance.name}"]
         ]
     %>
