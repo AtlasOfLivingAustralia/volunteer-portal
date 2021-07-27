@@ -137,10 +137,12 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                <cl:ifSiteAdmin>
+                                    <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
                                                 disabled="${templateInstance.projects?.size() > 0}"
                                                 title="${(templateInstance.projects?.size() > 0 ? "Delete is not allowed when template is linked to an existing expedition." : "Delete")}"
                                                 value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                                </cl:ifSiteAdmin>
                             </div>
                         </div>
                     </g:form>
