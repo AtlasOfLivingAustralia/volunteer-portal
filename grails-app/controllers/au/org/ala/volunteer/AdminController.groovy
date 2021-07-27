@@ -205,6 +205,8 @@ class AdminController {
         def currentUser = userService.getCurrentUser()
         def userRoleId = params.long('userRoleId')
         def userRole = UserRole.get(userRoleId)
+        log.debug("Params: ${params}")
+        log.debug("userRoleId: ${userRoleId}")
 
         if (!userRole) {
             flash.message = message(code: 'default.not.found.message',

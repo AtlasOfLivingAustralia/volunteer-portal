@@ -256,6 +256,7 @@ $(function($) {
         roleUser = $.trim($("span", roleUser).remove().end().html());
         const roleName = $(this).closest('tr').find('.role-name').html().trim();
         let roleLevelName = $(this).closest('tr').find('.role-level-name').find('a').html();
+        console.log("ID: " + id);
 
         if (id) {
             let confirmMsg = 'Are you sure you wish to delete the '+ roleLevel +' '+ roleName +' role for ' +
@@ -263,7 +264,8 @@ $(function($) {
 
             bootbox.confirm(confirmMsg, function(result) {
                 if (result) {
-                    const url = "${createLink(controller: 'admin', action: 'deleteUserRole', params: params).encodeAsJavaScript()}" + "?userRoleId=" + id;
+                    const url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id;
+                    console.log("url: " + url);
                     window.location = url;
                 }
             });
