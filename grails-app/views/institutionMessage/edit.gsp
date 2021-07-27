@@ -144,7 +144,6 @@
 
         function updateRecipient(type, data) {
             console.log("Update recipient field");
-            const emptyOption = "<option>- Select a recipient -</option>";
             let selectList = "";
 
             if (type === 'user') {
@@ -162,7 +161,7 @@
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
                     .removeAttr("data-count-selected-text")
-                    .append(emptyOption + selectList);
+                    .append(selectList);
 
             <g:if test="${institutionMessageInstance.approved}">
                 $('#recipient').attr("disabled", true);
@@ -181,7 +180,7 @@
                 $('#recipient').selectpicker('destroy');
                 $('#recipient').empty()
                     .attr("multiple", "true")
-                    .append(emptyOption + selectList)
+                    .append(selectList);
 
                 // Set selected attributes
                 $.each(selectedValues.split(","), function(idx, e) {

@@ -102,7 +102,6 @@
         }
 
         function updateRecipient(type, data) {
-            const emptyOption = "<option value=''>- Select a recipient -</option>";
             let selectList = "";
 
             if (type === 'user') {
@@ -128,7 +127,7 @@
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
                     .removeAttr("data-count-selected-text")
-                    .append(emptyOption + selectList);
+                    .append(selectList);
                 $('#recipient').selectpicker();
 
             } else if (type === 'project') {
@@ -137,7 +136,7 @@
                 if (getQueryStringParam('projectId')) {
                     selectedValues = getQueryStringParam('projectId');
                 } else {
-                    selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : ""}";
+                    selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : "0"}";
                 }
 
                 console.log("Selected Value: " + selectedValues);
@@ -148,7 +147,7 @@
                 $('#recipient').selectpicker('destroy');
                 $('#recipient').empty()
                     .attr("multiple", "true")
-                    .append(emptyOption + selectList)
+                    .append(selectList);
 
                 // Set selected attributes
                 $.each(selectedValues.split(","), function(idx, e) {
