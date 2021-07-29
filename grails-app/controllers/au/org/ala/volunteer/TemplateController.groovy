@@ -195,7 +195,7 @@ class TemplateController {
                 // Now can delete template proper
                 template.delete(flush: true)
 
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
+                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), "'${template.name}'"])}"
                 redirect(action: "list", params: params)
             } catch (DataIntegrityViolationException e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"

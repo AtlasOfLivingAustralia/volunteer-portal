@@ -179,6 +179,32 @@
 <asset:script type="text/javascript">
     $(function() {
 
+        function getQueryStringParams() {
+            const params = new URLSearchParams(window.location.search);
+            let institution = params.get('institution');
+            let q = params.get('q');
+            let statusFilter = params.get('status');
+            let viewName = params.get('viewName');
+
+            let paramString = "", s = false;
+            if (institution) {
+                paramString += (s ? "&" : "") + "institution=" + institution;
+                s = true;
+            }
+            if (q) {
+                paramString += (s ? "&" : "") + "q=" + q;
+                s = true;
+            }
+            if (viewName) {
+                paramString += (s ? "&" : "") + "viewName=" + viewName;
+                s = true;
+            }
+            if (statusFilter) {
+                paramString += (s ? "&" : "") + "status=" + statusFilter;
+            }
+            return paramString;
+        }
+
         $(".btnDeleteTemplate").click(function(e) {
             e.preventDefault();
             console.log("deleting template");
@@ -191,7 +217,14 @@
                 if (linkCount > 0) linkMsg = "<br />There are <b>" + linkCount + "</b> expeditions linked to this template.";
                 let confirmMsg = "Are you sure you wish to delete template " + templateName + "? " + linkMsg
                 bootbox.confirm(confirmMsg, function(result) {
-                    if (result) window.location = "${createLink(controller: 'template', action: 'delete', params: params)}/" + templateId;
+                    if (result) {
+                        let url = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                        const params = getQueryStringParams();
+                        if (params) {
+                            url += "?" + params;
+                        }
+                        window.location = url;
+                    }
                 });
             }
         });
@@ -261,39 +294,22 @@
             let url = "${createLink(controller: 'template', action: 'list')}?";
 
             if (institutionId) {
-                //url += "institution=" + institutionId;
                 url = addParam(url, 'institution', institutionId, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (viewName) {
-                // if (hasParams) {
-                //     url = addAmpersand(url);
-                // }
-                // url += "viewName=" + viewName;
                 url = addParam(url, 'viewName', viewName, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (q) {
-                // if (hasParams) {
-                //     url = addAmpersand(url);
-                // }
-                // url += "q=" + q;
                 url = addParam(url, 'q', encodeURIComponent(q), hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (status) {
-                // if (hasParams) {
-                //     url = addAmpersand(url);
-                // }
-                // url += "status=" + status;
                 url = addParam(url, 'status', status, hasParams);
                 if (!hasParams) hasParams = true;
             }
             if (sort) {
-                // if (hasParams) {
-                //     url = addAmpersand(url);
-                // }
-                // url += "sort=" + sort + "&order=" + order;
                 url = addParam(url, 'sort', sort, hasParams);
                 url = addParam(url, 'order', order, hasParams);
             }
