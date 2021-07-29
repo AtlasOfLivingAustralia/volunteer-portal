@@ -395,7 +395,7 @@ class ProjectService {
 
     def makeSummaryListForInstitution(Institution institution, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
         def conditions = [PROJECT.INSTITUTION_ID.eq(institution.id)]
-        if (!userService.isInstitutionAdmin(institution)) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             conditions += ACTIVE_ONLY
         }
         makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, false)
