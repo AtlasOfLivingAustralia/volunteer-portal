@@ -51,6 +51,21 @@ class InstitutionMessageController {
         }
     }
 
+    def approve() {
+        if (checkAdminAccess(false)) {
+
+            params.sort = (params.sort ?: 'date_created')
+            params.order = (params.order ?: 'desc')
+            params.max = (params.max ?: 20)
+            params.offset = (params.offset ?: 0)
+
+            def messageListDetails = institutionMessageService.getMessagesForApproval(params)
+
+            render(view: 'approve', model: [messageList: messageListDetails.messageList as List<InstitutionMessage>,
+                                                messageCount: messageListDetails.messageCount as int])
+        }
+    }
+
     /**
      * Displays create message form.
      */

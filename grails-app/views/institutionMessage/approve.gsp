@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.ala.skin}">
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Message')}"/>
-    <title><cl:pageTitle title="${g.message(code:"institutionMessage.list.label", default:"Institution Messages")}" /></title>
+    <title><cl:pageTitle title="${g.message(code:"institutionMessage.approve.list.label", default:"Approve Institution Messages")}" /></title>
     <style type="text/css">
         table {
             font-size: 0.9em;
@@ -13,69 +13,36 @@
 </head>
 
 <body class="admin">
-    <cl:headerContent title="${message(code: 'institutionMessage.list.label', default: 'Institution Messages')}" selectedNavItem="bvpadmin">
+    <cl:headerContent title="${message(code: 'institutionMessage.approve.list.label', default: 'Approve Institution Messages')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
-                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')]
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                [link: createLink(controller: 'institutionMessage', action: 'index'),
+                    label: message(code: 'institutionMessage.list.label', default: 'Institution Messages')]
             ]
         %>
 
-        <cl:ifSiteAdmin>
-            <div class="btn-group">
-                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="fa fa-cog"></i> Tools
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="${createLink(action: "create", params: params)}"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="${createLink(action: "approve")}"><i class="fa fa-inbox"></i>&nbsp;Approve ${entityName}</a>
-                    </li>
-                </ul>
-            </div>
-        </cl:ifSiteAdmin>
-        <cl:ifNotSiteAdmin>
-            <a class="btn btn-success" href="${createLink(action: "create", params: params)}"><i
-                    class="icon-plus icon-white"></i>&nbsp;Create ${entityName}</a>
-        </cl:ifNotSiteAdmin>
+        <div class="btn-group">
+            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-cog"></i> Tools
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="${createLink(action: "create", params: params)}"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="${createLink(action: "index")}"><i class="fa fa-envelope"></i>&nbsp
+                        ${message(code: 'institutionMessage.list.label', default: 'Institution Messages')}
+                    </a>
+                </li>
+            </ul>
+        </div>
     </cl:headerContent>
-
     <div class="container" role="main">
         <div class="panel panel-default">
             <div class="panel-body">
-                <p>
-                    Welcome to the DigiVol Institution messaging system. This system allows institutions to contact individual
-                    volunteers directly, via email, through DigiVol. Institutions can contact individuals, or a group of individuals
-                    based on contribution to an expedition or multiple expeditions, or all people who have contributed to an institution's
-                    activities.
-                </p>
-                <p>
-                    This tool is intended to allow institutions to contact volunteers with expedition/project updates,
-                    results or outcomes. You could also use this system to contact individual volunteers with feedback
-                    or information relating to validation.<br>
-                    <strong>All</strong> messages will be <u>approved by the DigiVol Admin prior to being sent</u>, this is to
-                    ensure that volunteers are sent communications at appropriate times and don’t become overwhelmed with
-                    message fatigue. <br>
-                    If you have any questions, or think your communication is better sent via the regular DigiVol monthly
-                    newsletter, then please contact <a href="mailto:digivol@australian.museum">digivol@australian.museum</a>.
-                </p>
-                <p>
-                    Please note, volunteers can opt-out of receiving messages from this tool and will be noted as such when composing new messages.
-                </p>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <g:select class="form-control institutitonFilter" name="institution" from="${institutionList}"
-                                  optionKey="id"
-                                  value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
                         <small>${messageCount ?: 0} Messages found.</small>
@@ -100,9 +67,7 @@
 
                                 <th>Recipient</th>
 
-                                <g:sortableColumn property="status"
-                                                  title="${message(code: 'institutionMessage.status.label', default: 'Status')}"
-                                                  params="${params}"/>
+                                <th>${message(code: 'institutionMessage.status.label', default: 'Status')}</th>
 
                                 <th>Action</th>
                             </tr>
@@ -143,30 +108,12 @@
                                     </g:else>
                                     </td>
                                     <td style="text-wrap: none; text-align: center">
-                                    <g:if test="${iMessage.approved}">
-                                        <i class="fa fa-check"
-                                           title="Approved/Sent: ${new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(iMessage.dateSent)} (by ${iMessage.approvedBy.displayName})"></i>
-                                    </g:if>
-                                    <g:else>
                                         <i class="fa fa-clock-o" title="Not Approved"></i>
-                                    </g:else>
                                     </td>
                                     <td style="text-wrap: none">
-                                        <a class="btn btn-xs btn-default" title="Resend Message"
-                                           href="${createLink(controller: 'institutionMessage', action: 'resend', id: iMessage.id)}"><i class="fa fa-share"></i></a>
-                                    <g:if test="${!iMessage.approved}">
-                                        <a class="btn btn-xs btn-default" title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
+                                        <a class="btn btn-xs btn-default" title="Edit/Approve Message"
                                             href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
-                                    </g:if>
-                                    <g:else>
-                                        <a class="btn btn-xs btn-default" title="View Message Details"
-                                           href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-list-alt"></i></a>
-                                    </g:else>
-                                <cl:ifSiteAdmin>
-                                    <g:if test="${!iMessage.approved}">
                                         <a class="btn btn-xs btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
-                                    </g:if>
-                                </cl:ifSiteAdmin>
                                     </td>
                                 </tr>
                             </g:each>
@@ -185,13 +132,6 @@
 <asset:script type="text/javascript">
     jQuery(function($) {
 
-        $('.institutitonFilter').change(function() {
-            let filter = $(this).val();
-            var url = "${createLink(controller: 'institutionMessage', action: 'index')}" +
-                "?institution=" + filter;
-            window.location = url;
-        });
-<cl:ifSiteAdmin>
         $(".delete-message").click(function(e) {
             e.preventDefault();
             const messageId = $(this).parents("[messageId]").attr("messageId");
@@ -225,7 +165,6 @@
                     "], recipient: [" + recipient + "]");
             }
         });
-</cl:ifSiteAdmin>
     });
 </asset:script>
 

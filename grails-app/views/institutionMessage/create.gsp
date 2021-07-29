@@ -127,6 +127,7 @@
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
                     .removeAttr("data-count-selected-text")
+                    .attr('title', 'Select a recipient')
                     .append(selectList);
                 $('#recipient').selectpicker();
 
@@ -147,6 +148,7 @@
                 $('#recipient').selectpicker('destroy');
                 $('#recipient').empty()
                     .attr("multiple", "true")
+                    .attr('title', 'Select a recipient')
                     .append(selectList);
 
                 // Set selected attributes
@@ -163,9 +165,10 @@
                 $('#recipient').empty()
                     .removeAttr("multiple")
                     .removeAttr("data-selected-text-format")
-                    .removeAttr("data-count-selected-text")
-                    .append("<option>- Institution; no recipient required -</option>");
+                    .removeAttr("data-count-selected-text");
+                    //.append("<option>- Institution; no recipient required -</option>");
                 $('#recipient').attr("disabled", true);
+                $('#recipient').attr('title', "No recipient selection required");
                 $('#recipient').selectpicker();
             }
 

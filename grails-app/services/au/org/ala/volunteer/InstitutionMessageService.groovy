@@ -1,9 +1,12 @@
 package au.org.ala.volunteer
 
 import grails.transaction.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.hibernate.Session
 import org.springframework.context.i18n.LocaleContextHolder
+
+import javax.sql.DataSource
 
 @Transactional
 class InstitutionMessageService {
@@ -15,6 +18,49 @@ class InstitutionMessageService {
     def groovyPageRenderer
     def grailsApplication
     def messageSource
+
+    def getMessagesForApproval(GrailsParameterMap params) {
+        String query = """\
+            select m.id
+            from message m
+            left join vp_user u2 on (created_by_id = u2.id)
+            where m.approved = false """.stripIndent()
+
+        def sortClause = "order by "
+        switch (params.sort) {
+            case 'sender':
+                sortClause += """\
+                    concat(u2.first_name, ' ', u2.last_name) ${params?.order} """.stripIndent()
+                break
+            case 'subject':
+                sortClause += "m.subject ${params?.order} "
+                break
+            case 'date_created':
+            default:
+                sortClause += "m.date_created ${params?.order}"
+                break
+        }
+
+        def messageList = []
+        def sql = new Sql(dataSource as DataSource)
+        def selectQuery = "${query} ${sortClause}"
+        int offset = params.int('offset') + 1
+        int max = params.int('max')
+
+        sql.eachRow(selectQuery.toString(), offset, max) { row ->
+            InstitutionMessage institutionMessage = InstitutionMessage.get(row.id as long)
+            if (institutionMessage) {
+                messageList.add(institutionMessage)
+            }
+        }
+
+        def totalMessages = sql.firstRow("select count(*) as message_count from (" + query + ") messages")
+
+        log.debug("total messages: ${totalMessages?.message_count}")
+        sql.close()
+
+        [messageList: messageList, messageCount: (totalMessages?.message_count) ?: 0]
+    }
 
     /**
      * Returns a list of institution messages for a given institution.
