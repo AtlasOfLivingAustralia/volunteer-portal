@@ -540,12 +540,6 @@ class TemplateController {
         }
 
         def template = Template.get(params.int("sourceTemplateId"))
-        def permissions = templateService.getTemplatePermissions(template)
-        if (!permissions.canEdit) {
-            render(view: '/notPermitted')
-            return
-        }
-
         [templateInstance: template]
     }
 
