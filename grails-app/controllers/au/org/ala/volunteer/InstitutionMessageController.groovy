@@ -467,22 +467,26 @@ class InstitutionMessageController {
      * @param id the user ID
      * @param refKey the reference verification key. Both this and userID are required to invoke the action.
      */
-    def optOut() {
+    def optOut(User requestingUser) {
         // Check params has a user ID and refKey hash.
         User user = userService.getCurrentUser()
+        log.debug("Opt out requesting user: ${requestingUser}")
+        log.debug("Current user: ${user}")
 
-        if (!params.long('id') || !params.refKey) {
-            render status: 403
+        if (!params.long('id') || !params.refKey || !requestingUser || !user) {
+            render(view: '/notPermitted')
+            return
         }
 
         // Check the user ID is the same as the one for the logged in user and confirm the user key.
         def verificationRefKey = userService.getUserHash(user)
         def success = false
-        if (user.id == params.long('id') && verificationRefKey == params.refKey as String) {
+        if (user.id == params.long('id') && verificationRefKey == (params.refKey as String)) {
             // Matches, process opt out.
             // Check there isn't already one there for some reason.
             if (!UserOptOut.findByUser(user)) {
-                UserOptOut optOut = new UserOptOut(user: user, dateCreated: new Date())
+                UserOptOut optOut = new UserOptOut(user: user)
+                optOut.dateCreated = new Date(System.currentTimeMillis())
                 optOut.save(flush: true, failOnError: true)
                 success = true
             }
