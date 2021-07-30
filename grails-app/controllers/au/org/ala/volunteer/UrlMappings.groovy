@@ -23,6 +23,7 @@ class UrlMappings {
         "500"(controller: 'error', action: 'index')
         "404"(view:'/notFound')
         "403"(view:'/notPermitted')
+        "405"(view: '/notPermitted')
 
         name landingPage: "/$shortUrl"(controller: 'project', action: 'customLandingPage')
 
