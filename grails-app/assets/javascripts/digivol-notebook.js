@@ -155,8 +155,8 @@ function digivolNotebooksTabs(config) {
         if (args) {
           if (args.sorting) {
             args.sorting = undefined;
-            if (args.sort == $ctrl.sort) {
-              $ctrl.order = $ctrl.order == 'asc' ? 'desc' : 'asc';
+            if (args.sort === $ctrl.sort) {
+              $ctrl.order = $ctrl.order === 'asc' ? 'desc' : 'asc';
             }
           }
           angular.extend($ctrl, args);
@@ -197,7 +197,7 @@ function digivolNotebooksTabs(config) {
       };
 
       $ctrl.sortedClasses = function (column) {
-        return column == $ctrl.sort ? ['sorted', $ctrl.order] : [];
+        return column === $ctrl.sort ? ['sorted', $ctrl.order] : [];
       };
 
       // watch the selectedTab value to initiate lazy loading of tab contents
@@ -206,7 +206,7 @@ function digivolNotebooksTabs(config) {
           return $ctrl.selectedTab;
         },
         function (newValue, oldValue) {
-          if (newValue == $ctrl.tabIndex && $ctrl.data == null) {
+          if (newValue === $ctrl.tabIndex && $ctrl.data == null) {
             $ctrl.load();
           }
         }
@@ -263,7 +263,7 @@ function digivolNotebooksTabs(config) {
           return $ctrl.selectedTab;
         },
         function (newValue, oldValue) {
-          if (newValue == $ctrl.tabIndex && $ctrl.data == null) {
+          if (newValue === $ctrl.tabIndex && $ctrl.data == null) {
             $ctrl.load();
           }
         }

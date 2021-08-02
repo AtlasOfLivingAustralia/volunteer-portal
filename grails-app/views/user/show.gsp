@@ -333,20 +333,19 @@
                     <th colspan="2">
                         <h4 style="padding-bottom: 10px">
                             <g:message code="forumTopic.label" />: <a ng-href="${createLink(controller: 'forum', action: 'viewForumTopic')}/{{ mt.topic.id }}">{{ mt.topic.title }} </a>
-                            <span ng-show="mt.topicProject"><g:message code="project.label" />: <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ mt.topicProject.id }}">{{ mt.topicProject.id }}</a></span>
-                            <span ng-show="mt.topicTask"><g:message code="task.label" />: <a ng-href="${createLink(controller: 'project', action: 'show')}/{{ mt.topicTask.id }}">{{ mt.topicTask.externalIdentifier }}</a></span>
                         </h4>
+                        <span ng-show="mt.topicProject"><g:message code="project.label" />: <a ng-href="${createLink(controller: 'project', action: 'index')}/{{ mt.topicProject.id }}">{{ mt.topicProject.name }}</a></span><br/>
+                        <span ng-show="mt.topicTask"><g:message code="task.label" />: <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ mt.topicTask.id }}">{{ mt.topicTask.externalIdentifier }}</a></span>
                     </th>
                 </tr>
                 <tr ng-repeat="m in mt.messages track by m.message.id" ng-class="{ 'author-is-moderator-row': m.isUserForumModerator }" ng-repeat-end>
                     <td class="forumNameColumn">
-                        <a ng-hide="$ctrl.hideUsername" ng-href="${link(controller: 'user', action: 'show')}/{{ m.message.user.id}}">{{ m.userProps.displayName }}</a>
+                        <a ng-hide="$ctrl.hideUsername" ng-href="${createLink(controller: 'user', action: 'show')}/{{ m.message.user.id}}">{{ m.userProps.displayName }}</a>
                         <br />
                         <span class="forumMessageDate">{{ m.message.date | date : 'medium' }}</span>
                         <br ng-show="m.isUserForumModerator" />
                         <span ng-show="m.isUserForumModerator" class="moderator-label"><g:message code="moderator.label" /></span>
                     </td>
-                    <td style="vertical-align: middle" marked="m.message.text"></td>
                 </tr>
             </tbody>
         </table>
