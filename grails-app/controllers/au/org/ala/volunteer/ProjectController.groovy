@@ -1625,7 +1625,7 @@ class ProjectController {
     }
 
     def loadProgress(Project project) {
-        if (!projectService.isAdminForProject(project)) {
+        if (!project || !projectService.isAdminForProject(project)) {
             respond status: 403
         } else {
             respond project

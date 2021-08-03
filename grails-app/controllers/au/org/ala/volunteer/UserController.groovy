@@ -292,8 +292,8 @@ class UserController {
         def currentUser = userService.currentUserId
 
         if (!user) {
-            flash.message = "Missing user id, or user not found!"
-            redirect(action: 'list')
+            // flash.message = "Missing user id, or user not found!"
+            render(view: '/notPermitted')
             return
         }
 
@@ -317,7 +317,7 @@ class UserController {
         if (!user) {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            redirect(action: "list")
+            render(view: '/notPermitted')
         } else {
             Map myModel = [
                     userInstance         : user,
@@ -337,6 +337,11 @@ class UserController {
     }
 
     def edit() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def user = User.get(params.int("id"))
 
         if (!user) {
@@ -345,11 +350,6 @@ class UserController {
             redirect(action: "list")
         }
 
-        if (!userService.isAdmin()) {
-            flash.message = "You do not have permission to edit this user page (ROLE_ADMIN required)"
-            redirect(action: "show", id: user.id)
-        }
-        
         def roles = UserRole.findAllByUser(user)
 
         return [userInstance: user, roles: roles, userDetails: authService.getUserForUserId(user.getUserId())]
@@ -357,6 +357,11 @@ class UserController {
 
     @Transactional
     def update() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def user = User.get(params.long('id'))
         def currentUser = userService.currentUserId
         if (user && currentUser && (userService.isAdmin() || currentUser == user.userId)) {
@@ -390,6 +395,11 @@ class UserController {
 
     @Transactional
     def delete() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def user = User.get(params.long('id'))
         def currentUser = userService.currentUserId
         if (user && currentUser && userService.isAdmin()) {
@@ -417,6 +427,11 @@ class UserController {
      * @return
      */
     def editRoles() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
         def user = User.get(params.long('id'))
         user.userRoles = sortUserRoles (user)
 
@@ -502,8 +517,8 @@ class UserController {
         }
 
         if (!user) {
-            flash.message = "User not found!"
-            redirect(action: "list")
+            //flash.message = "User not found!"
+            render(view: "/notPermitted")
             return
         }
 
