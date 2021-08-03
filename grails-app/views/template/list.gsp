@@ -49,6 +49,10 @@
                         cloned for your own institutions/expeditions.<br/>
                         To view templates that are not yet assigned to an expedition, select 'View all institutions' and filter by
                         'Unassigned templates'.<br/>
+                        <b>Clone Template:</b><br/>
+                        When cloning a template, it will be created unassigned to any expeditions. To find your newly
+                        cloned template, select 'View ALL Institutions' in the institution filter and 'Unassigned templates'
+                        in the status filter.<br/>
                     <cl:ifSiteAdmin>
                         <b>Deleting:</b><br/>
                         Deleting is only available when the template is not assigned to an expedition. Please be aware
