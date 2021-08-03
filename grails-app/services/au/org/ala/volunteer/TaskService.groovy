@@ -166,9 +166,11 @@ class TaskService {
                 task.is_valid, 
                 COALESCE(task.number_of_matching_transcriptions, 0),
                 task.external_identifier,
-                task.fully_validated_by
+                task.fully_validated_by,
+                concat(vu.last_name, ' ', vu.first_name) as validator
             from task
             join project on (project.id = task.project_id)
+            left join vp_user vu on (vu.user_id = task.fully_validated_by)
             where project_id = :projectId """.stripIndent()
 
         def queryParams = [:]
@@ -203,7 +205,8 @@ class TaskService {
                 sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "
                 break
             case 'fullyValidatedBy':
-                sortClause += " task.fully_validated_by " + (params.order ?: 'asc')
+                //sortClause += " task.fully_validated_by " + (params.order ?: 'asc')
+                sortClause += " concat(vu.last_name, ' ', vu.first_name) " + (params.order ?: 'asc')
                 break
             case 'externalIdentifier':
                 sortClause += " task.external_identifier " + (params.order ?: 'asc')

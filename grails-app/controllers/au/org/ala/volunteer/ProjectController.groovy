@@ -1626,7 +1626,7 @@ class ProjectController {
 
     def loadProgress(Project project) {
         if (!project || !projectService.isAdminForProject(project)) {
-            respond status: 403
+            render(view: '/notPermitted')
         } else {
             respond project
         }
