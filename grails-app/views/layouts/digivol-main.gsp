@@ -179,11 +179,10 @@
 
             <div class="row footer-header">
                 <div class="col-sm-12">
-                    <a class="footer-brand " href="https://www.facebook.com/groups/181836918595085/"><asset:image
-                            src="logoDigivolInverted.png"/></a>
+                    <asset:image src="logoDigivolInverted.png"/>
 
                     <div class="social-icons pull-right">
-                        <a href="https://www.facebook.com/DigiVolOnline/?ref=hl" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
+                        <a href="https://www.facebook.com/AMDigiVol/" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
                         <a href="https://twitter.com/AMDigiVol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
