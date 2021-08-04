@@ -25,7 +25,7 @@ plugins {
     id "com.virgo47.ClasspathJar" version "1.0.0"
 }
 
-version "5.4.2"
+version "6.0.0"
 group "au.org.ala"
 description "Digivol application"
 
@@ -153,7 +153,7 @@ dependencies {
     compile 'org.grails.plugins:cache-headers:2.0.2'
     compile 'org.grails.plugins:csv:1.0.ALA.3'
     compile 'org.grails.plugins:postgresql-extensions:5.2.0'
-    compile 'org.grails.plugins:mail:2.0.0.RC6'
+    compile 'org.grails.plugins:mail:2.0.1'
     compile 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
     compile 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
     compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
@@ -163,7 +163,7 @@ dependencies {
     // TODO ALA Plugins: image service (is it used anywhere?)
     compile 'org.grails.plugins:ala-auth:3.0.5'
     compile 'au.org.ala:userdetails-service-client:1.4.0' // override this to for external properties changes
-    compile 'org.grails.plugins:cache-ehcache:2.0.0.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:cache-ehcache:2.0.0.ALA'
     //compile 'org.grails.plugins:cache-ehcache:3.0.0.M1'
     // TODO Collection Event Controller?
 

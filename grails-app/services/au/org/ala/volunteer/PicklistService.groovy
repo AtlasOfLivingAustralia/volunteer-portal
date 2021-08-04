@@ -1,10 +1,7 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
-import grails.plugins.csv.CSVReaderUtils
 import grails.transaction.Transactional
-
-//import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.FlushMode
 
 @Transactional
@@ -38,26 +35,27 @@ class PicklistService {
 
     def replaceItems(long picklistId, CSVReader csvdata, String institutionCode) {
         def picklist = Picklist.get(picklistId)
+
         // First delete the existing items...
         if (picklist) {
             log.info "Deleting existing items..."
-            int itemsDeleted = 0;
+            int itemsDeleted = 0
             PicklistItem.findAllByPicklistAndInstitutionCode(picklist, institutionCode ?: null).each {
-                it.delete();
-                itemsDeleted++;
+                it.delete()
+                itemsDeleted++
             }
             log.info "${itemsDeleted} existing items deleted from picklist '${picklist.name}' and institutionCode '${institutionCode}'"
         }
 
         def pattern = ~/^(['"])(.*)(\1)$/
-        int rowsProcessed = 0;
+        int rowsProcessed = 0
         try {
             sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
             csvdata.eachLine { tokens ->
                 def value = tokens[0]
                 def m = pattern.matcher(value)
                 if (m.find()) {
-                    value = m.group(2);
+                    value = m.group(2)
                 }
                 def picklistItem = new PicklistItem(picklist: picklist, value: value, institutionCode: institutionCode ?: null, index: rowsProcessed)
 
@@ -65,7 +63,7 @@ class PicklistService {
                     picklistItem.key = tokens[1] // optional second value as "key"
                 }
                 picklistItem.save()
-                rowsProcessed++;
+                rowsProcessed++
                 if (rowsProcessed % 2000 == 0) {
                     // Doing this significantly speeds up imports...
                     sessionFactory.currentSession.flush()
@@ -77,25 +75,25 @@ class PicklistService {
             log.error(e)
             throw e
         } finally {
-            sessionFactory.currentSession.flush();
+            sessionFactory.currentSession.flush()
             sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
         }
-
     }
 
     def getInstitutionCodes() {
-        def c = PicklistItem.createCriteria();
-        def results = c {
+        def c = PicklistItem.createCriteria()
+        def results = c.list {
             isNotNull("institutionCode")
             projections {
                 distinct("institutionCode")
             }
+            order("institutionCode", "asc")
         }
-        List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes)
+        List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
         boolean changed = false
         results.each {
             if (!codes.contains(it)) {
-                codes.add(it)
+                codes.add(it as String)
                 changed = true
             }
         }
@@ -104,11 +102,12 @@ class PicklistService {
             settingsService.setSetting(SettingDefinition.PicklistCollectionCodes.key, codes.sort())
         }
 
-        return codes;
+        return codes
     }
 
-    public boolean addCollectionCode(String code) {
+    boolean addCollectionCode(String code) {
         List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
+
         if (codes && code) {
             if (!codes.contains(code)) {
                 codes.add(code)
@@ -116,11 +115,13 @@ class PicklistService {
                 return true
             }
         }
+
         return false
     }
 
-    public boolean removeCollectionCode(String code) {
+    boolean removeCollectionCode(String code) {
         List<String> codes = settingsService.getSetting(SettingDefinition.PicklistCollectionCodes) as List<String>
+
         if (codes && code) {
             if (codes.contains(code)) {
                 codes.remove(code)
@@ -128,12 +129,13 @@ class PicklistService {
                 return true
             }
         }
-        return false
 
+        return false
     }
     
-    public List getPicklistItemsForProject(DarwinCoreField picklistField, Project project) {
+    List getPicklistItemsForProject(DarwinCoreField picklistField, Project project) {
         def results = []
+
         if (picklistField && project) {
             def pl = Picklist.findByName(picklistField.toString())
             if (pl) {
@@ -144,6 +146,7 @@ class PicklistService {
                 }
             }
         }
+
         return results
     }
 }

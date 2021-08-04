@@ -18,7 +18,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class ProjectController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST",
-                             archive: "POST",
+                             archive: "POST", toggleProjectInactivity: "POST",
                              wizardImageUpload: "POST", wizardClearImage: "POST", wizardAutosave: "POST", wizardCreate: "POST"]
 
     static numbers = ["Zero", "One", 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven',
@@ -37,6 +37,7 @@ class ProjectController {
     def projectStagingService
     def authService
     def groovyPageRenderer
+    def templateService
     Closure<DSLContext> jooqContext
 
     /**
@@ -62,7 +63,7 @@ class ProjectController {
             redirect(action: "list")
         } else {
             // project info
-            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
+            List userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
             def expedition = grailsApplication.config.expedition as List
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
@@ -71,8 +72,8 @@ class ProjectController {
                 row.put("members", [])
                 roles.addAll(row)
             }
-            
-            userIds.each { it
+
+            userIds.each { it ->
                 // iterate over each user and assign to a role.
                 def userId = it[0] as String
                 def count = it[1]
@@ -96,7 +97,9 @@ class ProjectController {
             log.debug "roles = ${roles as JSON}"
 
             def leader = roles.find { it.name == "Expedition Leader" } ?.members?.getAt(0)
-            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null, null, null, null, null, null, null, false)?.projectRenderList?.get(0)
+
+            def projectSummary = projectService.makeSummaryListFromProjectList([projectInstance], null, null,
+                    null, null, null, null, null, null, false)?.projectRenderList?.get(0)
 
             def taskCount
             def tasksTranscribed
@@ -115,16 +118,16 @@ class ProjectController {
             }
 
             render(view: "index", model: [
-                    projectInstance: projectInstance,
-                    taskCount: taskCount,
+                    projectInstance : projectInstance,
+                    taskCount       : taskCount,
                     tasksTranscribed: tasksTranscribed,
-                    roles:roles,
-                    currentUserId: currentUserId,
-                    leader: leader,
-                    percentComplete: percentComplete,
-                    projectSummary: projectSummary,
+                    roles           : roles,
+                    currentUserId   : currentUserId,
+                    leader          : leader,
+                    percentComplete : percentComplete,
+                    projectSummary  : projectSummary,
                     transcriberCount: userIds.size(),
-                    showTutorial: showTutorial
+                    showTutorial    : showTutorial
             ])
         }
     }
@@ -133,7 +136,6 @@ class ProjectController {
      * REST web service to return a list of tasks with coordinates to show on Google Map
      */
     def tasksToMap() {
-
         def projectInstance = Project.get(params.long('id'))
         def taskListFields = []
 
@@ -176,20 +178,19 @@ class ProjectController {
      * Output list of email addresses for a given project
      */
     def mailingList() {
-        def projectInstance = Project.get(params.long('id'))
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
+            return
+        }
 
-        if (projectInstance && userService.isAdmin()) {
-            def userIds = taskService.getUserIdsForProject(projectInstance)
+        if (project) {
+            def userIds = taskService.getUserIdsForProject(project)
             log.debug("userIds = " + userIds)
             def userEmails = userService.getEmailAddressesForIds(userIds as List<String>)
-            //render(userIds)
             def list = userEmails.join(";\n")
             render(text:list, contentType: "text/plain")
-        }
-        else if (projectInstance) {
-            render("You do not have permission to access this page.")
-        }
-        else {
+        } else {
             render("No project found for id: " + params.long('id'))
         }
     }
@@ -215,32 +216,35 @@ class ProjectController {
      * Produce an export file
      */
     def exportCSV() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long('id'))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
-        def projectInstance = Project.get(params.long('id'))
         boolean transcribedOnly = params.transcribed?.toBoolean()
         boolean validatedOnly = params.validated?.toBoolean()
 
-        if (projectInstance) {
+        if (project) {
             def sw = Stopwatch.createStarted()
+
             def taskList
             if (transcribedOnly) {
-                taskList = taskService.getFullyTranscribedTasksAndTranscriptions(projectInstance, [max:9999, sort:"id"])
+                taskList = taskService.getFullyTranscribedTasksAndTranscriptions(project, [max:9999, sort:"id"])
             } else if (validatedOnly) {
-                taskList = taskService.getValidTranscribedTasks(projectInstance, [max:9999, sort:"id"])
+                taskList = taskService.getValidTranscribedTasks(project, [max:9999, sort:"id"])
             } else {
-                taskList = taskService.getAllTasksAndTranscriptionsIfExists(projectInstance, [max: 9999])
+                taskList = taskService.getAllTasksAndTranscriptionsIfExists(project, [max: 9999])
             }
+
             log.debug("Got task list in ${sw.elapsed(MILLISECONDS)}ms")
             sw.reset().start()
 
             def fieldList = fieldService.getAllFieldsWithTasks(taskList)
             log.debug("Got all fields for tasks in ${sw.elapsed(MILLISECONDS)}ms")
             sw.reset().start()
-            def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID", "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
+            def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID",
+                               "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
             log.debug("Got all field names in ${sw.elapsed(MILLISECONDS)}ms")
             sw.reset().start()
@@ -250,45 +254,38 @@ class ProjectController {
                 export_func = exportService.export_zipFile
             }
 
-//            def exporter_func_property = exportService.metaClass.getProperties().find() { it.name == 'export_' + projectInstance.template.name }
-//            if (exporter_func_property) {
-//                export_func = exporter_func_property.getProperty(exportService)
-//            }
-
             if (export_func) {
                 response.setHeader("Cache-Control", "must-revalidate")
                 response.setHeader("Pragma", "must-revalidate")
-                export_func(projectInstance, taskList, fieldNames, fieldList, response)
+                export_func(project, taskList, fieldNames, fieldList, response)
                 log.debug("Ran export func in ${sw.elapsed(MILLISECONDS)}ms")
             } else {
-                throw new Exception("No export function for template ${projectInstance.template.name}!")
+                throw new Exception("No export function for template ${project.template.name}!")
             }
 
-        }
-        else {
+        } else {
             throw new Exception("No project found for id: " + params.long('id'))
         }
     }
 
     def deleteTasks() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        projectService.deleteTasksForProject(projectInstance, true)
-        //redirect(action: "edit", id: projectInstance?.id)
+        projectService.deleteTasksForProject(project, true)
         render '', status: SC_ACCEPTED
     }
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 24, 1000)
-
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
         def projectSummaryList = projectService.getProjectSummaryList(params, false)
-
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
+        def numberOfUncompletedProjects =
+                projectSummaryList.numberOfIncompleteProjects < numbers.size() ?
+                        numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
 
@@ -335,9 +332,11 @@ class ProjectController {
             tags = labels*.value
         }
 
-        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort, offset, max, order, pt, tags, false)
-
-        def numberOfUncompletedProjects = projectSummaryList.numberOfIncompleteProjects < numbers.size() ? numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
+        def projectSummaryList = projectService.getProjectSummaryList(statusFilterMode, activeFilterMode, q, sort,
+                offset, max, order, pt, tags, false)
+        def numberOfUncompletedProjects =
+                projectSummaryList.numberOfIncompleteProjects < numbers.size() ?
+                        numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
 
@@ -350,17 +349,18 @@ class ProjectController {
                 numberOfUncompletedProjects: numberOfUncompletedProjects,
                 totalUsers: User.countByTranscribedCountGreaterThan(0)
         ]
+
         render(view: 'customLandingPage', model: model)
     }
 
     /**
-     * Redirects a image for the supplied project
+     * Redirects an image for the supplied project
      */
     def showImage() {
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
+        def project = Project.get(params.long('id'))
+        if (project) {
             params.max = 1
-            def task = Task.findByProject(projectInstance, params)
+            def task = Task.findByProject(project, params)
             if (task?.multimedia?.filePathToThumbnail) {
                 redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail?.get(0))
             }
@@ -368,58 +368,154 @@ class ProjectController {
     }
 
     def show() {
-        def projectInstance = Project.get(params.long('id'))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+        def project = Project.get(params.long('id'))
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
-            redirect(action: 'index', id: projectInstance.id, params: params)
+            redirect(action: 'index', id: project.id, params: params)
         }
+    }
+
+    def create() {
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        def projectTypes = ProjectType.listOrderByName()
+
+        [institutionList: institutionList, projectTypes: projectTypes]
+    }
+
+    def save() {
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        Project project = new Project()
+        bindData(project, params)
+
+        if (params.institutionId) {
+            Institution institution = Institution.get(params.long('institutionId') as Long)
+            if (institution) {
+                project.institution = institution
+            } else {
+                project.errors.rejectValue("institution", "project.institution.required",
+                        "Institution is required.")
+            }
+        }
+
+        if (project.errors.hasErrors()) {
+            def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+            def projectTypes = ProjectType.listOrderByName()
+            render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
+            return
+        } else {
+            if (!projectService.createProject(project)) {
+                log.error("Error creating project, reloading create page.")
+                flash.message = "An error occurred creating the Project."
+                def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+                def projectTypes = ProjectType.listOrderByName()
+                render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
+                return
+            }
+        }
+
+        redirect(action: 'index', id: project?.id)
     }
 
     def edit() {
         def currentUser = userService.currentUserId
-        if (currentUser != null && userService.isAdmin()) {
-            redirect(action: "editGeneralSettings", params: params)
+        Project p = Project.get(params.long('id'))
+        if (currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(p?.institution))) {
+            redirect(action:"editGeneralSettings", params: params)
         } else {
             flash.message = "You do not have permission to view this page"
             redirect(controller: "project", action: "index", id: params.long('id'))
         }
     }
 
-    def editGeneralSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+    def toggleProjectInactivity(Project project) {
+        if (!project) {
+            render status: 404
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
-            redirect(action: "list")
-        } else {
-            final insts = Institution.list()
-            final names = insts*.name
-            final nameToId = insts.collectEntries { [(it.name): it.id] }
-            final labelCats = Label.withCriteria { projections { distinct 'category' } }
 
-            final sortedLabels = projectInstance.labels.sort { a,b -> def x = a.category?.compareTo(b.category); return x == 0 ? a.value <=> b.value : x }
-            def counter = 0
-            final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
-            return [projectInstance: projectInstance,
-                    templates: Template.listOrderByName(),
-                    projectTypes: ProjectType.listOrderByName(),
-                    institutions: names,
-                    institutionsMap: nameToId,
-                    labelColourMap: catColourMap,
-                    sortedLabels: sortedLabels]
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        if (!params.verifyId || params.verifyId as long != project.id) {
+            flash.message = "You do not have permission to view this page"
+            render(view: '/notPermitted')
+            return
+        }
+
+        // inactive == true, sets false, inactive == false, sets true
+        project.inactive = (!project.inactive)
+        if (!project.save(flush: true, failOnError: true)) {
+            flash.message = "The expedition status was not able to be updated."
+            render(view: '/notPermitted')
+        } else {
+            if (!project.inactive) {
+                generateActivationNotification(project)
+            }
+            flash.message = "The expedition status has been updated."
+            redirect(uri: request?.getHeader("referer") ?: createLink(controller: 'project', action: 'editGeneralSettings', id: project.id))
         }
     }
 
+    def editGeneralSettings() {
+        Project project = Project.get(params.long("id"))
+
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
+            redirect(action: "list")
+        } else {
+            def editLists = getGeneralProjectLists(project)
+
+            return [projectInstance: project,
+                    templates      : editLists?.templates,
+                    projectTypes   : ProjectType.listOrderByName(),
+                    institutionList: editLists?.insts,
+                    labelColourMap : editLists?.catColourMap,
+                    sortedLabels   : editLists?.sortedLabels]
+        }
+    }
+
+    def getGeneralProjectLists(Project project) {
+        final insts = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
+        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        final templates = templateService.getTemplatesForProject(project, userService.isSiteAdmin())
+
+        final sortedLabels = project.labels.sort { a,b ->
+            def x = a.category?.compareTo(b.category)
+            return x == 0 ? a.value <=> b.value : x
+        }
+
+        def counter = 0
+        final catColourMap = labelCats?.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
+
+        return [insts: insts, labelCats: labelCats, templates: templates, sortedLabels: sortedLabels, catColourMap: catColourMap]
+    }
+
     def checkTemplateSupportMultiTranscriptions() {
-        if (!userService.isAdmin()) {
+        def project = Project.findById(params.long('projectId'))
+        if (!projectService.isAdminForProject(project)) {
             render (["status": 403, "error": "Forbidden"] as JSON)
         } else {
-            def template = Template.findById(params.int("templateId"))
+            def template = Template.findById(params.long("templateId"))
             if (template) {
                 render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
             } else {
@@ -429,40 +525,45 @@ class ProjectController {
     }
 
     def editTutorialLinksSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
-            return [projectInstance: projectInstance, templates: Template.list(), projectTypes: ProjectType.list() ]
+            return [projectInstance: project, templates: Template.list(), projectTypes: ProjectType.list() ]
         }
     }
 
     def editPicklistSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
             def picklistInstitutionCodes = [""]
             picklistInstitutionCodes.addAll(picklistService.getInstitutionCodes())
 
-            return [projectInstance: projectInstance, picklistInstitutionCodes: picklistInstitutionCodes ]
+            return [projectInstance: project, picklistInstitutionCodes: picklistInstitutionCodes ]
         }
     }
 
     private def getCommonEditSettings(def params) {
-        def projectInstance = Project.get(params.int("id"))
+        def projectInstance = Project.get(params.long("id"))
         if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
             return [projectInstance: projectInstance ]
@@ -470,8 +571,9 @@ class ProjectController {
     }
 
     def editMapSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
@@ -479,8 +581,9 @@ class ProjectController {
     }
 
     def editBannerImageSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
@@ -488,8 +591,9 @@ class ProjectController {
     }
 
     def editBackgroundImageSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
@@ -497,137 +601,179 @@ class ProjectController {
     }
 
     def editTaskSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
         def projectId = params.long("id")
-        def projectInstance = Project.get(projectId)
-        if (!projectInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
             def currentlyLoading = jooqContext.call().fetchExists(TASK_DESCRIPTOR, TASK_DESCRIPTOR.PROJECT_ID.eq(projectId))
-            def taskCount = Task.countByProject(projectInstance)
-            return [projectInstance: projectInstance, taskCount: taskCount, currentlyLoading: currentlyLoading]
+            def taskCount = Task.countByProject(project)
+            return [projectInstance: project, taskCount: taskCount, currentlyLoading: currentlyLoading]
         }
     }
 
     def updateGeneralSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
 
+        if (project) {
             if (params.name) {
                 params.featuredLabel = params.name
             }
 
-            final instId = params.getLong("institutionId")
-            def inst
-            if (instId && (inst = Institution.get(instId))) {
-                projectInstance.institution = inst
+            if (!saveProjectSettingsFromParams(project, params)) {
+                def editLists = getGeneralProjectLists(project)
+                render(view: "editGeneralSettings", model: [projectInstance: project,
+                                                            templates      : editLists?.templates,
+                                                            projectTypes   : ProjectType.listOrderByName(),
+                                                            institutionList: editLists?.insts,
+                                                            labelColourMap : editLists?.catColourMap,
+                                                            sortedLabels   : editLists?.sortedLabels])
             } else {
-                projectInstance.institution = null
-            }
-
-            if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
-            } else {
-                redirect(action:'editGeneralSettings', id: projectInstance.id)
+                redirect(action:'editGeneralSettings', id: project.id)
             }
         }  else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         }
     }
 
     def update() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
-            if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editGeneralSettings", model: [projectInstance: projectInstance])
+
+        if (project) {
+            if (!saveProjectSettingsFromParams(project, params)) {
+                render(view: "editGeneralSettings", model: [projectInstance: project])
             } else {
-                redirect(action:'editGeneralSettings', id: projectInstance.id)
+                redirect(action:'editGeneralSettings', id: project.id)
             }
         }  else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         }
     }
 
     def updateTutorialLinksSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
-            if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editTutorialLinksSettings", model: [projectInstance: projectInstance])
+
+        if (project) {
+            if (!saveProjectSettingsFromParams(project, params)) {
+                render(view: "editTutorialLinksSettings", model: [projectInstance: project])
             } else {
-                redirect(action:'editTutorialLinksSettings', id: projectInstance.id)
+                redirect(action:'editTutorialLinksSettings', id: project.id)
             }
         }  else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         }
     }
 
     def deleteAllTasksFragment() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        def taskCount = Task.countByProject(projectInstance)
-        [projectInstance: projectInstance, taskCount: taskCount]
+        def taskCount = Task.countByProject(project)
+        [projectInstance: project, taskCount: taskCount]
     }
 
     def deleteProjectFragment() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        def taskCount = Task.countByProject(projectInstance)
-        [projectInstance: projectInstance, taskCount: taskCount]
+        def taskCount = Task.countByProject(project)
+        [projectInstance: project, taskCount: taskCount]
     }
 
-    private boolean saveProjectSettingsFromParams(Project projectInstance, GrailsParameterMap params) {
-        if (projectInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (projectInstance.version > version) {
-                    projectInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'project.label', default: 'Project')] as Object[], "Another user has updated this Project while you were editing")
-                    return false
-                }
-            }
+    private boolean saveProjectSettingsFromParams(Project project, GrailsParameterMap params) {
+        if (!projectService.isAdminForProject(project)) {
+            return false
+        }
 
+        if (project != null) {
             // Issue #371 - Activation notification
-            def oldInactiveFlag = projectInstance.inactive
-            boolean newInactive = (params.inactive != null ? params.inactive == "true" : projectInstance.inactive)
+            def oldInactiveFlag = project.inactive == null ? false : project.inactive
+            boolean newInactive = (params.inactive != null ? params.inactive == "true" : project.inactive)
 
-            projectInstance.properties = params
+            // If the user is toggling the inactive setting, only that parameter exists.
+            if (params.inactive) {
+                project.inactive = (params.inactive == "true")
+            } else {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (project.version > version) {
+                        project.errors.rejectValue("version", "default.optimistic.locking.failure",
+                                [message(code: 'project.label', default: 'Project')] as Object[],
+                                "Another user has updated this Project while you were editing")
+                        return false
+                    }
+                }
 
-            if (!projectInstance.template.supportMultipleTranscriptions) {
-                projectInstance.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
-                projectInstance.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+                if (params.formType == Project.EDIT_SECTION_GENERAL) {
+                    if (params.template) {
+                        Template newTemplate = Template.get(params.long('template'))
+                        if ((project.template.id != newTemplate.id) && newTemplate.isHidden) {
+                            project.errors.rejectValue("template", "project.template.notavailable",
+                                    [newTemplate.name] as Object[],
+                                    "Template is no longer available.")
+                            return false
+                        }
+                    }
+
+                    log.debug("Institution from edit: ${params.institutionId}")
+                    def inst = Institution.get(params.getLong('institutionId'))
+                    if (inst) {
+                        project.institution = inst
+                    } else {
+                        project.errors.rejectValue("institutionId", "project.institution.required",
+                                [message(code: 'project.label', default: 'Project')] as Object[],
+                                message(code: 'project.institution.required', default: 'Institution required') as String)
+                        return false
+                    }
+                }
+
+                bindData(project, params)
+
+                if (!project.template.supportMultipleTranscriptions) {
+                    project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
+                    project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
+                }
             }
 
-            if (!projectInstance.hasErrors() && projectService.saveProject(projectInstance)) {
+            if (!project.hasErrors() && projectService.saveProject(project)) {
+                log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
                 if (((oldInactiveFlag != newInactive) && (!newInactive))) {
-                    log.info("Project was activated; Sending project activation notification")
-                    def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: projectInstance.name])
-                    projectService.emailNotification(projectInstance, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
+                    log.info("Project was activated Sending project activation notification")
+                    generateActivationNotification(project)
                 }
-                flash.message = "Expedition updated"
+                if (project.template.isHidden) {
+                    flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
+                } else {
+                    flash.message = "Expedition updated"
+                }
                 return true
             } else {
                 flash.message = "Expedition update failed"
@@ -636,140 +782,152 @@ class ProjectController {
         return false
     }
 
+    private def generateActivationNotification(Project project) {
+        def message = groovyPageRenderer.render(view: '/project/projectActivationNotification', model: [projectName: project.name])
+        projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_ACTIVATION)
+    }
+
     def updatePicklistSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
-            if (!saveProjectSettingsFromParams(projectInstance, params)) {
-                render(view: "editPicklistSettings", model: [projectInstance: projectInstance])
+
+        if (project) {
+            if (!saveProjectSettingsFromParams(project, params)) {
+                render(view: "editPicklistSettings", model: [projectInstance: project])
             } else {
-                redirect(action:'editPicklistSettings', id: projectInstance.id)
+                redirect(action:'editPicklistSettings', id: project.id)
             }
         }  else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         }
     }
 
     def delete() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
+
+        if (project) {
             try {
-                projectService.deleteProject(projectInstance)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
-                redirect(action: "list")
-            }
-            catch (DataIntegrityViolationException e) {
-                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
+                projectService.deleteProject(project)
+                flash.message = message(code: 'default.deleted.message',
+                         args: [message(code: 'project.label', default: 'Project'), project.name]) as String
+                redirect(action: "manage")
+            } catch (DataIntegrityViolationException e) {
+                String message = message(code: 'default.not.deleted.message',
+                          args: [message(code: 'project.label', default: 'Project'), project.name]) as String
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "show", id: params.long('id'))
             }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.long('id')])}"
-            redirect(action: "list")
+        } else {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
+            redirect(action: "manage")
         }
     }
     
     def uploadFeaturedImage() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
 
-        if(request instanceof MultipartHttpServletRequest) {
+        if (request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('featuredImage')
             
             if (f != null && f.size > 0) {
-
                 def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
-                    render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
+                    render(view: 'editBannerImageSettings', model: [projectInstance:project])
+                    return
                 }
 
                 try {
-                    def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+                    def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
                     def file = new File(filePath)
                     file.getParentFile().mkdirs()
                     f.transferTo(file)
-                    projectService.checkAndResizeExpeditionImage(projectInstance)
+                    projectService.checkAndResizeExpeditionImage(project)
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
-                    render(view:'editBannerImageSettings', model:[projectInstance:projectInstance])
+                    render(view: 'editBannerImageSettings', model: [projectInstance:project])
                     return
                 }
             }
         }
 
-        projectInstance.featuredImageCopyright = params.featuredImageCopyright
-        projectService.saveProject(projectInstance)
+        project.featuredImageCopyright = params.featuredImageCopyright
+        projectService.saveProject(project)
         flash.message = "Expedition image settings updated."
         redirect(action: "editBannerImageSettings", id: params.long('id'))
     }
 
     def uploadBackgroundImage() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.long('id'))
 
-        if(request instanceof MultipartHttpServletRequest) {
+        if (request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('backgroundImage')
 
             if (f != null && f.size > 0) {
-
                 def allowedMimeTypes = ['image/jpeg', 'image/png']
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     flash.message = "Image must be one of: ${allowedMimeTypes}"
-                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    render(view: 'editBackgroundImageSettings', model: [projectInstance:project])
+                    return
                 }
 
                 if (f.size >= MAX_BACKGROUND_SIZE) {
                     flash.message = "Image size cannot be bigger than 512 KB (half a MB)"
-                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    render(view: 'editBackgroundImageSettings', model: [projectInstance:project])
+                    return
                 }
 
                 try {
                     f.inputStream.withCloseable {
-                        projectInstance.setBackgroundImage(it, f.contentType)
+                        project.setBackgroundImage(it, f.contentType)
                     }
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
                     log.error("Failed to upload image: " + ex.message, ex)
-                    render(view:'editBackgroundImageSettings', model:[projectInstance:projectInstance])
+                    render(view: 'editBackgroundImageSettings', model: [projectInstance:project])
+                    return
                 }
             }
         }
 
-        projectInstance.backgroundImageAttribution = params.backgroundImageAttribution
-        projectInstance.backgroundImageOverlayColour = params.backgroundImageOverlayColour
-        projectService.saveProject(projectInstance)
+        project.backgroundImageAttribution = params.backgroundImageAttribution
+        project.backgroundImageOverlayColour = params.backgroundImageOverlayColour
+        projectService.saveProject(project)
         flash.message = "Background image settings updated."
         redirect(action: "editBackgroundImageSettings", id: params.long('id'))
     }
 
     def clearBackgroundImageSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        Project projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
-            projectInstance.backgroundImageAttribution = null
-            projectInstance.backgroundImageOverlayColour = null
-            projectInstance.setBackgroundImage(null,null)
+
+        if (project) {
+            project.backgroundImageAttribution = null
+            project.backgroundImageOverlayColour = null
+            project.setBackgroundImage(null,null)
         }
 
         flash.message = "Background image settings have been deleted."
@@ -777,46 +935,47 @@ class ProjectController {
     }
 
     def updateMapSettings() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.int("id"))
-        if (projectInstance) {
+
+        if (project) {
             def showMap = params.showMap == "on"
             def zoom = params.int("mapZoomLevel")
             def latitude = params.double("mapLatitude")
             def longitude = params.double("mapLongitude")
 
-            projectInstance.showMap = showMap
+            project.showMap = showMap
 
             if (zoom && latitude && longitude) {
-                projectInstance.mapInitZoomLevel = zoom
-                projectInstance.mapInitLatitude = latitude
-                projectInstance.mapInitLongitude = longitude
+                project.mapInitZoomLevel = zoom
+                project.mapInitLatitude = latitude
+                project.mapInitLongitude = longitude
             }
             flash.message = "Map settings updated"
-            projectService.saveProject(projectInstance, true, true)
+            projectService.saveProject(project, true, true)
         }
 
-        redirect(action: 'editMapSettings', id: projectInstance?.id)
+        redirect(action: 'editMapSettings', id: project?.id)
     }
 
     def findProjectFragment() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
         render(view: 'findProjectFragment')
     }
 
     def findProjectResultsFragment() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
-        def q = params.q as String ?: ""
 
+        def q = params.q?.toString() ?: ""
         def c = Project.createCriteria()
         def projectList = c.list {
             or {
@@ -831,9 +990,9 @@ class ProjectController {
         [projectList: projectList]
     }
 
-    def addLabel(Project projectInstance) {
-        if (!userService.isAdmin()) {
-            render status: 403
+    def addLabel(Project project) {
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
@@ -844,17 +1003,17 @@ class ProjectController {
             return
         }
 
-        projectInstance.addToLabels(label)
-        projectService.saveProject(projectInstance, true)
+        project.addToLabels(label)
+        projectService.saveProject(project, true)
 
         // Just adding a label won't trigger the GORM update event, so force a project update
-        DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
+        DomainUpdateService.scheduleProjectUpdate(project.id)
         render status: 204
     }
 
-    def removeLabel(Project projectInstance) {
-        if (!userService.isAdmin()) {
-            render status: 403
+    def removeLabel(Project project) {
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
@@ -865,23 +1024,23 @@ class ProjectController {
             return
         }
 
-        projectInstance.removeFromLabels(label)
-        projectService.saveProject(projectInstance, true)
+        project.removeFromLabels(label)
+        projectService.saveProject(project, true)
 
         // Just adding a label won't trigger the GORM update event, so force a project update
-        DomainUpdateService.scheduleProjectUpdate(projectInstance.id)
+        DomainUpdateService.scheduleProjectUpdate(project.id)
         render status: 204
     }
 
-    def newLabels(Project projectInstance) {
-        if (!userService.isAdmin()) {
-            render status: 403
+    def newLabels(Project project) {
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
 
         def term = params.term ?: ''
         def ilikeTerm = "%${term.replace('%','')}%"
-        def existing = projectInstance?.labels
+        def existing = project?.labels
         def labels
 
         if (existing) {
@@ -902,9 +1061,14 @@ class ProjectController {
         render labels as JSON
     }
 
+    /**
+     * Project Creation Wizard.
+     * @deprecated
+     * @param id
+     */
     def wizard(String id) {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
         if (!id) {
@@ -939,9 +1103,7 @@ class ProjectController {
             order('institutionCode')
         }
 
-
         final labelCats = Label.withCriteria { projections { distinct 'category' } }
-
         def counter = 0
         final catColourMap = labelCats.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
 
@@ -958,8 +1120,12 @@ class ProjectController {
         ]
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardAutosave(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -967,22 +1133,27 @@ class ProjectController {
         render status: 204
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardImageUpload(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
 
         def project = new NewProjectDescriptor(stagingId: id)
-
         def errors = []
         def errorStatus = SC_BAD_REQUEST
         def result = ""
 
         if (request instanceof MultipartHttpServletRequest) {
             MultipartFile f = ((MultipartHttpServletRequest) request).getFile('image')
+
             if (f != null && f.size > 0) {
                 final allowedMimeTypes = ['image/jpeg', 'image/png']
+
                 if (!allowedMimeTypes.contains(f.getContentType())) {
                     errors << "Image must be one of: ${allowedMimeTypes}"
                     errorStatus = SC_UNSUPPORTED_MEDIA_TYPE
@@ -1009,12 +1180,16 @@ class ProjectController {
             response.status = errorStatus
             render(errors as JSON)
         } else {
-            render([imageUrl: result] as JSON)
+            render([imageUrl: !result ? "" : result] as JSON)
         }
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardClearImage(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1029,8 +1204,12 @@ class ProjectController {
         render status: 204
     }
 
+    /**
+     * @deprecated
+     * @param name
+     */
     def wizardProjectNameValidator(String name) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1038,8 +1217,12 @@ class ProjectController {
         render([ count: Project.countByName(name) ] as JSON)
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardCancel(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
@@ -1048,15 +1231,16 @@ class ProjectController {
         redirect(controller:'admin', action:"index")
     }
 
+    /**
+     * @deprecated
+     * @param id
+     */
     def wizardCreate(String id) {
-        if (!userService.isAdmin()) {
+        if (!userService.isInstitutionAdmin()) {
             render status: 403
             return
         }
 
-        if (!userService.isAdmin()) {
-            response.sendError(SC_FORBIDDEN, "you don't have permission")
-        }
         try {
             def body = request.getJSON()
             body.createdBy = userService.getCurrentUserId()
@@ -1077,11 +1261,186 @@ class ProjectController {
         }
     }
 
-    def archiveList() {
-        final sw = Stopwatch.createStarted()
-        if (!userService.isAdmin()) {
+    def manage() {
+        if (!userService.isInstitutionAdmin()) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
+        }
+
+        def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) :
+                userService.getAdminInstitutionList())
+
+        def statusFilterList = [[key: "active", value: "Active"],
+                                [key: "inactive", value: "Inactive"],
+                                [key: "archived", value: "Archived"],
+                                [key: "not-archived", value: "Not Archived"]]
+
+        params.sort = (params.sort ?: 'id')
+        params.order = (params.order ?: 'asc')
+        params.max = (params.max ?: 20)
+        if (params.sort == 'status') {
+            if (params.order == 'asc') params.sortFields = ['inactive', 'archived', 'id']
+            else params.sortFields = ['archived', 'inactive', 'id']
+        }
+
+        def institutionFilter = []
+        Institution institution = (params.institution ? Institution.get(params.long('institution')) : null)
+        if (institution) institutionFilter.add(institution)
+        else institutionFilter = institutionList
+
+        def statusFilter = (params.statusFilter ?: null)
+
+        def results = getProjectsForManagement(institutionFilter, statusFilter)
+        def projectList = results.projectList
+        def completions = projectService.calculateCompletion(projectList)
+        def totalProjects = results.count
+        // Drop the sortFields to prevent junking up the querystring.
+        params.remove('sortFields')
+
+        List<ManageProject> projectsWithSize = projectList.collect {
+            log.debug("Project: ${it}")
+            final counts = completions[it.id as long]
+            final transcribed
+            final validated
+            if (counts) {
+                transcribed = (counts.transcribed / counts.total) * 100.0
+                validated = (counts.validated / counts.total) * 100.0
+            } else {
+                transcribed = 0.0
+                validated = 0.0
+            }
+
+            new ManageProject(project: it, percentTranscribed: transcribed, percentValidated: validated)
+        }
+
+        render(view: 'manage', model: ['archiveProjectInstanceList'    : projectsWithSize,
+                                       'archiveProjectInstanceListSize': totalProjects,
+                                       'imageStoreStats'               : projectService.imageStoreStats(),
+                                       'institutionList'               : institutionList,
+                                       'statusFilterList'              : statusFilterList])
+    }
+
+    /**
+     * Private method to get list of projects for management.
+     * Not in the service due to clash with JOOQ.
+     * @param institutionFilter the list of Institutions to select projects for. Use an empty list for ALL projects.
+     * @param params the query parameters (q, sort, order, max, offset etc)
+     * @return a Map containing the projectList and count.
+     */
+    private def getProjectsForManagement(List institutionFilter, String statusFilter = null) {
+        Closure fetchProjects = {
+            if (institutionFilter?.size() > 0) {
+                'in' ('institution', institutionFilter)
+            }
+            if (!Strings.isNullOrEmpty(params.q as String)) {
+                or {
+                    ilike('name', "%${params.q}%")
+                }
+            }
+            if (statusFilter) {
+                switch (statusFilter) {
+                    case 'active':
+                        and {
+                            eq('inactive', false)
+                            eq('archived', false)
+                        }
+                        break
+                    case 'inactive':
+                        and {
+                            eq('inactive', true)
+                            eq('archived', false)
+                        }
+                        break
+                    case 'archived':
+                        eq('archived', true)
+                        break
+                    case 'not-archived':
+                        eq('archived', false)
+                        break
+                }
+            }
+        }
+        List results = Project.createCriteria().list() {
+            fetchProjects.delegate = delegate
+            fetchProjects()
+            maxResults(params.int('max'))
+            firstResult(params.int('offset') ?: 0)
+            if (params.sortFields) {
+                params.sortFields.each {
+                    order(it as String, params.order as String)
+                }
+            } else {
+                order(params.sort as String, params.order as String)
+            }
+        } as List
+
+        int resultCount = Project.createCriteria().get() {
+            fetchProjects.delegate = delegate
+            fetchProjects()
+            projections {
+                count('id')
+            }
+        } as int
+
+        return [projectList: results, count: resultCount]
+    }
+
+    def cloneProjectFragment() {
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        def project = Project.get(params.int("sourceProjectId"))
+        [project: project]
+    }
+
+    def cloneProject() {
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        def project = Project.get(params.int("projectId"))
+        String newName = params.newName
+
+        if (newName) {
+            def existing = Project.findByName(newName)
+            if (existing) {
+                flash.message = message(code: 'project.clone.fail.existing.name', default: 'Cloning project failed.', args: [newName]) as String
+                redirect(action: 'manage')
+                return
+            }
+        }
+
+        def newProject
+        if (project && newName) {
+            newProject = projectService.cloneProject(project, newName)
+        }
+
+        if (newProject) {
+            redirect(action: 'edit', id: newProject.id)
+        } else {
+            flash.message = message(code: 'project.clone.fail', default: 'Cloning project failed.') as String
+            redirect(action: 'manage')
+        }
+    }
+
+    /**
+     * @deprecated
+     * @return
+     */
+    def archiveList() {
+        final sw = Stopwatch.createStarted()
+        if (!userService.isInstitutionAdmin()) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+
+        def institutionList
+        if (userService.isSiteAdmin()) {
+            institutionList = Institution.list([sort: 'name', order: 'asc'])
+        } else {
+            institutionList = userService.getAdminInstitutionList()
         }
 
         if (!params.sort) {
@@ -1115,12 +1474,33 @@ class ProjectController {
                 projects = null
                 total = 0
             }
-        } else if (!Strings.isNullOrEmpty(params.q?.toString())) {
-            projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
-            total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
         } else {
-            projects = Project.findAllByArchived(false, params)
-            total = Project.countByArchived(false)
+            // No institution parameter, if Institution Admin, only show projects for their institutions.
+            if (!userService.isSiteAdmin()) {
+                if (!Strings.isNullOrEmpty(params.q?.toString())) {
+                    projects = Project.findAllByArchivedAndNameIlikeAndInstitutionInList(false, "%${params.q}%", institutionList, params)
+                    total = Project.countByArchivedAndNameIlikeAndInstitutionInList(false, "%${params.q}%", institutionList)
+                } else {
+                    projects = Project.findAllByArchivedAndInstitutionInList(false, institutionList, params)
+                    total = Project.countByArchivedAndInstitutionInList(false, institutionList)
+                }
+            } else {
+                if (!Strings.isNullOrEmpty(params.q?.toString())) {
+                    projects = Project.findAllByArchivedAndNameIlike(false, "%${params.q}%", params)
+                    total = Project.countByArchivedAndNameIlike(false, "%${params.q}%")
+                } else {
+                    projects = Project.findAllByArchived(false, params)
+                    total = Project.countByArchived(false)
+                }
+            }
+
+        }
+
+        if (!projects) {
+            projects = []
+        }
+        if (!total) {
+            total = 0
         }
         sw.stop()
         log.debug("archiveList: findAllByArchived = $sw")
@@ -1131,7 +1511,7 @@ class ProjectController {
         log.debug("archiveList: calculateCompletion = $sw")
         sw.reset().start()
 
-        List<ArchiveProject> projectsWithSize = projects.collect {
+        List<ManageProject> projectsWithSize = projects.collect {
             final counts = completions[it.id]
             final transcribed
             final validated
@@ -1142,16 +1522,24 @@ class ProjectController {
                 transcribed = 0.0
                 validated = 0.0
             }
-            new ArchiveProject(project: it, /*size: sizes[it.id].size,*/ percentTranscribed: transcribed, percentValidated: validated)
+            new ManageProject(project: it, percentTranscribed: transcribed, percentValidated: validated)
         }
 
         respond(projectsWithSize, model: ['archiveProjectInstanceListSize': total,
-                                          'imageStoreStats': projectService.imageStoreStats()])
+                                          'imageStoreStats'               : projectService.imageStoreStats(),
+                                          'institutionList'               : institutionList])
     }
 
     def projectSize(Project project) {
-        def size = [size: FileUtils.byteCountToDisplaySize(projectService.projectSize(project).size)]
-        respond(size)
+        if (!userService.isInstitutionAdmin()) {
+            respond status: 403
+        } else {
+            def projectSize = projectService.projectSize(project).size as long
+            def size
+            if (projectSize > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(projectSize))
+            else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+            respond([size: size])
+        }
     }
 
     /**
@@ -1159,9 +1547,9 @@ class ProjectController {
      * @param project the project to archive.
      */
     def archive(Project project) {
-        if (!userService.isAdmin()) {
+        if (!projectService.isAdminForProject(project)) {
             log.error("Unauthorised access by ${userService.getCurrentUser()?.displayName}")
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -1169,16 +1557,16 @@ class ProjectController {
             projectService.archiveProject(project)
             log.debug("${project.name} (id=${project.id}) archived")
             flash.message = "${message(code: 'project.label', default: 'Project')} ${project.name} archived."
-            redirect(action: 'archiveList', params: params)
+            redirect(action: 'manage', params: params)
         } catch (e) {
             flash.message = "An error occured while archiving ${project.name}."
             log.error("An error occured while archiving ${message(code: 'project.label', default: 'Project')} ${project}", e)
-            redirect(action: 'archiveList', params: params)
+            redirect(action: 'manage', params: params)
         }
     }
 
     def downloadImageArchive(Project project) {
-        if (!userService.isAdmin()) {
+        if (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution)) {
             response.sendError(SC_FORBIDDEN, "you don't have permission")
             return
         }
@@ -1236,11 +1624,11 @@ class ProjectController {
         respond result
     }
 
-    def loadProgress(Project projectInstance) {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
-            return
+    def loadProgress(Project project) {
+        if (!project || !projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
+        } else {
+            respond project
         }
-        respond projectInstance
     }
 }

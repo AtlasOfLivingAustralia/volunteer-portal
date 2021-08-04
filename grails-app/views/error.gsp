@@ -47,8 +47,8 @@
 
                 <strong>Exception Message:</strong> <g:if test="${exception.message}">${exception.message?.encodeAsHTML()}</g:if> <g:else>None, see cause below.</g:else><br/>
                 <strong>Caused by:</strong> ${exception.cause?.encodeAsHTML()} <br/>
-                <strong>Class:</strong> ${content.className} <br/>
-                <strong>At Line:</strong> [${content.lineNumber}] <br/>
+                <strong>Class:</strong> ${content?.className} <br/>
+                <strong>At Line:</strong> [${content?.lineNumber}] <br/>
 
             </g:if>
 

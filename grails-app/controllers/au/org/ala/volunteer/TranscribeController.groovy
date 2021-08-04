@@ -42,7 +42,7 @@ class TranscribeController {
 
             boolean isLockedByOtherUser = auditService.isTaskLockedForTranscription(taskInstance, currentUserId)
 
-            def isAdmin = userService.isAdmin()
+            def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(taskInstance.project.institution))
             if (isLockedByOtherUser && !isAdmin) {
                 def lastView = auditService.getLastViewForTask(taskInstance)
                 // task is already being viewed by another user (with timeout period)
@@ -63,8 +63,8 @@ class TranscribeController {
             def isReadonly = false
 
             def isValidator = userService.isValidator(project)
-            log.debug(currentUserId + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
-            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUserId) && !userService.isAdmin()) {
+            log.debug(currentUserId + " has role: ADMIN = " + isAdmin + " &&  VALIDATOR = " + isValidator)
+            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUserId) && !isAdmin) {
                 isReadonly = "readonly"
             }
 

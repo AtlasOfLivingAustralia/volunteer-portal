@@ -9,90 +9,96 @@ class TemplateFieldController {
     def userService
 
     def save() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
-        def templateFieldInstance = new TemplateField(params)
-        if (templateFieldInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'templateField.label', default: 'TemplateField'), templateFieldInstance.id])}"
-            redirect(action: "show", id: templateFieldInstance.id)
+        def templateField = new TemplateField(params)
+        if (templateField.save(flush: true)) {
+            flash.message = message(code: 'default.created.message',
+                     args: [message(code: 'templateField.label', default: 'TemplateField'), templateField.id]) as String
+            redirect(action: "show", id: templateField.id)
         }
         else {
-            render(controller: 'template', view: "manageFields", id: templateFieldInstance?.template?.id)
+            render(controller: 'template', view: "manageFields", id: templateField?.template?.id)
         }
     }
 
     def edit() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
-        def templateFieldInstance = TemplateField.get(params.id)
-        if (!templateFieldInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
+        def templateField = TemplateField.get(params.long('id'))
+        if (!templateField) {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'templateField.label', default: 'TemplateField'), params.id]) as String
             redirect(action: "list")
-        }
-        else {
+        } else {
             def validationRules = [""]
-            validationRules.addAll(ValidationRule.list(order:'name')*.name)
+            def ruleList = ValidationRule.list(order:'name')*.name
+            validationRules.addAll(ruleList)
 
-            return [templateFieldInstance: templateFieldInstance, validationRules: validationRules]
+            return [templateFieldInstance: templateField, validationRules: validationRules]
         }
     }
 
     def update() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
-        def templateFieldInstance = TemplateField.get(params.id)
-        if (templateFieldInstance) {
+        def templateField = TemplateField.get(params.long('id'))
+        if (templateField) {
             if (params.version) {
                 def version = params.version.toLong()
-                if (templateFieldInstance.version > version) {
-                    templateFieldInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'templateField.label', default: 'TemplateField')] as Object[], "Another user has updated this TemplateField while you were editing")
-                    render(view: "edit", model: [templateFieldInstance: templateFieldInstance])
+                if (templateField.version > version) {
+                    templateField.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: 'templateField.label', default: 'TemplateField')] as Object[],
+                            "Another user has updated this TemplateField while you were editing")
+                    render(view: "edit", model: [templateFieldInstance: templateField])
                     return
                 }
             }
-            templateFieldInstance.properties = params
-            if (!templateFieldInstance.hasErrors() && templateFieldInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'templateField.label', default: 'TemplateField'), templateFieldInstance.id])}"
-                redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
+            // templateFieldInstance.properties = params
+            bindData(templateField, params)
+            if (!templateField.hasErrors() && templateField.save(flush: true)) {
+                flash.message = message(code: 'default.updated.message',
+                         args: [message(code: 'templateField.label', default: 'TemplateField'), templateField.id]) as String
+                redirect(controller: 'template', action: "manageFields", id: templateField.template.id)
+            } else {
+                render(view: "edit", model: [templateFieldInstance: templateField])
             }
-            else {
-                render(view: "edit", model: [templateFieldInstance: templateFieldInstance])
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
+        } else {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'templateField.label', default: 'TemplateField'), params.id]) as String
             redirect(controller: 'template', action: "list")
         }
     }
 
     def delete() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        if (!userService.isInstitutionAdmin()) {
+            render(view: '/notPermitted')
             return
         }
-        def templateFieldInstance = TemplateField.get(params.id)
-        if (templateFieldInstance) {
+        def templateField = TemplateField.get(params.long('id'))
+        if (templateField) {
             try {
-                templateFieldInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-                redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
-            }
-            catch (DataIntegrityViolationException e) {
-                String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
+                templateField.delete(flush: true)
+                flash.message = message(code: 'default.deleted.message',
+                         args: [message(code: 'templateField.label', default: 'TemplateField'), params.id]) as String
+                redirect(controller: 'template', action: "manageFields", id: templateField.template.id)
+            } catch (DataIntegrityViolationException e) {
+                String message = message(code: 'default.not.deleted.message',
+                          args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "show", id: params.id)
             }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])}"
-            redirect(controller: 'template', action: "manageFields", id: templateFieldInstance.template.id)
+        } else {
+            flash.message = message(code: 'default.not.found.message',
+                     args: [message(code: 'templateField.label', default: 'TemplateField'), params.id]) as String
+            redirect(controller: 'template', action: "manageFields", id: templateField.template.id)
         }
     }
 }

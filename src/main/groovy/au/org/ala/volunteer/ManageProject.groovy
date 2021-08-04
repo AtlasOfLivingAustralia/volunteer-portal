@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-class ArchiveProject {
+class ManageProject {
 
     Project project
     long size

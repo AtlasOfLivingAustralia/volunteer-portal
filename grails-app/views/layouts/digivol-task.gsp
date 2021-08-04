@@ -274,7 +274,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="alert alert-warning">
-                        No tasks loaded for this project !
+                        No tasks loaded for this expedition !
                     </div>
                 </div>
             </div>

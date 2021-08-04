@@ -1,18 +1,23 @@
 package au.org.ala.volunteer
 
+import groovy.sql.Sql
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
+import groovy.time.TimeCategory
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.sql.DataSource
+import java.util.concurrent.ThreadLocalRandom
 
 @Consumer
 class FrontPageService {
 
     public static final String ALERT_MESSAGE = 'alertMessage'
 
+    DataSource dataSource
+    def projectService
     def eventSourceService
-
     def eventSourceStartMessage
 
     @PostConstruct

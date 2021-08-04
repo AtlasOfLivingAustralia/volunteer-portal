@@ -150,12 +150,14 @@ class LeaderBoardService {
     }
 
     List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], def pt = null) {
+        return getTopNForPeriod(startDate, endDate, count, [institution], ineligibleUsers, pt)
+    }
 
+    List getTopNForPeriod(Date startDate, Date endDate, int count, List<Institution> institutionList, List<String> ineligibleUsers = [], def pt = null) {
         // Get a map of users who transcribed tasks during this period, along with the count
-        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institution, ineligibleUsers, pt)
+        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institutionList, ineligibleUsers, pt)
         // Get a map of user who validated tasks during this periodn, along with the count
-        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institution, ineligibleUsers, pt)
-
+        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institutionList, ineligibleUsers, pt)
 
         return mergeScores(validatedMap, scoreMap, count)
     }
@@ -192,7 +194,8 @@ class LeaderBoardService {
         return list
     }
 
-    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, Institution institution, List<String> ineligibleUserIds, def projectsInLabels = null) {
+    Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, List<Institution> institutionList,
+                            List<String> ineligibleUserIds, def projectsInLabels = null) {
         def results
         if (ActivityType.Transcribed == activityType) {
             results = Transcription.withCriteria {
@@ -204,9 +207,10 @@ class LeaderBoardService {
                         inList "fully${activityType}By", ineligibleUserIds
                     }
                 }
-                if (institution) {
+
+                if (institutionList) {
                     project {
-                        eq("institution", institution)
+                        'in' 'institution', institutionList
                     }
                 }
 
@@ -231,16 +235,19 @@ class LeaderBoardService {
                         inList "fully${activityType}By", ineligibleUserIds
                     }
                 }
-                if (institution) {
+
+                if (institutionList) {
                     project {
-                        eq("institution", institution)
+                        'in' 'institution', institutionList
                     }
                 }
+
                 if (projectsInLabels) {
                     project {
                         'in' 'id', projectsInLabels
                     }
                 }
+
                 projections {
                     groupProperty("fully${activityType}By")
                     count("fully${activityType}By", 'count')

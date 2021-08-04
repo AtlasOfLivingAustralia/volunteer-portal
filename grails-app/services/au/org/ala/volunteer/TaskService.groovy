@@ -150,6 +150,89 @@ class TaskService {
         Task.findAllByProjectAndIsFullyTranscribed(project, true, params)
     }
 
+    /**
+     * Retrieves a list of tasks for a given project. Params provided can include a statusFilter from the options
+     * 'transcribed', 'validated', 'not-transcribed' to filter the list on that given status. Also provides a secondary
+     * sort on isValid, to prevent random order changes when paginating results.
+     * @param project the project to query
+     * @param params the query parameters
+     * @return a Map containing the task list (taskList) and the taskCount
+     */
+    Map getTaskListForProject(Project project, def params) {
+        if (!project) return null
+
+        def query = """\
+            select distinct task.id, 
+                task.is_valid, 
+                COALESCE(task.number_of_matching_transcriptions, 0),
+                task.external_identifier,
+                task.fully_validated_by,
+                concat(vu.last_name, ' ', vu.first_name) as validator
+            from task
+            join project on (project.id = task.project_id)
+            left join vp_user vu on (vu.user_id = task.fully_validated_by)
+            where project_id = :projectId """.stripIndent()
+
+        def queryParams = [:]
+        queryParams.projectId = project.id
+        def statusFilterClause = " and task.is_fully_transcribed = :transcribed " +
+            " and task.fully_validated_by :validated "
+
+        switch (params.statusFilter) {
+            case 'transcribed':
+                queryParams.transcribed = true
+                statusFilterClause = statusFilterClause.replace(':validated', 'is null')
+                break
+            case 'validated':
+                queryParams.transcribed = true
+                statusFilterClause = statusFilterClause.replace(':validated', 'is not null')
+                break
+            case 'not-transcribed':
+                queryParams.transcribed = false
+                statusFilterClause = statusFilterClause.replace(':validated', 'is null')
+                break
+            default:
+                statusFilterClause = ""
+                break
+        }
+
+        def sortClause = " order by "
+        switch (params.sort) {
+            case 'isValid':
+                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+                break
+            case 'numberOfMatchingTranscriptions':
+                sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "
+                break
+            case 'fullyValidatedBy':
+                //sortClause += " task.fully_validated_by " + (params.order ?: 'asc')
+                sortClause += " concat(vu.last_name, ' ', vu.first_name) " + (params.order ?: 'asc')
+                break
+            case 'externalIdentifier':
+                sortClause += " task.external_identifier " + (params.order ?: 'asc')
+                break
+            default:
+                sortClause += " task." + (params.sort ?: 'id') + " " + (params.order ?: 'asc')
+                break
+        }
+
+        def selectQuery = query + statusFilterClause + sortClause + (params.max ? " limit ${params.max} " : "") +
+                (params.offset ? " offset ${params.offset} " : "")
+        def countQuery = "select count(*) as taskCount from (" + query + statusFilterClause + ") taskList"
+
+        def sql = new Sql(dataSource)
+        def taskList = []
+        def results = sql.eachRow(selectQuery, queryParams) { row->
+            Task task = Task.get(row.id as long)
+            if (task) taskList.add(task)
+        }
+
+        def rowCount = sql.firstRow(countQuery, queryParams)?.taskCount as Integer
+        sql.close()
+
+        [taskList: taskList, taskCount: (rowCount ?: 0)]
+    }
+
     /***
      * Obtain Fully Transcribed tasks and the corresponding transcriptions for the project (eager fetching)
      * Note: if there are 2000 fully transcribed tasks and 4000 transcriptions (2 transcriptions per task), this should return 2000 rows of tasks.

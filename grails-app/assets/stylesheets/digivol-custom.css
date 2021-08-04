@@ -256,9 +256,13 @@ table .btn-default:hover {
 .admin .label {
     position: relative;
     display: inline-block;
-    padding: .2em .6em .3em;
+    padding: .4em .6em .3em;
     top: 0;
     left: 0;
+}
+
+.label {
+    padding: .4em .6em .3em;
 }
 
 .admin .twitter-typeahead {
@@ -373,6 +377,16 @@ table .btn-default:hover {
 .expedition #projectDescriptionX {
     max-height: 120px;
     overflow-y: scroll;
+}
+
+span.expedition.disabledMenuItem {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
 }
 
 #recordsMap {

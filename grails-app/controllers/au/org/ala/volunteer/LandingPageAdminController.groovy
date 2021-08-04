@@ -6,7 +6,7 @@ import grails.converters.JSON
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NO_CONTENT
 
-@AlaSecured("ROLE_VP_ADMIN")
+@AlaSecured(value="ROLE_VP_ADMIN", redirectController = "index", redirectAction="notPermitted")
 class LandingPageAdminController {
 
     def fileUploadService
@@ -144,5 +144,4 @@ class LandingPageAdminController {
         }
         redirect(action: "editImage", params: ['id': landingPage.id])
     }
-
 }

@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}"/>
+    <g:set var="entry" value="CREATE"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
     <asset:stylesheet src="bootstrap-colorpicker"/>
 </head>
@@ -32,6 +33,7 @@
                     </g:hasErrors>
 
                     <g:form action="save" class="form-horizontal">
+                        <input type="hidden" name="isApproved" value="true" />
                             <g:render template="form"/>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">

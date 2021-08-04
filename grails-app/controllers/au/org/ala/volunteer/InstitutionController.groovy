@@ -4,7 +4,6 @@ class InstitutionController {
 
     def projectService
     def institutionService
-    def userService
 
     def index() {
         def institution = Institution.get(params.int("id"))
@@ -17,12 +16,14 @@ class InstitutionController {
         params.sort = params.sort ?: 'completed'
         params.order = params.order ?: 'asc'
 
-        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter)
-        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter)
+        def statusFilterMode = ProjectStatusFilterType.fromString(params.statusFilter as String)
+        def activeFilterMode = ProjectActiveFilterType.fromString(params.activeFilter as String)
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilterMode, activeFilterMode)
 
-        def projectSummaries = projectService.makeSummaryListForInstitution(institution, params.tag, params.q, params.sort, params.int('offset', 0), params.int('max'), params.order, statusFilterMode, activeFilterMode)
+        def projectSummaries = projectService.makeSummaryListForInstitution(institution, params.tag as String,
+                params.q as String, params.sort as String, params.int('offset', 0), params.int('max'),
+                params.order as String, statusFilterMode, activeFilterMode)
         def transcriberCount = institutionService.getTranscriberCount(institution)
 
         def taskCounts = institutionService.getTaskCounts(institution)
@@ -63,23 +64,46 @@ class InstitutionController {
 
         if (params.q) {
             def query = "%${params.q}%"
-            institutions = Institution.findAllByNameIlikeOrAcronymIlike(query, query, params)
-            totalCount = Institution.countByNameIlikeOrAcronymIlike(query, query)
+
+            def closure = {
+                and {
+                    eq('isInactive', false)
+                    eq('isApproved', true)
+                    or {
+                        ilike('name', query)
+                        ilike('acronym', query)
+                    }
+                }
+            }
+
+            institutions = Institution.createCriteria().list(params) {
+                closure.delegate = delegate
+                closure()
+            } as List
+
+            totalCount = Institution.createCriteria().get {
+                closure.delegate = delegate
+                closure()
+                projections {
+                    count('id')
+                }
+            }
+
         } else {
-            institutions = Institution.list(params)
-            totalCount = Institution.count()
+            institutions = Institution.findAllByIsInactiveAndIsApproved(false, true, params)
+            totalCount = Institution.countByIsInactiveAndIsApproved(false, true)
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)
         def projectVolunteers = institutionService.getTranscriberCounts(institutions)
         def taskCounts = institutionService.countTasksForInstitutions(institutions)
 
-        [   institutions: institutions,
+        [
+            institutions: institutions,
             totalInstitutions: totalCount,
             projectCounts: projectCounts,
             projectVolunteers: projectVolunteers,
             taskCounts: taskCounts
         ]
     }
-
 }

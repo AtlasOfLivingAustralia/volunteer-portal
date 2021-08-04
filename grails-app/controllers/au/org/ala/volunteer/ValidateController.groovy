@@ -39,14 +39,15 @@ class ValidateController {
             Template template = Template.findById(project.template.id)
 
             def isValidator = userService.isValidator(project)
-            log.debug(currentUser + " has role: ADMIN = " + userService.isAdmin() + " &&  VALIDATOR = " + isValidator)
+            def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(project?.institution))
+            log.debug(currentUser + " has role: ADMIN = " + isAdmin + " &&  VALIDATOR = " + isValidator)
 
-            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(userService.isAdmin() || isValidator)) {
+            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(isAdmin || isValidator)) {
                 isReadonly = "readonly"
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
                 if (taskInstance.hasBeenTranscribedByUser(currentUser)) {
-                    if (userService.isAdmin()) {
+                    if (isAdmin) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
                         flash.message = "This task is read-only. You cannot validate your own tasks!"
@@ -90,7 +91,7 @@ class ValidateController {
         def taskInstance = Task.get(params.long('id'))
         if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
             log.warn("User requesting unauthed url: ${userService.currentUserId}")
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -131,7 +132,7 @@ class ValidateController {
     def dontValidate() {
         def taskInstance = Task.get(params.long('id'))
         if (!userService.isValidator(taskInstance?.project) || !taskInstance) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -168,7 +169,7 @@ class ValidateController {
             redirect(action: 'showNextFromProject', id: taskInstance.project.id)
         } else {
             flash.message = "No task id supplied!"
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -178,7 +179,7 @@ class ValidateController {
         def project = Project.get(params.long('id'))
 
         if (!userService.isValidator(project) || !project) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

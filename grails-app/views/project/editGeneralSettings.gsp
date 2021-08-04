@@ -1,8 +1,8 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
-    <asset:stylesheet src="institution-dropdown"/>
     <asset:stylesheet src="label-autocomplete"/>
 </head>
 
@@ -22,19 +22,20 @@
 </g:hasErrors>
 
 <g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
-    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <g:hiddenField name="id" id="projectId" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
+    <g:hiddenField name="formType" value="${Project.EDIT_SECTION_GENERAL}" />
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredOwner">Expedition institution</label>
-
+        <label class="control-label col-md-3" for="institutionId">Expedition institution</label>
         <div class="col-md-6">
-            <g:textField class="form-control"  name="featuredOwner" value="${projectInstance.featuredOwner}"/>
-            <g:hiddenField name="institutionId" value="${projectInstance?.institution?.id}"/>
+        <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
+          optionKey="id"
+          value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
-
         <div id="institution-link-icon" class="col-md-3 control-label text-left">
-            <i class="fa fa-check"></i> Linked to <a id="institution-link" href="">institution</a>!
+            <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
+                action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
         </div>
     </div>
 
@@ -66,12 +67,20 @@
         <label class="control-label col-md-3" for="template">Template</label>
 
         <div class="col-md-6">
-            <g:select name="template" class="form-control" from="${templates}" value="${projectInstance.template?.id}" optionKey="id"/>
+            <select name="template" id="template" class="form-control">
+                <cl:templateSelectOptions currentTemplateId="${projectInstance.template?.id}" templateList="${templates}" />
+            </select>
         </div>
 
         <div class="col-md-3">
-            <a class="btn btn-default"
-               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">Edit template</a>
+            <a class="btn btn-xs btn-default" title="Edit Template" style="margin: 5px;"
+               href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">
+                <i class="fa fa-pencil"></i>
+            </a>
+            <a class="btn btn-xs btn-default" title="View All Templates"
+               href="${createLink(controller: 'template', action: 'list')}">
+                <i class="fa fa-list"></i>
+            </a>
         </div>
     </div>
 
@@ -84,7 +93,6 @@
         </div>
     </div>
 
-    %{--<g:if test="${projectInstance.template?.supportMultipleTranscriptions}">--}%
         <div class="multipleTranscriptionsSupport">
             <div class="form-group">
                 <label class="control-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
@@ -101,7 +109,6 @@
                 </div>
             </div>
         </div>
-    %{--</g:if>--}%
 
     <div class="form-group">
         <label class="control-label col-md-3" for="label">Tags</label>
@@ -119,9 +126,6 @@
             </g:each>
         </div>
 
-        %{--<div class="clearfix visible-md-block visible-lg-block"></div>--}%
-
-        %{--<div class="col-md-offset-3 col-md-6"></div>--}%
     </div>
 
     <div class="form-group">
@@ -167,8 +171,9 @@
        var checkSupportMultipleTransUrl = "${createLink(controller: 'project', action: 'checkTemplateSupportMultiTranscriptions')}";
 
        var templateId = $('#template').val();
-       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId}}).done(function(data) {
-           if (data && data.supportMultipleTranscriptions == 'true') {
+       const projectId = $('#projectId').val();
+       $.ajax(checkSupportMultipleTransUrl, {type: 'POST', data: {templateId: templateId, projectId: projectId}}).done(function(data) {
+           if (data && data.supportMultipleTranscriptions === 'true') {
                if (!$('#transcriptionsPerTask').val()) {
                    $('#transcriptionsPerTask').val('1');
                }
@@ -206,12 +211,9 @@
     });
 
     jQuery(function($) {
-        var institutions = <cl:json value="${institutions}"/>;
-        var nameToId = <cl:json value="${institutionsMap}"/>;
         var labelColourMap = <cl:json value="${labelColourMap}"/>;
         var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
-        setupInstitutionAutocomplete("#featuredOwner", "#institutionId", "#institution-link-icon", "#institution-link", institutions, nameToId, baseUrl);
         labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
             //var obj = JSON.parse(item);
             var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
@@ -233,6 +235,7 @@
                         .appendTo(
                             $( "#labels" )
                         );
+                    $("#label").val("");
                 })
                 .fail(function() { alert("Couldn't add label")});
                 //.always(hideSpinner);

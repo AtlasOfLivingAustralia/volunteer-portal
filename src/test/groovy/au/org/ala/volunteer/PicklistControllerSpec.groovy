@@ -26,7 +26,7 @@ class PicklistControllerSpec extends Specification {
             controller.save()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot update a picklist"() {
@@ -37,7 +37,7 @@ class PicklistControllerSpec extends Specification {
         controller.update()
 
         then: "User is redirected to the home page"
-        response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 
     def "Test a user without Admin permission cannot delete a picklist"() {
@@ -48,6 +48,6 @@ class PicklistControllerSpec extends Specification {
             controller.delete()
 
         then: "User is redirected to the home page"
-            response.redirectedUrl == "/"
+            view == "/notPermitted"
     }
 }

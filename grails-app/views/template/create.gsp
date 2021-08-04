@@ -13,7 +13,7 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'template.manage.label', default: "Manage Templates")]
             ]
         %>
     </cl:headerContent>
@@ -31,7 +31,7 @@
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
                             <label for="name" class="col-md-2 control-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                         </div>
 
