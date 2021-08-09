@@ -299,6 +299,14 @@ class TemplateService {
                 default: sort = "t.id"
                     break
             }
+
+            // Sanitise the order parameter
+            if (!Strings.isNullOrEmpty(params.order?.toString())) {
+                if (params.order.toString().toLowerCase() != "asc" && params.order.toString().toLowerCase() != "desc") {
+                    params.order = 'asc'
+                }
+            }
+
             query += " order by is_global desc, ${sort} ${params.order}"
         } else {
             query += " order by is_global desc, t.id asc"
