@@ -25,7 +25,7 @@
                     <ul>
                         <li><span class="metaDataLabel">Institution:</span> <span
                                 id="institutionCode">${recordValues?.get(0)?.institutionCode}</span></li>
-                        <li><span class="metaDataLabel">Project:</span> ${taskInstance?.project?.name}</li>
+                        <li><span class="metaDataLabel">Expedition:</span> ${taskInstance?.project?.name}</li>
                         <li><span class="metaDataLabel">Catalogue No.:</span> ${recordValues?.get(0)?.catalogNumber}
                         </li>
                         <li><span class="metaDataLabel">Taxa:</span> ${recordValues?.get(0)?.scientificName}</li>
