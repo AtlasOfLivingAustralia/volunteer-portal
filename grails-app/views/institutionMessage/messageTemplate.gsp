@@ -221,7 +221,7 @@
                                     You can reply to this email to contact ${institutionContactName}, ${institutionName}.<br>
                                 </g:if>
                                 <g:else>
-                                    This email was sent my the DigiVol System. Please do not reply to this email.
+                                    This email was sent by the DigiVol System. Please do not reply to this email.
                                 </g:else>
                                 <br>
                                 If you do not want to receive these communications, please opt out using the link below.
