@@ -129,7 +129,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Volunteer And Project</h4></div>
+                            <div class="panel-heading"><h4>Transcriptions By Volunteer And Expedition</h4></div>
                             <div class="panel-body">
                                 <span data-ng-if="statsCtrl.loadingTranscriptionsByVolunteerProject"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingTranscriptionsByVolunteerProject">
@@ -158,12 +158,12 @@
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Average Transcription Time by Project Type</h4></div>
+                            <div class="panel-heading"><h4>Average Transcription Time by Expedition Type</h4></div>
                             <div class="panel-body">
                                 <span data-ng-if="statsCtrl.loadingTimeByProjectType"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingTimeByProjectType">
                                     <div barchart data="statsCtrl.getTranscriptionTimeByProjectType()" title="" width="100%" height="350" xaxis="Project Type"
-                                         yaxis="Transcription Time" searchdate="{{statsCtrl.searchDate}}"></div>
+                                         yaxis="Transcription Time (sec)" searchdate="{{statsCtrl.searchDate}}"></div>
                                     <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionTimeByProjectType, 'transcriptionTimeByProjectType')">
                                         <span class="glyphicon glyphicon-download-alt"></span> Download
                                     </button>
