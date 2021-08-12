@@ -179,7 +179,7 @@
 
             <div class="row footer-header">
                 <div class="col-sm-12">
-                    <asset:image src="logoDigivolInverted.png"/>
+                    <span class="footer-brand"><asset:image src="logoDigivolInverted.png"/></span>
 
                     <div class="social-icons pull-right">
                         <a href="https://www.facebook.com/AMDigiVol/" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
