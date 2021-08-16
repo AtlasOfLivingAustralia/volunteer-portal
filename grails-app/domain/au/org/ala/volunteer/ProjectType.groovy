@@ -9,6 +9,7 @@ class ProjectType implements Serializable {
     static final String PROJECT_TYPE_CAMERATRAP = 'cameratraps'
     static final String PROJECT_TYPE_FIELDNOTES = 'fieldnotes'
     static final String PROJECT_TYPE_SPECIMEN = 'specimens'
+    static final String PROJECT_TYPE_AUDIO = 'audio'
 
     static hasMany = [projects: Project, landingPages: LandingPage]
 

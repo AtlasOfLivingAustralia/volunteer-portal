@@ -102,15 +102,19 @@ class BootStrap {
 
     private void prepareProjectTypes() {
         log.info("Checking project types...")
-        def builtIns = [[name: ProjectType.PROJECT_TYPE_SPECIMEN,
-                         label: 'Specimens',
-                         icon: '/public/images/2.0/iconLabels.png'],
-                        [name: ProjectType.PROJECT_TYPE_FIELDNOTES,
-                         label: 'Field notes',
-                         icon: '/public/images/2.0/iconNotes.png'],
-                        [name: ProjectType.PROJECT_TYPE_CAMERATRAP,
-                         label: 'Camera Traps',
-                         icon: '/public/images/2.0/iconWild.png']]
+        def builtIns = [
+                [name: ProjectType.PROJECT_TYPE_SPECIMEN,
+                 label: 'Specimens',
+                 icon: '/public/images/2.0/iconLabels.png'],
+                [name: ProjectType.PROJECT_TYPE_FIELDNOTES,
+                 label: 'Field notes',
+                 icon: '/public/images/2.0/iconNotes.png'],
+                [name: ProjectType.PROJECT_TYPE_CAMERATRAP,
+                 label: 'Camera Traps',
+                 icon: '/public/images/2.0/iconWild.png'],
+                [name: ProjectType.PROJECT_TYPE_AUDIO,
+                 label: 'Audio',
+                 icon: '/public/images/2.0/iconWild.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
