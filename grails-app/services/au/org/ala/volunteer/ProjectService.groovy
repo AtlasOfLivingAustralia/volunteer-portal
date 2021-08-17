@@ -670,7 +670,7 @@ class ProjectService {
         try {
             [size: projectPath.directorySize(), error: null]
         } catch (e) {
-            log.error("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
+            log.debug("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
             [error: e, size: -1]
         }
     }

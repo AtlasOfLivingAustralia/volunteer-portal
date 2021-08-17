@@ -58,7 +58,7 @@ class AdminController {
     boolean checkAdminAccess(Boolean includeInstitutionAdmin) {
         log.debug("User: ${userService.getCurrentUser()}")
         if (userService.getCurrentUser() && (userService.isAdmin() || (includeInstitutionAdmin && userService.isInstitutionAdmin()))) {
-            log.info("Admin access allowed.")
+            log.debug("Admin access allowed.")
             return true
         } else {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
