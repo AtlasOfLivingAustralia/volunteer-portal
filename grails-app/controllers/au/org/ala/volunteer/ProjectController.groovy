@@ -1534,10 +1534,14 @@ class ProjectController {
         if (!userService.isInstitutionAdmin()) {
             respond status: 403
         } else {
-            def projectSize = projectService.projectSize(project).size as long
             def size
-            if (projectSize > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(projectSize))
-            else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+            if (!project.archived) {
+                def projectSize = projectService.projectSize(project).size as long
+                if (projectSize > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(projectSize))
+                else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+            } else {
+                size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+            }
             respond([size: size])
         }
     }
