@@ -9,6 +9,7 @@ import com.google.common.io.Files
 import groovy.transform.Canonical
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
 
@@ -115,6 +116,8 @@ class StagingService {
             }
         }
         def sort = sortByDateTaken ? {it.dateTaken} : {it.name}
+
+        log.debug("Staged files: ${images}")
 
         images.sort(sort)
     }
@@ -315,15 +318,20 @@ class StagingService {
 
         // First pass - computed defined field values (either literals, name captures etc...)
         stagedFiles.each { stagedFile ->
+            log.debug("Staged file: ${stagedFile}")
 
-            def m = shadowFilePattern.matcher(stagedFile.name)
+            def m = shadowFilePattern.matcher(stagedFile.name as CharSequence)
             if (m.matches()) {
-
+                log.debug("File is a shadow file")
                 def parentFile = m.group(1)
-                def shadowFile = [stagedFile: stagedFile, fieldName: m.group(2), recordIndex: Integer.parseInt(m.group(3) ?: '0'), parentFile: parentFile]
+                def shadowFile = [stagedFile: stagedFile,
+                                  fieldName: m.group(2),
+                                  recordIndex: Integer.parseInt(m.group(3) ?: '0'),
+                                  parentFile: parentFile]
                 if (!shadowFiles[parentFile]) {
                     shadowFiles[parentFile] = []
                 }
+                log.debug("ShadowFile: ${shadowFile}")
                 shadowFiles[parentFile] << shadowFile
 
                 return
@@ -380,9 +388,11 @@ class StagingService {
 
         // stage 2, process shadow files...
         images.each { imageFile ->
-            imageFile.shadowFiles = shadowFiles[imageFile.name]
+            //imageFile.shadowFiles = shadowFiles[imageFile.name]
+            imageFile.shadowFiles = shadowFiles[FilenameUtils.removeExtension(imageFile.name as String)]
         }
-
+        log.debug("Shadow Files: ${shadowFiles}")
+        log.debug("Images: ${images}")
         return images
     }
 

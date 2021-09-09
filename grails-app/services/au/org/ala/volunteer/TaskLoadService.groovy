@@ -143,10 +143,10 @@ class TaskLoadService {
         create.settings().updatablePrimaryKeys = true
 
         create.transaction({ cfg ->
-            def ctx = DSL.using(cfg)
+            def txContext = DSL.using(cfg)
             imageData.each { imgData ->
 
-                def taskDesc = ctx.newRecord(TASK_DESCRIPTOR).with {
+                def taskDesc = txContext.newRecord(TASK_DESCRIPTOR).with {
                     projectId = project.id
                     projectName = project.name
                     imageUrl = imgData.url
@@ -159,7 +159,7 @@ class TaskLoadService {
                     def fieldName = kvp.key
                     def recordIndex = 0
 
-                    def matcher = nameIndexRegex.matcher(fieldName)
+                    def matcher = nameIndexRegex.matcher(fieldName as CharSequence)
                     if (matcher.matches()) {
                         fieldName = matcher.group(1)
                         recordIndex = Integer.parseInt(matcher.group(2))
@@ -175,7 +175,7 @@ class TaskLoadService {
                 def shadowFileRecords = imgData.shadowFiles?.collect { shadowFile ->
                     log.info("Adding shadow files pre task import ${taskDesc.id}: ${shadowFile.stagedFile.file}")
                     def filePath = shadowFile.stagedFile.file as String
-                    ctx.newRecord(SHADOW_FILE_DESCRIPTOR).with {
+                    txContext.newRecord(SHADOW_FILE_DESCRIPTOR).with {
                         taskDescriptorId = taskDesc.id
                         name = shadowFile.fieldName as String
                         recordIdx = shadowFile.recordIndex as Integer
@@ -185,7 +185,7 @@ class TaskLoadService {
                 }
 
                 if (shadowFileRecords) {
-                    create.batchInsert(shadowFileRecords).execute()
+                    txContext.batchInsert(shadowFileRecords).execute()
                 }
             }
         } as TransactionalRunnable)
