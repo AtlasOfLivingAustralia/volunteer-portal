@@ -571,6 +571,10 @@ class TemplateController {
      * @return
      */
     def wildlifeTemplateConfig(long id) {
+        redirect(action: 'spotterTemplateConfig', id: id)
+    }
+
+    def spotterTemplateConfig(long id) {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
             return
@@ -584,7 +588,9 @@ class TemplateController {
         }
 
         def viewParams2 = template.viewParams2 ?: [ categories: [], animals: [] ]
-        [id: id, templateInstance: template, viewParams2: viewParams2]
+        def viewName = "wildlifeTemplateConfig"
+        if (template.viewName == "audioTranscribe") viewName = "audioTemplateConfig"
+        render(view: viewName, model: [id: id, templateInstance: template, viewParams2: viewParams2])
     }
 
     /**

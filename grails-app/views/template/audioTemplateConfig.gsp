@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="templateEntityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <title><g:message code="wildlifeSpotter.template.label" default="Wildlife Spotter Template Configuration"/></title>
+    <title><g:message code="wildlifeSpotter.template.label" default="Audio Template Configuration"/></title>
     <style>
     .form-control {
         height: 32px;
@@ -13,11 +13,15 @@
     .pointer {
         cursor: pointer;
     }
+
+    .save-options {
+        margin-top: 5px;
+    }
     </style>
 </head>
 
 <body>
-<cl:headerContent title="${message(code: 'default.wildlifeSpotterOptions.label', default: 'Wildlife Spotter Options')}"
+<cl:headerContent title="${message(code: 'default.wildlifeSpotterOptions.label', default: 'Audio Transcribe Options')}"
                   selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
@@ -33,7 +37,7 @@
 <div class="container" ng-app="wildlifespottertemplateconfig" ng-controller="TemplateConfigController as tcc">
     <div class="row">
         <div class="col-sm-12">
-            <button class="btn btn-primary" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
+            <button class="btn btn-primary save-options" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
         </div>
     </div>
 
@@ -239,7 +243,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <button class="btn btn-primary" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
+            <button class="btn btn-primary save-options" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
         </div>
     </div>
 </div>
