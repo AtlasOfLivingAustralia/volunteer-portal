@@ -75,10 +75,8 @@
                             <ul class="nav nav-pills nav-stacked" style="margin-left: 10px">
                                 <g:each in="${image.shadowFiles}" var="shadow">
                                     <li>
-                                        <div class="label">
-                                            <g:set var="shadowLabel"
-                                                   value="${shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")}"/>
-                                            <i class="fa fa-chevron-right"></i> ${shadowLabel}
+                                        <div class="label label-default">
+                                            <i class="fa fa-chevron-right"></i> <%= shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")%>
                                             <button class="btnDeleteShadowFile btn btn-xs btn-danger"
                                                title="Delete shadow file ${shadow.stagedFile.name}"
                                                filename="${shadow.stagedFile.name}"><i
