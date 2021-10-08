@@ -44,7 +44,7 @@ class FileUploadService {
 
     File uploadImage(String directory, MultipartFile mpf, Closure<String> renameFile) {
         if (!directory) throw new IllegalArgumentException('directory can not be empty')
-        def imagesHome = grailsApplication.config.images.home
+        def imagesHome = grailsApplication.config.images.home as String
         if (!imagesHome) throw new IllegalStateException('images.home not set')
         def imagesDir = new File(imagesHome, directory)
         if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")

@@ -352,7 +352,7 @@
             var name = file.name;
 
             Upload.upload({
-                url: "<g:createLink controller="template" action="uploadWildlifeImage"/>",
+                url: "<g:createLink controller="template" action="uploadSpotterFile"/>",
                 data: data
             }).then(function (resp) {
                 $log.debug('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));

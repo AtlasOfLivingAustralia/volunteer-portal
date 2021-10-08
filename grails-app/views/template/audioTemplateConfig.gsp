@@ -5,6 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <g:set var="templateEntityName" value="${message(code: 'template.label', default: 'Template')}"/>
     <title><g:message code="wildlifeSpotter.template.label" default="Audio Template Configuration"/></title>
+    <asset:stylesheet href="inline-player.css" />
     <style>
     .form-control {
         height: 32px;
@@ -97,12 +98,16 @@
                             <th>Entry Name</th>
                             <th>Icon</th>
                             <th>
-                                <button class="btn btn-mini btn-primary" ng-click="tcc.addEntry(c)"><i
-                                        class="fa fa-plus"></i></button>
-                                <button class="btn btn-mini btn-primary" type="file"
+                                <button class="btn btn-mini btn-primary"
+                                        ng-click="tcc.addEntry(c)">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                                <button class="btn btn-mini btn-primary"
+                                        type="file"
                                         ngf-drop="tcc.addManyImages(null,c,$files)"
-                                        ngf-select="tcc.addManyImages(null,c,$files)" ngf-multiple="true"
-                                        ngf-accept="'image/*'" title="upload multiple category images"><i
+                                        ngf-select="tcc.addManyImages(null,c,$files)"
+                                        ngf-accept="'image/*'"
+                                        title="upload multiple category images"><i
                                         class="fa fa-upload"></i></button>
                             </th>
                         </tr>
@@ -111,8 +116,10 @@
                         <tr ng-repeat="e in c.entries">
                             <td><input type="text" class="form-control" placeholder="Entry name" ng-model="e.name"
                                        ng-change="tcc.entryChange(c, e)"></td>
-                            <td ngf-drop="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><img
-                                    ng-src="{{tcc.entryUrl(e)}}"></td>
+                            <td ngf-drop="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'">
+                                <img ng-if="tcc.entryUrl(e) !== ''" ng-src="{{tcc.entryUrl(e)}}">
+                                <img ng-if="tcc.entryUrl(e) === ''" src="https://via.placeholder.com/80?text=No+image">
+                            </td>
                             <td>
                                 <button class="btn btn-mini btn-primary" type="file"
                                         ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><i
@@ -207,29 +214,66 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>Image</th>
+                            <th style="padding-left: 15px;">Image</th>
                             <th>
-                                <button class="btn btn-mini btn-primary" ng-click="tcc.addBlankImage(a)"><i
-                                        class="fa fa-plus"></i></button>
-                                <button class="btn btn-mini btn-primary" type="file"
-                                        ngf-select="tcc.addManyImages(a,null,$files)" ngf-multiple="true"
-                                        ngf-accept="'image/*'" title="Upload multiple images for this animal"><i
-                                        class="fa fa-upload"></i></button>
+                                <button class="btn btn-mini btn-primary" ng-click="tcc.addBlankImage(a)"
+                                        ng-disabled="a.images.length > 0">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                                <button class="btn btn-mini btn-primary"
+                                        type="file"
+                                        ngf-select="tcc.addManyImages(a,null,$files)"
+                                        ngf-multiple="false"
+                                        ngf-accept="'image/*'"
+                                        ng-disabled="a.images.length > 0"
+                                        title="Upload multiple images for this animal">
+                                    <i class="fa fa-upload"></i>
+                                </button>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr ng-repeat="i in a.images">
-                            <td ngf-drop="tcc.addImage(a.images,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
+                            <td style="padding-left: 15px;" ngf-drop="tcc.addImage(a.images,$index,$files)">
+%{--                                <img ng-src="{{tcc.imageUrl(i)}}"></td>--}%
+                                <img ng-if="tcc.imageUrl(i) !== ''" ng-src="{{tcc.imageUrl(i)}}">
+                                <img ng-if="tcc.imageUrl(i) === ''" src="https://via.placeholder.com/150?text=No+image">
                             <td>
                                 <button class="btn btn-mini btn-primary" type="file"
                                         ngf-select="tcc.addImage(a.images,$index,$files)" ngf-accept="'image/*'"><i
                                         class="fa fa-upload"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(a.images,$index)"><i
-                                        class="fa fa-arrow-up"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(a.images,$index)"><i
-                                        class="fa fa-arrow-down"></i></button>
                                 <button class="btn btn-mini btn-danger" ng-click="tcc.removeImage(a,$index)"><i
+                                        class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th style="padding-left: 15px;">Audio Samples</th>
+                            <th>
+                                <button class="btn btn-mini btn-primary"
+                                        type="file"
+                                        ngf-select="tcc.addManyAudio(a,null,$files)"
+                                        ngf-multiple="true"
+                                        ngf-accept="'audio/*'"
+                                        title="Upload multiple audio samples for this animal">
+                                    <i class="fa fa-upload"></i>
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="i in a.audio">
+                            <td class="audio-flat"  style="padding-left: 15px;" ngf-drop="tcc.addAudio(a.audio,$index,$files)">
+                                <span class="sm2_link"><a href="{{tcc.audioUrl(i)}}">Audio Sample {{$index + 1}}</a></span> <span ng-if="$index == 0">(This sample will be displayed on the animal selection view)</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-mini btn-primary" type="file"
+                                        ngf-select="tcc.addAudio(a.audio,$index,$files)" ngf-accept="'audio/*'"><i
+                                        class="fa fa-upload"></i></button>
+                                <button class="btn btn-mini btn-danger" ng-click="tcc.removeAudio(a,$index)"><i
                                         class="fa fa-trash"></i></button>
                             </td>
                         </tr>
@@ -247,7 +291,8 @@
         </div>
     </div>
 </div>
-<asset:javascript src="wildlifespotter-template-config.js" asset-defer=""/>
+<asset:javascript src="audio-template-config.js" asset-defer=""/>
+
 
 <asset:script type="text/javascript">
     var templateId = ${templateInstance.id};
@@ -272,9 +317,14 @@
             }
         }
 
+        function ensureAnimalArray() {
+            if (angular.isUndefined(self.model.animals) || self.model.animals === null) {
+                self.model.animals = [];
+            }
+        };
+
         initCategoryUiStatus();
         initAnimalUiStatus();
-
 
         self.addCategory = function() {
             self.model.categories.push({name: '', entries: []});
@@ -295,7 +345,8 @@
         };
 
         self.addAnimal = function() {
-            self.model.animals.push({vernacularName: '', scientificName: '', description: '', categories: {}, images: []});
+            ensureAnimalArray();
+            self.model.animals.push({vernacularName: '', scientificName: '', description: '', categories: {}, images: [], audio: []});
             self.animalUiStatus.push({minimized: false});
         };
 
@@ -313,13 +364,23 @@
             if (angular.isUndefined(a.images) || a.images === null) {
                 a.images = [];
             }
-        }
+        };
+
+        function ensureAudioArray(a) {
+            if (angular.isUndefined(a.audio) || a.audio === null) {
+                a.audio = [];
+            }
+        };
 
         self.removeImage = function(a, $index) {
             a.images.splice($index, 1);
         };
 
-        self.addManyImages = function(animal, category, $files) {
+        self.removeAudio = function(a, $index) {
+            a.audio.splice($index, 1);
+        };
+
+        self.addManyFiles = function(animal, category, $files, fileType) {
             for (var i = 0; i < $files.length; i++) {
                 var file = $files[i];
                 var hashable;
@@ -328,25 +389,46 @@
                     category.entries.push(hashable);
                 } else {
                     hashable = {hash: ''};
-                    ensureImagesArray(hashable);
-                    animal.images.push(hashable);
+                    if (fileType === 'image') {
+                        ensureImagesArray(animal);
+                        animal.images.push(hashable);
+                    } else if (fileType === 'audio') {
+                        ensureAudioArray(animal);
+                        animal.audio.push(hashable);
+                    }
                 }
 
-                uploadImage(hashable, file);
+                uploadFile(hashable, file, fileType);
             }
         };
 
-        self.addImage = function(entryOrAnimalArray, $index, $file) {
+        self.addManyImages = function(animal, category, $files) {
+            self.addManyFiles(animal, category, $files, 'image');
+        };
+
+        self.addManyAudio = function(animal, category, $files) {
+            self.addManyFiles(animal, category, $files, 'audio');
+        };
+
+        self.addFile = function(entryOrAnimalArray, $index, $file, fileType) {
             var entryOrAnimal = entryOrAnimalArray[$index];
             if (!$file) {
                 entryOrAnimal.hash = '';
                 return;
             }
 
-            uploadImage(entryOrAnimal, $file[0]);
+            uploadFile(entryOrAnimal, $file[0], fileType);
         };
 
-        function uploadImage(hashable, file) {
+        self.addImage = function(entryOrAnimalArray, $index, $file) {
+            self.addFile(entryOrAnimalArray, $index, $file, 'image');
+        };
+
+        self.addAudio = function(entryOrAnimalArray, $index, $file) {
+            self.addFile(entryOrAnimalArray, $index, $file, 'audio');
+        };
+
+        function uploadFile(hashable, file, type) {
             var data;
             if ("name" in hashable) {
                 data = {entry: file};
@@ -354,9 +436,13 @@
                 data = {animal: file};
             }
             var name = file.name;
+            var submitUrl = "<g:createLink controller="template" action="uploadSpotterFile"/>";
+            if (type !== undefined && type === 'audio') {
+                submitUrl = "<g:createLink controller="template" action="uploadSpotterFile" params="[fileType: 'audio']"/>";
+            }
 
             Upload.upload({
-                url: "<g:createLink controller="template" action="uploadWildlifeImage"/>",
+                url: submitUrl,
                 data: data
             }).then(function (resp) {
                 $log.debug('Success ' + name + ' uploaded. Response: ' + JSON.stringify(resp.data));
@@ -369,7 +455,15 @@
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                 $log.info('progress: ' + progressPercentage + '% ' + name);
             });
-        }
+        };
+
+        function uploadImage(hashable, file) {
+            uploadFile(hashable, file, 'image');
+        };
+
+        function uploadAudio(hashable, file) {
+            uploadFile(hashable, file, 'audio');
+        };
 
         self.moveCategoryUp = function(index) {
             self.moveUp(self.model.categories, index);
@@ -436,15 +530,28 @@
         var imageUrlTemplate = "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}"
                                                   height="{{height}}" format="{{format}}" template="true"/>";
 
+        var audioUrlTemplate = "<cl:audioUrl prefix="audiotranscribe" name="{{name}}" format="{{format}}" template="true"/>";
+
         self.entryUrl = function(e) {
-            var url = imageUrlTemplate.replace("{{name}}", e.hash).replace("{{width}}", "100").replace("{{height}}", "100").replace("{{format}}", "png");
+            var url = "";
+            if (!angular.isUndefined(e.hash) && e.hash !== "") {
+                url = imageUrlTemplate.replace("{{name}}", e.hash).replace("{{width}}", "100").replace("{{height}}", "100").replace("{{format}}", "png");
+            }
             return url;
         };
 
         self.imageUrl = function(i) {
-            var url = imageUrlTemplate.replace("{{name}}", i.hash).replace("{{width}}", "150").replace("{{height}}", "150").replace("{{format}}", "jpg");
+            var url = "";
+            if (!angular.isUndefined(i.hash) && i.hash !== "") {
+                url = imageUrlTemplate.replace("{{name}}", i.hash).replace("{{width}}", "150").replace("{{height}}", "150").replace("{{format}}", i.ext);
+            }
             return url;
         };
+
+        self.audioUrl = function(i) {
+            var url = audioUrlTemplate.replace("{{name}}", i.hash).replace("{{format}}", i.ext);
+            return url;
+        }
 
         self.fullName = function(a) {
             if (a.vernacularName && a.scientificName) {
@@ -552,6 +659,7 @@
                     scientificName: '',
                     description: '',
                     images: [],
+                    audio: [],
                     categories: defaultCats
                 };
 

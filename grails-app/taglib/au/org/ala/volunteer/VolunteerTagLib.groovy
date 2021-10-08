@@ -728,6 +728,15 @@ class VolunteerTagLib {
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 
+    def audioUrl = { attrs, body ->
+        def prefix = attrs.remove('prefix')
+        def name = attrs.remove('name')
+        def format = attrs.remove('format') ?: 'wav'
+        def template = attrs.remove('template')?.toBoolean()
+        String url = g.createLink(controller: 'image', action: 'audioFile', params: [prefix: prefix, name: name, format: format])
+        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+    }
+
 
     /**
      * @id The id of the institution
