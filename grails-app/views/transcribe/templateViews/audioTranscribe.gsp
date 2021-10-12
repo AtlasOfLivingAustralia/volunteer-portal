@@ -3,7 +3,8 @@
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
         <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
-        <asset:stylesheet src="wildlifespotter.css"/>
+        <asset:stylesheet src="audiotranscribe.css"/>
+        <asset:stylesheet src="inline-player.css.css"/>
     </head>
     <content tag="templateView">
         <div id="ct-container" >
@@ -15,13 +16,13 @@
                         <div class="panel-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                                    <g:imageViewer multimedia="${multimedia}"/>
+                                    <g:audioWaveViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-                            <g:render template="/transcribe/cameraTrapImageSequence"/>
+%{--                            <g:render template="/transcribe/cameraTrapImageSequence"/>--}%
 
                             <div style="margin-top:10px" class="text-center">
-                                <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>
+%{--                                <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>--}%
                             </div>
                         </div>
                     </div>
@@ -33,8 +34,8 @@
                                     <div class="col-sm-12">
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" id="btn-animals-present" name="recordValues.0.noAnimalsVisible"
-                                                       value="yes" ${'yes' == recordValues[0]?.noAnimalsVisible ? 'checked' : ''}> There's no animal in view
+                                                <input type="checkbox" id="btn-animals-present" name="recordValues.0.noAudibleAnimal"
+                                                       value="yes" ${'yes' == recordValues[0]?.noAudibleAnimal ? 'checked' : ''}> There was no audible animal call.
                                             </label>
                                         </div>
                                     </div>
@@ -43,8 +44,8 @@
                                     <div class="col-sm-12">
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" id="btn-problem-image" name="recordValues.0.problemWithImage"
-                                                       value="yes" ${'yes' == recordValues[0]?.problemWithImage ? 'checked' : ''}> There's a problem with this image
+                                                <input type="checkbox" id="btn-problem-image" name="recordValues.0.problemWithAudio"
+                                                       value="yes" ${'yes' == recordValues[0]?.problemWithAudio ? 'checked' : ''}> There's a problem with this audio clip.
                                             </label>
                                         </div>
                                     </div>
@@ -104,7 +105,7 @@
                                             </g:each>
                                         </div>
                                         <div id="ct-animals-no-filter">
-                                            <p>Researchers are interested in the animals listed below.  If you spot
+                                            <p>Researchers are interested in the animals listed below.  If you can hear
                                             an animal not on this list - choose the most appropriate of the general
                                             groups below.</p>
                                         </div>
@@ -266,24 +267,26 @@
                     <div class="carousel-inner" data-container="body">
                         {{#animal.images}}
                         <div class="item {{active}}">
-                            <cl:sizedImage prefix="wildlifespotter" name="{{hash}}" width="804" height="550" format="jpg" alt="{{animal.vernacularName}}" template="true"/>
+                            <cl:sizedImage prefix="wildlifespotter" name="{{hash}}" width="402" height="275" format="jpg" alt="{{animal.vernacularName}}" template="true"/>
                             %{--<img src="{{url}}" />--}%
                         </div>
                         {{/animal.images}}
                     </div>
-                    <a class="carousel-control left" href="#ct-full-image-carousel" data-slide="prev">
-                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">
-                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
                 </div>
                 <div class="description">
                     <h4 class="title">{{animal.vernacularName}}{{#animal.scientificName}} <span class="scientific-name">({{animal.scientificName}})</span>{{/animal.scientificName}}</h4>
                     <h4 class="features"><g:message code="wildlifespotter.detail.features" default="Distinguishing features"/></h4>
                     <div class="featurestext">{{{animal.description}}}</div>
+                    <h4 class="audio-samples"><g:message code="wildlifespotter.detail.audio.samples" default="Audio Samples"/></h4>
+                    <div class="audio-samples-audio">
+                        <ul class="flat">
+                            {{#animal.audio}}
+                            <li class="sm2_link" style="padding-bottom: 0.3em;">
+                                <cl:audioSample prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" linkText="Audio Sample {{idx + 1}}" template="true"/>
+                            </li>
+                            {{/animal.audio}}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </script>
@@ -299,7 +302,9 @@
             </div>
         </script>
 
-        <asset:javascript src="transcribe/wildlifespotter" asset-defer=""/>
+        <asset:javascript src="transcribe/audiotranscribe" asset-defer=""/>
+        <script src="https://unpkg.com/wavesurfer.js"></script>
+
         <asset:script type="text/javascript">
             var imgPrefix = "<cl:imageUrlPrefix type="wildlifespotter" />";
             var wsParams = <cl:json value="${wsParams}"/>;

@@ -349,6 +349,83 @@ class TranscribeTagLib {
         return w
     }
 
+    def audioWaveViewer = { attrs, body ->
+        def multimedia = attrs.multimedia as Multimedia
+
+        if (multimedia) {
+            def mb = new MarkupBuilder(out)
+            def audioFileUrl = taskService.getAudioMetaData(multimedia)
+
+            if (!audioFileUrl) {
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/audio/klankbeeld_suburb-sunday-713am.wav")
+                audioFileUrl = resource(file:'/klankbeeld_suburb-sunday-713am.wav')
+
+                mb.div(class:'alert alert-danger') {
+                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
+                        mkp.yieldUnescaped('&times;')
+                    }
+                    span() {
+                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    }
+                }
+            }
+
+            mb.div(id:'image-parent-container') {
+                mb.div(id:'audio-container') {
+                    mb.div(id:'waveform') {
+                        mkp.yieldUnescaped('<!-- Here be the waveform -->')
+                    }
+
+                    mb.div(id:'wave-controls') {
+                        mb.div(id:'row') {
+                            mb.div(class:'col-sm-12', style:'padding-top:10px; padding-left:0px;') {
+                                mkp.yieldUnescaped("""
+                                    <a id="wave-play" class="btn btn-default" data-action="play" style="padding-top: 5px;">
+                                        <i class="fa fa-play"></i>
+                                        Play /
+                                        <i class="fa fa-pause"></i>
+                                        Pause
+                                    </a>
+                                """)
+                            }
+                        }
+                    }
+                }
+            }
+
+            asset.script([type: 'text/javascript', 'asset-defer': ''],
+                """   
+                // Create an instance
+                let wavesurfer = {};
+                
+                // Init & load audio file
+                document.addEventListener('DOMContentLoaded', function() {
+                    wavesurfer = WaveSurfer.create({
+                        container: document.querySelector('#waveform'),
+                        waveColor: '#D9DCFF',
+                        progressColor: '#4353FF',
+                        cursorColor: '#4353FF',
+                        cursorWidth: 1,
+                        height: 200
+                    });
+                
+                    wavesurfer.on('error', function(e) {
+                        console.warn(e);
+                    });
+                
+                    // Load audio from URL
+                    wavesurfer.load('${audioFileUrl}');
+                
+                    // Play button
+                    const button = document.querySelector('[data-action="play"]');
+                    button.addEventListener('click', wavesurfer.playPause.bind(wavesurfer));
+                    
+                });
+                """.toString()
+            )
+        }
+    }
+
     /**
      * @attr multimedia
      * @attr elementId
@@ -359,24 +436,21 @@ class TranscribeTagLib {
      */
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
-        if (multimedia) {
 
+        if (multimedia) {
             int rotate = 0
             if (attrs.rotate) {
                 rotate = attrs.rotate
             }
 
             def mb = new MarkupBuilder(out)
-
             def imageMetaData = taskService.getImageMetaData(multimedia, rotate)
 
             if (!imageMetaData) {
-
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
-
-
                 def sampleUrl = resource(file:'/sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
+
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
                         mkp.yieldUnescaped('&times;')
@@ -407,17 +481,18 @@ class TranscribeTagLib {
                                 }
                             }
                         }
+
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
                                 a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
                                     mkp.yield('Show image in a separate window')
                                 }
                             }
-
                         }
                     }
                 }
             }
+
             if (attrs.height) {
                 asset.script([type: 'text/javascript', 'asset-defer': ''], "   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );" )
 //                mb.script(type:"text/javascript") {

@@ -1003,6 +1003,16 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
+    @Cacheable(value='getAudioMetaData', key="(#multimedia?.id?:0)")
+    String getAudioMetaData(Multimedia multimedia) {
+        def path = multimedia?.filePath
+        if (path) {
+            return multimediaService.getImageUrl(multimedia)
+        } else {
+            return null
+        }
+    }
+
     @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
@@ -1030,7 +1040,7 @@ ORDER BY record_idx, name;
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: {}, {}", resource, ex.message)  // don't print whoel stack trace
+            log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
         }
 
         if (image) {

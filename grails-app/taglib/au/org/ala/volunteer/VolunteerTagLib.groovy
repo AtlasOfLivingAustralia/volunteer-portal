@@ -10,8 +10,10 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.http.client.utils.URIBuilder
+import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.beans.factory.annotation.Value
-
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -704,7 +706,7 @@ class VolunteerTagLib {
         def alt = attrs.remove('alt')
         def cssClass = attrs.remove('class')
         out << "<img src="
-        out << sizedImageUrl(attrs,body)
+        out << sizedImageUrl(attrs, body)
         if (cssClass) {
             out << " class=\"${cssClass.encodeAsHTML()}\""
         }
@@ -715,6 +717,17 @@ class VolunteerTagLib {
             out << " alt=\"${alt.encodeAsHTML()}\""
         }
         out << "/>"
+    }
+
+    def audioSample = { attrs, body ->
+        def linkText = attrs.remove('linkText')
+        out << "<a href="
+        out << audioUrl(attrs, body)
+        out << " class=\"sm2_link\">"
+        if (linkText) {
+            out << linkText
+        }
+        out << "</a>"
     }
 
     def sizedImageUrl = { attrs, body ->
@@ -736,7 +749,6 @@ class VolunteerTagLib {
         String url = g.createLink(controller: 'image', action: 'audioFile', params: [prefix: prefix, name: name, format: format])
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
-
 
     /**
      * @id The id of the institution
