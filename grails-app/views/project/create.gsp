@@ -24,12 +24,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${projectInstance}">
-                        <ul class="errors" role="alert">
+                    <div class="alert alert-danger">
+                        <ul class="errors" role="alert" style="padding-left: 0px;">
                             <g:eachError bean="${projectInstance}" var="error">
-                                <li <g:if test="${error in FieldError}">data-field-id="${error.field}"</g:if>><g:message
+                                <li style="list-style: none" <g:if test="${error in FieldError}">data-field-id="${error.field}"</g:if>><g:message
                                         error="${error}"/></li>
                             </g:eachError>
                         </ul>
+                    </div>
                     </g:hasErrors>
                 </div>
                 <div class="col-md-12">
