@@ -4,7 +4,7 @@
     <head>
         <title><cl:pageTitle title="${(validator) ? 'Validate' : 'Expedition'} ${taskInstance?.project?.name}" /></title>
         <asset:stylesheet src="audiotranscribe.css"/>
-        <asset:stylesheet src="inline-player.css.css"/>
+        <asset:stylesheet src="inline-player.css"/>
     </head>
     <content tag="templateView">
         <div id="ct-container" >
@@ -19,11 +19,6 @@
                                     <g:audioWaveViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-%{--                            <g:render template="/transcribe/cameraTrapImageSequence"/>--}%
-
-                            <div style="margin-top:10px" class="text-center">
-%{--                                <markdown:renderHtml><g:message code="wildlifespotter.sequenceImages.helpText" /></markdown:renderHtml>--}%
-                            </div>
                         </div>
                     </div>
                     <div class="panel panel-default">
