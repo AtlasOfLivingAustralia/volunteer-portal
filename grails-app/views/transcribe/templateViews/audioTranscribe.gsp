@@ -15,7 +15,7 @@
                     <div id="ct-image-well" class="panel panel-default">
                         <div class="panel-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
-                                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
+                                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
                                     <g:audioWaveViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>

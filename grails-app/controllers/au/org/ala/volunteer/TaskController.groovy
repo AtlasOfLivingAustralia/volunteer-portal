@@ -521,11 +521,16 @@ class TaskController {
             return
         }
 
+        boolean isAudioProject = (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO)
+
         if (taskLoadService.isProjectLoadingAlready(projectId)) {
             flash.message = 'Please wait while existing staged images are loaded'
             redirect(controller: 'project', action: 'loadProgress', id: projectId)
         } else {
-            [projectInstance: project, hasDataFile: stagingService.projectHasDataFile(project), dataFileUrl:stagingService.dataFileUrl(project)]
+            [projectInstance: project,
+             hasDataFile: stagingService.projectHasDataFile(project),
+             dataFileUrl:stagingService.dataFileUrl(project),
+             isAudioProject: isAudioProject]
         }
     }
 

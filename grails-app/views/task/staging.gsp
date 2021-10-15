@@ -32,52 +32,53 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-3">
-                    <h4><span class="numberCircle">1</span>&nbsp;Upload Images</h4>
+                    <h4><span class="numberCircle">1</span>&nbsp;Upload Task Files</h4>
 
                     <p>
-                        Upload your images to the staging area
+                        Upload your <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> to the staging area
                     </p>
+                    <g:if test="${!isAudioProject}">
                     <p>
-                        In addition to task image files, you can also upload auxiliary data files that can contain additional data that should
+                        In addition to task files, you can also upload auxiliary data files that can contain additional data that should
                         be attached to individual tasks (e.g. OCR text)
                         <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft" customClass="upload-images-tooltip">
+                            <p>
+                                Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
+                                <b/>
+                                Example: image01.jpg
+                            </p>
+
+                            <p>
+                                Text files must match the following pattern:
+                            </p>
+                            <code>&lt;imageFilename&gt;__&lt;DwC field name&gt;__&lt;record index&gt;.txt</code>
+                            where:
+                            <ul>
+                                <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension
+                                </li>
+                                <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file
+                                </li>
+                                <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)
+                                </li>
+                            </ul>
+
+                            <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.
+                            </p>
+
+                            <div>
                                 <p>
-                                    Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
-                                    <b/>
-                                    Example: image01.jpg
+                                    For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
+                                    <br/>
+                                    The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
                                 </p>
-
-                                <p>
-                                    Text files must match the following pattern:
-                                </p>
-                                <code>&lt;imageFilename&gt;__&lt;DwC field name&gt;__&lt;record index&gt;.txt</code>
-                                where:
-                                <ul>
-                                    <li><code>imageFilename</code> matches exactly the name of an image file already uploaded, including the file extension
-                                    </li>
-                                    <li><code>DwC field name</code> is the name of the field which should be populated with the contents of the file
-                                    </li>
-                                    <li><code>record index</code> is the field index if the same field name can contain multiple values. (defaults to 0 if omitted)
-                                    </li>
-                                </ul>
-
-                                <p><strong>Important:</strong> <code>__</code> in the filename are two underscore characters.
-                                </p>
-
-                                <div>
-                                    <p>
-                                        For example, assuming an image file has been staged with the name <code>image01.jpg</code>:
-                                        <br/>
-                                        The contents of <code>image01.jpg__occurrenceRemarks__0.txt</code> will populate the <em>occurrenceRemarks</em> field at index 0
-                                    </p>
-                                </div>
+                            </div>
                         </cl:helpText>
                     </p>
+                    </g:if>
                 </div>
             
                 <div class="col-md-3">
                     <h4><span class="numberCircle">2</span>&nbsp;Upload datafile (Optional)</h4>
-
                     <p>
                         Upload a csv file containing extra data to attach to each task. This can also be used for prepopulating fields within your template.
                     </p>
@@ -112,18 +113,25 @@
                         <a href="${dataFileUrl}">View data file</a>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-default" id="btnUploadDataFile"><i class="fa fa-upload"></i>&nbsp;Upload data file
+                        <button class="btn btn-default"
+                                id="btnUploadDataFile"
+                            <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
+                                >
+                            <i class="fa fa-upload"></i>&nbsp;Upload data file
                         </button>
                     </g:else>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
-                    <button class="btnAddFieldDefinition btn btn-default"><i class="fa fa-plus"></i> Add column</button>
+                    <button class="btnAddFieldDefinition btn btn-default"
+                        <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
+                        >
+                        <i class="fa fa-plus"></i> Add column</button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
                     <button id="btnLoadTasks" class="btn btn-primary"
-                            style="margin-left: 10px">Create tasks from staged images</button>
+                            style="margin-left: 10px">Create tasks from staged <g:if test="${isAudioProject}">audio</g:if><g:else>images</g:else></button>
                 </div>
             </div>
 
@@ -175,8 +183,10 @@
 
     digivolStageFiles({
         projectId: ${projectInstance.id},
+        isAudioProject: ${isAudioProject},
         stagedImagesUrl: "${createLink(action: 'stagedImages', params: [projectId: projectInstance.id])}",
-        uploadFileUrl: "${createLink(controller: 'ajax', action: 'resumableUploadFile', params: [projectId: projectInstance.id])}",
+        uploadFileUrl: "${createLink(controller: 'ajax', action: 'resumableUploadImage', params: [projectId: projectInstance.id])}",
+        uploadAudioUrl: "${createLink(controller: 'ajax', action: 'resumableUploadAudio', params: [projectId: projectInstance.id])}",
         unStageImageUrl: "${createLink(controller: 'task', action: 'unstageImage', params: [projectId: projectInstance.id])}&imageName=",
         addFieldUrl: "${createLink(action: 'editStagingFieldFragment', params: [projectId: projectInstance.id])}",
         clearStagingUrl: "${createLink(controller: 'task', action: 'deleteAllStagedImages', params: [projectId: projectInstance.id])}",

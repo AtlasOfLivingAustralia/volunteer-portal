@@ -5,6 +5,7 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.ProjectType" %>
 <%@ page contentType="text/html; UTF-8" %>
 
 <html>
@@ -64,11 +65,21 @@
             <div class="col-sm-12 col-md-6">
                 <div class="panel panel-default">
                     <div class="panel-body">
+                        <g:if test="${taskInstance?.project?.projectType?.name == ProjectType.PROJECT_TYPE_AUDIO}">
+                            <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
+                                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
+                                    <g:audioWaveViewer multimedia="${multimedia}"/>
+                                </g:if>
+                            </g:each>
+                        </g:if>
+                        <g:else>
                         <div class="imageDiv">
                             <g:set var="multimedia" value="${taskInstance?.multimedia?.first()}"/>
                             <g:imageViewer multimedia="${multimedia}"/>
                         </div>
+                        </g:else>
 
+                        <div class="col-sm-12" style="padding-top: 0.5em; padding-left: 0px;">
                         <a class="btn btn-default btn-small"
                            href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
                         <cl:ifAdmin>
@@ -83,6 +94,7 @@
                                    href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
                             </g:else>
                         </cl:ifAdmin>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -209,6 +221,10 @@
 </g:else>
 </section>
 <asset:javascript src="image-viewer" asset-defer=""/>
+
+<g:if test="${taskInstance?.project?.projectType?.name == ProjectType.PROJECT_TYPE_AUDIO}">
+<script src="https://unpkg.com/wavesurfer.js"></script>
+</g:if>
 
 <asset:script type="text/javascript">
 

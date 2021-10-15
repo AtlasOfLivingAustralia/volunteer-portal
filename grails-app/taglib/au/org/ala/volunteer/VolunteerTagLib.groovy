@@ -622,6 +622,10 @@ class VolunteerTagLib {
                 fullUrl = multimediaService.getImageUrl(mm)
             }
 
+            if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+                url = resource(file:'/icons-audio-52.png')
+            }
+
             if (!url) {
                 // sample
                 url = resource(file:'/sample-task-thumbnail.jpg')
@@ -630,8 +634,11 @@ class VolunteerTagLib {
                 fullUrl = resource(file: '/sample-task.jpg')
             }
 
-            if (url) {
+            if (url && task.project.projectType.name != ProjectType.PROJECT_TYPE_AUDIO) {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
+            } else {
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" />"
                 if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
 

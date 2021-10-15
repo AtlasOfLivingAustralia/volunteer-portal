@@ -51,6 +51,7 @@ class TaskLoadService {
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext
+    def assetResourceLocator
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -926,13 +927,20 @@ class TaskLoadService {
     }
 
     private TaskService.FileMap completeMultimediaRecord(MultimediaRecord multimedia, long projectId) {
-            def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
-            if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, ${projectId}, ${multimedia.taskId}, ${multimedia.id}")
+        Project project = Project.get(projectId)
+
+        def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
+        if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, ${projectId}, ${multimedia.taskId}, ${multimedia.id}")
+
+        if (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+            multimedia.filePathToThumbnail = null
+        } else {
             filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-            multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
             multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
-            multimedia.mimeType = filePath.contentType
-            return filePath
+        }
+        multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+        multimedia.mimeType = filePath.contentType
+        return filePath
     }
 
 

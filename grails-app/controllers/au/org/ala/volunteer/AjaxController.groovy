@@ -634,22 +634,29 @@ class AjaxController {
         return result
     }
 
+    def resumableUploadImage(ResumableUploadCommand cmd) {
+        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
+        resumableUploadFile(cmd, allowedMimeTypes)
+    }
 
-    def resumableUploadFile(ResumableUploadCommand cmd) {
+    def resumableUploadAudio(ResumableUploadCommand cmd) {
+        def allowedMimeTypes = ['audio/aac', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/ogg']
+        resumableUploadFile(cmd, allowedMimeTypes)
+    }
 
+    def resumableUploadFile(ResumableUploadCommand cmd, def allowedMimeTypes) {
         if (cmd.hasErrors()) {
             log.error("Resumable params are not valid {}", cmd)
             return render(status: SC_BAD_REQUEST, text: "Params aren't valid")
         }
 
-        def allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'text/plain']
         if (!allowedMimeTypes.contains(cmd.type)) {
             log.error("Resumable file content-type is not valid {}", cmd)
-            return render(status: SC_BAD_REQUEST, text: "The image file must be one of: ${allowedMimeTypes}")
+            return render(status: SC_BAD_REQUEST, text: "The file must be one of: ${allowedMimeTypes}")
         }
 
         if (!Project.exists(cmd.projectId)) {
-            return render(status: SC_NOT_FOUND, text: "Project doesn't exist")
+            return render(status: SC_NOT_FOUND, text: "Expedition doesn't exist")
         }
 
         if (!projectService.isAdminForProject(Project.get(cmd.projectId))) {
