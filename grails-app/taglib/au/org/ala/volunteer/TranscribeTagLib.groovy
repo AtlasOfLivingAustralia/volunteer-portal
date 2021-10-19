@@ -431,7 +431,7 @@ class TranscribeTagLib {
                     wavesurfer.load('${audioFileUrl}');
                 
                     // Play button
-                    const button = document.querySelector('[data-action="play"]');
+                    var button = document.querySelector('[data-action="play"]');
                     button.addEventListener('click', wavesurfer.playPause.bind(wavesurfer));
                     
                 });

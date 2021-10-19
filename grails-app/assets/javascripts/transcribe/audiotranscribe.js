@@ -338,7 +338,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       wavesurfers.forEach(function (item, index) {
         //console.log(item);
         item.wave.load(item.url);
-        const button = document.querySelector('[data-action-play="'+ item.playLink +'"]');
+        var button = document.querySelector('[data-action-play="'+ item.playLink +'"]');
         button.addEventListener('click', item.wave.playPause.bind(item.wave));
       });
     }
