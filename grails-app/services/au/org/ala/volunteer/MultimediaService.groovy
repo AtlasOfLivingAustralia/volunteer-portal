@@ -38,6 +38,15 @@ class MultimediaService {
         media.filePath ? getImageUrl(media.filePath) : ''
     }
 
+    String getSampleAudioUrl(String prefix, String name, String format) {
+        def encodedPrefix = IOUtils.toFileSystemDirectorySafeName(prefix)
+        def encodedName = IOUtils.toFileSystemSafeName(name)
+
+        def imagesHome = grailsApplication.config.getProperty('images.home')
+        def filePath = imagesHome + File.separator + encodedPrefix + File.separator + encodedName + format
+        return filePath
+    }
+
     public String getImageUrl(String filePath) {
         return filePath ? "${grailsApplication.config.server.url}${filePath}" : ''
     }

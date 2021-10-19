@@ -16,7 +16,7 @@
                         <div class="panel-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
-                                    <g:audioWaveViewer multimedia="${multimedia}"/>
+                                    <g:audioWaveViewer multimedia="${multimedia}" waveColour="${taskInstance.project.institution?.themeColour}"/>
                                 </g:if>
                             </g:each>
                         </div>
@@ -273,14 +273,28 @@
                     <h4 class="features"><g:message code="wildlifespotter.detail.features" default="Distinguishing features"/></h4>
                     <div class="featurestext">{{{animal.description}}}</div>
                     <h4 class="audio-samples"><g:message code="wildlifespotter.detail.audio.samples" default="Audio Samples"/></h4>
-                    <div class="audio-samples-audio">
-                        <ul class="flat">
-                            {{#animal.audio}}
-                            <li class="sm2_link" style="padding-bottom: 0.3em;">
-                                <cl:audioSample prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" linkText="Audio Sample {{idx + 1}}" template="true"/>
-                            </li>
-                            {{/animal.audio}}
-                        </ul>
+%{--                    <div class="audio-samples-audio">--}%
+%{--                        <ul class="flat">--}%
+%{--                            {{#animal.audio}}--}%
+%{--                            <li class="sm2_link" style="padding-bottom: 0.3em;">--}%
+%{--                                <cl:audioSample prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" linkText="Audio Sample {{idx + 1}}" template="true"/>--}%
+%{--                            </li>--}%
+%{--                            {{/animal.audio}}--}%
+%{--                        </ul>--}%
+%{--                    </div>--}%
+                    <div class="audio-samples-wave" style="padding-bottom: 2em;">
+
+                        {{#animal.audio}}
+                        %{-- do a list, then put URL in data attr or something. Write JS method to pull URL from attr and load wavesurfer... --}%
+                        <div class="row" style="padding-bottom: 0.5em;">
+                            <div class="col-sm-1"><a class="btn btn-default" data-action-play="{{hash}}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
+                            <div class="col-sm-4 audio-play-sample" style="border-radius: 4px; border: 1px solid #ddd;"
+                                 data-play-link="{{hash}}"
+                                 data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" template="true"/>'></div>
+%{--                            <li style="list-style: none;" data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" template="true"/>'>--}%
+                        </div>
+                        {{/animal.audio}}
+
                     </div>
                 </div>
             </div>
@@ -306,6 +320,12 @@
             var recordValues = <cl:json value="${recordValues}"/>;
             var placeholders = <cl:json value="${placeholders}"/>;
             wildlifespotter(wsParams, imgPrefix, recordValues, placeholders);
+        </asset:script>
+
+        <asset:script type="text/javascript">
+            $(document).ready(function () {
+
+            });
         </asset:script>
     </content>
 </g:applyLayout>

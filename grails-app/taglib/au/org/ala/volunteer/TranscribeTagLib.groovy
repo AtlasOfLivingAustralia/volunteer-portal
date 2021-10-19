@@ -349,8 +349,20 @@ class TranscribeTagLib {
         return w
     }
 
+    def audioSampleWave = { attrs, body ->
+        def prefix = attrs.remove('prefix') as String
+        def name = attrs.remove('name') as String
+        def format = (attrs.remove('format') ?: 'wav') as String
+        def template = attrs.remove('template')?.toBoolean()
+        if (prefix && name) {
+            def audioFileUrl = multimediaService.getSampleAudioUrl(prefix, name, format)
+
+        }
+    }
+
     def audioWaveViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
+        def waveColour = attrs.waveColour ?: '#d5502a'
 
         if (multimedia) {
             def mb = new MarkupBuilder(out)
@@ -370,9 +382,9 @@ class TranscribeTagLib {
                 }
             }
 
-            mb.div(id:'image-parent-container') {
+            mb.div(id:'audio-parent-container') {
                 mb.div(id:'audio-container') {
-                    mb.div(id:'waveform') {
+                    mb.div(id:'waveform', style:'padding: 15px; border-radius: 5px; border: 1px solid #ddd;') {
                         mkp.yieldUnescaped('<!-- Here be the waveform -->')
                     }
 
@@ -402,11 +414,13 @@ class TranscribeTagLib {
                 document.addEventListener('DOMContentLoaded', function() {
                     wavesurfer = WaveSurfer.create({
                         container: document.querySelector('#waveform'),
-                        waveColor: '#D9DCFF',
-                        progressColor: '#4353FF',
-                        cursorColor: '#4353FF',
+                        backgroundColor: 'white',
+                        waveColor: '#a1a1a1',
+                        progressColor: '${waveColour}',
+                        cursorColor: 'black',
                         cursorWidth: 1,
-                        height: 200
+                        height: 300,
+                        hideScrollbar: true
                     });
                 
                     wavesurfer.on('error', function(e) {

@@ -103,17 +103,7 @@ class ImageController {
             render([error: "${original.path} could not be read as an image"] as JSON, status: 500)
             return
         }
-
-        def scaled = ImageUtils.centreCropAndScale(originalImage, width, height)
-        if (!ImageIO.write(scaled, format, result)) {
-            log.warn("${original.path} could not be scaled or written with ${width}x${height} in $format")
-            render([error: "${original.path} could not be read as an image"] as JSON, status: 500)
-            return
-        }
-        scaled.flush()
         originalImage.flush()
-        log.info("Scaled and saved $result")
-
         sendImage(result, contentType(format))
     }
 

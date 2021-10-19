@@ -269,6 +269,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       detail.find('[title]').tooltip();
 
       switchCtPage('#ws-dynamic-container');
+
+      addSampleWaveforms();
     }
 
     function hideDetail() {
@@ -312,6 +314,33 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       var summary = to == '#ct-animals-summary';
       $('#btnNext').toggleClass('hidden', summary);
     //  $('.bvp-submit-button').toggleClass('hidden', !summary);
+    }
+
+    function addSampleWaveforms() {
+      //console.log('adding sample waves3');
+      var wavesurfers = [].map.call(document.querySelectorAll("div.audio-play-sample"), function (element) {
+        //console.log("Adding wave");
+        return {
+          wave: WaveSurfer.create({
+            container: element,
+            backgroundColor: 'white',
+            waveColor: '#a1a1a1',
+            progressColor: '#d5502a',
+            hideScrollbar: true,
+            height: 40,
+            barMinHeight: 5
+          }),
+          url: element.getAttribute('data-audio-file'),
+          playLink: element.getAttribute('data-play-link')
+        };
+      });
+
+      wavesurfers.forEach(function (item, index) {
+        //console.log(item);
+        item.wave.load(item.url);
+        const button = document.querySelector('[data-action-play="'+ item.playLink +'"]');
+        button.addEventListener('click', item.wave.playPause.bind(item.wave));
+      });
     }
 
     // Cycling Thumbnails
@@ -408,6 +437,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       generateFormFields();
       return true;
     });
+
+
 
     // force intial sync of saved values
     syncRecordValues();
