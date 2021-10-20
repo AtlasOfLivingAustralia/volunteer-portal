@@ -640,7 +640,7 @@ class AjaxController {
     }
 
     def resumableUploadAudio(ResumableUploadCommand cmd) {
-        def allowedMimeTypes = ['audio/aac', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/ogg']
+        def allowedMimeTypes = ['audio/aac', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/ogg', 'audio/vnd.dlna.adts']
         resumableUploadFile(cmd, allowedMimeTypes)
     }
 
