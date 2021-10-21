@@ -142,7 +142,7 @@ class InstitutionAdminController {
         def title = institutionService.NOTIFICATION_APPLICATION + ": ${institution.name}"
         def message = groovyPageRenderer.render(view: '/institutionAdmin/institutionApplicantNotification',
                 model: model)
-        institutionService.emailNotification(message, title)
+        institutionService.emailNotification(message, title, recipient.email)
     }
 
     private def sendApplicationNotification(Institution institution) {
