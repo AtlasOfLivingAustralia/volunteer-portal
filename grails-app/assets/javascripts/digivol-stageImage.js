@@ -133,7 +133,7 @@ function digivolStageFiles (config, self) {
     }
 
     var imageFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'text/plain'];
-    var audioFileTypes = ['audio/aac', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/ogg']
+    var audioFileTypes = ['audio/aac', 'audio/wav', 'audio/mpeg', 'audio/x-m4a', 'audio/ogg', 'audio/vnd.dlna.adts']
 
     var r = new Resumable({
         target: (config.isAudioProject) ? config.uploadAudioUrl : config.uploadFileUrl,

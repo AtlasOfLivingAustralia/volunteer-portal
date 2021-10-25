@@ -75,6 +75,11 @@
                         </cl:helpText>
                     </p>
                     </g:if>
+                    <g:else>
+                        <p>
+                            Note: AAC files will be renamed to *.mp3 due to file format requirements.
+                        </p>
+                    </g:else>
                 </div>
             
                 <div class="col-md-3">
