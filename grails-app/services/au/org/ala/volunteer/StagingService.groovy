@@ -108,6 +108,20 @@ class StagingService {
             if (!it.isDirectory()) {
                 def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
                 Map image = [file: it, name: it.name, url: url]
+
+                // If Audio project, check if it's an AAC file and rename to mp3.
+                def extension = FilenameUtils.getExtension(it.getPath())
+                log.debug("Extn: ${extension}")
+                if (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO && 'aac' == extension.toLowerCase()) {
+                    log.debug("Renaming aac file to mp3")
+                    def newFile = changeFileExtension(it, 'mp3')
+                    log.debug("Path: ${newFile.path}")
+                    image.file = newFile
+                    image.name = newFile.name
+                    image.url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(newFile.name, "UTF-8").replaceAll("\\+", "%20")
+                }
+                log.debug("File details: ${image}")
+
                 if (sortByDateTaken) {
                     Date dateTaken = ImageUtils.getDateTaken(it)
                     image.dateTaken = dateTaken ? dateTaken.getTime() : 0
@@ -120,6 +134,29 @@ class StagingService {
         log.debug("Staged files: ${images}")
 
         images.sort(sort)
+    }
+
+    /**
+     * To cater for requirements for the WaveSurfer JS library, AAC files need to be renamed.
+     * This method renames a file's extension to the provided extension.
+     * @param oldFile
+     * @param newExtension
+     * @return
+     */
+    def changeFileExtension(File oldFile, String newExtension) {
+        def filePath = oldFile.getPath() //createFilePath(oldname)
+//        def file = new File(filePath)
+        if (oldFile.exists()) {
+            def extension = FilenameUtils.getExtension(filePath)
+            def newFilePath = filePath.replace(extension, newExtension)
+            def newFile = new File(newFilePath)
+            if (!newFile.exists()) {
+                oldFile.renameTo(newFile)
+                return newFile
+            }
+        } else {
+            return oldFile
+        }
     }
 
     def unstageImage(long projectId, String imageName) {

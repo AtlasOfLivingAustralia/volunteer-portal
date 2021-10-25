@@ -420,7 +420,10 @@ class TranscribeTagLib {
                         cursorColor: 'black',
                         cursorWidth: 1,
                         height: 300,
-                        hideScrollbar: true
+                        hideScrollbar: true,
+                        barMinHeight: 50,
+                        barHeight: 70,
+                        normalize: true
                     });
                 
                     wavesurfer.on('error', function(e) {
