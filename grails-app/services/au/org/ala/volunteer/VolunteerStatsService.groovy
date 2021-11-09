@@ -24,7 +24,7 @@ class VolunteerStatsService {
 
     LinkGenerator grailsLinkGenerator
 
-    //@Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString()) + (#disableStats.toString()) + (#disableHonourBoard.toString())")
+    @Cacheable(value = 'MainVolunteerStats', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString()) + (#disableStats.toString()) + (#disableHonourBoard.toString())")
     def generateStats(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -122,6 +122,7 @@ class VolunteerStatsService {
          daily: daily, weekly: weekly, monthly: monthly, alltime: alltime /*, contributors: contributors*/]
     }
 
+    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString())")
     def generateContributors(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)

@@ -327,6 +327,19 @@
     >
     </cache>
     <cache
+            name="MainVolunteerStats"
+            eternal="false"
+            timeToLiveSeconds="900"
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="2000"
+            memoryStoreEvictionPolicy="LRU"
+            overflowToDisk="true"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            logging="true"
+    >
+    </cache>
+    <cache
             name="MainVolunteerContribution"
             eternal="false"
             timeToLiveSeconds="600"
