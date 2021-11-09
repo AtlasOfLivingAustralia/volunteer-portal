@@ -1,19 +1,23 @@
 package au.org.ala.volunteer
 
-import grails.transaction.NotTransactional
+
+import groovy.sql.Sql
+
+import javax.sql.DataSource
 
 class LeaderBoardService {
 
     static transactional = false
 
     final static EMPTY_LEADERBOARD_WINNER = [userId: 0, name:'', email:'', score:0]
-    
+
     private static Date getTodaysDate() {
         // def today = Date.parse("yyyy-MM-dd", "2014-03-01") // for testing
         def today = new Date().clearTime()
         return today.clearTime()
     }
 
+    DataSource dataSource
     def settingsService
     def userService
 
@@ -51,7 +55,7 @@ class LeaderBoardService {
                     } else {
                         result = EMPTY_LEADERBOARD_WINNER
                     }
-                } else if (pt?.size() >= 0) {
+                } else if (pt) { //(pt?.size() >= 0) {
                     def tmp = getTopNForProjectType(1, pt, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
@@ -139,14 +143,14 @@ class LeaderBoardService {
         def scoreMap = getUserCountsForInstitution(institution, ActivityType.Transcribed, ineligibleUsers)
         def validatedMap = getUserCountsForInstitution(institution, ActivityType.Validated, ineligibleUsers)
 
-        return mergeScores(validatedMap, scoreMap, count)
+        return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
     List getTopNForProjectType(int count, def projectsInLabels = null, List<String> ineligibleUsers = []) {
 
         def scoreMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Transcribed, ineligibleUsers) : [:]
         def validatedMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Validated, ineligibleUsers) : [:]
-        return mergeScores(validatedMap, scoreMap, count)
+        return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
     List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], def pt = null) {
@@ -159,18 +163,24 @@ class LeaderBoardService {
         // Get a map of user who validated tasks during this periodn, along with the count
         def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institutionList, ineligibleUsers, pt)
 
-        return mergeScores(validatedMap, scoreMap, count)
+        return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
-    private List mergeScores(LinkedHashMap validatedMap, LinkedHashMap scoreMap, int count) {
+    private List mergeScores(LinkedHashMap validatedMap, LinkedHashMap scoreMap, int count, def ineligibleUsers) {
         // merge the validated map into the transcribed map, forming a total activity score for the superset of users
         validatedMap.each { kvp ->
-            // if there exists a validator who is not a transcriber, set the transcription count to 0
-            if (!scoreMap[kvp.key]) {
-                scoreMap[kvp.key] = 0
+            // If the user is excluded, set their score to -1.
+            if (ineligibleUsers?.size() > 0 && ineligibleUsers?.contains(kvp.key)) {
+                scoreMap[kvp.key] = -1
+            } else {
+                // if there exists a validator who is not a transcriber, set the transcription count to 0
+                if (!scoreMap[kvp.key]) {
+                    scoreMap[kvp.key] = 0
+                }
+
+                // combine the transcribed count with the validated count for that user.
+                scoreMap[kvp.key] += kvp.value
             }
-            // combine the transcribed count with the validated count for that user.
-            scoreMap[kvp.key] += kvp.value
         }
 
         scoreMap = scoreMap.sort { a, b -> b.value <=> a.value }
@@ -196,9 +206,45 @@ class LeaderBoardService {
 
     Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, List<Institution> institutionList,
                             List<String> ineligibleUserIds, def projectsInLabels = null) {
-        def results
+        def map = [:]
+        def sql = new Sql(dataSource)
+
+        String select = "select fully_${activityType}_by, count(fully_${activityType}_by) as count "
+        String groupByClause = " group by fully_${activityType}_by "
+        def filter = " date_fully_${activityType} >= :startDate and date_fully_${activityType} < :endDate "
+
+        def ineligibleUserClause = ""
+        if (ineligibleUserIds) {
+            ineligibleUserClause = " and fully_${activityType}_by not in (${ineligibleUserIds.join(",").tr(/"/, /'/)})"
+        }
+
         if (ActivityType.Transcribed == activityType) {
-            results = Transcription.withCriteria {
+
+            def institutionJoin = ""
+            if (institutionList) {
+                String institutionIdList = institutionList.collect{ it.id }.join(',').tr(/"/, /'/)
+                institutionJoin = " join project on (project.id = transcription.project_id " +
+                        " and project.institution_id in (${institutionIdList})) "
+            }
+
+            def projectJoin = ""
+            if (projectsInLabels) {
+                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = transcription.project_id)"
+            }
+
+            def query = """\
+                ${select}
+                from transcription
+                ${institutionJoin}
+                ${projectJoin}
+                where ${filter} 
+                ${groupByClause} """.stripIndent()
+//${ineligibleUserClause}
+            sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
+                map[row[0]] = row[1]
+            }
+
+            /*results = Transcription.withCriteria {
                 ge("dateFully${activityType}", startDate)
                 lt("dateFully${activityType}", endDate + 1)
 
@@ -223,9 +269,34 @@ class LeaderBoardService {
                     groupProperty("fully${activityType}By")
                     count("fully${activityType}By", 'count')
                 }
-
             }
+             */
+
         } else {
+            def institutionJoin = ""
+            if (institutionList) {
+                institutionJoin = " join project on (project.id = task.project_id " +
+                        " and project.institution_id in (${institutionList.collect{ it.id }.join(',')})) "
+            }
+
+            def projectJoin = ""
+            if (projectsInLabels) {
+                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = task.project_id)"
+            }
+
+            def query = """\
+                ${select}
+                from task
+                ${institutionJoin}
+                ${projectJoin}
+                where ${filter} 
+                ${groupByClause} """.stripIndent()
+//${ineligibleUserClause}
+            sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
+                map[row[0]] = row[1]
+            }
+
+            /*
             results = Task.withCriteria {
                 ge("dateFully${activityType}", startDate)
                 lt("dateFully${activityType}", endDate + 1)
@@ -253,11 +324,12 @@ class LeaderBoardService {
                     count("fully${activityType}By", 'count')
                 }
             }
+             */
         }
-        def map = [:]
-        results.each { row ->
-            map[row[0]] = row[1]
-        }
+        //def map = [:]
+//        results.each { row ->
+//            map[row[0]] = row[1]
+//        }
 
         return map
     }
@@ -313,8 +385,35 @@ class LeaderBoardService {
     }
 
     private getUserCountsForProjectType(def projectsInLabels = null, ActivityType activityType, List<String> exceptUsers = []) {
-        def results
+        def map = [:]
+        def sql = new Sql(dataSource)
+
+        String select = "select fully_${activityType}_by, count(fully_${activityType}_by) as count "
+        String groupByClause = " group by fully_${activityType}_by "
+
+        def ineligibleUserClause = ""
+        if (exceptUsers) {
+            ineligibleUserClause = " where fully_${activityType}_by not in (${exceptUsers.join(",").tr(/"/, /'/)})"
+        }
+
+        // def results
         if (ActivityType.Transcribed == activityType) {
+            def projectJoin = ""
+            if (projectsInLabels) {
+                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = transcription.project_id)"
+            }
+
+            def query = """\
+                ${select}
+                from transcription
+                ${projectJoin}
+                ${groupByClause} """.stripIndent()
+//${ineligibleUserClause}
+            sql.eachRow(query) { row ->
+                map[row[0]] = row[1]
+            }
+
+            /*
             results = Transcription.withCriteria {
                 if (projectsInLabels) {
                     project {
@@ -332,7 +431,24 @@ class LeaderBoardService {
                     count("fully${activityType}By", 'count')
                 }
             }
+             */
         } else {
+            def projectJoin = ""
+            if (projectsInLabels) {
+                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = task.project_id)"
+            }
+
+            def query = """\
+                ${select}
+                from task
+                ${projectJoin}
+                ${groupByClause} """.stripIndent()
+//${ineligibleUserClause}
+            sql.eachRow(query) { row ->
+                map[row[0]] = row[1]
+            }
+
+            /*
             results = Task.withCriteria {
                 if (projectsInLabels) {
                     project {
@@ -350,12 +466,13 @@ class LeaderBoardService {
                     count("fully${activityType}By", 'count')
                 }
             }
+             */
         }
 
-        def map = [:]
-        results.each { row ->
-            map[row[0]] = row[1]
-        }
+//        def map = [:]
+//        results.each { row ->
+//            map[row[0]] = row[1]
+//        }
 
         return map
     }

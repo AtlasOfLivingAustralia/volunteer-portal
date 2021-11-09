@@ -10,17 +10,17 @@
         </h2>
 
         <h3>
-            <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{transcriberCount | number}}</span>
+            <span data-ng-if="lbLoading"><cl:spinner/></span>
+            <span data-ng-if="!lbLoading">{{transcriberCount | number}}</span>
             Volunteers
         </h3>
 
         <p>
-            <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{completedTasks | number}}</span>
+            <span data-ng-if="lbLoading"><cl:spinner/></span>
+            <span data-ng-if="!lbLoading">{{completedTasks | number}}</span>
             tasks of
-            <span data-ng-if="loading"><cl:spinner/></span>
-            <span data-ng-if="!loading">{{totalTasks | number}}</span>
+            <span data-ng-if="lbLoading"><cl:spinner/></span>
+            <span data-ng-if="!lbLoading">{{totalTasks | number}}</span>
             completed
         </p>
 
@@ -47,8 +47,8 @@
                     </a>
                 </th>
                 <th>
-                    <span data-ng-if="loading"><cl:spinner/></span>
-                    <span data-ng-if="!loading">
+                    <span data-ng-if="lbLoading"><cl:spinner/></span>
+                    <span data-ng-if="!lbLoading">
                     <a id="day-tripper-name" data-ng-href="{{userProfileUrl(daily)}}">{{daily.name}}</a>
                     </span>
                 </th>
@@ -70,8 +70,8 @@
                     </a>
                 </th>
                 <th>
-                    <span data-ng-if="loading"><cl:spinner/></span>
-                    <span data-ng-if="!loading">
+                    <span data-ng-if="lbLoading"><cl:spinner/></span>
+                    <span data-ng-if="!lbLoading">
                     <a id="weekly-wonder-name" data-ng-href="{{userProfileUrl(weekly)}}">{{weekly.name}}</a>
                     </span>
                 </th>
@@ -93,8 +93,8 @@
                     </a>
                 </th>
                 <th>
-                    <span data-ng-if="loading"><cl:spinner/></span>
-                    <span data-ng-if="!loading">
+                    <span data-ng-if="lbLoading"><cl:spinner/></span>
+                    <span data-ng-if="!lbLoading">
                     <a id="monthly-maestro-name"
                        data-ng-href="{{userProfileUrl(monthly)}}">{{monthly.name}}</a>
                     </span>
@@ -117,8 +117,8 @@
                     </a>
                 </th>
                 <th>
-                    <span data-ng-if="loading"><cl:spinner/></span>
-                    <span data-ng-if="!loading">
+                    <span data-ng-if="lbLoading"><cl:spinner/></span>
+                    <span data-ng-if="!lbLoading">
                     <a id="digivol-legend-name"
                        data-ng-href="{{userProfileUrl(alltime)}}">{{alltime.name}}</a>
                     </span>
@@ -131,7 +131,7 @@
     </g:if>
 
     <h2 class="heading">
-        <g:message code="latest.contributions.label" /><span data-ng-if="loading"> <cl:spinner/></span>
+        <g:message code="latest.contributions.label" /><span data-ng-if="conLoading"> <cl:spinner/></span>
     </h2>
     <ul class="media-list"
         data-ng-repeat="contributor in contributors"
@@ -182,16 +182,17 @@
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script type="text/javascript">
 digivolStats({
-statsUrl: "${createLink(controller: 'index', action: 'stats')}",
-projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
-userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
-taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
-institutionId: ${institutionId ?: -1},
-projectId: ${projectId ?: -1},
-projectType: "${projectType ?: ''}",
-tags: <cl:json value="${tagName}" />,
-maxContributors: ${maxContributors ?: 5},
-disableStats: ${disableStats ? 'true' : 'false' },
-disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },
+    statsUrl: "${createLink(controller: 'index', action: 'stats')}",
+    contributorsUrl: "${createLink(controller: 'index', action: 'contributors')}",
+    projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
+    userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
+    taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
+    institutionId: ${institutionId ?: -1},
+    projectId: ${projectId ?: -1},
+    projectType: "${projectType ?: ''}",
+    tags: <cl:json value="${tagName}" />,
+    maxContributors: ${maxContributors ?: 5},
+    disableStats: ${disableStats ? 'true' : 'false' },
+    disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },
     });
 </asset:script>

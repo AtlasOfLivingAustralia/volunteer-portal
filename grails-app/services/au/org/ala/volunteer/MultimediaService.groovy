@@ -53,17 +53,18 @@ class MultimediaService {
 
     public String getImageThumbnailUrl(Multimedia media, boolean absolute = false) {
         if (media == null) {
-            log.warn("getImageThumbnailUrl called for null media object")
+            log.error("getImageThumbnailUrl called for null media object")
             return grailsLinkGenerator.resource(file:'/sample-task-thumbnail.jpg')
         }
         String filePath = filePathFor(media) ?: ''
         String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''
         File file = new File(filePath, filename)
-        log.debug("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
+        // log.debug("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
         if (file.exists()) {
             return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
         } else {
-            log.warn("Thumbnail requested for $media but $file doesn't exist")
+            // Log the warning from the Taglib, if the image isn't available.
+            // log.warn("Thumbnail requested for $media but $file doesn't exist")
             return grailsLinkGenerator.resource(file:'/sample-task-thumbnail.jpg', absolute: absolute)
         }
     }

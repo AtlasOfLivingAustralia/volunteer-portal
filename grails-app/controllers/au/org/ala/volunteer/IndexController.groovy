@@ -47,6 +47,15 @@ class IndexController {
         render result as JSON
     }
 
+    def contributors(long institutionId, long projectId, String projectType) {
+        List<String> tags = params.list('tags') ?: []
+        def maxContributors = (params.maxContributors as Integer) ?: 5
+        def disableStats = params.getBoolean('disableStats', false)
+        def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
+        def result = volunteerStatsService.generateContributors(institutionId, projectId, projectType, tags, maxContributors)
+        render result as JSON
+    }
+
  /*   private generateContributors(Institution institution, Project projectInstance, ProjectType pt, maxContributors) {
 
         def latestTranscribers = LatestTranscribers.withCriteria {
