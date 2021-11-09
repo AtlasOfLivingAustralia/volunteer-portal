@@ -126,8 +126,13 @@ class VolunteerStatsService {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
 
-        String tempTableName = 'stats_projects_for_contributors'
-        def projectList = getProjectsForLabels(tempTableName, tags, projectTypeName)
+        String tempTableName = ""
+        def projectList = []
+
+        if (projectTypeName || tags) {
+            tempTableName = 'stats_projects_for_contributors'
+            projectList = getProjectsForLabels(tempTableName, tags, projectTypeName)
+        }
 
         List<LinkedHashMap<String, Serializable>> contributors = getContributors(institution, projectInstance, projectList, maxContributors, tempTableName)
         cleanUpTables(tempTableName)
