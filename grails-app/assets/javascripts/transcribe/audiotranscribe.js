@@ -329,7 +329,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             hideDetail();
         });
 
-        function togglePlayButton(e, forceStopped = false) {
+        function togglePlayButton(e, forceStopped) {
+            if (forceStopped === undefined || forceStopped === null) forceStopped = false;
             var $this = $(e);
             var pause = '<i class="fa fa-2x fa-pause-circle-o"></i>';
             var play = '<i class="fa fa-2x fa-play-circle-o"></i>';
