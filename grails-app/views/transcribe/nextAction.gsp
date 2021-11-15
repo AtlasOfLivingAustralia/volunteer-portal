@@ -11,7 +11,7 @@
             $(document).ready(function () {
                 $("li#goBack button").click(function (e) {
                     e.preventDefault();
-                    window.location.href = "${createLink(action: 'task', id: id, controller: 'transcribe')}";
+                    window.location.href = "${createLink(action: 'task', id: id, controller: 'transcribe', params: [mode: params.mode ?: ''])}";
                 });
 
                 $("li#projectHome button").click(function (e) {
@@ -21,7 +21,7 @@
 
                 $("li#viewTask button").click(function (e) {
                     e.preventDefault();
-                    window.location.href = "${createLink(controller: 'transcribe', action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+                    window.location.href = "${createLink(controller: 'transcribe', action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id, mode: params.mode ?: ''])}";
                 });
 
                 $("li#viewStats button").click(function (e) {

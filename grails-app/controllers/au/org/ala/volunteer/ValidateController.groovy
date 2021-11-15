@@ -78,7 +78,10 @@ class ValidateController {
                             validator          : true,
                             imageMetaData      : imageMetaData,
                             transcribersAnswers: transcribersAnswers,
-                            thumbnail          : multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)])
+                            thumbnail          : multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true),
+                            pageController: 'validate',
+                            pageAction: 'task',
+                            mode: params.mode ?: ''])
         } else {
             redirect(view: 'list', controller: "task")
         }
@@ -98,7 +101,7 @@ class ValidateController {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action: 'task', id: params.failoverTaskId)
+            redirect(action: 'task', id: params.failoverTaskId, params: [mode: params.mode ?: ''])
             return
         }
 
@@ -120,7 +123,7 @@ class ValidateController {
             if (taskInstance.hasErrors()) {
                 log.warn("Validation of task ${taskInstance.id} produced errors: " + errors)
             }
-            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id])
+            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id, mode: params.mode ?: ''])
         } else {
             redirect(view: '../index')
         }
@@ -139,7 +142,7 @@ class ValidateController {
         def currentUser = userService.currentUserId
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action: 'task', id: params.failoverTaskId)
+            redirect(action: 'task', id: params.failoverTaskId, params: [mode: params.mode ?: ''])
             return
         }
 
@@ -157,7 +160,7 @@ class ValidateController {
             fieldSyncService.syncFields(taskInstance, params.recordValues as Map, currentUser, false,
                     true, false, fieldSyncService.truncateFieldsForProject(taskInstance.project),
                     request.remoteAddr, transcription)
-            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id])
+            redirect(controller: 'task', action: 'projectAdmin', id: taskInstance.project.id, params: [lastTaskId: taskInstance.id, mode: params.mode ?: ''])
         } else {
             redirect(view: '../index')
         }
@@ -166,7 +169,7 @@ class ValidateController {
     def skip() {
         def taskInstance = Task.get(params.long('id'))
         if (taskInstance != null) {
-            redirect(action: 'showNextFromProject', id: taskInstance.project.id)
+            redirect(action: 'showNextFromProject', id: taskInstance.project.id, params: [mode: params.mode ?: ''])
         } else {
             flash.message = "No task id supplied!"
             render(view: '/notPermitted')
@@ -207,7 +210,7 @@ class ValidateController {
             render(view: 'noTasks')
         } else if (taskInstance && project) {
             log.debug "2."
-            redirect(action: 'task', id: taskInstance.id)
+            redirect(action: 'task', id: taskInstance.id, params: [mode: params.mode ?: ''])
         } else if (!project) {
             log.error("Project not found for id: " + params.long('id'))
             redirect(view: '/index')

@@ -21,8 +21,8 @@ class TranscribeController {
 
     def index() {
         if (params.id) {
-            log.debug("index redirect to showNextFromProject: " + params.id)
-            redirect(action: "showNextFromProject", id: params.id)
+            log.debug("index redirect to showNextFromProject: " + params.long('id'))
+            redirect(action: "showNextFromProject", id: params.id, params: [mode: params.mode ?: ''])
         } else {
             flash.message = "Something unexpected happened. Try pressing the back button to return to the previous task and trying again."
             redirect(uri:"/")
@@ -49,7 +49,7 @@ class TranscribeController {
                 log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
                 flash.message  = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. You have been allocated a new task"
                 // redirect to another task
-                redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId])
+                redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId, mode: params.mode ?: ''])
                 return
             } else {
                 if (isLockedByOtherUser) {
@@ -92,7 +92,10 @@ class TranscribeController {
                     prevTask: adjacentTasks.prev,
                     sequenceNumber: adjacentTasks.sequenceNumber,
                     complete: params.complete,
-                    thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true)
+                    thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true),
+                    pageController: 'transcribe',
+                    pageAction: 'task',
+                    mode: params.mode ?: ''
             ]
             log.debug('task before render: {}', sw)
             render(view: 'templateViews/' + project.template.viewName, model: model)
@@ -104,7 +107,7 @@ class TranscribeController {
     def showNextAction() {
         log.debug("rendering view: nextAction")
         def taskInstance = Task.get(params.id)
-        render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId])
+        render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId, mode: params.mode ?: ''])
     }
 
     /**
@@ -164,9 +167,10 @@ class TranscribeController {
      */
     private def commonSave(params, markTranscribed) {
         def currentUser = userService.currentUserId
+        log.debug("Params: ${params}")
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action:'task', id: params.failoverTaskId)
+            redirect(action:'task', id: params.failoverTaskId, params: [mode: params.mode ?: ''])
             return
         }
 
@@ -181,7 +185,7 @@ class TranscribeController {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: "
                 log.error(msg + "User ${currentUser} attempted to save a transcription not assigned to them.")
                 flash.message = msg + "You attempted to save a transcription for a task not assigned to you."
-                redirect(action:'task', id: params.id)
+                redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
             }
 
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
@@ -209,14 +213,14 @@ class TranscribeController {
                 updatePicklists(taskInstance)
                 if (skipNextAction) {
                     redirect(action: 'showNextFromProject', id: taskInstance.project.id,
-                            params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id])
-                } else redirect(action: 'showNextAction', id: params.id)
+                            params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
+                } else redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
             }
             else {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
-                redirect(action:'task', id: params.id)
+                redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
             }
         } else {
             redirect(view: '../index')
