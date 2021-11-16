@@ -212,6 +212,10 @@
             soundManager.unload(oSound.id);
         };
 
+        this.stopAll = function() {
+            soundManager.stopAll();
+        }
+
         this.init = function() {
             sm._writeDebug('inlinePlayer.init()');
             var oLinks = document.getElementsByTagName('a');
@@ -238,10 +242,10 @@
 
     }
 
-    var inlinePlayer = null;
+    // var inlinePlayer = null;
 
 // in the event any external script references this...
-    window.inlinePlayer = inlinePlayer;
+    window.inlinePlayer = null;
 
     soundManager.setup({
         // disable or enable debug output
@@ -257,7 +261,10 @@
 
     soundManager.onready(function() {
         // soundManager.createSound() etc. may now be called
-        inlinePlayer = new InlinePlayer();
+        window.inlinePlayer = new InlinePlayer();
+        // console.log("Initialising inline player");
+        // console.log(window.inlinePlayer);
+        // console.log("Inline player initialised");
     });
 
 }());

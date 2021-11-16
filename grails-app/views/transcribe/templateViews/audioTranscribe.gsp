@@ -98,6 +98,10 @@
 
                                                 </div>
                                             </g:each>
+                                            <div class="btn-group pull-right" role="group" aria-label="...">
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'grid'])}" class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                            </div>
                                         </div>
                                         <div id="ct-animals-no-filter">
                                             <p>Researchers are interested in the animals listed below.  If you can hear
@@ -116,8 +120,14 @@
                                         <div class="ct-sub-item active sortable text-center" id="ct-animals-list">
                                             <g:set var="animalInfos"
                                                    value="${wsParams.animals}"/>
-                                            <g:render template="/transcribe/wildlifeSpotterWidget"
-                                                      model="${[imageInfos: animalInfos]}"/>
+                                            <g:if test="${mode == 'grid'}">
+                                                <g:render template="/transcribe/wildlifeSpotterWidget"
+                                                          model="${[imageInfos: animalInfos]}"/>
+                                            </g:if>
+                                            <g:else>
+                                                <g:render template="/transcribe/audioAnimalWidget"
+                                                          model="${[imageInfos: animalInfos]}"/>
+                                            </g:else>
                                         </div>
                                     </div>
                                 </div>
@@ -287,11 +297,10 @@
                         {{#animal.audio}}
                         %{-- do a list, then put URL in data attr or something. Write JS method to pull URL from attr and load wavesurfer... --}%
                         <div class="row" style="padding-bottom: 0.5em;">
-                            <div class="col-sm-1"><a class="btn btn-default" data-action-play="{{hash}}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
-                            <div class="col-sm-4 audio-play-sample" style="border-radius: 4px; border: 1px solid #ddd;"
+                            <div class="col-sm-1"><a class="btn btn-next audio-sample-detail-play" data-action-play="{{hash}}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
+                            <div class="col-sm-4 audio-sample-detail" style="border-radius: 4px; border: 1px solid #ddd;"
                                  data-play-link="{{hash}}"
                                  data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" template="true"/>'></div>
-%{--                            <li style="list-style: none;" data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" template="true"/>'>--}%
                         </div>
                         {{/animal.audio}}
 

@@ -453,7 +453,10 @@ class TemplateController {
                         prevTask: null,
                         sequenceNumber: 0,
                         imageMetaData: imageMetaData,
-                        isPreview: true])
+                        isPreview: true,
+                        pageController: 'template',
+                        mode: params.mode ? params.mode : '',
+                        pageAction: 'preview'])
     }
 
     def exportFieldsAsCSV() {

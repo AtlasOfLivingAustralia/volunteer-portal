@@ -332,7 +332,7 @@
         taskId: "${taskInstance?.id}",
                 picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",
                 updatePicklistUrl: "${createLink(controller: 'picklistItem', action: 'updateLocality')}",
-                nextTaskUrl: "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id)}",
+                nextTaskUrl: "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [mode: params.mode ?: ''])}",
                 isReadonly: "${isReadonly}",
                 isValid: ${(taskInstance?.isValid) ? "true" : "false"}
     };
@@ -458,7 +458,7 @@
 
                 $(document).keypress(function(event) {
                     if ((event.which == 115 || event.which == 19) && event.ctrlKey && event.shiftKey) {
-                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
+                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [mode: params.mode ?: ''])}");
                         e.preventDefault();
                     }
                     return true;
@@ -775,25 +775,25 @@
         $("#btnSave").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id])}");
+                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
             }
         });
 
         $("#btnSavePartial").click(function(e) {
             e.preventDefault();
-            submitFormWithAction("${createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id])}");
+            submitFormWithAction("${createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
         });
 
         $("#btnValidate").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id])}");
+                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
             }
         });
 
         $("#btnDontValidate").click(function(e) {
             e.preventDefault();
-            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id])}");
+            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
         });
 
         $("#btnWarningCancelSubmission").click(function(e) {
@@ -818,7 +818,7 @@
         $("#showNextFromProject, .btn-skip-n").click(function(e) {
             e.preventDefault();
             var skip = $(this).data('skip');
-            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id, mode: params.mode ?: ''])}";
             if (skip) url = url + '&skip='+skip;
             window.location = url;
         });
@@ -897,10 +897,10 @@
 
     function submitInvalid() {
     <g:if test="${validator}">
-        submitFormWithAction("${createLink(controller: 'validate', action: 'validate')}");
+        submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [mode: params.mode ?: ''])}");
     </g:if>
     <g:else>
-        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
+        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [mode: params.mode ?: ''])}");
     </g:else>
     }
 
