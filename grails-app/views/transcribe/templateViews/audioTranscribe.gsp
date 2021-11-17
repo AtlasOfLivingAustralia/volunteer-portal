@@ -99,8 +99,8 @@
                                                 </div>
                                             </g:each>
                                             <div class="btn-group pull-right" role="group" aria-label="...">
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'grid'])}" class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" class="btn btn-default btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
                                             </div>
                                         </div>
                                         <div id="ct-animals-no-filter">
@@ -117,15 +117,15 @@
 
                                 <div class="row">
                                     <div class="col-sm-12 ct-sub-item-container">
-                                        <div class="ct-sub-item active sortable text-center" id="ct-animals-list">
+                                        <div class="ct-sub-item active sortable" id="ct-animals-list">
                                             <g:set var="animalInfos"
                                                    value="${wsParams.animals}"/>
-                                            <g:if test="${mode == 'grid'}">
-                                                <g:render template="/transcribe/wildlifeSpotterWidget"
+                                            <g:if test="${mode == 'list'}">
+                                                <g:render template="/transcribe/audioAnimalWidget"
                                                           model="${[imageInfos: animalInfos]}"/>
                                             </g:if>
                                             <g:else>
-                                                <g:render template="/transcribe/audioAnimalWidget"
+                                                <g:render template="/transcribe/wildlifeSpotterWidget"
                                                           model="${[imageInfos: animalInfos]}"/>
                                             </g:else>
                                         </div>

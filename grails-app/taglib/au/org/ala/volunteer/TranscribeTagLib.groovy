@@ -384,7 +384,7 @@ class TranscribeTagLib {
 
             mb.div(id:'audio-parent-container') {
                 mb.div(id:'audio-container') {
-                    mb.div(id:'waveform', style:'padding: 15px; border-radius: 5px; border: 1px solid #ddd;') {
+                    mb.div(id:'waveform', style:'padding: 1px; border-radius: 5px; border: 1px solid #ddd;') {
                         mkp.yieldUnescaped('<!-- Here be the waveform -->')
                     }
 
@@ -421,6 +421,8 @@ class TranscribeTagLib {
                         cursorWidth: 1,
                         height: 300,
                         hideScrollbar: true,
+                        scrollParent: false,
+                        fillParent: true,
                         barMinHeight: 50,
                         barHeight: 70,
                         normalize: true

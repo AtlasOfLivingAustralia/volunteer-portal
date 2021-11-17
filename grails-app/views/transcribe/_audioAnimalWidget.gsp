@@ -1,6 +1,6 @@
 <div class="audio-item-list">
 <g:each in="${imageInfos}" var="piItem" status="st">
-    <div class="audio-row" data-item-index="${st}" style="display: flex; align-content: flex-end; padding: 0.1em;">
+    <div class="audio-row" data-item-index="${st}" style="display: flex; align-content: flex-end; padding: 0.1em; float: none; position: relative;">
         <div class="audio-badge <g:if test="${!isAnswers}">ws-selector</g:if>" aria-selected="false"
              data-image-select-key="${st}"
              style="width: 100px;"
@@ -16,14 +16,14 @@
 
         </div>
         <div style="flex-grow: 1; text-align: justify; padding-left: 0.5em;">
-            <span class="audio-badge-title">${piItem.vernacularName} (${piItem.scientificName})</span>
+            <span class="audio-badge-title">${piItem.vernacularName} (<i>${piItem.scientificName}</i>)</span>
             <span class="audio-info" style="display: inline-block; "><i class="fa fa-info-circle" title="More details"></i></span>
 
             <div class="row" style="padding-bottom: 0.5em; padding-top: 1em; margin-right: 0px; margin-left: 0px;">
                 <g:if test="${piItem.audio.size() > 0}">
                 <g:set var="audioSample" value="${piItem.audio?.first()}" />
-                <div class="col-sm-1"><a class="btn btn-next audio-sample-list-play" data-action-play="${audioSample.hash}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
-                <div class="col-sm-4 audio-sample-list" style="border-radius: 4px; border: 1px solid #ddd;"
+                <div class="" style="width: 48px; float: left;"><a class="btn btn-next audio-sample-list-play" data-action-play="${audioSample.hash}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
+                <div class="audio-sample-list" style="border-radius: 4px; border: 1px solid #ddd; width: 240px; float: left;"
                      data-play-link="${audioSample.hash}"
                      data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="${audioSample.hash}" format="${audioSample.ext}" template="true"/>'>
                 </div>
