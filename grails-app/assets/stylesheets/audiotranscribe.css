@@ -147,8 +147,8 @@
 
 .ws-selected {
     position: absolute;
-    margin-top: 0.1em;
-    left: 2px;
+    margin-top: 4px;
+    left: 4px;
     /* padding: 2px 9px; */
     font-size: 24px;
     width: 31px;
