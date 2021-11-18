@@ -948,12 +948,20 @@ class ProjectService {
             log.debug("Projects list: ${projectList.size()}")
         }
 
-        // Randomly select a project from the list.
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, projectList.size() + 1);
-        Project projectToDisplay = projectList.get(randomIndex) as Project
-        log.debug("Project selected: ${projectToDisplay}")
-        projectToDisplay.potdLastSelected = new Date()
-        projectToDisplay.save(failOnError: true, flush: true)
+        Project projectToDisplay = null
+        if (projectList.size() > 1) {
+            // Randomly select a project from the list.
+            int randomIndex = ThreadLocalRandom.current().nextInt(0, ((projectList.size() - 1) > 0 ? projectList.size() - 1 : 1))
+            projectToDisplay = projectList.get(randomIndex) as Project
+        } else if (projectList.size() == 1) {
+            projectToDisplay = projectList.first() as Project
+        }
+
+        if (projectToDisplay) {
+            log.debug("Project selected: ${projectToDisplay}")
+            projectToDisplay.potdLastSelected = new Date()
+            projectToDisplay.save(failOnError: true, flush: true)
+        }
 
         return projectToDisplay
     }
