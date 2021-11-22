@@ -161,6 +161,11 @@ class Task implements Serializable {
         if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
             // Only views made by users that have not completed their transcription are relevant.
             Set currentViews = viewedTasks.findAll { view ->
+                // If this view's user is not in the list of completed transcriptions
+                // AND the view was less than 2hours ago
+                //     and the view's user is not the requesting user
+                //     and the view wasn't skipped
+                // Then the task is locked.
                 return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)
             }.collect{it.userId}.toSet()
 
