@@ -243,4 +243,38 @@ class FieldService {
         databaseFieldNames
     }
 
+    List findAllTasksByFieldAndFieldValue(Project project, String fieldName, String fieldValue, String sortFieldName = null) {
+        def select = """
+            SELECT distinct task_id
+            FROM field
+            JOIN task ON (task.id = field.task_id)
+            WHERE task.project_id = :projectId
+            AND field.name = :fieldName
+            AND field.value = :fieldValue
+        """
+
+        def params = [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue]
+
+        if (sortFieldName) {
+            select = """
+                ${select}
+                ORDER BY ${sortFieldName} ASC
+            """
+        }
+
+        log.debug("Query: ${select}")
+
+        def sql = new Sql(dataSource)
+        def taskList = []
+        sql.eachRow(select, params) { row ->
+            Task task = Task.get(row.task_id as long)
+            if (task) {
+                taskList.add(task)
+            }
+        }
+        sql.close()
+
+        taskList
+    }
+
 }

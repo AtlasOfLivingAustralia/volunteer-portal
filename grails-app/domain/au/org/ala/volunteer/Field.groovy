@@ -52,4 +52,22 @@ class Field implements Serializable {
   }
   // Fields are only deleted when a task is deleted so there is no
   // need to push an task update event on delete here
+
+
+  @Override
+  public String toString() {
+    return "Field{" +
+            "id: " + id +
+            ", task: " + task?.id +
+            ", transcription: " + transcription?.id +
+            ", name: '" + name + '\'' +
+            ", value: '" + value + '\'' +
+            ", recordIdx: " + recordIdx +
+            ", transcribedByUserId: '" + transcribedByUserId + '\'' +
+            ", validatedByUserId: '" + validatedByUserId + '\'' +
+            ", superceded: " + superceded +
+            ", created: " + created +
+            ", updated: " + updated +
+            '}';
+  }
 }

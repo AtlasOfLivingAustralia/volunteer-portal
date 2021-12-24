@@ -780,9 +780,11 @@ class TranscribeTagLib {
 
     def taskSequence = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        Task taskInstance = attrs.task
+        Task taskInstance = attrs.task as Task
         boolean isPreview = attrs.isPreview
         Project project = taskInstance.project
+
+        log.debug("Loading task sequence for task: ${taskInstance.id}")
 
         Field field = null
 
@@ -791,6 +793,8 @@ class TranscribeTagLib {
         if (taskInstance.id) {
             field = fieldService.getFieldForTask(taskInstance, "sequenceGroupId")
         }
+
+        log.debug("Field: ${field}")
 
         Map tasks = [previous:[], current: [:], next:[]]
         if (!field) {
@@ -803,43 +807,47 @@ class TranscribeTagLib {
             def seqToTaskId = taskService.findByProjectAndFieldValues(project.id, 'sequenceNumber', allSeqNos)
             def taskIds = seqToTaskId.values() + taskInstance.id
             Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(taskIds)
+
             sequenceNumbers.previous.each { seqNo ->
                 def seq = seqNo as String
                 tasks.previous << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
+
             tasks.current = [sequenceNumber: sequenceNumber, multimedia: taskIdToMM[taskInstance.id]]
             sequenceNumbers.next.each { seqNo ->
                 def seq = seqNo as String
                 tasks.next << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
-        }
-        else {
-
+        } else {
             // Get other tasks with the same sequenceGroupId
             String sequenceGroupId = field.value
-            QueryResults<Task> results = fullTextIndexService.findProjectTasksByFieldValue(project, "sequenceGroupId",sequenceGroupId, "sequenceNumber")
+            //QueryResults<Task> results = fullTextIndexService.findProjectTasksByFieldValue(project, "sequenceGroupId", sequenceGroupId, "sequenceNumber")
+            List<Task> allTasks = fieldService.findAllTasksByFieldAndFieldValue(project, "sequenceGroupId", sequenceGroupId, "task_id")
+
+            log.debug("Sequence Group: ${sequenceGroupId}")
 
             // The results are sorted by sequence number
-            List<Task> allTasks = results.list
+            //List<Task> allTasks = results.list
             Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(allTasks*.id)
+            log.debug("allTasks size: ${allTasks?.size()}")
+            log.debug("taskIdToMM size: ${taskIdToMM?.size()}")
 
             int taskIndex = allTasks.indexOf(taskInstance)
-            int minIndex = Math.max(0, taskIndex-attrs.count)
-            int maxIndex = Math.min(allTasks.size()-1, taskIndex+attrs.count)
+            int minIndex = Math.max(0, taskIndex - attrs.count as int)
+            int maxIndex = Math.min(allTasks.size() - 1, taskIndex + attrs.count as int)
 
-            for (int i=minIndex; i<taskIndex; i++) {
+            for (int i = minIndex; i < taskIndex; i++) {
                 tasks.previous << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
+
             tasks.current = [sequenceNumber:taskIndex, multimedia: taskIdToMM[allTasks[taskIndex].id]]
-            for (int i=taskIndex+1; i<=maxIndex; i++) {
+            for (int i = taskIndex + 1; i <= maxIndex; i++) {
                 tasks.next << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
-
-
         }
-        log.debug("taskSequence: {}", sw)
-        return tasks
 
+        log.debug("taskSequence: ${sw}")
+        return tasks
     }
 
     def transcriptionLogoUrl = { attrs, body ->

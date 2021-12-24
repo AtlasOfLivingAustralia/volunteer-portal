@@ -123,13 +123,13 @@ class DomainUpdateService {
                         break
                     case UpdateProjectTask:
                         def tasks = Task.withCriteria {
-                                        project {
-                                            eq 'id', jobDescriptor.projectId
-                                        }
-                                        projections {
-                                            property 'id'
-                                        }
-                                    }
+                            project {
+                                eq 'id', jobDescriptor.projectId
+                            }
+                            projections {
+                                property 'id'
+                            }
+                        }
                         updates.addAll(tasks)
                         indexes.addAll(tasks)
                         taskCount+= tasks.size()
@@ -148,7 +148,7 @@ class DomainUpdateService {
         sw.reset().start()
         if (deletes) fullTextIndexService.deleteTasks(deletes)
         if (indexes) fullTextIndexService.indexTasks(indexes) { currentlyProcessing.decrementAndGet() }
-        if (updates) postIndexTaskActions(updates)
+        if (updates) postIndexTaskActions(updates)  
         if (validations) validationService.autoValidate(validations)
         if (deletes || indexes || updates) log.debug("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to process ${deletes.size()} deletes, ${indexes.size()} indexes, ${updates.size()} post-index updates, ${validations.size()} task validations")
     }
