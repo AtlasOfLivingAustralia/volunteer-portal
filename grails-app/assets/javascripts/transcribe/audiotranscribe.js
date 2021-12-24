@@ -484,7 +484,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                 if (recordValues && recordValues[0]) {
                     delete recordValues[0].vernacularName;
                     delete recordValues[0].scientificName;
-                    delete recordValues[0].individualCount;
+                    //delete recordValues[0].individualCount;
                 }
             }
             var i = 0;
@@ -497,10 +497,10 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                     id: 'recordValues.' + i + '.scientificName',
                     value: wsParams.animals[key].scientificName
                 });
-                mu.appendTemplate($ctFields, 'input-template', {
-                    id: 'recordValues.' + i + '.individualCount',
-                    value: value.count
-                });
+                // mu.appendTemplate($ctFields, 'input-template', {
+                //     id: 'recordValues.' + i + '.individualCount',
+                //     value: value.count
+                // });
                 mu.appendTemplate($ctFields, 'input-template', {
                     id: 'recordValues.' + i + '.comment',
                     value: value.comment
@@ -527,7 +527,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                 if (index >= 0) {
                     selectedIndicies[index] = {
                         comment: v.comment,
-                        count: v.individualCount,
+                        //count: v.individualCount,
                         editorOpen: false
                     };
                 }
