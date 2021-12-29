@@ -111,6 +111,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                     return {
                         index: v,
                         name: wsParams.animals[v].vernacularName,
+                        scientificName: wsParams.animals[v].scientificName,
                         options: _([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map(function (opt, i) {
                             return {
                                 val: opt,
@@ -140,13 +141,13 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             generateFormFields();
         });
 
-        $('#ct-container').on('change', 'select.numAnimals', function () {
-            var $this = $(this);
-            var idx = $this.closest('[data-item-index]').data('item-index');
-            var count = $this.val();
-            selectedIndicies[idx].count = parseInt(count);
-            generateFormFields();
-        });
+        // $('#ct-container').on('change', 'select.numAnimals', function () {
+        //     var $this = $(this);
+        //     var idx = $this.closest('[data-item-index]').data('item-index');
+        //     var count = $this.val();
+        //     selectedIndicies[idx].count = parseInt(count);
+        //     generateFormFields();
+        // });
 
         $('#ct-container').on('click', '.editCommentButton', function () {
             var $this = $(this);

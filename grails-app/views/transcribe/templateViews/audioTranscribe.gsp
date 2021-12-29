@@ -235,7 +235,7 @@
                 <li data-item-index="{{index}}">
                     <div>
                         <div class="classificationRow">
-                            <div class="animalName">{{name}}</div>
+                            <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
                             <button type="button" class="btn btn-mini btn-default animalDelete pull-right" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
 %{--                            <span class="animalNum pull-right">--}%
 %{--                                <select tabindex="-1" name="numAnimals" class="numAnimals form-control">--}%
