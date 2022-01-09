@@ -147,7 +147,7 @@
                                                 <th>Problem With Image</th>
                                                 <th>Animals Visible?</th>
                                                 <th>Selected Animal</th>
-                                                <th>Individual Count</th>
+%{--                                                <th>Individual Count</th>--}%
                                                 <th>Comment</th>
                                             </tr>
                                             <tbody id="tbody-answer-summary">
@@ -179,7 +179,7 @@
                                                                         <g:render template="/transcribe/wildlifeSpotterWidgetInvalid"
                                                                                   model="${[invalidVernacularName: selectedAnimalAns?.get('vernacularName')]}"/>
                                                                     </td>
-                                                                    <td>${selectedAnimalAns?.get('individualCount')}</td>
+%{--                                                                    <td>${selectedAnimalAns?.get('individualCount')}</td>--}%
                                                                     <td>${selectedAnimalAns?.get('comment')}</td>
                                                                     <g:if test="${recordIdx > 0}"></tr></g:if>
                                                                 </g:if>
@@ -190,7 +190,7 @@
                                                                             <g:render template="/transcribe/wildlifeSpotterWidget"
                                                                                       model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
                                                                         </td>
-                                                                        <td>${selectedAnimalAns?.get('individualCount')}</td>
+%{--                                                                        <td>${selectedAnimalAns?.get('individualCount')}</td>--}%
                                                                         <td>${selectedAnimalAns?.get('comment')}</td>
                                                                     </g:if>
                                                                     <g:else>
@@ -200,7 +200,7 @@
                                                                                 <g:render template="/transcribe/wildlifeSpotterWidget"
                                                                                           model="${[imageInfos: selectedAnimalInfos, isAnswers: true]}"/>
                                                                             </td>
-                                                                            <td>${selectedAnimalAns?.get('individualCount')}</td>
+%{--                                                                            <td>${selectedAnimalAns?.get('individualCount')}</td>--}%
                                                                             <td>${selectedAnimalAns?.get('comment')}</td>
                                                                         </tr>
                                                                     </g:else>
@@ -235,15 +235,15 @@
                 <li data-item-index="{{index}}">
                     <div>
                         <div class="classificationRow">
-                            <div class="animalName">{{name}}</div>
+                            <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
                             <button type="button" class="btn btn-mini btn-default animalDelete pull-right" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
-                            <span class="animalNum pull-right">
-                                <select tabindex="-1" name="numAnimals" class="numAnimals form-control">
-                                    {{#options}}
-                                    <option value="{{val}}" {{selected}}>{{val}}</option>
-                                    {{/options}}
-                                </select>
-                            </span>
+%{--                            <span class="animalNum pull-right">--}%
+%{--                                <select tabindex="-1" name="numAnimals" class="numAnimals form-control">--}%
+%{--                                    {{#options}}--}%
+%{--                                    <option value="{{val}}" {{selected}}>{{val}}</option>--}%
+%{--                                    {{/options}}--}%
+%{--                                </select>--}%
+%{--                            </span>--}%
                             <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton pull-right" tabindex="-1" style="display:none;">Save Comment</button>
                             <button type="button" aria-expanded="false" class="btn btn-link editCommentButton pull-right" tabindex="-1">Add Comment</button>
                         </div>

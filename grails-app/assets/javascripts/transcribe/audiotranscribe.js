@@ -111,6 +111,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                     return {
                         index: v,
                         name: wsParams.animals[v].vernacularName,
+                        scientificName: wsParams.animals[v].scientificName,
                         options: _([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map(function (opt, i) {
                             return {
                                 val: opt,
@@ -140,13 +141,13 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             generateFormFields();
         });
 
-        $('#ct-container').on('change', 'select.numAnimals', function () {
-            var $this = $(this);
-            var idx = $this.closest('[data-item-index]').data('item-index');
-            var count = $this.val();
-            selectedIndicies[idx].count = parseInt(count);
-            generateFormFields();
-        });
+        // $('#ct-container').on('change', 'select.numAnimals', function () {
+        //     var $this = $(this);
+        //     var idx = $this.closest('[data-item-index]').data('item-index');
+        //     var count = $this.val();
+        //     selectedIndicies[idx].count = parseInt(count);
+        //     generateFormFields();
+        // });
 
         $('#ct-container').on('click', '.editCommentButton', function () {
             var $this = $(this);
@@ -484,7 +485,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                 if (recordValues && recordValues[0]) {
                     delete recordValues[0].vernacularName;
                     delete recordValues[0].scientificName;
-                    delete recordValues[0].individualCount;
+                    //delete recordValues[0].individualCount;
                 }
             }
             var i = 0;
@@ -497,10 +498,10 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                     id: 'recordValues.' + i + '.scientificName',
                     value: wsParams.animals[key].scientificName
                 });
-                mu.appendTemplate($ctFields, 'input-template', {
-                    id: 'recordValues.' + i + '.individualCount',
-                    value: value.count
-                });
+                // mu.appendTemplate($ctFields, 'input-template', {
+                //     id: 'recordValues.' + i + '.individualCount',
+                //     value: value.count
+                // });
                 mu.appendTemplate($ctFields, 'input-template', {
                     id: 'recordValues.' + i + '.comment',
                     value: value.comment
@@ -527,7 +528,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                 if (index >= 0) {
                     selectedIndicies[index] = {
                         comment: v.comment,
-                        count: v.individualCount,
+                        //count: v.individualCount,
                         editorOpen: false
                     };
                 }
@@ -542,7 +543,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
                 errorList.push({
                     element: null,
-                    message: "You must either indicate that there are no animals, there's a problem with the image or select at least one animal before you can submit",
+                    message: "You must either indicate that there are no animals, there's a problem with the audio file or select at least one animal before you can submit",
                     type: "Error"
                 });
             }
@@ -552,7 +553,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             function () {});
 
         var submitRequiresConfirmation = true;
-        var postValidationFunction = function (validationResults) {
+        postValidationFunction = function (validationResults) {
+            console.log("I'm in the audio validation.");
             if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
         };
 
