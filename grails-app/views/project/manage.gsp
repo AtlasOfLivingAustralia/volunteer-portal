@@ -95,9 +95,9 @@
             <div class="row">
                 <div class="col-md-6">
 
-                        <g:select class="form-control institutitonFilter" name="institution" from="${institutionList}"
+                        <g:select class="form-control institutitonFilter" name="institutionFilter" from="${institutionList}"
                                   optionKey="id"
-                                  value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
+                                  value="${params?.institutionFilter}" noSelection="['':'- Filter by Institution -']" />
 
                 </div>
                 <div class="col-md-3">
@@ -312,21 +312,21 @@ jQuery(function($) {
     $('.statusFilter').change(function() {
         let filter = $(this).val();
         var url = "${createLink(controller: 'project', action: 'manage')}" +
-            "?institution=${params.institution}&q=${params.q}&statusFilter=" + filter;
+            "?institutionFilter=${params.institutionFilter}&q=${params.q}&statusFilter=" + filter;
         window.location = url;
     });
 
     $('.institutitonFilter').change(function() {
         let filter = $(this).val();
         var url = "${createLink(controller: 'project', action: 'manage')}" +
-            "?q=${params.q}&statusFilter=${params.statusFilter}&institution=" + filter;
+            "?q=${params.q}&statusFilter=${params.statusFilter}&institutionFilter=" + filter;
         window.location = url;
     });
 
     function doProjectSearch() {
         var q = $("#searchbox").val();
         var url = "${createLink(controller: 'project', action: 'manage')}" +
-            "?institution=${params.institution}&statusFilter=${params.statusFilter}&q=" +
+            "?institutionFilter=${params.institutionFilter}&statusFilter=${params.statusFilter}&q=" +
             encodeURIComponent(q);
         window.location = url;
     }
@@ -347,13 +347,13 @@ jQuery(function($) {
 
     function getQueryStringParams() {
         const params = new URLSearchParams(window.location.search);
-        let institution = params.get('institution');
+        let institution = params.get('institutionFilter');
         let q = params.get('q');
         let statusFilter = params.get('statusFilter');
 
         let paramString = "", s = false;
         if (institution) {
-            paramString += (s ? "&" : "") + "institution=" + institution;
+            paramString += (s ? "&" : "") + "institutionFilter=" + institution;
             s = true;
         }
         if (q) {

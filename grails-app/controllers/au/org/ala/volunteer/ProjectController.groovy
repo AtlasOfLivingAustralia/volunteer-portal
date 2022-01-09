@@ -1307,7 +1307,7 @@ class ProjectController {
         }
 
         def institutionFilter = []
-        Institution institution = (params.institution ? Institution.get(params.long('institution')) : null)
+        Institution institution = (params.institutionFilter ? Institution.get(params.long('institutionFilter')) : null)
         if (institution) institutionFilter.add(institution)
         else institutionFilter = institutionList
 
