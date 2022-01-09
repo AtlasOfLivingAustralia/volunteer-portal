@@ -543,7 +543,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
                 errorList.push({
                     element: null,
-                    message: "You must either indicate that there are no animals, there's a problem with the image or select at least one animal before you can submit",
+                    message: "You must either indicate that there are no animals, there's a problem with the audio file or select at least one animal before you can submit",
                     type: "Error"
                 });
             }
@@ -553,7 +553,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
             function () {});
 
         var submitRequiresConfirmation = true;
-        var postValidationFunction = function (validationResults) {
+        postValidationFunction = function (validationResults) {
+            console.log("I'm in the audio validation.");
             if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
         };
 
