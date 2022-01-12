@@ -175,7 +175,7 @@ class TranscribeController {
         }
 
         if (currentUser != null) {
-            def taskInstance = Task.get(params.id)
+            def taskInstance = Task.get(params.long('id'))
 
             // Check if the user has actually viewed this task (remote transcription spam protection)
             def currentViews = taskInstance.viewedTasks.findAll {view ->
@@ -186,6 +186,7 @@ class TranscribeController {
                 log.error(msg + "User ${currentUser} attempted to save a transcription not assigned to them.")
                 flash.message = msg + "You attempted to save a transcription for a task not assigned to you."
                 redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
+                return
             }
 
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
@@ -205,18 +206,21 @@ class TranscribeController {
                 transcription.recordTranscriptionTime(seconds)
             }
             def skipNextAction = params.getBoolean('skipNextAction', false)
-            WebUtils.cleanRecordValues(params.recordValues)
-            fieldSyncService.syncFields(taskInstance, params.recordValues, currentUser, markTranscribed,
+            WebUtils.cleanRecordValues(params.recordValues as Map)
+
+            fieldSyncService.syncFields(taskInstance, params.recordValues as Map, currentUser, markTranscribed,
                     false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project),
                     request.remoteAddr, transcription)
+
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
                 if (skipNextAction) {
                     redirect(action: 'showNextFromProject', id: taskInstance.project.id,
                             params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
-                } else redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
-            }
-            else {
+                } else {
+                    redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
+                }
+            } else {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
                 flash.message = msg
