@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
+import grails.converters.JSON
 import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
@@ -8,6 +9,10 @@ class TranscribeController {
     private static final String HEADER_PRAGMA = "Pragma"
     private static final String HEADER_EXPIRES = "Expires"
     private static final String HEADER_CACHE_CONTROL = "Cache-Control"
+
+    private static final int SAVE_TYPE_BACKGROUND = 1
+    private static final int SAVE_TYPE_PARTIAL = 2
+    private static final int SAVE_TYPE_SUBMIT = 3
 
     def fieldSyncService
     def auditService
@@ -80,6 +85,10 @@ class TranscribeController {
             response.setHeader(HEADER_CACHE_CONTROL, "no-cache")
             response.addHeader(HEADER_CACHE_CONTROL, "no-store")
 
+            // Background saving of tasks for specimens and fieldnotes.
+            boolean enableBackgroundSave = (taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_FIELDNOTES ||
+                    taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_SPECIMEN)
+
             //retrieve the existing values
             Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, currentUserId)
             def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
@@ -95,7 +104,8 @@ class TranscribeController {
                     thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true),
                     pageController: 'transcribe',
                     pageAction: 'task',
-                    mode: params.mode ?: ''
+                    mode: params.mode ?: '',
+                    enableBackgroundSave: enableBackgroundSave
             ]
             log.debug('task before render: {}', sw)
             render(view: 'templateViews/' + project.template.viewName, model: model)
@@ -151,26 +161,73 @@ class TranscribeController {
      * done in the form.
      */
     def save() {
-        commonSave(params, true)
+        commonSave(params, true, SAVE_TYPE_SUBMIT)
     }
 
     /**
      * Sync fields
      */
     def savePartial() {
-        commonSave(params, false)
+        commonSave(params, false, SAVE_TYPE_PARTIAL)
+    }
+
+    /**
+     * Sync fields but return a json response (with no redirect) for AJAX calls.
+     * @return
+     */
+    def backgroundSave() {
+        commonSave(params, false, SAVE_TYPE_BACKGROUND)
+    }
+
+    /**
+     * To be called via AJAX to initialise background saving.
+     * This needs to happen so that we can tell the difference between a new transcription and one that was closed
+     * before saving (and returning to the transcription).
+     * @return JSON response success or failure.
+     */
+    def initBackgroundSave() {
+        def currentUser = userService.currentUserId
+
+        if (!params.id) {
+            log.error("Attempting to save transcription, no task ID was found. Returning error.")
+            render([success: false, message: "Unable to save task with missing ID.", status: 400] as JSON)
+            return
+        }
+
+        if (currentUser != null) {
+            def task = Task.get(params.long('id'))
+
+            Transcription transcription = task.findUserTranscription(currentUser)
+            if (!transcription) {
+                // try to reuse existing transcription which could have been reset
+                if (task.project.requiredNumberOfTranscriptions == 1) {
+                    transcription = task.transcriptions[0]
+                }
+            }
+
+            render([success: true, timeToTranscribe: (transcription?.timeToTranscribe ?: 0)] as JSON)
+            return
+        }
+
+        render([sucess: true, timeToTranscribe: 0] as JSON)
     }
 
     /**
      * CommonSave (cannot be used for validator's save fields. For multi transcriptions task, validators don't have
      * their own transcription record, except for validator's fields
      */
-    private def commonSave(params, markTranscribed) {
+    private def commonSave(params, markTranscribed, int saveType) {
         def currentUser = userService.currentUserId
+        def currentUserObj = userService.getCurrentUser()
         log.debug("Params: ${params}")
 
         if (!params.id && params.failoverTaskId) {
-            redirect(action:'task', id: params.failoverTaskId, params: [mode: params.mode ?: ''])
+            log.error("Attempting to save transcription, no task ID was found. Returning error.")
+            if (saveType == SAVE_TYPE_BACKGROUND) {
+                render([success: false, message: "Unable to save task with missing ID.", status: 400] as JSON)
+            } else {
+                redirect(action:'task', id: params.failoverTaskId, params: [mode: params.mode ?: ''])
+            }
             return
         }
 
@@ -183,9 +240,15 @@ class TranscribeController {
             }
             if (!currentViews) {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: "
-                log.error(msg + "User ${currentUser} attempted to save a transcription not assigned to them.")
-                flash.message = msg + "You attempted to save a transcription for a task not assigned to you."
-                redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
+                log.error(msg + "User ${currentUserObj.displayName} (${currentUserObj.id}) attempted to save a transcription not assigned to them.")
+                if (saveType == SAVE_TYPE_BACKGROUND) {
+                    render([success: false,
+                            message: "User attempted to save a transcription not assigned to them. " +
+                                    "User: ${currentUserObj.displayName} (${currentUserObj.id})", status: 400] as JSON)
+                } else {
+                    flash.message = msg + "You attempted to save a transcription for a task not assigned to you."
+                    redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
+                }
                 return
             }
 
@@ -200,11 +263,22 @@ class TranscribeController {
                 }
             }
 
+            // If background or saving partial, only update the transcription record.
+            // If Submitting the transcription for validation, add the timer value to the task.
             def seconds = params.getInt('timeTaken', null)
             if (seconds) {
-                taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
-                transcription.recordTranscriptionTime(seconds)
+                switch(saveType) {
+                    case SAVE_TYPE_BACKGROUND:
+                    case SAVE_TYPE_PARTIAL:
+                        transcription.timeToTranscribe = seconds
+                        break
+                    case SAVE_TYPE_SUBMIT:
+                        transcription.timeToTranscribe = seconds
+                        taskInstance.timeToTranscribe = (taskInstance.timeToTranscribe ?: 0) + seconds
+                        break
+                }
             }
+
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues as Map)
 
@@ -215,19 +289,36 @@ class TranscribeController {
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
                 if (skipNextAction) {
-                    redirect(action: 'showNextFromProject', id: taskInstance.project.id,
-                            params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
+                    if (saveType == SAVE_TYPE_BACKGROUND) {
+                        // Flow should not reach this...
+                        render([success: true] as JSON)
+                    } else {
+                        redirect(action: 'showNextFromProject', id: taskInstance.project.id,
+                                params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
+                    }
                 } else {
-                    redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
+                    if (saveType == SAVE_TYPE_BACKGROUND) {
+                        render([success: true] as JSON)
+                    } else {
+                        redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
+                    }
                 }
             } else {
                 def msg = "Task save ${markTranscribed ? '' : 'partial '}failed: " + taskInstance.hasErrors()
                 log.error(msg)
-                flash.message = msg
-                redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
+                if (saveType == SAVE_TYPE_BACKGROUND) {
+                    render([success: false, message: msg, status: 400] as JSON)
+                } else {
+                    flash.message = msg
+                    redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
+                }
             }
         } else {
-            redirect(view: '../index')
+            if (saveType == SAVE_TYPE_BACKGROUND) {
+                render([success: false, status: 401] as JSON)
+            } else {
+                redirect(view: '../index')
+            }
         }
     }
 
