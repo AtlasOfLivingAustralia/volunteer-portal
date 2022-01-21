@@ -192,6 +192,25 @@ class UserService {
     }
 
     /**
+     * Returns a list of users who hold the institution admin role for a given project's institution.
+     * @param project
+     * @return
+     */
+    List<User> getInstitutionAdminsForProject(Project project) {
+        if (!project) return []
+
+        def role = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+        def userRoles = UserRole.findAll {
+            it.role.id == role.id && it.institution.id == project.institution.id
+        }
+        def users = userRoles.collect {
+            it.user
+        }
+
+        users
+    }
+
+    /**
      * Determines if the current user holds the institution admin role for any institution.
      * To find if a user holds the institution admin role for a specific institution, call
      * {@link UserService#isInstitutionAdmin(Institution)}

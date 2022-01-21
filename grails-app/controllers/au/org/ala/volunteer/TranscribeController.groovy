@@ -250,6 +250,29 @@ class TranscribeController {
                     redirect(action:'task', id: params.id, params: [mode: params.mode ?: ''])
                 }
                 return
+            } else {
+                // If Background save, update view time
+                if (saveType == SAVE_TYPE_BACKGROUND) {
+                    def actualView
+                    if (currentViews.size() > 1) {
+                        def sortedViews = currentViews.sort { a, b ->
+                            a.lastView <=> b.lastView
+                        }.reverse()
+                        actualView = sortedViews?.first()
+                    } else {
+                        actualView = currentViews.first()
+                    }
+
+                    try {
+                        if (actualView) {
+                            actualView.lastView = System.currentTimeMillis()
+                            actualView.lastUpdated = new Date()
+                            actualView.save(flush: true, failOnError: true)
+                        }
+                    } catch (Exception e) {
+                        log.error("Error updating last view during auto save of transcription. Exception message is: ${e.getMessage()}", e)
+                    }
+                }
             }
 
             Transcription transcription = taskInstance.findUserTranscription(currentUser)
