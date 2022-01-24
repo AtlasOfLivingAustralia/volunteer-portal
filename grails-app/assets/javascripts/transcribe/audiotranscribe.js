@@ -552,7 +552,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         transcribeValidation.setErrorRenderFunctions(function (errorList) {},
             function () {});
 
-        var submitRequiresConfirmation = true;
+        submitRequiresConfirmation = true;
         postValidationFunction = function (validationResults) {
             console.log("I'm in the audio validation.");
             if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
