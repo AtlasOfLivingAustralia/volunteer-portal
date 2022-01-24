@@ -735,22 +735,40 @@
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = 90 * 60; // Seconds
+        var taskLockTimeout = 5 * 60; // Seconds ####### ---> SET TO 90 FOR RELEASE
+        setPageTimeoutTimer();
 
-        window.setTimeout(function() {
-            showTaskTimeoutMessage();
-        }, taskLockTimeout * 1000);
+        function setPageTimeoutTimer() {
+            console.log("Setting page timeout timer to [" + (taskLockTimeout / 60) + "] minutes");
+            window.setTimeout(function() {
+                showTaskTimeoutMessage();
+            }, taskLockTimeout * 1000);
+        }
+
+        var onCloseModal = function onCloseModal() {
+            setPageTimeoutTimer();
+        }
 
         function showTaskTimeoutMessage() {
+
+        <g:if test="${enableBackgroundSave}">
+            var url = "${createLink(controller: 'transcribe', action: 'taskIdleFragment', params: [taskId: taskInstance.id, validator: validator])}";
+        </g:if>
+        <g:else>
+            var url = "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}";
+        </g:else>
             var options = {
-                url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
-                title: 'Task lock will expire soon!',
+                url: url,
+                title: 'Are you still transcribing?',
                 backdrop: 'static',
-                keyboard: false
+                keyboard: false,
+                onClose: onCloseModal
             };
 
             bvp.showModal(options);
         }
+
+
     </g:if>
 
         var keepAliveInterval = 10; // Minutes
@@ -934,11 +952,9 @@
     }
 
     $(document).ready(function() {
-        var bgSaveTimer = 2 * 60; // set to 15 * 60 for release
+        var bgSaveTimer = 2 * 60; // SET TO 15 FOR RELEASE
 
         var timerInitial = 0;
-
-
 
         // Init bg save
         var request = $.ajax({
@@ -950,8 +966,9 @@
             if (data && data.success) {
                 var timer = data.timeToTranscribe;
                 if (timer > 0) initTimer(timer);
-                console.log("Timer initialised at [" + timer + "]");
+                console.log("Transcription timer initialised at [" + timer + "] seconds");
                 console.log("Background save initialised.");
+                console.log("Background save will occur every ["+ (bgSaveTimer / 60) +"] minutes.");
             } else {
                 console.log("Background save failed to initialise: " + data.message);
             }
@@ -959,6 +976,8 @@
 
         setInterval(bgSave, bgSaveTimer * 1000);
     });
+
+
 </g:if>
 
     function submitFormWithAction(action) {

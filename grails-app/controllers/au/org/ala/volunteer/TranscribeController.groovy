@@ -431,6 +431,12 @@ class TranscribeController {
         [taskInstance: taskInstance, isValidator: validator]
     }
 
+    def taskIdleFragment() {
+        def taskInstance = Task.get(params.int('taskId'))
+        def validator = params.boolean('validator')
+        [taskInstance: taskInstance, isValidator: validator]
+    }
+
     def discard() {
         def taskInstance = Task.get(params.id)
         if (!taskInstance) {
