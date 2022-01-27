@@ -1,8 +1,10 @@
 %{-- include CSS and JS assets in calling page --}%
 <g:set var="instName" value="${institutionName ?: institutionInstance?.name ?: message(code: 'default.application.name')}"/>
 <g:set var="institutionId" value="${institutionInstance?.id}"/>
+
+
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
-    <g:if test="${!disableStats}">
+<g:if test="${!disableStats}">
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats
@@ -25,8 +27,8 @@
         </p>
 
     </div><!-- Volunteer Stats Ends Here -->
-    </g:if>
-    <g:if test="${!disableHonourBoard}">
+</g:if>
+<g:if test="${!disableHonourBoard}">
     <div class="panel panel-default leaderboard">
         <!-- Default panel contents -->
         <h2 class="heading"><g:message code="honour.board.label" /> <g:link controller="leaderBoard" action="describeBadges" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
@@ -128,8 +130,9 @@
             </tbody>
         </table>
     </div><!-- Honour Board Ends Here -->
-    </g:if>
+</g:if>
 
+<g:if test="${!disableContribution}">
     <h2 class="heading">
         <g:message code="latest.contributions.label" /><span data-ng-if="conLoading"> <cl:spinner/></span>
     </h2>
@@ -177,8 +180,10 @@
             </div>
         </li>
     </ul>
+</g:if>
 
 </section>
+
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script type="text/javascript">
 digivolStats({
@@ -194,5 +199,6 @@ digivolStats({
     maxContributors: ${maxContributors ?: 5},
     disableStats: ${disableStats ? 'true' : 'false' },
     disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },
+    disableContribution: ${disableContribution ? 'true' : 'false' }
     });
 </asset:script>

@@ -138,7 +138,7 @@
 
             </div>
             <div class="col-sm-4">
-                <g:render template="/leaderBoard/stats" model="[disableStats: true]"/>
+                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableContribution: true]"/>
             </div>
         </div>
     </div>

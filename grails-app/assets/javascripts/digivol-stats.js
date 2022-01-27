@@ -67,22 +67,26 @@ function digivolStats(config) {
                     $log.error("Got error response for leaderboard", resp);
                 });
 
-            var c = $http.get(config.contributorsUrl, {
-                params: {
-                    institutionId: config.institutionId,
-                    projectId: config.projectId,
-                    projectType: config.projectType,
-                    tags: config.tags,
-                    maxContributors: config.maxContributors
-                }
-            });
-            c.then(function (resp) {
-                   angular.extend($scope, resp.data);
-                   $scope.conLoading = false;
-                },
-                function (resp) {
-                    $log.error("Got error response for contributors", resp);
+            //console.log("Disable contributors: " + config.disableContribution);
+            if (config.disableContribution === false) {
+                console.log("Getting contributors");
+                var c = $http.get(config.contributorsUrl, {
+                    params: {
+                        institutionId: config.institutionId,
+                        projectId: config.projectId,
+                        projectType: config.projectType,
+                        tags: config.tags,
+                        maxContributors: config.maxContributors
+                    }
                 });
+                c.then(function (resp) {
+                        angular.extend($scope, resp.data);
+                        $scope.conLoading = false;
+                    },
+                    function (resp) {
+                        $log.error("Got error response for contributors", resp);
+                    });
+            }
         }
     ]);
 }

@@ -175,7 +175,7 @@
             </div><!-- /.col-sm-8 -->
 
             <div class="col-sm-4">
-                <g:render template="/leaderBoard/stats"/>
+                <g:render template="/leaderBoard/stats" model="[disableContribution: true]"/>
             </div>
         </div>
     </div>
