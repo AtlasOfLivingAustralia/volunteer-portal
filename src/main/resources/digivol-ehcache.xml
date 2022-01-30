@@ -329,7 +329,7 @@
     <cache
             name="MainVolunteerStats"
             eternal="false"
-            timeToLiveSeconds="900"
+            timeToLiveSeconds="3600"
             maxElementsInMemory="1000"
             maxElementsOnDisk="2000"
             memoryStoreEvictionPolicy="LRU"
