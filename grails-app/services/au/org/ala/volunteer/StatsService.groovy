@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.transaction.Transactional
+import grails.plugin.cache.Cacheable
 import groovy.sql.Sql
 
 import javax.sql.DataSource
@@ -532,6 +533,7 @@ class StatsService {
         return results
     }
 
+    @Cacheable(value = 'StatsHourlyContribution', key = "(#institution?.id?.toString()?:'-1') + (#startDate?.getTime()?:'-1') + (#endDate?.getTime()?:'-1')")
     def getHourlyContributions(Date startDate, Date endDate, Institution institution) {
         def taskView = ""
         def taskJoin = ""
@@ -601,6 +603,7 @@ class StatsService {
         return results
     }
 
+    @Cacheable(value = 'StatsTranscriptionTime', key = "(#institution?.id?.toString()?:'-1') + (#startDate?.getTime()?:'-1') + (#endDate?.getTime()?:'-1')")
     def getTranscriptionTimeByProjectType(Date startDate, Date endDate, Institution institution) {
         def institutionClause = ""
         def params = [:]
