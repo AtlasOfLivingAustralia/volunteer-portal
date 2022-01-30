@@ -20,66 +20,53 @@ class VolunteerStatsService {
     def userService
     def leaderBoardService
     def institutionService
-    def projectService
-
     LinkGenerator grailsLinkGenerator
 
-    @Cacheable(value = 'MainVolunteerStats', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString()) + (#disableStats.toString()) + (#disableHonourBoard.toString())")
-    def generateStats(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors, boolean disableStats, boolean disableHonourBoard) {
+    /**
+     * Generates a map of stats info, including total transcribers and leaderboard (daily/weekly/monthly)
+     *
+     * @param institutionId optional institution
+     * @param projectId optional project
+     * @param projectTypeName optional project type
+     * @param tags optional tags to filter on
+     * @param maxContributors the maximum number of transcribers to
+     * @param disableStats flag whether stats has been disabled
+     * @param disableHonourBoard flag whether honour board has been disabled
+     * @return transcriber stats on the given parameters
+     */
+    @Cacheable(value = 'MainVolunteerStats', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#disableStats?.toString()) + (#disableHonourBoard?.toString())")
+    def generateStats(long institutionId, String projectTypeName, List<String> tags, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
-        Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
 
-        List<Long> projectsInLabels = null
         String projectTempTable = null
 
         def sw = Stopwatch.createStarted()
-
-        /*if (tags || projectTypeName) {
-            projectsInLabels = Project.withCriteria {
-                if (tags) {
-                    labels {
-                        'in'('value', tags)
-                    }
-                }
-                if (projectTypeName) {
-                    projectType {
-                        eq('name', projectTypeName)
-                    }
-                }
-                projections {
-                    property('id')
-                }
-            }
-        }*/
-
-        log.debug("Generating stats for inst id $institutionId, proj id: $projectId, maxContrib: $maxContributors, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectTypeName, projectsInLabels: $projectsInLabels")
+        log.debug("Generating stats for inst id $institutionId, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectTypeName")
 
         def totalTasks
         def completedTasks
         def transcriberCount
-        def projectLevel = false
+
         if (disableStats) {
+            log.debug("Stats are disabled")
             totalTasks = 0
             completedTasks = 0
             transcriberCount = 0
         } else if (institution) {
+            log.debug("Getting institution stats for [${institution.name}]")
             totalTasks = institutionService.countTasksForInstitution(institution)
             completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
             transcriberCount = institutionService.getTranscriberCount(institution)
-      /*} else if (projectsInLabels?.size() >= 0) {
-            totalTasks = projectService.countTasksForTag(projectsInLabels)
-            completedTasks = projectService.countTranscribedTasksForTag(projectsInLabels)
-            transcriberCount = getTranscriberCountForTag(projectsInLabels)
-        }*/
         } else if (tags || projectTypeName) {
+            log.debug("Getting tag/project type stats for [tags: ${tags}, projectTypeName: ${projectTypeName}]")
             def stats = getStatsForProjects(tags, projectTypeName)
             totalTasks = stats.tasks
             completedTasks = stats.transcriptions
             transcriberCount = stats.transcribers
-            projectsInLabels = stats.projectsInLabels
             projectTempTable = stats.projectTempTable
 
         } else { // TODO Project stats, not needed for v2.3
+            log.debug("Getting full site stats")
             totalTasks = Task.count()
             completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
             transcriberCount = User.countByTranscribedCountGreaterThan(0)
@@ -109,20 +96,124 @@ class VolunteerStatsService {
 
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
 
-//        sw.reset().start()
-
-//        List<LinkedHashMap<String, Serializable>> contributors = getContributors(institution, projectInstance, projectsInLabels, maxContributors, projectTempTable)
-        //generateContributors(institution, projectInstance, pt, maxContributors)
-
-//        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate contributors section")
-
         cleanUpTables(projectTempTable)
 
         ['totalTasks': totalTasks, 'completedTasks': completedTasks, 'transcriberCount': transcriberCount,
-         daily: daily, weekly: weekly, monthly: monthly, alltime: alltime /*, contributors: contributors*/]
+         daily: daily, weekly: weekly, monthly: monthly, alltime: alltime]
     }
 
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors.toString())")
+    /**
+     * Collects forum post information for a given project or institution
+     *
+     * @param institutionId the optional institution
+     * @param projectId the optional project
+     * @param maxPosts the maximum number of posts to collect
+     * @return a list of contributors and their forum posts
+     */
+    def generateForumPosts(long institutionId, long projectId, int maxPosts) {
+        def messages = getForumActivity(institutionId, projectId, maxPosts)
+        def contributors = messages.sort { -it.timestamp }.take(maxPosts)
+        return [contributors: contributors]
+    }
+
+    /**
+     * Retrieves and collates forum activity for a given institution, project or all forums.
+     *
+     * @param institutionId optional institution
+     * @param projectId optional project
+     * @param maxPosts maximum number of posts to collect
+     * @return a map containing forum posts
+     */
+    def getForumActivity(Long institutionId, Long projectId, Integer maxPosts) {
+        Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
+        Project project = (projectId == -1l) ? null : Project.get(projectId)
+
+        def latestMessages
+
+        if (institution) {
+            latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxPosts])
+            latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxPosts])
+        } else if (project) {
+            latestMessages = ForumMessage.withCriteria {
+                or {
+                    'in'('topic', new DetachedCriteria(ProjectForumTopic).build {
+                        eq('project', project)
+                        projections {
+                            property('id')
+                        }
+                    })
+                    'in'('topic', new DetachedCriteria(TaskForumTopic).build {
+                        task {
+                            eq('project', project)
+                        }
+                        projections {
+                            property('id')
+                        }
+                    })
+                }
+                order('date', 'desc')
+                maxResults(maxPosts)
+            }
+        } else {
+            latestMessages = ForumMessage.withCriteria {
+                order('date', 'desc')
+                maxResults(maxPosts)
+            }
+        }
+
+        def userDetails = userService.detailsForUserIds(latestMessages*.user*.userId).collectEntries { [(it.userId): it] }
+        def messages = latestMessages.collect {
+            def topic = it.topic
+            def topicId = topic.id
+            def details = userDetails[it.user.userId]
+            def timestamp = it.date.time / 1000
+            def topicUrl = grailsLinkGenerator.link(controller: 'forum', action: 'viewForumTopic', id: topic.id)
+
+            def forumName
+            def forumUrl
+            def thumbnail = null
+
+            if (topic instanceof ProjectForumTopic) {
+                def forumProject = ((ProjectForumTopic) topic).project
+                forumName = forumProject.name
+                thumbnail = forumProject.featuredImage
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: forumProject.id])
+            } else if (topic instanceof TaskForumTopic) {
+                def task = ((TaskForumTopic) topic).task
+                forumName = task.project.name
+                thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
+            } else {
+                forumName = "General Discussion"
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'index', params: [selectedTab: 1])
+            }
+
+            [type        : 'forum',
+             topicId     : topicId,
+             topicUrl    : topicUrl,
+             forumName   : forumName,
+             forumUrl    : forumUrl,
+             userId      : it.userId,
+             displayName : details?.displayName,
+             email       : details?.email?.toLowerCase()?.encodeAsMD5(),
+             thumbnailUrl: thumbnail,
+             timestamp   : timestamp]
+        }
+
+        return messages
+    }
+
+    /**
+     * Retrieves and collects information from {@link #getContributors(Institution, Project, List<Long>, Integer, String)}
+     *
+     * @param institutionId optional institution filter
+     * @param projectId optional project filter
+     * @param projectTypeName optional project type filter
+     * @param tags tag filter
+     * @param maxContributors maximum number of contributors to collect
+     * @return a map containing the contribution information.
+     */
+    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors?.toString())")
     def generateContributors(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -141,6 +232,17 @@ class VolunteerStatsService {
         [contributors: contributors]
     }
 
+    /**
+     * Collects a list of contributions from transcribers, including transcriptions AND forum posts. Can be filtered
+     * on institution, project, project type or tag.
+     *
+     * @param institution optional institution filter
+     * @param projectInstance optional project filter
+     * @param projectIds optional project ID list
+     * @param maxContributors maximum number of contributors to collect
+     * @param projectTempTable collation table containing data
+     * @return a map of contributors containing information on their activity
+     */
     def getContributors(Institution institution, Project projectInstance, List<Long> projectIds, Integer maxContributors, String projectTempTable) {
         def sw = Stopwatch.createStarted()
 
@@ -185,102 +287,11 @@ class VolunteerStatsService {
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to collect latest transcribers")
         sw.reset().start()
 
-        def latestMessages
-
-        if (institution) {
-            latestMessages = ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
-            latestMessages += ForumMessage.findAll('FROM ForumMessage fm WHERE fm.topic.task.project.institution = :institution ORDER BY date desc', [institution: institution], [max: maxContributors])
-        } else if (projectIds) {
-            def projects = Project.findAllByIdInList(projectIds)
-
-            latestMessages = ForumMessage.withCriteria {
-                or {
-                    'in'('topic', new DetachedCriteria(ProjectForumTopic).build {
-                        'in'('project', projects)
-                        projections {
-                            property('id')
-                        }
-                    })
-                    'in'('topic', new DetachedCriteria(TaskForumTopic).build {
-                        task {
-                            'in'('project', projects)
-                        }
-                        projections {
-                            property('id')
-                        }
-                    })
-                }
-                order('date', 'desc')
-                maxResults(maxContributors)
-            }
-
-        } else if (projectInstance) {
-            latestMessages = ForumMessage.withCriteria {
-                or {
-                    'in'('topic', new DetachedCriteria(ProjectForumTopic).build {
-                        eq('project', projectInstance)
-                        projections {
-                            property('id')
-                        }
-                    })
-                    'in'('topic', new DetachedCriteria(TaskForumTopic).build {
-                        task {
-                            eq('project', projectInstance)
-                        }
-                        projections {
-                            property('id')
-                        }
-                    })
-                }
-                order('date', 'desc')
-                maxResults(maxContributors)
-            }
-        } else {
-            latestMessages = ForumMessage.withCriteria {
-                order('date', 'desc')
-                maxResults(maxContributors)
-            }
-        }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to collect forum messages")
-        sw.reset().start()
-
-        def userDetails = userService.detailsForUserIds(latestMessages*.user*.userId).collectEntries { [(it.userId): it] }
-        def messages = latestMessages.collect {
-            def topic = it.topic
-            def topicId = topic.id
-            def details = userDetails[it.user.userId]
-            def timestamp = it.date.time / 1000
-            def topicUrl = grailsLinkGenerator.link(controller: 'forum', action: 'viewForumTopic', id: topic.id)
-
-            def forumName
-            def forumUrl
-            def thumbnail = null
-
-            if (topic instanceof ProjectForumTopic) {
-                def project = ((ProjectForumTopic) topic).project
-                forumName = project.name
-                thumbnail = project.featuredImage
-                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: project.id])
-            } else if (topic instanceof TaskForumTopic) {
-                def task = ((TaskForumTopic) topic).task
-                forumName = task.project.name
-                thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
-                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
-            } else {
-                forumName = "General Discussion"
-                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'index', params: [selectedTab: 1])
-            }
-
-            [type        : 'forum', topicId: topicId, topicUrl: topicUrl, forumName: forumName, forumUrl: forumUrl, userId: it.userId,
-             displayName : details?.displayName, email: details?.email?.toLowerCase()?.encodeAsMD5(),
-             thumbnailUrl: thumbnail, timestamp: timestamp]
-        }
-
+        def messages = getForumActivity(institution?.id, projectInstance?.id, maxContributors)
         log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to compile message details")
         sw.reset().start()
 
-        userDetails = userService.detailsForUserIds(latestTranscribers*.fullyTranscribedBy).collectEntries { [(it.userId): it] }
+        def userDetails = userService.detailsForUserIds(latestTranscribers*.fullyTranscribedBy).collectEntries { [(it.userId): it] }
         def transcribers = latestTranscribers.collect {
 
             def proj = it.project
@@ -304,7 +315,6 @@ class VolunteerStatsService {
                 [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(task.multimedia?.first())]
             }
             log.debug("Took ${sw2.stop().elapsed(MILLISECONDS)}ms to compile thumbnail info for user ${userId}")
-
 
             [type: 'task',
              projectId: proj.id,

@@ -113,7 +113,7 @@
                 </div>
                 <div class="col-sm-4">
                     %{--<g:set var="model" value="${[institutionName: 'Wildlife Spotter', projectType: projectType, tagName, tags]}" />--}%
-                    <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType, disableContribution: true]" />
+                    <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType, disableContribution: true, disableForumActivity: true]" />
                 </div>
             </div>
         </div>

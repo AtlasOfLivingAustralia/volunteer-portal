@@ -182,6 +182,42 @@
     </ul>
 </g:if>
 
+<g:if test="${disableContribution && !disableForumActivity}">
+    <h2 class="heading">
+        <g:message code="latest.forum.activity.label" /><span data-ng-if="conLoading"> <cl:spinner/></span>
+    </h2>
+    <ul class="media-list"
+        data-ng-repeat="contributor in contributors"
+        data-ng-switch="contributor.type">
+        %{-- Begin template for forum message contribution --}%
+        <li data-ng-switch-when="forum" class="media">
+            <div class="media-left">
+                <a data-ng-href="{{userProfileUrl(contributor)}}">
+                    <img data-ng-src="{{avatarUrl(contributor)}}" class="avatar img-circle">
+                </a>
+            </div>
+            <div class="media-body">
+                <span class="time" data-livestamp="{{contributor.timestamp}}"></span>
+                <h4 class="media-heading"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h4>
+                <p>Has posted in the forum: <a data-ng-href="{{contributor.forumUrl}}">{{contributor.forumName}}</a></p>
+                <div class="transcribed-thumbs">
+                    <img data-ng-src="{{contributor.thumbnailUrl}}">
+                </div>
+                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
+            </div>
+        </li>
+
+    </ul>
+    <ul class="media-list"
+        data-ng-if="contributors.length === 0">
+        <li>
+            <div class="media-body">
+                <p>No topics yet. <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectId])}"><g:message code="start.discussion.label" /></a></p>
+            </div>
+        </li>
+    </ul>
+</g:if>
+
 </section>
 
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
@@ -189,6 +225,7 @@
 digivolStats({
     statsUrl: "${createLink(controller: 'index', action: 'stats')}",
     contributorsUrl: "${createLink(controller: 'index', action: 'contributors')}",
+    forumActivityUrl: "${createLink(controller: 'index', action: 'forumActivity')}",
     projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",
     userProfileUrl: "${createLink(controller: 'user', action: 'show', id: -1)}",
     taskSummaryUrl: "${createLink(controller: 'task', action: 'summary', id: -1)}",
@@ -197,8 +234,10 @@ digivolStats({
     projectType: "${projectType ?: ''}",
     tags: <cl:json value="${tagName}" />,
     maxContributors: ${maxContributors ?: 5},
+    maxPosts: ${maxPosts ?: 5},
     disableStats: ${disableStats ? 'true' : 'false' },
     disableHonourBoard: ${disableHonourBoard ? 'true' : 'false' },
-    disableContribution: ${disableContribution ? 'true' : 'false' }
-    });
+    disableContribution: ${disableContribution ? 'true' : 'false' },
+    disableForumActivity: ${disableForumActivity ? 'true' : 'false' }
+});
 </asset:script>

@@ -42,18 +42,22 @@ function digivolStats(config) {
                 return Math.max(contrib.transcribedItems - 5, 0);
             };
 
-
             $scope.taskSummaryUrl = function (thumb) {
                 var id = thumb.id || "";
                 return config.taskSummaryUrl.replace('-1', id);
             };
+
+            var tags = '';
+            if (config.tags !== 'null') {
+                tags = config.tags
+            }
 
             var p = $http.get(config.statsUrl, {
                 params: {
                     institutionId: config.institutionId,
                     projectId: config.projectId,
                     projectType: config.projectType,
-                    tags: config.tags,
+                    tags: tags,
                     maxContributors: config.maxContributors,
                     disableStats: config.disableStats,
                     disableHonourBoard: config.disableHonourBoard
@@ -85,6 +89,23 @@ function digivolStats(config) {
                     },
                     function (resp) {
                         $log.error("Got error response for contributors", resp);
+                    });
+            } else if (config.disableForumActivity === false) {
+                // Can't do contribution and forum activity together (forum activity is included in contribution)
+                console.log("Getting forum activity");
+                var f = $http.get(config.forumActivityUrl, {
+                    params: {
+                        institutionId: config.institutionId,
+                        projectId: config.projectId,
+                        maxPosts: config.maxContributors
+                    }
+                });
+                f.then(function (resp) {
+                        angular.extend($scope, resp.data);
+                        $scope.conLoading = false;
+                    },
+                    function (resp) {
+                        $log.error("Got error response for forum activity", resp);
                     });
             }
         }

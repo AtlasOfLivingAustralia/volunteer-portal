@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="col-sm-4">
-                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableContribution: true]"/>
+                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableContribution: true, disableForumActivity: true]"/>
             </div>
         </div>
     </div>
