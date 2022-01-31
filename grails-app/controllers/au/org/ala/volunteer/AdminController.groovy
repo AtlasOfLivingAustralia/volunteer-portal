@@ -219,7 +219,7 @@ class AdminController {
         // Because this action is run by both Site admins (for IA's) and IA's (for user roles), check that that user
         // has permission to delete the selected role
         // Also check, in the case of IA's, that they are not deleting another institution's role.
-        def institution = (userRole.institution ? userRole.institution : userRole.project.institution)
+        def institution = (userRole.institution ? userRole.institution : userRole.project?.institution)
 
         if (userRole.role.name == BVPRole.INSTITUTION_ADMIN && !userService.isAdmin()) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of Institution Admin role " +
