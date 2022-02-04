@@ -52,6 +52,7 @@ class TaskLoadService {
     def stagingService
     Closure<DSLContext> jooqContext
     def assetResourceLocator
+    def projectService
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -409,6 +410,13 @@ class TaskLoadService {
     def doTaskLoad(Long projectId = null) {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
+            // Calculate project directory disk usage after completion
+            def project = Project.get(projectId)
+            if (project) {
+                def projectSize = projectService.projectSize(project).size as long
+                log.info("Project size: ${projectSize}")
+            }
+
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
         }
     }

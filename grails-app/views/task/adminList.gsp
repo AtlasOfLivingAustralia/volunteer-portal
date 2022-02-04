@@ -98,7 +98,7 @@
                     <td style="text-align: center;">${transcribedCount}</td>
                     <td style="text-align: center;">${validatedCount}</td>
                     <td style="text-align: center;">${taskInstanceTotal - transcribedCount}</td>
-                    <td style="text-align: center;"><cl:formatFileSize size="${projectSize}"/></td>
+                    <td style="text-align: center;"><cl:formatFileSize size="${projectInstance?.sizeInBytes}"/></td>
                 </tr>
             </table>
         </div>

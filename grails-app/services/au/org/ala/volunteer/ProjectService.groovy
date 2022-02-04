@@ -108,7 +108,12 @@ class ProjectService {
                             }
                             tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
+
+                        // Reset disk usage to zero, as all tasks have been deleted.
+                        p.sizeInBytes = 0
+
                         log.info("Completed deleting all tasks for ${msg.projectId}")
+
                         session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
@@ -668,9 +673,12 @@ class ProjectService {
     def projectSize(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
-            [size: projectPath.directorySize(), error: null]
+            long sizeInBytes = projectPath.directorySize()
+            project.sizeInBytes = sizeInBytes
+            project.save(flush: true, failOnError: true)
+            [size: sizeInBytes, error: null]
         } catch (e) {
-            log.debug("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
+            log.warn("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
             [error: e, size: -1]
         }
     }

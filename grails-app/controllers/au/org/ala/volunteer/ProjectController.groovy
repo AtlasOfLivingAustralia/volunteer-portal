@@ -1553,6 +1553,11 @@ class ProjectController {
                                           'institutionList'               : institutionList])
     }
 
+    /**
+     * @deprecated
+     * @param project
+     * @return
+     */
     def projectSize(Project project) {
         if (!userService.isInstitutionAdmin()) {
             respond status: 403

@@ -17,6 +17,7 @@ import org.springframework.web.context.support.ServletContextResource
 class BootStrap {
 
     def projectTypeService
+    def projectService
     GrailsApplication grailsApplication
     def auditService
     def sessionFactory
@@ -57,6 +58,29 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
+        initProjectSize()
+    }
+
+    /**
+     * This is to initialise the project sizes for release 6.1.0.
+     * Disable this in next release.
+     */
+    private void initProjectSize() {
+        log.info("Initialising project sizes...")
+
+        def projectList = Project.findAllByArchived(false)
+        int count = 0
+
+        projectList.each { project ->
+            if (project.sizeInBytes == 0L) {
+                def size = projectService.projectSize(project).size as long
+                if (size > 0) {
+                    log.info("Project [${project.id}] ${project.name} calculated to be ${size} bytes.")
+                }
+            }
+        }
+
+        log.info("Completed Project Size initialisation for ${projectList.size()} projects.")
     }
 
     private void fixTaskLastViews() {

@@ -130,17 +130,10 @@ class TaskController {
             views?.values()?.each { List viewList ->
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
-                    if (new Date(max.lastView) > 2.hours.ago && !max.skipped) {
-                        lockedMap[max.task?.id] = max
+                    if (new Date(max.lastView as long) > 2.hours.ago && !max.skipped) {
+                        lockedMap[max.task?.id as long] = max
                     }
                 }
-            }
-
-            // Get Project size (for Admin view)
-            def projectSize = 0
-            if (view == VIEW_TASK_LIST_ADMIN) {
-                projectSize = projectService.projectSize(project).size
-                if (projectSize < 0) projectSize = 0
             }
 
             def statusFilterList = [[key: "transcribed", value: "View transcribed tasks"],
@@ -158,7 +151,6 @@ class TaskController {
                      extraFields      : extraFields,
                      userInstance     : userInstance,
                      lockedMap        : lockedMap,
-                     projectSize      : projectSize,
                      statusFilterList : statusFilterList])
         } else {
             flash.message = "No project found for ID " + params.long('id')
@@ -357,7 +349,7 @@ class TaskController {
                     thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
                     image: multimediaService.getImageUrl(mm),
                 // TODO: replace these?
-                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy)?.displayName,
+                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy as String)?.displayName,
                     dateTranscribed: task.dateFullyTranscribed,
                     validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
                     dateValidated: task.dateFullyValidated,

@@ -149,7 +149,9 @@
                                               title="${message(code: 'project.dateCreated.label')}"/>
 
 
-                            <th><span><g:message code="project.manage.size.label"/></span></th>
+%{--                            <th><span><g:message code="project.manage.size.label"/></span></th>--}%
+                            <g:sortableColumn property="sizeInBytes" params="${params}"
+                                              title="${message(code: 'project.manage.size.label')}"/>
 
                             <th></th>
 
@@ -179,7 +181,8 @@
                                 <td style="vertical-align: middle; white-space: nowrap;"><g:formatDate type="date" style="medium"
                                         date="${projectInstance.project.dateCreated}"/></td>
 
-                                <td style="vertical-align: middle; white-space: nowrap;"><span class="archive-list-file-size" data-id="${projectInstance.project.id}"><i class="fa fa-2x fa-cog fa-spin"></i></span></td>
+%{--                                <td style="vertical-align: middle; white-space: nowrap;"><span class="archive-list-file-size" data-id="${projectInstance.project.id}"><i class="fa fa-2x fa-cog fa-spin"></i></span></td>--}%
+                                <td style="vertical-align: middle; white-space: nowrap;"><span data-id="${projectInstance.project.id}">${projectInstance.project.getProjectSizeFormatted()}</span></td>
 
                                 <td style="white-space: nowrap;">
                                     <!-- Toggle Status -->
@@ -293,9 +296,9 @@ jQuery(function($) {
     $('.archive-list-file-size').each(function() {
         var $this = $(this);
         var id = $this.data('id');
-        $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {
-            $this.text(data.size);
-        });
+%{--        $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {--}%
+%{--            $this.text(data.size);--}%
+%{--        });--}%
     })
 
     $("#searchbox").keydown(function(e) {
