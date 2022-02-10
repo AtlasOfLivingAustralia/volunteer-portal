@@ -40,7 +40,7 @@ class Project implements Serializable {
     Date lastUpdated
     // Project of the Day Last Selected Date
     Date potdLastSelected
-    long sizeInBytes = 0L
+    Long sizeInBytes = 0L
 
     Integer version
 
