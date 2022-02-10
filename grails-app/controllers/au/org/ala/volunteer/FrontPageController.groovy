@@ -49,7 +49,8 @@ class FrontPageController {
             // If Random Project of the Day is selected, and it hasn't been updated today, then update.
             if (frontPage.randomProjectOfTheDay &&
                     projectService.isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated)) {
-                Project potd = projectService.selectRandomProject()
+                def potdId = projectService.selectRandomProject()
+                Project potd = Project.get(potdId)
                 if (potd) {
                     frontPage.projectOfTheDay = potd
                     frontPage.randomProjectDateUpdated = new Date()

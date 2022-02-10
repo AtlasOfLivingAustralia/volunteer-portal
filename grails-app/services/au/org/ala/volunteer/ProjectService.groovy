@@ -971,7 +971,7 @@ class ProjectService {
             projectToDisplay.save(failOnError: true, flush: true)
         }
 
-        return projectToDisplay
+        return projectToDisplay.id
     }
 
     /**
@@ -999,7 +999,8 @@ class ProjectService {
         if (isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated) ||
                 isProjectComplete(frontPage.projectOfTheDay)) {
             log.debug("Yes, updating PotD...")
-            def project = selectRandomProject()
+            def projectId = selectRandomProject()
+            def project = Project.get(projectId)
             if (project) {
                 log.debug("New PotD: ${project}")
                 frontPage.projectOfTheDay = project
