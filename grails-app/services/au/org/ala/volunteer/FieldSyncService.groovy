@@ -3,11 +3,18 @@ package au.org.ala.volunteer
 import grails.gorm.DetachedCriteria
 import grails.transaction.Transactional
 import org.apache.commons.lang3.StringUtils
+import org.jooq.DSLContext
+import org.springframework.beans.factory.annotation.Autowired
+
+import static au.org.ala.volunteer.jooq.tables.VpUser.VP_USER
 
 @Transactional
 class FieldSyncService {
 
     ValidationService validationService
+
+    @Autowired
+    Closure<DSLContext> jooqContextFactory
 
     Map retrieveFieldsForTask(Task taskInstance, String currentUserId) {
 
@@ -276,8 +283,9 @@ class FieldSyncService {
                 transcription.fullyTranscribedBy = transcriberUserId
                 transcription.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
-                user?.transcribedCount++
-                user?.save(flush: true)
+//                user?.transcribedCount++
+//                user?.save(flush: true)
+                incrementTranscriptionCount(user.id)
             }
             if (!transcription.dateFullyTranscribed) {
                 transcription.dateFullyTranscribed = now
@@ -296,8 +304,9 @@ class FieldSyncService {
 
             if (!task.fullyValidatedBy) {
                 def user = User.findByUserId(transcriberUserId)
-                user?.validatedCount++
-                user?.save(flush: true)
+//                user?.validatedCount++
+//                user?.save(flush: true)
+                incrementValidationCount(user.id)
             }
             task.validate(transcriberUserId, isValid, now)
         }
@@ -349,4 +358,59 @@ class FieldSyncService {
         }.updateAll(superceded: true)
     }
 
+    /**
+     * Increments the transcription count for a user by 1. Done with JOOQ so that issues with cached values aren't
+     * encountered.
+     * @param userId the user's ID.
+     */
+    def incrementTranscriptionCount(long userId) {
+        DSLContext context = jooqContextFactory()
+
+        context.update(VP_USER)
+                .set(VP_USER.TRANSCRIBED_COUNT, VP_USER.TRANSCRIBED_COUNT.plus(1))
+                .where(VP_USER.ID.eq(userId))
+                .execute()
+    }
+
+    /**
+     * Decrements the transcription count for a user by 1. Done with JOOQ so that issues with cached values aren't
+     * encountered.
+     * @param userId the user's ID.
+     */
+    def decrementTranscriptionCount(long userId) {
+        DSLContext context = jooqContextFactory()
+
+        context.update(VP_USER)
+                .set(VP_USER.TRANSCRIBED_COUNT, VP_USER.TRANSCRIBED_COUNT.minus(1))
+                .where(VP_USER.ID.eq(userId))
+                .execute()
+    }
+
+    /**
+     * Increments the validated count for a user by 1. Done with JOOQ so that issues with cached values aren't
+     * encountered.
+     * @param userId the user's ID.
+     */
+    def incrementValidationCount(long userId) {
+        DSLContext context = jooqContextFactory()
+
+        context.update(VP_USER)
+                .set(VP_USER.VALIDATED_COUNT, VP_USER.VALIDATED_COUNT.plus(1))
+                .where(VP_USER.ID.eq(userId))
+                .execute()
+    }
+
+    /**
+     * Decrements the validated count for a user by 1. Done with JOOQ so that issues with cached values aren't
+     * encountered.
+     * @param userId the user's ID.
+     */
+    def decrementValidationCount(long userId) {
+        DSLContext context = jooqContextFactory()
+
+        context.update(VP_USER)
+                .set(VP_USER.VALIDATED_COUNT, VP_USER.VALIDATED_COUNT.minus(1))
+                .where(VP_USER.ID.eq(userId))
+                .execute()
+    }
 }

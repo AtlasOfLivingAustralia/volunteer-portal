@@ -31,6 +31,7 @@ class TaskService {
     def multimediaService
     def grailsLinkGenerator
     def fieldService
+    def fieldSyncService
     def i18nService
     def userService
     Closure<DSLContext> jooqContext
@@ -1088,7 +1089,8 @@ ORDER BY record_idx, name;
         tr.each {
             def transcriber = User.findByUserId(it.fullyTranscribedBy)
             if (transcriber) {
-                transcriber.transcribedCount--
+                //transcriber.transcribedCount--
+                fieldSyncService.decrementTranscriptionCount(transcriber.id)
             }
 
             it.fullyTranscribedBy = null
@@ -1114,7 +1116,8 @@ ORDER BY record_idx, name;
 
         def validator = User.findByUserId(task.fullyValidatedBy)
         if (validator) {
-            validator.validatedCount--
+            //validator.validatedCount--
+            fieldSyncService.decrementValidationCount(transcriber.id)
         }
         task.isValid = null
         task.fullyValidatedBy = null
