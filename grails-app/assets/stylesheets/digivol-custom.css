@@ -173,6 +173,12 @@ table .btn-default {
 table .btn-default:hover {
     background-color: #e6e6e6;
 }
+
+table.task-table {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
 /*** End - Styles for tables ***/
 
 /*** Begin - Admin ***/
