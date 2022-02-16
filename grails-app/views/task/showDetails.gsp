@@ -126,9 +126,11 @@
                         </tr>
                         <tr>
 
-                            <td>Validated</td>
+                            <td>Validation Status</td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyValidated}">
+                                    <g:if test="${!taskInstance.isValid}"><span class="label label-info">In progress</span></g:if>
+                                    <g:if test="${taskInstance.isValid}"><span class="label label-success">Validated</span></g:if>
                                     ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.displayNameForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>
@@ -150,20 +152,6 @@
                         </tr>
 
                         <tr>
-                            <td>Is Valid</td>
-                            <td>
-                                <g:if test="${taskInstance.isValid != null}">
-                                    ${taskInstance.isValid}
-                                </g:if>
-                                <g:else>
-                                    <span class="muted">
-                                        Not set
-                                    </span>
-                                </g:else>
-
-                            </td>
-                        </tr>
-                        <tr>
                             <td>Views</td>
                             <td>
                                 <ul>
@@ -175,7 +163,7 @@
                             </td>
                         </tr>
                     </table>
-                    <cl:validationStatus task="${taskInstance}"/>
+%{--                    <cl:validationStatus task="${taskInstance}"/>--}%
                 </div>
             </div>
         </div>

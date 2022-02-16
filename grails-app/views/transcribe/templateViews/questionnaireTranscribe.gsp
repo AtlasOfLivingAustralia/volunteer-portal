@@ -99,11 +99,11 @@
                         <button id="carousel-control-right" type="button" class="btn btn-default pull-right btn-next qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
                         <g:if test="${validator}">
                             <div class="btn-group pull-right">
-                                <button type="button" id="btnValidate" class="btn btn-default btn-next bvp-submit-button"><i
-                                        class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
+                                <button type="button" id="btnValidate" class="btn btn-default btn-next bvp-submit-button">
+                                    ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                 </button>
-                                <button type="button" id="btnDontValidate" class="btn btn-danger btn-next bvp-submit-button"><i
-                                        class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                                <button type="button" id="btnDontValidate" class="btn btn-next bvp-submit-button">
+                                    ${message(code: 'default.button.dont.validate.label', default: 'Save partial validation')}
                                 </button>
                             </div>
                         </g:if>

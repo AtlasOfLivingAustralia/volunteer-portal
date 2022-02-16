@@ -234,11 +234,11 @@
                         <div id="submitButtons" class="row">
                             <div class="col-sm-12">
                                 <g:if test="${validator}">
-                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button"><i
-                                            class="icon-ok icon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
+                                    <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button">
+                                        ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
-                                    <button type="button" id="btnDontValidate" class="btn btn-danger bvp-submit-button"><i
-                                            class="icon-remove icon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                                    <button type="button" id="btnDontValidate" class="btn btn-default bvp-submit-button">
+                                        ${message(code: 'default.button.dont.validate.label', default: 'Save partial validation')}
                                     </button>
                                     <button type="button" class="btn btn-default bvp-submit-button"
                                             id="showNextFromProject" data-skip="true">Skip</button>
@@ -735,7 +735,7 @@
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = 5 * 60; // Seconds ####### ---> SET TO 90 FOR RELEASE
+        var taskLockTimeout = 2 * 60; // Seconds ####### ---> SET TO 90 FOR RELEASE
         setPageTimeoutTimer();
 
         function setPageTimeoutTimer() {
@@ -746,20 +746,25 @@
         }
 
         var onCloseModal = function onCloseModal() {
+        <g:if test="${enableBackgroundSave}">
+            taskIdleResetCountdownTimer();
+        </g:if>
             setPageTimeoutTimer();
         }
 
         function showTaskTimeoutMessage() {
 
         <g:if test="${enableBackgroundSave}">
-            var url = "${createLink(controller: 'transcribe', action: 'taskIdleFragment', params: [taskId: taskInstance.id, validator: validator])}";
+            var url = "${raw(createLink(controller: 'transcribe', action: 'taskIdleFragment', params: [taskId: taskInstance.id, validator: validator]))}";
+            var title = "transcribing";
         </g:if>
         <g:else>
-            var url = "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}";
+            var url = "${raw(createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator]))}";
+            var title = "validating";
         </g:else>
             var options = {
                 url: url,
-                title: 'Are you still transcribing?',
+                title: 'Are you still ' + title + '?',
                 backdrop: 'static',
                 keyboard: false,
                 onClose: onCloseModal
@@ -770,37 +775,37 @@
 
 
     </g:if>
-
         var keepAliveInterval = 10; // Minutes
         var intervalSeconds = 60 * keepAliveInterval;
 
         // Set up the session keep alive
         setInterval(function() {
-            $.ajax("${createLink(controller: 'ajax', action: 'keepSessionAlive')}").done(function(data) {});
+            $.ajax("${raw(createLink(controller: 'ajax', action: 'keepSessionAlive'))}").done(function(data) {});
         }, intervalSeconds * 1000);
 
         $("#btnSave").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
+                submitFormWithAction("${raw(createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: '']))}");
             }
         });
 
         $("#btnSavePartial").click(function(e) {
             e.preventDefault();
-            submitFormWithAction("${createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
+            submitFormWithAction("${raw(createLink(controller: 'transcribe', action: 'savePartial', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: '']))}");
         });
 
         $("#btnValidate").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
+                submitFormWithAction("${raw(createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: '']))}");
             }
         });
 
         $("#btnDontValidate").click(function(e) {
             e.preventDefault();
-            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
+            console.log("Saving validation progress");
+            submitFormWithAction("${raw(createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: '']))}");
         });
 
         $("#btnWarningCancelSubmission").click(function(e) {
@@ -825,7 +830,7 @@
         $("#showNextFromProject, .btn-skip-n").click(function(e) {
             e.preventDefault();
             var skip = $(this).data('skip');
-            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id, mode: params.mode ?: ''])}";
+            var url = "${raw(createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id, mode: params.mode ?: '']))}";
             if (skip) url = url + '&skip='+skip;
             window.location = url;
         });
@@ -931,8 +936,15 @@
         // Save the form in local storage (if available). This is so we can restore in case the submission fails for some reason
         saveFormState();
 
+    <g:if test="${validator}">
+        var url = "${createLink(controller: 'validate', action: 'backgroundSave', params: [failoverTaskId: taskInstance.id])}";
+    </g:if>
+    <g:else>
+        var url = "${createLink(controller: 'transcribe', action: 'backgroundSave', params: [failoverTaskId: taskInstance.id])}";
+    </g:else>
+
         var request = $.ajax({
-            url: "${createLink(controller: 'transcribe', action: 'backgroundSave', params: [failoverTaskId: taskInstance.id])}",
+            url: url,
             data: jQuery(form).serialize(),
             type: 'POST'
         });
@@ -953,18 +965,19 @@
 
     $(document).ready(function() {
         var bgSaveTimer = 2 * 60; // SET TO 15 FOR RELEASE
-
         var timerInitial = 0;
 
+    <g:if test="${!validator}">
         // Init bg save
+        var initUrl = "${createLink(controller: 'transcribe', action: 'initBackgroundSave', params: [id: taskInstance.id])}";
         var request = $.ajax({
-            url: "${createLink(controller: 'transcribe', action: 'initBackgroundSave', params: [id: taskInstance.id])}",
+            url: initUrl,
             type: 'POST'
         });
 
         request.done(function(data) {
             if (data && data.success) {
-                var timer = data.timeToTranscribe;
+                var timer = data.timerInitValue;
                 if (timer > 0) initTimer(timer);
                 console.log("Transcription timer initialised at [" + timer + "] seconds");
                 console.log("Background save initialised.");
@@ -973,6 +986,21 @@
                 console.log("Background save failed to initialise: " + data.message);
             }
         });
+
+        request.fail(function(data) {
+            if (data && data.message) {
+                console.log("Background save failed: " + data.message);
+            } else {
+                console.log("Background save failed for some unknown reason");
+                console.log(data);
+            }
+        });
+    </g:if>
+    <g:else>
+        console.log("Validation timer initialised at [0] seconds");
+        console.log("Background save initialised.");
+        console.log("Background save will occur every ["+ (bgSaveTimer / 60) +"] minutes.");
+    </g:else>
 
         setInterval(bgSave, bgSaveTimer * 1000);
     });

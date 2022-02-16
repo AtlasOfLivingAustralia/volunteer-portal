@@ -86,7 +86,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-condensed table-striped table-hover">
+                    <table class="table table-condensed table-striped table-hover task-table">
                         <thead>
                         <tr>
 
@@ -115,7 +115,7 @@
                             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
                                 <td><g:link controller="transcribe" action="task"
-                                            id="${taskInstance.id}">${fieldValue(bean: taskInstance, field: "id")}</g:link></td>
+                                            id="${taskInstance.id}">${taskInstance.id}</g:link></td>
 
                                 <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
 
@@ -131,19 +131,19 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <g:if test="${taskInstance.isValid == true}">validated</g:if>
-                                    <g:elseif test="${taskInstance.isValid == false}">invalidated</g:elseif>
-                                    <g:elseif test="${taskInstance.transcriptions*.fullyTranscribedBy}">submitted</g:elseif>
+                                    <g:if test="${taskInstance.isValid == true}">Validated</g:if>
+                                    <g:elseif test="${taskInstance.isValid == false}">In Progress</g:elseif>
+                                    <g:elseif test="${taskInstance.isFullyTranscribed}">Transcribed</g:elseif>
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <g:if test="${taskInstance.transcriptions*.fullyTranscribedBy}">
+                                    <g:if test="${taskInstance.isFullyTranscribed}">
                                         <g:link class="btn btn-sm btn-info" controller="task" action="show"
-                                                id="${taskInstance.id}">view</g:link>
+                                                id="${taskInstance.id}">View</g:link>
                                     </g:if>
                                     <g:else>
                                         <button class="btn btn-sm btn-default"
-                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">transcribe</button>
+                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
                                     </g:else>
                                 </td>
 

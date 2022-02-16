@@ -281,11 +281,10 @@ class TaskService {
     private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1, long lastId = -1) {
         Task transcribableTask = null
         int matches = 0
-        log.debug("Processing results for user ${userId}, jump ${jump}, and lastId ${lastId}")
+        log.debug("Processing results for user_id: [${userId}], jump: [${jump}], lastId: [${lastId}]")
         results?.find { result ->
             Task task = Task.get(result[0])
-            log.debug("Checking task ${result[0]}")
-            log.debug("Task: ${task}")
+            log.debug("Checking ${task}")
 
             // If locked or skipped, move onto next task.
             if (!task.isLockedForTranscription(userId, timeoutWindow) && !task.wasSkippedByUser(userId)) {
@@ -296,7 +295,7 @@ class TaskService {
                 transcribableTask = task
                 matches++
                 if (matches >= jump) {
-                    log.debug("Allocating task ${task.id}.")
+                    log.debug("Allocating task [${task.id}] to user_id [${userId}].")
                     return true
                 }
             }
@@ -337,15 +336,16 @@ class TaskService {
             order by $orderBy
             """.stripIndent()
 
-        log.debug("Unviewed task Query: ${query}")
+        //log.debug("Unviewed task Query: ${query}")
 
         List results = Task.executeQuery(query,queryParams)
-        log.debug("Results: ${results}")
+        log.debug("Searching for unviewed tasks resulted in [${results.size()}] tasks.")
 
         if (results) {
             def taskResult = results.last()
             task = Task.get(taskResult[0])
         }
+
         task
     }
 
@@ -377,7 +377,8 @@ class TaskService {
                         "order by count(transcriptions) desc, task.id",
                     params
                 )
-        log.debug("Unfinished task not viewed results: ${results}")
+        //log.debug("Unfinished task not viewed results: ${results}")
+        log.debug("Searching for unfinished tasks for user_id [${userId}] returned ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
@@ -395,7 +396,8 @@ class TaskService {
                         "having count(transcriptions) < :transcriptionsPerTask "+
                         "order by count(transcriptions) desc, task.id",
                 [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
-        log.debug("Viewed but not transcribed results: ${results}")
+        //log.debug("Viewed but not transcribed results: ${results}")
+        log.debug("Searching for viewed but not transcribed tasks for user_id [${userId}] resulted in ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
@@ -409,16 +411,14 @@ class TaskService {
      * @return
      */
     Task getNextTask(String userId, Project project, Long lastId = -1) {
-
+        log.debug("Get next task for user_id: [${userId}], project: [${project.id}], lastId: [${lastId}]")
         if (!project || !userId) {
             return null;
         }
 
-//        Task task = null
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
-        log.debug("Task jump set to: [${jump}]")
         int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
-        log.debug("Transcriptions per task: [${transcriptionsPerTask}]")
+        log.debug("Transcriptions per task: [${transcriptionsPerTask}], task jump: [${jump}]")
 
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
@@ -429,7 +429,7 @@ class TaskService {
         // required to transcribe the Task.
         Task task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
+            log.debug("Unviewed task selected to jump to: [${task.id}]")
             return task
         }
 
@@ -439,19 +439,22 @@ class TaskService {
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
         task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unfinished task not viewed by user to jump to: ${task.id}")
+            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unfinished task not viewed by user to jump to: ${task.id}")
+            log.debug("Unfinished task assigned to user: [${task.id}]")
             return task
         }
 
         task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout, lastId)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
+            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
+            log.debug("Viewed non-transcribed task assigned to user: [${task.id}]")
             return task
         }
 
         // If we have been unable to find a Task while jumping over Tasks, see if we can get any Task.
-        if (lastId >=0 && jump > 1) {
+        if (lastId >= 0 && jump > 1) {
             // Try it all again, but without the jump
+            log.debug("Unable to find a task with jump [${jump}] specified. Re-searching with no jump.")
             task = getNextTask(userId, project)
         }
 

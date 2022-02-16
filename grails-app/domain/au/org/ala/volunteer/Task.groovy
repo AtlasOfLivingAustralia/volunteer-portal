@@ -34,7 +34,7 @@ class Task implements Serializable {
         multimedia cascade: 'all,delete-orphan'
         viewedTasks cascade: 'all,delete-orphan'
         fields cascade: 'all,delete-orphan'
-        comments cascade: 'all,delete-orphan'
+        //comments cascade: 'all,delete-orphan'
         transcriptions cascade: 'all,delete-orphan'
         //transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
@@ -72,7 +72,7 @@ class Task implements Serializable {
             return true
         }
         int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
-        int transcriptionCount = transcriptions?.count{it.fullyTranscribedBy} ?: 0
+        int transcriptionCount = (int) (transcriptions?.count { it.fullyTranscribedBy } ?: 0)
         return transcriptionCount >= requiredTranscriptionCount
     }
 

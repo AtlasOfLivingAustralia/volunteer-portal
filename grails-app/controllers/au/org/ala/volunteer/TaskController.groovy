@@ -260,10 +260,17 @@ class TaskController {
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
                     } else if (task.fullyValidatedBy && task.isValid != null) {
-                        msg = "This task has been validated, and is currently read-only."
+                        if (task.isValid) {
+                            msg = "This task has been validated, and is currently read-only."
+                        } else {
+                            msg = "This task has been partially validated and is currently read-only."
+                        }
+
                         if (userService.isValidator(task.project)) {
                             def link = createLink(controller: 'validate', action: 'task', id: task.id) as String
-                            msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                            //msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                            msg += """ As a validator, you may review/${(task.isValid ? "edit" : "continue validating")} 
+                                this task by clicking <a href='${link}'>here</a>.""".toString()
                         }
                         readonly = true
                     } else if (userTask && userTask != currentUser) {

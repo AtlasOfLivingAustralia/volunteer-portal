@@ -419,11 +419,11 @@ class VolunteerTagLib {
             if (validator) {
                 def status = "Not yet validated"
                 def badgeClass = "label"
-                if (taskInstance.isValid == false) {
-                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-danger"
+                if (!taskInstance.isValid) {
+                    status = "Partially validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-warning"
                 } else if (taskInstance.isValid) {
-                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = "Validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"
                 }
                 mb.span(class:badgeClass) {

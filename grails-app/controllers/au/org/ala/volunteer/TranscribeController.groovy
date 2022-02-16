@@ -36,7 +36,6 @@ class TranscribeController {
     }
 
     def task() {
-
         Stopwatch sw = Stopwatch.createStarted()
 
         def taskInstance = Task.get(params.int('id'))
@@ -72,6 +71,8 @@ class TranscribeController {
             if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUserId) && !isAdmin) {
                 isReadonly = "readonly"
             }
+
+            log.debug("Loading task for transcription - project: [${project.id}], task: [${task.id}], user: [${currentUserId}]")
 
             // Disable browser caching of this page, to force it to reload from server always
             // This, in turn, ensures that there is always an active http session when the page
@@ -115,7 +116,7 @@ class TranscribeController {
     }
 
     def showNextAction() {
-        log.debug("rendering view: nextAction")
+        log.debug("Rendering view: nextAction")
         def taskInstance = Task.get(params.id)
         render(view: 'nextAction', model: [id: params.id, taskInstance: taskInstance, userId: userService.currentUserId, mode: params.mode ?: ''])
     }
@@ -205,7 +206,7 @@ class TranscribeController {
                 }
             }
 
-            render([success: true, timeToTranscribe: (transcription?.timeToTranscribe ?: 0)] as JSON)
+            render([success: true, timerInitValue: (transcription?.timeToTranscribe ?: 0)] as JSON)
             return
         }
 
@@ -219,7 +220,7 @@ class TranscribeController {
     private def commonSave(params, markTranscribed, int saveType) {
         def currentUser = userService.currentUserId
         def currentUserObj = userService.getCurrentUser()
-        log.debug("Params: ${params}")
+        //log.debug("Params: ${params}")
 
         if (!params.id && params.failoverTaskId) {
             log.error("Attempting to save transcription, no task ID was found. Returning error.")
@@ -232,6 +233,7 @@ class TranscribeController {
         }
 
         if (currentUser != null) {
+            log.debug("${(saveType == 1 ? "Auto-saving" : "Saving")} transcription for user: [${currentUser?.id}]")
             def taskInstance = Task.get(params.long('id'))
 
             // Check if the user has actually viewed this task (remote transcription spam protection)
@@ -316,13 +318,16 @@ class TranscribeController {
                         // Flow should not reach this...
                         render([success: true] as JSON)
                     } else {
+                        log.debug("Skip to next task.")
                         redirect(action: 'showNextFromProject', id: taskInstance.project.id,
                                 params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
                     }
                 } else {
                     if (saveType == SAVE_TYPE_BACKGROUND) {
+                        log.debug("Save successful.")
                         render([success: true] as JSON)
                     } else {
+                        log.debug("Save successful. Redirecting to show next action view")
                         redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
                     }
                 }
@@ -350,14 +355,15 @@ class TranscribeController {
      */
     def showNextFromProject() {
         def currentUser = userService.currentUserId
-        def project = Project.get(params.id)
+        def project = Project.get(params.long('id'))
 
         if (project == null) {
-            log.error("Project not found for id: " + params.id)
+            log.error("Project not found for id: ${params.id}")
             redirect(view: '/index')
+            return
         }
 
-        log.debug("project id = " + params.id + " || msg = " + params.msg + " || prevInt = " + params.prevId)
+        log.debug("Finding next task from project: [${project.id}], previous task ID: [${params.prevId}], msg: [${params.msg}]")
 
         if (params.msg) {
             flash.message = params.msg
@@ -432,9 +438,11 @@ class TranscribeController {
     }
 
     def taskIdleFragment() {
-        def taskInstance = Task.get(params.int('taskId'))
+        def task = Task.get(params.int('taskId'))
         def validator = params.boolean('validator')
-        [taskInstance: taskInstance, isValidator: validator]
+        log.debug("Picking up validator parameter: [${params.validator}] - [${params.boolean('validator')}]")
+        log.debug(task.toString())
+        [taskInstance: task, isValidator: validator]
     }
 
     def discard() {
