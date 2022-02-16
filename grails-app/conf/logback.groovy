@@ -102,7 +102,14 @@ logger('au.org.ala.volunteer.BVPSessionListener', DEBUG, [ACCESS], false)
 logger('au.org.ala.cas', DEBUG, [CAS], false)
 logger('org.jasig.cas', DEBUG, [CAS], false)
 
-logger('grails.app.services.au.org.ala.volunteer.TaskService', DEBUG, [DEBUG_LOG], false)
+//logger('grails.app.services.au.org.ala.volunteer.TaskService', DEBUG, [DEBUG_LOG], false)
+final debug_logger = [
+        'grails.app.services.au.org.ala.volunteer.TaskService',
+        'grails.app.services.au.org.ala.volunteer.ValidationService',
+        'grails.app.controllers.au.org.ala.volunteer.TranscribeController',
+        'grails.app.controllers.au.org.ala.volunteer.ValidateController'
+]
+for (String name: debug_logger) logger(name, DEBUG, [DEBUG_LOG], false)
 
 logger('org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport', INFO, [SLOW_QUERIES], false)
 
