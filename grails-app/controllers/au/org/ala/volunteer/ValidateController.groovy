@@ -17,103 +17,87 @@ class ValidateController {
     private static final int SAVE_TYPE_PROGRESS = 2
 
     def task() {
-        def taskInstance = Task.get(params.long('id'))
+        def task = Task.get(params.long('id'))
         def currentUser = userService.currentUserId
         userService.registerCurrentUser()
 
-        if (taskInstance) {
+        if (task) {
 
-            if (auditService.isTaskLockedForValidation(taskInstance, currentUser)) {
-                def lastView = auditService.getLastViewForTask(taskInstance)
+            if (auditService.isTaskLockedForValidation(task, currentUser)) {
+                def lastView = auditService.getLastViewForTask(task)
                 // task is already being viewed by another user (with timeout period)
-                log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Returning to admin list.")
-                def msg = "The requested task (id: " + taskInstance.id + ") is being viewed/edited/validated by another user."
+                log.debug("Task ${task.id} is currently locked by ${lastView.userId}. Returning to admin list.")
+                def msg = "The requested task (id: " + task.id + ") is being viewed/edited/validated by another user."
                 flash.message = msg
                 // redirect to another task
-                redirect(controller: "task", action: "projectAdmin", id: taskInstance.project.id, params: params + [projectId: taskInstance.project.id])
+                redirect(controller: "task", action: "projectAdmin", id: task.project.id, params: params + [projectId: task.project.id])
                 return
             } else {
                 // go ahead with this task
-                auditService.auditTaskViewing(taskInstance, currentUser)
+                auditService.auditTaskViewing(task, currentUser)
             }
 
             def isReadonly = false
 
-            def project = Project.findById(taskInstance.project.id)
+            def project = Project.findById(task.project.id)
             Template template = Template.findById(project.template.id)
+            log.debug("Loading task for validation - project: [${project?.id}], task: [${task.id}], user: [${currentUser}]")
 
             def isValidator = userService.isValidator(project)
             def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(project?.institution))
-            log.debug(currentUser + " has role: ADMIN = " + isAdmin + " &&  VALIDATOR = " + isValidator)
+            log.debug("Role check for user: ${currentUser}; Admin: [${isAdmin}], isValidator: [${isValidator}]")
 
-            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUser) && !(isAdmin || isValidator)) {
+            if (task.isFullyTranscribed && !task.hasBeenTranscribedByUser(currentUser) && !(isAdmin || isValidator)) {
                 isReadonly = "readonly"
+                log.debug("Transcribed task is being set to read-only.")
             } else {
                 // check that the validator is not the transcriber...Admins can, though!
-                if (taskInstance.hasBeenTranscribedByUser(currentUser)) {
+                if (task.hasBeenTranscribedByUser(currentUser)) {
                     if (isAdmin) {
                         flash.message = "Normally you cannot validate your own tasks, but you have the ADMIN role, so it is allowed in this case"
                     } else {
                         flash.message = "This task is read-only. You cannot validate your own tasks!"
                         isReadonly = "readonly"
+                        log.debug("Transcribed task is being set to read-only.")
                     }
                 }
             }
 
             Stopwatch sw = Stopwatch.createStarted()
-            Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(taskInstance)
+            Map recordValues = fieldSyncService.retrieveValidationFieldsForTask(task)
             sw.stop()
-            log.debug("retrieveValidationFieldsForTask: ${sw.elapsed(TimeUnit.SECONDS)}")
-            def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
-            def imageMetaData = taskService.getImageMetaData(taskInstance)
-            def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(taskInstance)
+
+            def adjacentTasks = taskService.getAdjacentTasksBySequence(task)
+            def imageMetaData = taskService.getImageMetaData(task)
+            def transcribersAnswers = fieldSyncService.retrieveTranscribersFieldsForTask(task)
 /*            if (!recordValues && transcribersAnswers && transcribersAnswers.size() > 0) {
                 recordValues = transcribersAnswers[0].fields
             }*/
 
             // Background saving of tasks for specimens and fieldnotes.
-            boolean enableBackgroundSave = (taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_FIELDNOTES ||
-                    taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_SPECIMEN)
+            boolean enableBackgroundSave = (task.project.projectType.name == ProjectType.PROJECT_TYPE_FIELDNOTES ||
+                    task.project.projectType.name == ProjectType.PROJECT_TYPE_SPECIMEN)
 
             render(view: '../transcribe/templateViews/' + template.viewName,
-                    model: [taskInstance       : taskInstance,
-                            recordValues       : recordValues,
-                            isReadonly         : isReadonly,
-                            nextTask           : adjacentTasks.next,
-                            prevTask           : adjacentTasks.prev,
-                            sequenceNumber     : adjacentTasks.sequenceNumber,
-                            template           : template,
-                            validator          : true,
-                            imageMetaData      : imageMetaData,
-                            transcribersAnswers: transcribersAnswers,
-                            thumbnail          : multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true),
-                            pageController: 'validate',
-                            pageAction: 'task',
-                            mode: params.mode ?: '',
+                    model: [taskInstance        : task,
+                            recordValues        : recordValues,
+                            isReadonly          : isReadonly,
+                            nextTask            : adjacentTasks.next,
+                            prevTask            : adjacentTasks.prev,
+                            sequenceNumber      : adjacentTasks.sequenceNumber,
+                            template            : template,
+                            validator           : true,
+                            imageMetaData       : imageMetaData,
+                            transcribersAnswers : transcribersAnswers,
+                            thumbnail           : multimediaService.getImageThumbnailUrl(task.multimedia.first(), true),
+                            pageController      : 'validate',
+                            pageAction          : 'task',
+                            mode                : params.mode ?: '',
                             enableBackgroundSave: enableBackgroundSave])
         } else {
             redirect(view: 'list', controller: "task")
         }
     }
-
-//    def initBackgroundSave() {
-//        def currentUser = userService.currentUserId
-//
-//        if (!params.id) {
-//            log.error("Attempting to save transcription, no task ID was found. Returning error.")
-//            render([success: false, message: "Unable to save task with missing ID.", status: 400] as JSON)
-//            return
-//        }
-//
-//        if (currentUser != null) {
-//            def task = Task.get(params.long('id'))
-//
-//            render([success: true, timerInitValue: (task?.timeToValidate ?: 0)] as JSON)
-//            return
-//        }
-//
-//        render([sucess: true, timeToTranscribe: 0] as JSON)
-//    }
 
     def backgroundSave() {
         dontValidate(SAVE_TYPE_BACKGROUND)
@@ -193,7 +177,7 @@ class ValidateController {
         }
 
         if (currentUser != null) {
-            log.debug("${(saveType == 1 ? "Auto-saving" : "Saving")} validation for user: [${currentUser}]")
+            log.debug("${(saveType == 1 ? "Auto-saving" : "Saving")} validation of task [${taskInstance.id}] for user: [${currentUser}]")
 
             def seconds = params.getInt('timeTaken', null)
             if (seconds) {
@@ -245,8 +229,7 @@ class ValidateController {
             return
         }
 
-        log.debug("project id = " + params.long('id') + " || msg = " + params.msg?.toString() +
-                " || prevInt = " + params.long('prevId'))
+        log.debug("Finding next task for user [${currentUser}] from project: [${project.id}], previous task ID: [${params.prevId}], msg: [${params.msg}]")
         flash.message = params.msg
 
         def previousId = params.long('prevId',-1)

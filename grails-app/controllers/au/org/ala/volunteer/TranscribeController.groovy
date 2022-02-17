@@ -38,37 +38,37 @@ class TranscribeController {
     def task() {
         Stopwatch sw = Stopwatch.createStarted()
 
-        def taskInstance = Task.get(params.int('id'))
+        def task = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
         userService.registerCurrentUser()
 
-        if (taskInstance) {
+        if (task) {
 
-            boolean isLockedByOtherUser = auditService.isTaskLockedForTranscription(taskInstance, currentUserId)
+            boolean isLockedByOtherUser = auditService.isTaskLockedForTranscription(task, currentUserId)
 
-            def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(taskInstance.project.institution))
+            def isAdmin = (userService.isAdmin() || userService.isInstitutionAdmin(task.project.institution))
             if (isLockedByOtherUser && !isAdmin) {
-                def lastView = auditService.getLastViewForTask(taskInstance)
+                def lastView = auditService.getLastViewForTask(task)
                 // task is already being viewed by another user (with timeout period)
-                log.debug("Task ${taskInstance.id} is currently locked by ${lastView.userId}. Another task will be allocated")
-                flash.message  = "The requested task (id: " + taskInstance.id + ") is being viewed/edited by another user. You have been allocated a new task"
+                log.debug("Task ${task.id} is currently locked by ${lastView.userId}. Another task will be allocated")
+                flash.message  = "The requested task (id: " + task.id + ") is being viewed/edited by another user. You have been allocated a new task"
                 // redirect to another task
-                redirect(action: "showNextFromProject", id: taskInstance.project.id, params: [prevId: taskInstance.id, prevUserId: lastView?.userId, mode: params.mode ?: ''])
+                redirect(action: "showNextFromProject", id: task.project.id, params: [prevId: task.id, prevUserId: lastView?.userId, mode: params.mode ?: ''])
                 return
             } else {
                 if (isLockedByOtherUser) {
                     flash.message = "This task is currently locked by another user. Because you are an admin you are able to work on this task, but only do so if you are confident that no-one else is working on this task as well, as data will be lost if two people save the same task!"
                 }
                 // go ahead with this task
-                auditService.auditTaskViewing(taskInstance, currentUserId)
+                auditService.auditTaskViewing(task, currentUserId)
             }
 
-            def project = Project.findById(taskInstance.project.id)
+            def project = Project.findById(task.project.id)
             def isReadonly = false
 
             def isValidator = userService.isValidator(project)
             log.debug(currentUserId + " has role: ADMIN = " + isAdmin + " &&  VALIDATOR = " + isValidator)
-            if (taskInstance.isFullyTranscribed && !taskInstance.hasBeenTranscribedByUser(currentUserId) && !isAdmin) {
+            if (task.isFullyTranscribed && !task.hasBeenTranscribedByUser(currentUserId) && !isAdmin) {
                 isReadonly = "readonly"
             }
 
@@ -87,14 +87,14 @@ class TranscribeController {
             response.addHeader(HEADER_CACHE_CONTROL, "no-store")
 
             // Background saving of tasks for specimens and fieldnotes.
-            boolean enableBackgroundSave = (taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_FIELDNOTES ||
-                    taskInstance.project.projectType.name == ProjectType.PROJECT_TYPE_SPECIMEN)
+            boolean enableBackgroundSave = (task.project.projectType.name == ProjectType.PROJECT_TYPE_FIELDNOTES ||
+                    task.project.projectType.name == ProjectType.PROJECT_TYPE_SPECIMEN)
 
             //retrieve the existing values
-            Map recordValues = fieldSyncService.retrieveFieldsForTask(taskInstance, currentUserId)
-            def adjacentTasks = taskService.getAdjacentTasksBySequence(taskInstance)
+            Map recordValues = fieldSyncService.retrieveFieldsForTask(task, currentUserId)
+            def adjacentTasks = taskService.getAdjacentTasksBySequence(task)
             def model = [
-                    taskInstance: taskInstance,
+                    taskInstance: task,
                     recordValues: recordValues,
                     isReadonly: isReadonly,
                     template: project.template,
@@ -102,13 +102,13 @@ class TranscribeController {
                     prevTask: adjacentTasks.prev,
                     sequenceNumber: adjacentTasks.sequenceNumber,
                     complete: params.complete,
-                    thumbnail: multimediaService.getImageThumbnailUrl(taskInstance.multimedia.first(), true),
+                    thumbnail: multimediaService.getImageThumbnailUrl(task.multimedia.first(), true),
                     pageController: 'transcribe',
                     pageAction: 'task',
                     mode: params.mode ?: '',
                     enableBackgroundSave: enableBackgroundSave
             ]
-            log.debug('task before render: {}', sw)
+            //log.debug('task before render: {}', sw)
             render(view: 'templateViews/' + project.template.viewName, model: model)
         } else {
             redirect(view: 'list', controller: "task")
@@ -318,7 +318,7 @@ class TranscribeController {
                         // Flow should not reach this...
                         render([success: true] as JSON)
                     } else {
-                        log.debug("Skip to next task.")
+                        log.debug("Save successful, skip to next task.")
                         redirect(action: 'showNextFromProject', id: taskInstance.project.id,
                                 params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
                     }
@@ -363,7 +363,7 @@ class TranscribeController {
             return
         }
 
-        log.debug("Finding next task from project: [${project.id}], previous task ID: [${params.prevId}], msg: [${params.msg}]")
+        log.debug("Finding next task for user [${currentUser}] from project: [${project.id}], previous task ID: [${params.prevId}], msg: [${params.msg}]")
 
         if (params.msg) {
             flash.message = params.msg
@@ -440,8 +440,8 @@ class TranscribeController {
     def taskIdleFragment() {
         def task = Task.get(params.int('taskId'))
         def validator = params.boolean('validator')
-        log.debug("Picking up validator parameter: [${params.validator}] - [${params.boolean('validator')}]")
-        log.debug(task.toString())
+        //log.debug("Picking up validator parameter: [${params.validator}] - [${params.boolean('validator')}]")
+        log.debug("Displaying idle warning to user for ${task.toString()}")
         [taskInstance: task, isValidator: validator]
     }
 
