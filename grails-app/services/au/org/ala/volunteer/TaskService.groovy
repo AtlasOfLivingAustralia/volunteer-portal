@@ -1228,6 +1228,7 @@ ORDER BY record_idx, name;
      */
     Map getTaskViewList(int selectedTab, User user, Project project, String query, Integer offset, Integer max, String sort, String order) {
         Stopwatch sw = Stopwatch.createStarted()
+        log.debug("Generating task view list for project [${project?.id}]")
         // DEFAULTS FOR MAX, OFFSET
         if (!offset) offset = 0
         max = Math.max(Math.min(max ?: 0, 100), 1)
@@ -1299,9 +1300,11 @@ ORDER BY record_idx, name;
         if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
 
         final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
-        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'Invalidated')
+        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'In progress')
         final transcribedStatus = i18nService.message(code: 'status.transcribed', default: 'Transcribed')
         final savedStatus = i18nService.message(code: 'status.saved', default: 'Saved')
+
+        log.debug("invalidated status: ${invalidatedStatus}")
 
         final statusSnippet = """
             CASE WHEN t.is_valid = true THEN '$validatedStatus'
@@ -1401,8 +1404,8 @@ ORDER BY record_idx, name;
             """.stripIndent()
         // removed $withClause
 
-        log.debug("View list query:\n$rowsQuery")
-        log.debug("Params: $params")
+        //log.debug("View list query:\n$rowsQuery")
+        //log.debug("Params: $params")
         log.debug("Took ${sw.stop()} to generate queries")
         sw.reset().start()
 
