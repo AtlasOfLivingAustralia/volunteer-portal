@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import com.google.common.base.Stopwatch
+//import com.google.common.base.Stopwatch
 import grails.converters.JSON
 import org.apache.commons.lang.StringUtils
 
@@ -36,7 +36,7 @@ class TranscribeController {
     }
 
     def task() {
-        Stopwatch sw = Stopwatch.createStarted()
+//        Stopwatch sw = Stopwatch.createStarted()
 
         def task = Task.get(params.int('id'))
         def currentUserId = userService.currentUserId
@@ -233,7 +233,7 @@ class TranscribeController {
         }
 
         if (currentUser != null) {
-            log.debug("${(saveType == 1 ? "Auto-saving" : "Saving")} transcription for user: [${currentUser?.id}]")
+            log.debug("${(saveType == 1 ? "Auto-saving" : "Saving")} transcription for user: [${currentUser}]")
             def taskInstance = Task.get(params.long('id'))
 
             // Check if the user has actually viewed this task (remote transcription spam protection)

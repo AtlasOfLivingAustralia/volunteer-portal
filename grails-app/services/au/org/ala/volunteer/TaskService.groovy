@@ -223,7 +223,7 @@ class TaskService {
 
         def sql = new Sql(dataSource)
         def taskList = []
-        def results = sql.eachRow(selectQuery, queryParams) { row->
+        sql.eachRow(selectQuery, queryParams) { row->
             Task task = Task.get(row.id as long)
             if (task) taskList.add(task)
         }
@@ -413,7 +413,7 @@ class TaskService {
     Task getNextTask(String userId, Project project, Long lastId = -1) {
         log.debug("Get next task for user_id: [${userId}], project: [${project.id}], lastId: [${lastId}]")
         if (!project || !userId) {
-            return null;
+            return null
         }
 
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
@@ -471,7 +471,7 @@ class TaskService {
     Task getNextTaskForValidationForProject(String userId, Project project) {
 
         if (!project || !userId) {
-            return null;
+            return null
         }
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
@@ -528,7 +528,7 @@ class TaskService {
         c.list(params) {
             eq("fullyTranscribedBy", userId)
             isNotNull("dateFullyTranscribed")
-        }
+        } as List<Task>
     }
 
     /**
@@ -715,8 +715,8 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             log.debug("Getting recently validated tasks. ")
         }
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS));
+        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS))
 
         def tasks = Task.createCriteria().list() {
             eq("fullyTranscribedBy", transcriber)
@@ -732,7 +732,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             log.debug("Returning validated tasks: " + sw.toString())
         }
 
-        return tasks
+        return tasks as List<Task>
     }
 
     /**
@@ -834,7 +834,7 @@ ORDER BY record_idx, name;
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         if (!filename.trim()) {
-            filename = "image_" + taskId;
+            filename = "image_" + taskId
         }
         filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
@@ -877,7 +877,7 @@ ORDER BY record_idx, name;
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
         sizes.each{
             fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
-            BufferedImage scaledImage = srcImage;
+            BufferedImage scaledImage = srcImage
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {
                 scaledImage = Scalr.resize(srcImage, it.value)
             }
@@ -889,14 +889,14 @@ ORDER BY record_idx, name;
 
     static BufferedImage ensureOpaque(BufferedImage bi) {
         if (bi.getTransparency() == BufferedImage.OPAQUE)
-            return bi;
-        int w = bi.getWidth();
-        int h = bi.getHeight();
-        int[] pixels = new int[w * h];
-        bi.getRGB(0, 0, w, h, pixels, 0, w);
-        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        bi2.setRGB(0, 0, w, h, pixels, 0, w);
-        return bi2;
+            return bi
+        int w = bi.getWidth()
+        int h = bi.getHeight()
+        int[] pixels = new int[w * h]
+        bi.getRGB(0, 0, w, h, pixels, 0, w)
+        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
+        bi2.setRGB(0, 0, w, h, pixels, 0, w)
+        return bi2
     }
 
     /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
@@ -939,7 +939,7 @@ ORDER BY record_idx, name;
             results.add(taskRow)
         }
 
-        return results;
+        return results
     }
 
 
@@ -984,11 +984,11 @@ ORDER BY record_idx, name;
     Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select = """
             WITH task_ids AS (SELECT id from task where project_id = :projectId)
-            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue;
+            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue
         """
 
         def sql = new Sql(dataSource: dataSource)
-        int taskId = -1;
+        int taskId = -1
         def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
             taskId = row[0]
@@ -1156,7 +1156,7 @@ ORDER BY record_idx, name;
         def field = fieldService.getFieldForTask(task, "sequenceNumber")
 
         if (field?.value && field.value.isInteger()) {
-            def sequenceNumber = Integer.parseInt(field.value);
+            def sequenceNumber = Integer.parseInt(field.value)
             def padSize = 0
             if (field.value.startsWith("0")) {
                 // remember to left pad the resulting sequence numbers with 0
