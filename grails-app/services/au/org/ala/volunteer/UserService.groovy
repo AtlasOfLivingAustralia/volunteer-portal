@@ -283,13 +283,27 @@ class UserService {
         return authService.userInRole(CASRoles.ROLE_ADMIN)
     }
 
+    boolean isValidator(User user, Project project) {
+        return isValidatorForProjectId(user, project?.id)
+    }
+
+    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
+        def userId = currentUserId
+        if (!userId) {
+            return false
+        }
+
+        def user = User.findByUserId(userId)
+        return isValidatorForProjectId(user, projectId, projectInstitutionId)
+    }
+
     /**
      * returns true if the current user can validate tasks from the specified project
      * @param project
      * @return
      */
     boolean isValidator(Project project) {
-        isValidatorForProjectId(project?.id, project?.institution?.id)
+        return isValidatorForProjectId(project?.id, project?.institution?.id)
     }
 
     /**
@@ -298,12 +312,7 @@ class UserService {
      * @param institutionId (optional) where the project belongs to (if any)
      * @return true if user has validator access, false if user does not.
      */
-    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
-
-        def userId = currentUserId
-        if (!userId) {
-            return false
-        }
+    boolean isValidatorForProjectId(User user, Long projectId, Long projectInstitutionId = null) {
 
         // Site administrator/institution admin can validate anything
         if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId)?.institution)) {
@@ -322,7 +331,7 @@ class UserService {
         //   this is an institution-level role - return true.
         // - If the provided project matches the role's project, this is a project-level role - return true.
         log.debug("Checking if user has validator role")
-        def user = User.findByUserId(userId)
+        //def user = User.findByUserId(userId)
         if (user) {
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {

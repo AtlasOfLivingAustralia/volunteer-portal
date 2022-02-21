@@ -92,21 +92,30 @@
                 <g:if test="${taskInstance.fullyValidatedBy}">
                     <g:if test="${taskInstance.isValid}">
 %{--                <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">Review</g:link>--}%
-                    <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}"><i class="fa fa-2x fa-eye" title="Review"></i></a>
+                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                        <i class="fa fa-2x fa-eye" title="Review"></i>
+                    </a>
                     </g:if>
                     <g:else>
-                    <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}"><i class="fa fa-2x fa-check-square-o" title="Complete Validation"></i></a>
+                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                        <i class="fa fa-2x fa-check-square-o" title="Complete Validation ${(lastView ? '- currently being viewed by another volunteer' : '')}"></i>
+                    </a>
                     </g:else>
                 </g:if>
                 %{-- Transcribed --}%
                 <g:elseif test="${taskInstance.isFullyTranscribed}">
 %{--                    <g:link  controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>--}%
-                    <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}"><i class="fa fa-2x fa-check-square-o" title="Validate"></i></a>
+                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                        <i class="fa fa-2x fa-check-square-o" title="Validate"></i>
+                    </a>
                 </g:elseif>
                 %{-- Not Transcribed --}%
                 <g:else>
 %{--                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id}">Transcribe</g:link>--}%
-                    <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: taskInstance.id)}"><i class="fa fa-2x fa-pencil-square-o" title="Transcribe"></i></a>
+
+                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'transcribe', action: 'task', id: taskInstance.id)}">
+                        <i class="fa fa-2x fa-pencil-square-o" title="Transcribe"></i>
+                    </a>
                 </g:else>
             </td>
 

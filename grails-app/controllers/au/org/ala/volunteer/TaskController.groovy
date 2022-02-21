@@ -131,7 +131,20 @@ class TaskController {
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
                     if (new Date(max.lastView as long) > 2.hours.ago && !max.skipped) {
-                        lockedMap[max.task?.id as long] = max
+                        // Lock if not fully transcribed
+                        // Lock if fully transcribed and opened by a validator
+                        if (!max.task?.isFullyTranscribed) {
+                            log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}], skipped: [${max.skipped}]")
+                            lockedMap[max.task?.id as long] = max
+                        } else {
+                            User viewingUser = User.findByUserId(max.userId as String)
+                            if (viewingUser) {
+                                if (userService.isValidator(viewingUser, project) && currentUser != max.userId) {
+                                    log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}], skipped: [${max.skipped}]")
+                                    lockedMap[max.task?.id as long] = max
+                                }
+                            }
+                        }
                     }
                 }
             }

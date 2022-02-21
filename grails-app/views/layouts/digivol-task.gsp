@@ -754,13 +754,18 @@
 
         function showTaskTimeoutMessage() {
 
+        <g:if test="${validator}">
+            var title = "validating";
+        </g:if>
+        <g:else>
+            var title = "transcribing";
+        </g:else>
+
         <g:if test="${enableBackgroundSave}">
             var url = "${raw(createLink(controller: 'transcribe', action: 'taskIdleFragment', params: [taskId: taskInstance.id, validator: validator]))}";
-            var title = "transcribing";
         </g:if>
         <g:else>
             var url = "${raw(createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator]))}";
-            var title = "validating";
         </g:else>
             var options = {
                 url: url,

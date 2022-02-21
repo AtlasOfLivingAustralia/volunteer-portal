@@ -132,13 +132,9 @@ class Task implements Serializable {
      * valid fields that have been approved (or transcribed) by a validator.
      */
     Set<Field> getTaskFields() {
-
         Set taskFields = fields.findAll{it.transcription == null}
 
-        log.debug('taskfields {}', taskFields)
         taskFields
-
-
     }
 
     /**

@@ -24,6 +24,7 @@
 <div class="panel-body">
     <div class="row">
         <g:each in="${taskInstanceList}" status="i" var="taskInstance">
+            <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
             <div class="col-md-2 col-sm-4">
 
                 <div class="thumbnail">
@@ -37,40 +38,52 @@
                     <div style="text-align: center">
                         <g:if test="${taskInstance.isFullyTranscribed}">
                             <g:if test="${taskInstance.isValid == true}">
-                                <div class="label label-success">
-                                    <g:link controller="validate" action="task" id="${taskInstance.id}">&#10003;</g:link>
-                                </div>
+                                <div>
+%{--                                    <g:link controller="validate" action="task" id="${taskInstance.id}">Validated</g:link>--}%
+                                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')}
+                                       href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                                    <i class="fa fa-eye" title="Review"></i>
+                                    </a>
+
                             </g:if>
                             <g:elseif test="${taskInstance.isValid == false}">
-                                <div class="label label-important">
-                                    <g:link controller="validate" action="task" id="${taskInstance.id}">&#10005;</g:link>
-                                </div>
+                                <div>
+%{--                                    <g:link controller="validate" action="task" id="${taskInstance.id}">In progress</g:link>--}%
+                                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                                        <i class="fa fa-check-square-o" title="Complete Validation ${(lastView ? '- currently being viewed by another volunteer' : '')}"></i>
+                                    </a>
+
                             </g:elseif>
                             <g:else>
-                                <div class="label label-info">
+
                                     <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
+                                        <div class="label label-info">
                                         <g:link controller="validate" action="task" id="${taskInstance.id}">
                                             ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link controller="validate" action="task" id="${taskInstance.id}">?</g:link>
+                                        <div>
+%{--                                        <g:link controller="validate" action="task" id="${taskInstance.id}">?</g:link>--}%
+                                        <a class="btn btn-small" ${(lastView ? 'disabled' : '')} href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                                            <i class="fa fa-check-square-o" title="Validate"></i>
+                                        </a>
                                     </g:else>
 
-                                </div>
+
                             </g:else>
                         </g:if>
                         <g:else>
                             <div class="label label-default">
-                                Not transcribed
-                            </div>
+                                New
+
                         </g:else>
 
-                        <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
                         <g:if test="${lastView}">
                             <i class="glyphicon glyphicon-lock lastViewedTask pull-right" title="Locked by ${lastView.userId}"
                                viewedTaskId="${lastView.id}"></i>
                         </g:if>
+                        </div> %{-- End of thumbnail div --}%
                     </div>
                 </div>
             </div>
