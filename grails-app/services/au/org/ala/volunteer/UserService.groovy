@@ -199,10 +199,15 @@ class UserService {
     List<User> getInstitutionAdminsForProject(Project project) {
         if (!project) return []
 
+        // log.debug("Getting institution admins for project: [${project.id}]")
+
         def role = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
-        def userRoles = UserRole.findAll {
-            it.role.id == role.id && it.institution.id == project.institution.id
-        }
+        // log.debug("role: ${role}")
+        // log.debug("institution: ${project.institution}")
+
+        def userRoles = UserRole.findAllByRoleAndInstitution(role, project.institution)
+        // log.debug("User roles: ${userRoles}")
+
         def users = userRoles.collect {
             it.user
         }
