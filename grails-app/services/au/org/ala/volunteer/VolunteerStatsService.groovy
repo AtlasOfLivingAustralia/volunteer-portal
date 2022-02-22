@@ -319,6 +319,7 @@ class VolunteerStatsService {
             [type: 'task',
              projectId: proj.id,
              projectName: proj.name,
+             projectType: proj.projectType.name,
              userId: User.findByUserId(userId)?.id ?: -1,
              displayName: details?.displayName,
              email: details?.email?.toLowerCase()?.encodeAsMD5(),

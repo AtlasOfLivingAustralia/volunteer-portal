@@ -154,7 +154,7 @@
                 <p><g:message code="transcribed.label" /> <span>{{contributor.transcribedItems}}</span> <g:message code="items.from.the" /> <a
                         data-ng-href="{{projectUrl(contributor)}}">{{contributor.projectName}}</a></p>
 
-                <div class="transcribed-thumbs">
+                <div data-ng-if="contributor.projectType !== 'audio'" class="transcribed-thumbs">
                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
                     <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
                 </div>
