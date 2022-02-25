@@ -281,25 +281,7 @@ class UserService {
             return false
         }
 
-        // If  the user has been granted the ALA-AUTH ROLE_BVP_ADMIN....
-//        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
-//            return true
-//        }
         return authService.userInRole(CASRoles.ROLE_ADMIN)
-    }
-
-    boolean isValidator(User user, Project project) {
-        return isValidatorForProjectId(user, project?.id)
-    }
-
-    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
-        def userId = currentUserId
-        if (!userId) {
-            return false
-        }
-
-        def user = User.findByUserId(userId)
-        return isValidatorForProjectId(user, projectId, projectInstitutionId)
     }
 
     /**
@@ -317,7 +299,11 @@ class UserService {
      * @param institutionId (optional) where the project belongs to (if any)
      * @return true if user has validator access, false if user does not.
      */
-    boolean isValidatorForProjectId(User user, Long projectId, Long projectInstitutionId = null) {
+    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
+        def userId = currentUserId
+        if (!userId) {
+            return false
+        }
 
         // Site administrator/institution admin can validate anything
         if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId)?.institution)) {
@@ -336,23 +322,72 @@ class UserService {
         //   this is an institution-level role - return true.
         // - If the provided project matches the role's project, this is a project-level role - return true.
         log.debug("Checking if user has validator role")
-        //def user = User.findByUserId(userId)
+        def user = User.findByUserId(userId)
+//        if (user) {
+//            def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
+//            def role = user.userRoles.find {
+//                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
+//                                                    projectId == null ||
+//                                                   (it.institution != null && it.institution?.id == projectInstitutionId) ||
+//                                                    it.project?.id == projectId)
+//            }
+//            if (role) {
+//                // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
+//                // indicating that they can validate tasks from any project and or institution)
+//                return true
+//            }
+//        }
+
+//        return false
+        return userHasValidatorRole(user, projectId, projectInstitutionId)
+    }
+
+    boolean userHasValidatorRole(User user, Long projectId, Long projectInstitutionId = null) {
         if (user) {
+
+            if (hasCasRole(user, CASRoles.ROLE_VALIDATOR) || hasCasRole(user, CASRoles.ROLE_ADMIN)) {
+                log.debug("[userHasValidatorRole]: User has CAS Validator role/CAS Site Admin, granting validator.")
+                return true
+            }
+
             def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
             def role = user.userRoles.find {
                 it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
-                                                    projectId == null ||
-                                                   (it.institution != null && it.institution?.id == projectInstitutionId) ||
-                                                    it.project?.id == projectId)
+                        projectId == null ||
+                        (it.institution != null && it.institution?.id == projectInstitutionId) ||
+                        it.project?.id == projectId)
             }
             if (role) {
                 // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
                 // indicating that they can validate tasks from any project and or institution)
+                log.debug("[userHasValidatorRole]: User has the validator role, returning true.")
                 return true
             }
         }
 
         return false
+    }
+
+    /**
+     * Checks with the ALA user service if a given user has a given role.
+     * @param user The user to query
+     * @param role the role to query
+     * @return true of the user has the role, false if not.
+     */
+    boolean hasCasRole(User user, String role) {
+        if (!user) return false
+        def serviceResults = [:]
+        try {
+            log.debug("[hasCasRole]: User: ${user}, Role: ${role}")
+            serviceResults = authService.getUserDetailsById([user.userId], true)
+            def userFromService = serviceResults?.users?.get(user.userId)
+            def currentRoles = userFromService?.roles?.toSet()
+            log.debug("[hasCasRole]: ALA service roles: ${currentRoles}")
+            log.debug("[hasCasRole]: role check: [${!currentRoles?.intersect([role])?.isEmpty()}]")
+            return !currentRoles?.intersect([role])?.isEmpty()
+        } catch (Exception e) {
+            log.warn("[hasCasRole]: Couldn't get user details from web service", e)
+        }
     }
 
     String getCurrentUserId() {

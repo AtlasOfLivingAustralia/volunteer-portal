@@ -139,8 +139,10 @@ class TaskController {
                         } else {
                             User viewingUser = User.findByUserId(max.userId as String)
                             if (viewingUser) {
-                                if (userService.isValidator(viewingUser, project) && currentUser != max.userId) {
-                                    log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}], skipped: [${max.skipped}]")
+                                log.debug("Checking who the viewing user is: ${viewingUser}")
+                                log.debug("Viewing user is a validator: ${userService.userHasValidatorRole(viewingUser, project.id)}")
+                                if (userService.userHasValidatorRole(viewingUser, project.id) && currentUser != max.userId) {
+                                    log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}] by ${max.userId} (current user ${currentUser}), skipped: [${max.skipped}]")
                                     lockedMap[max.task?.id as long] = max
                                 }
                             }
