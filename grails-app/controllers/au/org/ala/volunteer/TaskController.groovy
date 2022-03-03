@@ -139,9 +139,15 @@ class TaskController {
                         } else {
                             User viewingUser = User.findByUserId(max.userId as String)
                             if (viewingUser) {
+                                def lastTranscription = max.task?.transcriptions?.max { it.dateFullyTranscribed }
+
                                 log.debug("Checking who the viewing user is: ${viewingUser}")
                                 log.debug("Viewing user is a validator: ${userService.userHasValidatorRole(viewingUser, project.id)}")
-                                if (userService.userHasValidatorRole(viewingUser, project.id) && currentUser != max.userId) {
+                                log.debug("View date: ${max.lastView}, date fully transcribed: ${lastTranscription?.dateFullyTranscribed?.getTime()}")
+
+                                // If the last view came after the date/time of the last transcription, it was opened by a validator.
+                                if (max.lastView > lastTranscription?.dateFullyTranscribed?.getTime() &&
+                                        (userService.userHasValidatorRole(viewingUser, project.id) && currentUser != max.userId)) {
                                     log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}] by ${max.userId} (current user ${currentUser}), skipped: [${max.skipped}]")
                                     lockedMap[max.task?.id as long] = max
                                 }
