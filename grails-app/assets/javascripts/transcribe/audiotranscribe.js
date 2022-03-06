@@ -524,13 +524,15 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
                 var index = _.findIndex(animals, function (a) {
                     return a.vernacularName === v.vernacularName || a.scientificName === v.scientificName;
                 });
+                //console.log("Any matching animals: ["+ index +"]");
 
                 if (index >= 0) {
                     selectedIndicies[index] = {
                         comment: v.comment,
-                        //count: v.individualCount,
+                        count: 1,  // Hard coded at this time, only one animal is assumed.
                         editorOpen: false
                     };
+                    //console.log(selectedIndicies);
                 }
             });
         }
