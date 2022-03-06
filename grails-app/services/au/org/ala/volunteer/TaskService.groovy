@@ -1120,7 +1120,7 @@ ORDER BY record_idx, name;
         def validator = User.findByUserId(task.fullyValidatedBy)
         if (validator) {
             //validator.validatedCount--
-            fieldSyncService.decrementValidationCount(transcriber.id)
+            fieldSyncService.decrementValidationCount(validator.id)
         }
         task.isValid = null
         task.fullyValidatedBy = null
