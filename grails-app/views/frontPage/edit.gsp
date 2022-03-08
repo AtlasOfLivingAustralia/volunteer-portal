@@ -39,7 +39,7 @@
                                     default="Project of the day"/></label>
                             <div class="col-md-6">
                                 <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
-                                    <option>- Select a Project -</option>
+                                    <option value="">- Select a Project -</option>
                                     <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
                                                              selectedProject="${frontPage.projectOfTheDay?.id}" />
                                 </select>
@@ -183,8 +183,11 @@
     $(document).ready(function () {
 
         function initForm() {
-            if ($('#randomProjectToggle').val() === 'on') {
+            if ($('#randomProjectToggle').is(":checked")) {
                 $('#projectOfTheDay').prop('disabled', true);
+                $('#projectOfTheDay').removeAttribute('required');
+            } else {
+                $('#projectOfTheDay').attr('required', 'required');
             }
         }
         initForm();
@@ -193,8 +196,10 @@
             if (this.checked) {
                 $('#projectOfTheDay').prop('disabled', true);
                 $('#projectOfTheDay').val($("#projectOfTheDay option:first").val());
+                $('#projectOfTheDay').removeAttribute('required');
             } else {
                 $('#projectOfTheDay').prop('disabled', false);
+                $('#projectOfTheDay').attr('required', 'required');
             }
         });
 

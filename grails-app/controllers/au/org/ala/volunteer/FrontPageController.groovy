@@ -73,7 +73,7 @@ class FrontPageController {
 
             flash.message = message(code: 'default.updated.message',
                         args: [message(code: 'frontPage.label', default: 'Front Page'), '']) as String
-            redirect(action: "edit", params: params)
+            redirect(action: "edit")
         } else {
             render(view: '/notPermitted')
         }
