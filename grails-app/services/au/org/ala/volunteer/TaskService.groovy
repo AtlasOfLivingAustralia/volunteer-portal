@@ -1266,6 +1266,7 @@ ORDER BY record_idx, name;
                 break
             case 3:
                 filter = 't.fully_validated_by = :userId'
+                distinctTasks = true
                 break
             default:
                 throw new IllegalArgumentException("selectedTab must be between 0 and 3")
