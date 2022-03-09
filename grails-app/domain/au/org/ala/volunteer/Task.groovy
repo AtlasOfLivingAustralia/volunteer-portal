@@ -162,6 +162,9 @@ class Task implements Serializable {
                 //     and the view's user is not the requesting user
                 //     and the view wasn't skipped
                 // Then the task is locked.
+                log.debug("View on this task: ${view.userId}, [${new Date(view.lastView)}]")
+                log.debug("Check: ${!(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)}")
+                log.debug("--------")
                 return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)
             }.collect{it.userId}.toSet()
 

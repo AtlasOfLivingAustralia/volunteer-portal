@@ -381,8 +381,11 @@ class UserService {
             log.debug("[hasCasRole]: User: ${user}, Role: ${role}")
             serviceResults = authService.getUserDetailsById([user.userId], true)
             def userFromService = serviceResults?.users?.get(user.userId)
-            def currentRoles = userFromService?.roles?.toSet()
+            def userRoles = user.userRoles
+            def roleObjs = userRoles*.role
+            def currentRoles = (roleObjs*.name + userFromService?.roles).toSet()
             log.debug("[hasCasRole]: ALA service roles: ${currentRoles}")
+            //log.debug("${currentRoles?.intersect([role])?.isEmpty()}")
             log.debug("[hasCasRole]: role check: [${!currentRoles?.intersect([role])?.isEmpty()}]")
             return !currentRoles?.intersect([role])?.isEmpty()
         } catch (Exception e) {
