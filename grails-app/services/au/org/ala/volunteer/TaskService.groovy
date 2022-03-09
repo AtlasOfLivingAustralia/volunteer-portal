@@ -1277,12 +1277,12 @@ ORDER BY record_idx, name;
 
         // SORTING
         final validSorts = [
-                'id': 't.id',
-                'externalIdentfier': 't.external_identfier',
+                'id': 'id',
+                'externalIdentfier': 'external_identfier',
                 //'catalogNumber': 'catalog_number',
                 'projectName': 'project_name',
                 'dateTranscribed': 'date_transcribed',
-                'dateValidated': 't.date_fully_validated',
+                'dateValidated': 'date_fully_validated',
                 //'validator': 'validator',
                 'status': 'status'
         ].withDefault { 'date_transcribed' }
