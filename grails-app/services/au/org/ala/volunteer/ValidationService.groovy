@@ -136,7 +136,7 @@ class ValidationService {
     private boolean fieldsMatch(Transcription t1, Transcription t2, Set excludedFields) {
         Set t1Fields = (t1.fields ?: new HashSet()).findAll{it.superceded == false  && !excludedFields.contains(it.name)}
         Set t2Fields = (t2.fields ?: new HashSet()).findAll{it.superceded == false  && !excludedFields.contains(it.name)}
-        log.debug("Fields selected: ${t1Fields}")
+        // log.debug("Fields selected: ${t1Fields}")
 
         if (t1Fields?.size() != t2Fields.size()) {
             return false

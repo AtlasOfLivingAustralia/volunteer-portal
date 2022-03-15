@@ -151,7 +151,7 @@ class Task implements Serializable {
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
         Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}
                 .collect{it.fullyTranscribedBy}.toSet()
-        log.debug("Task; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
+        log.debug("[isLockedForTranscription] Task: ${id}; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
 
         boolean locked = false
         if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
@@ -162,9 +162,8 @@ class Task implements Serializable {
                 //     and the view's user is not the requesting user
                 //     and the view wasn't skipped
                 // Then the task is locked.
-                log.debug("View on this task: ${view.userId}, [${new Date(view.lastView)}]")
-                log.debug("Check: ${!(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)}")
-                log.debug("--------")
+                log.debug("View on this task by user: [${view.userId}], date: [${new Date(view.lastView)}]")
+                log.debug("Does view count towards locking: ${!(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)}")
                 return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)
             }.collect{it.userId}.toSet()
 
