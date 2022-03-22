@@ -181,7 +181,6 @@
                                 <td style="vertical-align: middle; white-space: nowrap;"><g:formatDate type="date" style="medium"
                                         date="${projectInstance.project.dateCreated}"/></td>
 
-%{--                                <td style="vertical-align: middle; white-space: nowrap;"><span class="archive-list-file-size" data-id="${projectInstance.project.id}"><i class="fa fa-2x fa-cog fa-spin"></i></span></td>--}%
                                 <td style="vertical-align: middle; white-space: nowrap;"><span data-id="${projectInstance.project.id}">${projectInstance.project.getProjectSizeFormatted()}</span></td>
 
                                 <td style="white-space: nowrap;">
@@ -292,14 +291,6 @@ jQuery(function($) {
         var href = $this.data('href');
         window.location = href;
     });
-
-    $('.archive-list-file-size').each(function() {
-        var $this = $(this);
-        var id = $this.data('id');
-%{--        $.getJSON('${g.createLink(controller: 'project', action: 'projectSize')}/' + id).then(function(data) {--}%
-%{--            $this.text(data.size);--}%
-%{--        });--}%
-    })
 
     $("#searchbox").keydown(function(e) {
         if (e.keyCode ==13) {
