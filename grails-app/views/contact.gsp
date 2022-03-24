@@ -22,7 +22,6 @@
 
                     <h3>Help in using the Atlas of Living Australia</h3>
                     <b>E</b> <a href="mailto:support@ala.org.au">support@ala.org.au</a><br/>
-                    <b>T</b> (02) 6246 4108<br/>
                     GPO Box 1700<br/>
                     Canberra ACT 2601
                 </div>
