@@ -393,34 +393,45 @@ class VolunteerStatsService {
 
         def labelJoin = ""
         def projectTypeJoin = ""
+        def parameters = [:]
 
         if (tags?.size() > 0) {
+            def tagList = tags.join("','")
             labelJoin = """\
                 join project_labels on (project_labels.project_id = project.id) 
-                join label on (label.id = project_labels.label_id and label.value in ('${tags.join("','")}')) """
+                join label on (label.id = project_labels.label_id and label.value in ('${tagList}')) """
+            log.debug("tagList: ${tagList}")
+            log.debug("labelJoin: ${labelJoin}")
         }
 
         if (projectType) {
             projectTypeJoin = """\
                 join project_type on (project_type.id = project.project_type_id and project_type.name = :projectType)
             """
+            parameters.projectType = projectType
         }
 
         def query = """\
-            insert into ${tempTableName}
+            insert into {tempTableName}
                 select distinct project.id
                 from project
                 ${labelJoin}
                 ${projectTypeJoin}
         """
+        // This is SAFE - the variable is not modifiable/input from parameters.
+        query = query.replace("{tempTableName}", tempTableName)
 
         log.debug("Filling temp project table (${tempTableName}): ")
         log.debug(query)
         log.debug("Params: tags: ${tags}")
-        log.debug("Param: projectType: ${projectType}")
+        log.debug("Params: projectType: ${projectType}")
 
         def sql = new Sql(dataSource)
-        sql.executeInsert(query, (projectType ? [projectType: projectType] : null))
+        if (parameters.size() > 0) {
+            sql.executeInsert(query, parameters)
+        } else {
+            sql.executeInsert(query)
+        }
 
         query = """\
             select project_id 
