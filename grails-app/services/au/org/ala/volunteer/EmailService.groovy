@@ -74,7 +74,14 @@ class EmailService {
         }
 
         if (Environment.current != Environment.PRODUCTION || !Strings.isNullOrEmpty(subjPrefix)) {
+            String originalRecipient = queuedEmailMessage.emailAddress
             queuedEmailMessage.emailAddress = grailsApplication.config.getProperty('notifications.default.address', "digivol@austmus.gov.au")
+            if (QueuedEmailMessage.FORMAT_TEXT.equals(formatType)) {
+                queuedEmailMessage.message = "This message is addressed to: [${originalRecipient}]\n\n" + queuedEmailMessage.message
+            } else if (QueuedEmailMessage.FORMAT_HTML.equals(formatType)) {
+                queuedEmailMessage.message = "This message is addressed to: [<pre>${originalRecipient}</pre>]<br/><br/>" + queuedEmailMessage.message
+            }
+
             log.debug("Test/Dev environment, sending to notification email instead: ${queuedEmailMessage.emailAddress}")
         }
 

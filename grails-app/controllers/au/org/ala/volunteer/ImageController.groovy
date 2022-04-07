@@ -13,6 +13,7 @@ class ImageController {
 
 
     final static FORMATS = ['png', 'jpg', 'gif']
+    final static FORMAT_AUDIO = ['m4a', 'wav', 'mp3', 'aac']
 
     final static MAX_WIDTH = 1024
     final static MAX_HEIGHT = 1024
@@ -67,6 +68,42 @@ class ImageController {
         originalImage.flush()
         log.info("Scaled and saved $result")
 
+        sendImage(result, contentType(format))
+    }
+
+    def audioFile(String prefix, String name, String format) {
+        log.debug("Audio File request for $prefix and $name")
+
+        def encodedPrefix = IOUtils.toFileSystemDirectorySafeName(prefix)
+        def encodedName = IOUtils.toFileSystemSafeName(name)
+
+        format = format.toLowerCase()
+        if (!FORMAT_AUDIO.contains(format)) {
+            render([error: "${format} not supported"] as JSON, status: SC_BAD_REQUEST)
+            return
+        }
+
+        def imagesHome = grailsApplication.config.getProperty('images.home')
+        File result = new File("$imagesHome${File.separator}$encodedPrefix", "${encodedName}.${format}")
+
+        if (result.exists()) {
+            sendImage(result, contentType(format))
+            return
+        }
+
+        File original = findImage(encodedPrefix, encodedName)
+        if (!original) {
+            response.sendError(SC_NOT_FOUND)
+            return
+        }
+
+        def originalImage = ImageIO.read(original)
+        if (!originalImage) {
+            log.warn("${original.path} could not be read as an image")
+            render([error: "${original.path} could not be read as an image"] as JSON, status: 500)
+            return
+        }
+        originalImage.flush()
         sendImage(result, contentType(format))
     }
 

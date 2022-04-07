@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
-<table class="table table-striped table-condensed">
+<table class="table table-striped table-condensed task-table">
     <thead>
     <tr>
         <g:sortableColumn property="id" width="30%" style="padding: 0.9em;"
@@ -75,21 +75,47 @@
             </td>
 
             <td style="text-align: center; padding: 0.9em;">
-                <g:if test="${taskInstance.isValid == true}">&#10003;</g:if>
-                <g:elseif test="${taskInstance.isValid == false}">&#10005;</g:elseif>
-                <g:else>&#8211;</g:else>
+                <g:if test="${taskInstance.isValid == true}"><!-- &#10003; --> Validated</g:if>
+                <g:elseif test="${taskInstance.isValid == false}"><!-- &#10005; --> In Progress</g:elseif>
+                <g:else><!-- &#8211; -->
+                    <g:if test="${taskInstance.isFullyTranscribed}">
+                        Transcribed
+                    </g:if>
+                    <g:else>
+                        New
+                    </g:else>
+                </g:else>
             </td>
 
             <td style="text-align: center; padding: 0.9em;">
-                <g:if test="${taskInstance.fullyValidatedBy}">
-                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">review</g:link>
-                </g:if>
-                <g:elseif test="${taskInstance.isFullyTranscribed}">
-                    <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">validate</g:link>
-                </g:elseif>
-                <g:else>
-                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id}">transcribe</g:link>
-                </g:else>
+                %{-- Validated/Review --}%
+    <g:if test="${taskInstance.fullyValidatedBy}">
+        <g:if test="${taskInstance.isValid}">
+%{--                <g:link class="btn btn-small" controller="validate" action="task" id="${taskInstance.id}">Review</g:link>--}%
+                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-2x fa-eye" title="Review"></i>
+                </a>
+        </g:if>
+        <g:else>
+                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-2x fa-check-square-o" title="Complete Validation"></i>
+                </a>
+        </g:else>
+    </g:if>
+    %{-- Transcribed --}%
+    <g:elseif test="${taskInstance.isFullyTranscribed}">
+%{--                    <g:link  controller="validate" action="task" id="${taskInstance.id}">Validate</g:link>--}%
+                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-2x fa-check-square-o" title="Validate"></i>
+                </a>
+    </g:elseif>
+    %{-- Not Transcribed --}%
+    <g:else>
+%{--                    <g:link class="btn btn-small" controller="transcribe" action="task" id="${taskInstance.id}">Transcribe</g:link>--}%
+                <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-2x fa-pencil-square-o" title="Transcribe"></i>
+                </a>
+    </g:else>
             </td>
 
         </tr>

@@ -409,10 +409,21 @@ class ProjectController {
             }
         }
 
+        if (params.template) {
+            Template newTemplate = Template.get(params.long('template'))
+            ProjectType newProjectType = (params.projectType) ? ProjectType.get(params.long('projectType')) : project.projectType
+            log.debug("Project Type: ${project.projectType}, Template view name ${newTemplate.viewName}")
+            if ((newProjectType.name == ProjectType.PROJECT_TYPE_AUDIO && !newTemplate.viewName.contains("audio")) ||
+                    (newProjectType.name != ProjectType.PROJECT_TYPE_AUDIO && newTemplate.viewName.contains("audio"))) {
+                project.errors.rejectValue("template", "project.template.notcompatible",
+                        "Template is not compatible with expedition type.")
+            }
+        }
+
         if (project.errors.hasErrors()) {
             def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
             def projectTypes = ProjectType.listOrderByName()
-            render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
+            render(view: 'create', model: [projectInstance: project, params: params, institutionList: institutionList, projectTypes: projectTypes])
             return
         } else {
             if (!projectService.createProject(project)) {
@@ -752,6 +763,18 @@ class ProjectController {
                                 [message(code: 'project.label', default: 'Project')] as Object[],
                                 message(code: 'project.institution.required', default: 'Institution required') as String)
                         return false
+                    }
+
+                    if (params.template) {
+                        Template newTemplate = Template.get(params.long('template'))
+                        ProjectType newProjectType = (params.projectType) ? ProjectType.get(params.long('projectType')) : project.projectType
+                        log.debug("Project Type: ${project.projectType}, Template view name ${newTemplate.viewName}")
+                        if ((newProjectType.name == ProjectType.PROJECT_TYPE_AUDIO && !newTemplate.viewName.contains("audio")) ||
+                                (newProjectType.name != ProjectType.PROJECT_TYPE_AUDIO && newTemplate.viewName.contains("audio"))) {
+                            project.errors.rejectValue("template", "project.template.notcompatible",
+                                    "Template is not compatible with expedition type.")
+                            return false
+                        }
                     }
                 }
 
@@ -1284,7 +1307,7 @@ class ProjectController {
         }
 
         def institutionFilter = []
-        Institution institution = (params.institution ? Institution.get(params.long('institution')) : null)
+        Institution institution = (params.institutionFilter ? Institution.get(params.long('institutionFilter')) : null)
         if (institution) institutionFilter.add(institution)
         else institutionFilter = institutionList
 
@@ -1530,6 +1553,11 @@ class ProjectController {
                                           'institutionList'               : institutionList])
     }
 
+    /**
+     * @deprecated
+     * @param project
+     * @return
+     */
     def projectSize(Project project) {
         if (!userService.isInstitutionAdmin()) {
             respond status: 403

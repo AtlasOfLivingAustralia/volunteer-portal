@@ -7,6 +7,7 @@ branches:
   only:
   - master
   - develop
+  - feature/6.1.0-fixes
 services:
   - postgresql
 addons:

@@ -10,8 +10,10 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.http.client.utils.URIBuilder
+import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.beans.factory.annotation.Value
-
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -417,11 +419,11 @@ class VolunteerTagLib {
             if (validator) {
                 def status = "Not yet validated"
                 def badgeClass = "label"
-                if (taskInstance.isValid == false) {
-                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-danger"
+                if (!taskInstance.isValid) {
+                    status = "Partially validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-warning"
                 } else if (taskInstance.isValid) {
-                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = "Validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"
                 }
                 mb.span(class:badgeClass) {
@@ -620,6 +622,10 @@ class VolunteerTagLib {
                 fullUrl = multimediaService.getImageUrl(mm)
             }
 
+            if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+                url = resource(file:'/icons-audio-52.png')
+            }
+
             if (!url) {
                 // sample
                 url = resource(file:'/sample-task-thumbnail.jpg')
@@ -628,8 +634,11 @@ class VolunteerTagLib {
                 fullUrl = resource(file: '/sample-task.jpg')
             }
 
-            if (url) {
+            if (url && task.project.projectType.name != ProjectType.PROJECT_TYPE_AUDIO) {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
+            } else {
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" />"
                 if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
 
@@ -704,7 +713,7 @@ class VolunteerTagLib {
         def alt = attrs.remove('alt')
         def cssClass = attrs.remove('class')
         out << "<img src="
-        out << sizedImageUrl(attrs,body)
+        out << sizedImageUrl(attrs, body)
         if (cssClass) {
             out << " class=\"${cssClass.encodeAsHTML()}\""
         }
@@ -715,6 +724,17 @@ class VolunteerTagLib {
             out << " alt=\"${alt.encodeAsHTML()}\""
         }
         out << "/>"
+    }
+
+    def audioSample = { attrs, body ->
+        def linkText = attrs.remove('linkText')
+        out << "<a href="
+        out << audioUrl(attrs, body)
+        out << " class=\"sm2_link\">"
+        if (linkText) {
+            out << linkText
+        }
+        out << "</a>"
     }
 
     def sizedImageUrl = { attrs, body ->
@@ -728,6 +748,14 @@ class VolunteerTagLib {
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 
+    def audioUrl = { attrs, body ->
+        def prefix = attrs.remove('prefix')
+        def name = attrs.remove('name')
+        def format = attrs.remove('format') ?: 'wav'
+        def template = attrs.remove('template')?.toBoolean()
+        String url = g.createLink(controller: 'image', action: 'audioFile', params: [prefix: prefix, name: name, format: format])
+        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+    }
 
     /**
      * @id The id of the institution

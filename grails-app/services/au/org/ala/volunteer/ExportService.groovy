@@ -497,11 +497,12 @@ class ExportService {
     }
 
     private def taskValidationStatus(Task task) {
+        // Updated to update the definition of validation status
         switch (task.isValid) {
             case true:
-                return "Valid"
+                return "Validated"
             case false:
-                return "Invalid"
+                return "In progress"
             default:
                 return ""
         }

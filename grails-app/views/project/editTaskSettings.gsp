@@ -13,7 +13,8 @@
 
     <div class="alert alert-warning">
         There are <strong>${taskCount}</strong> <a
-            href="${createLink(controller: 'task', action: 'list', id: projectInstance.id)}">tasks</a> loaded.
+            href="${createLink(controller: 'task', action: 'list', id: projectInstance.id)}">tasks</a> loaded.<br />
+        Current disk usage: <cl:formatFileSize size="${projectInstance.sizeInBytes}"/>
     </div>
 
 <div class="form-horizontal">

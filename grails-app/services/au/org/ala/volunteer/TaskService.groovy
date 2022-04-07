@@ -31,6 +31,7 @@ class TaskService {
     def multimediaService
     def grailsLinkGenerator
     def fieldService
+    def fieldSyncService
     def i18nService
     def userService
     Closure<DSLContext> jooqContext
@@ -222,7 +223,7 @@ class TaskService {
 
         def sql = new Sql(dataSource)
         def taskList = []
-        def results = sql.eachRow(selectQuery, queryParams) { row->
+        sql.eachRow(selectQuery, queryParams) { row->
             Task task = Task.get(row.id as long)
             if (task) taskList.add(task)
         }
@@ -280,11 +281,10 @@ class TaskService {
     private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1, long lastId = -1) {
         Task transcribableTask = null
         int matches = 0
-        log.debug("Processing results for user ${userId}, jump ${jump}, and lastId ${lastId}")
+        log.debug("Processing results for user_id: [${userId}], jump: [${jump}], lastId: [${lastId}]")
         results?.find { result ->
             Task task = Task.get(result[0])
-            log.debug("Checking task ${result[0]}")
-            log.debug("Task: ${task}")
+            log.debug("Checking ${task}")
 
             // If locked or skipped, move onto next task.
             if (!task.isLockedForTranscription(userId, timeoutWindow) && !task.wasSkippedByUser(userId)) {
@@ -295,7 +295,7 @@ class TaskService {
                 transcribableTask = task
                 matches++
                 if (matches >= jump) {
-                    log.debug("Allocating task ${task.id}.")
+                    log.debug("Allocating task [${task.id}] to user_id [${userId}].")
                     return true
                 }
             }
@@ -336,15 +336,16 @@ class TaskService {
             order by $orderBy
             """.stripIndent()
 
-        log.debug("Unviewed task Query: ${query}")
+        //log.debug("Unviewed task Query: ${query}")
 
         List results = Task.executeQuery(query,queryParams)
-        log.debug("Results: ${results}")
+        log.debug("Searching for unviewed tasks resulted in [${results.size()}] tasks.")
 
         if (results) {
             def taskResult = results.last()
             task = Task.get(taskResult[0])
         }
+
         task
     }
 
@@ -376,7 +377,8 @@ class TaskService {
                         "order by count(transcriptions) desc, task.id",
                     params
                 )
-        log.debug("Unfinished task not viewed results: ${results}")
+        //log.debug("Unfinished task not viewed results: ${results}")
+        log.debug("Searching for unfinished tasks for user_id [${userId}] returned ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
@@ -394,7 +396,8 @@ class TaskService {
                         "having count(transcriptions) < :transcriptionsPerTask "+
                         "order by count(transcriptions) desc, task.id",
                 [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
-        log.debug("Viewed but not transcribed results: ${results}")
+        //log.debug("Viewed but not transcribed results: ${results}")
+        log.debug("Searching for viewed but not transcribed tasks for user_id [${userId}] resulted in ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
@@ -408,16 +411,14 @@ class TaskService {
      * @return
      */
     Task getNextTask(String userId, Project project, Long lastId = -1) {
-
+        log.debug("Get next task for user_id: [${userId}], project: [${project.id}], lastId: [${lastId}]")
         if (!project || !userId) {
-            return null;
+            return null
         }
 
-//        Task task = null
         int jump = (project?.template?.viewParams?.jumpNTasks ?: 1) as int
-        log.debug("Task jump set to: [${jump}]")
         int transcriptionsPerTask = project.transcriptionsPerTask ?: 1 //(project?.template?.viewParams?.transcriptionsPerTask ?: 1) as int
-        log.debug("Transcriptions per task: [${transcriptionsPerTask}]")
+        log.debug("Transcriptions per task: [${transcriptionsPerTask}], task jump: [${jump}]")
 
         // This is the length of time for which a Task remains locked after a user views it
         long timeout = grailsApplication.config.viewedTask.timeout as long
@@ -428,7 +429,7 @@ class TaskService {
         // required to transcribe the Task.
         Task task = findUnviewedTask(userId, project, transcriptionsPerTask, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unviewed task to jump to: ${task.id}")
+            log.debug("Unviewed task selected to jump to: [${task.id}]")
             return task
         }
 
@@ -438,19 +439,22 @@ class TaskService {
         // At this point, either the remaining transcriptions are in progress or some transcriptions have been abandoned.
         task = findUnfinishedTaskNotViewedByUser(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unfinished task not viewed by user to jump to: ${task.id}")
+            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found an unfinished task not viewed by user to jump to: ${task.id}")
+            log.debug("Unfinished task assigned to user: [${task.id}]")
             return task
         }
 
         task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout, lastId)
         if (task) {
-            log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
+            //log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
+            log.debug("Viewed non-transcribed task assigned to user: [${task.id}]")
             return task
         }
 
         // If we have been unable to find a Task while jumping over Tasks, see if we can get any Task.
-        if (lastId >=0 && jump > 1) {
+        if (lastId >= 0 && jump > 1) {
             // Try it all again, but without the jump
+            log.debug("Unable to find a task with jump [${jump}] specified. Re-searching with no jump.")
             task = getNextTask(userId, project)
         }
 
@@ -467,7 +471,7 @@ class TaskService {
     Task getNextTaskForValidationForProject(String userId, Project project) {
 
         if (!project || !userId) {
-            return null;
+            return null
         }
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
@@ -524,7 +528,7 @@ class TaskService {
         c.list(params) {
             eq("fullyTranscribedBy", userId)
             isNotNull("dateFullyTranscribed")
-        }
+        } as List<Task>
     }
 
     /**
@@ -711,8 +715,8 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             log.debug("Getting recently validated tasks. ")
         }
 
-        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS));
+        def SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        def recentDate = sdf.parse(sdf.format(new Date() - NUMBER_OF_RECENT_DAYS))
 
         def tasks = Task.createCriteria().list() {
             eq("fullyTranscribedBy", transcriber)
@@ -728,7 +732,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             log.debug("Returning validated tasks: " + sw.toString())
         }
 
-        return tasks
+        return tasks as List<Task>
     }
 
     /**
@@ -830,7 +834,7 @@ ORDER BY record_idx, name;
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         if (!filename.trim()) {
-            filename = "image_" + taskId;
+            filename = "image_" + taskId
         }
         filename = URLDecoder.decode(filename, "utf-8")
         def conn = url.openConnection()
@@ -873,7 +877,7 @@ ORDER BY record_idx, name;
         def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
         sizes.each{
             fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
-            BufferedImage scaledImage = srcImage;
+            BufferedImage scaledImage = srcImage
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {
                 scaledImage = Scalr.resize(srcImage, it.value)
             }
@@ -885,14 +889,14 @@ ORDER BY record_idx, name;
 
     static BufferedImage ensureOpaque(BufferedImage bi) {
         if (bi.getTransparency() == BufferedImage.OPAQUE)
-            return bi;
-        int w = bi.getWidth();
-        int h = bi.getHeight();
-        int[] pixels = new int[w * h];
-        bi.getRGB(0, 0, w, h, pixels, 0, w);
-        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        bi2.setRGB(0, 0, w, h, pixels, 0, w);
-        return bi2;
+            return bi
+        int w = bi.getWidth()
+        int h = bi.getHeight()
+        int[] pixels = new int[w * h]
+        bi.getRGB(0, 0, w, h, pixels, 0, w)
+        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
+        bi2.setRGB(0, 0, w, h, pixels, 0, w)
+        return bi2
     }
 
     /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
@@ -935,7 +939,7 @@ ORDER BY record_idx, name;
             results.add(taskRow)
         }
 
-        return results;
+        return results
     }
 
 
@@ -980,11 +984,11 @@ ORDER BY record_idx, name;
     Task findByProjectAndFieldValue(Project project, String fieldName, String fieldValue) {
         def select = """
             WITH task_ids AS (SELECT id from task where project_id = :projectId)
-            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue;
+            SELECT f.task_id as id from field f WHERE f.task_id in (SELECT id FROM task_ids) and f.superceded = false and f.name = :fieldName and value = :fieldValue
         """
 
         def sql = new Sql(dataSource: dataSource)
-        int taskId = -1;
+        int taskId = -1
         def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
             taskId = row[0]
@@ -1001,6 +1005,16 @@ ORDER BY record_idx, name;
         }
 
         return imageMetaData
+    }
+
+    @Cacheable(value='getAudioMetaData', key="(#multimedia?.id?:0)")
+    String getAudioMetaData(Multimedia multimedia) {
+        def path = multimedia?.filePath
+        if (path) {
+            return multimediaService.getImageUrl(multimedia)
+        } else {
+            return null
+        }
     }
 
     @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
@@ -1030,7 +1044,7 @@ ORDER BY record_idx, name;
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: {}, {}", resource, ex.message)  // don't print whoel stack trace
+            log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
         }
 
         if (image) {
@@ -1078,7 +1092,8 @@ ORDER BY record_idx, name;
         tr.each {
             def transcriber = User.findByUserId(it.fullyTranscribedBy)
             if (transcriber) {
-                transcriber.transcribedCount--
+                //transcriber.transcribedCount--
+                fieldSyncService.decrementTranscriptionCount(transcriber.id)
             }
 
             it.fullyTranscribedBy = null
@@ -1104,7 +1119,8 @@ ORDER BY record_idx, name;
 
         def validator = User.findByUserId(task.fullyValidatedBy)
         if (validator) {
-            validator.validatedCount--
+            //validator.validatedCount--
+            fieldSyncService.decrementValidationCount(validator.id)
         }
         task.isValid = null
         task.fullyValidatedBy = null
@@ -1140,7 +1156,7 @@ ORDER BY record_idx, name;
         def field = fieldService.getFieldForTask(task, "sequenceNumber")
 
         if (field?.value && field.value.isInteger()) {
-            def sequenceNumber = Integer.parseInt(field.value);
+            def sequenceNumber = Integer.parseInt(field.value)
             def padSize = 0
             if (field.value.startsWith("0")) {
                 // remember to left pad the resulting sequence numbers with 0
@@ -1212,6 +1228,7 @@ ORDER BY record_idx, name;
      */
     Map getTaskViewList(int selectedTab, User user, Project project, String query, Integer offset, Integer max, String sort, String order) {
         Stopwatch sw = Stopwatch.createStarted()
+        log.debug("Generating task view list for project [${project?.id}]")
         // DEFAULTS FOR MAX, OFFSET
         if (!offset) offset = 0
         max = Math.max(Math.min(max ?: 0, 100), 1)
@@ -1222,15 +1239,10 @@ ORDER BY record_idx, name;
         String additionalJoins = ''
         String dateTranscribed = 'tr.date_fully_transcribed'
         List<String> withClauses = []
-        /*
-                """catalog_numbers AS (
-                      SELECT f.task_id, ARRAY_AGG(f.value) as catalog_number
-                      FROM field f
-                      WHERE f.name = 'catalogNumber'
-                      AND superceded = false
-                      GROUP BY f.task_id
-                    )""".stripIndent()
-        ]*/
+
+        // Query for transcribed and saved tasks needs to select distinct tasks
+        boolean distinctTasks = false
+
         switch (selectedTab) {
             case 0:
                 // transcribed tasks that are recently validated
@@ -1240,26 +1252,21 @@ ORDER BY record_idx, name;
                 break
             case 1:
                 filter = 'tr.fully_transcribed_by = :userId'
+                distinctTasks = true
                 break
             case 2:
-                /*withClauses += """saved_tasks AS (
-                                      SELECT f.task_id, MAX(f.updated) as date_last_updated
-                                      FROM field f
-                                      WHERE f.superceded = false
-                                      AND f.transcribed_by_user_id = :userId
-                                      GROUP BY f.task_id
-                                    )""".stripIndent()*/
                 filter = 't.is_fully_transcribed = false'
-                //additionalJoins = 'JOIN saved_tasks s ON s.task_id = t.id'
                 additionalJoins = """JOIN (SELECT f.task_id, MAX(f.updated) as date_last_updated
                                       FROM field f
                                       WHERE f.superceded = false
                                       AND f.transcribed_by_user_id = :userId
                                       GROUP BY f.task_id) as s ON s.task_id = t.id """.stripIndent()
                 dateTranscribed = "COALESCE($dateTranscribed, s.date_last_updated)"
+                distinctTasks = true
                 break
             case 3:
                 filter = 't.fully_validated_by = :userId'
+                distinctTasks = true
                 break
             default:
                 throw new IllegalArgumentException("selectedTab must be between 0 and 3")
@@ -1270,12 +1277,12 @@ ORDER BY record_idx, name;
 
         // SORTING
         final validSorts = [
-                'id': 't.id',
-                'externalIdentfier': 't.external_identfier',
+                'id': 'id',
+                'externalIdentfier': 'external_identfier',
                 //'catalogNumber': 'catalog_number',
                 'projectName': 'project_name',
                 'dateTranscribed': 'date_transcribed',
-                'dateValidated': 't.date_fully_validated',
+                'dateValidated': 'date_fully_validated',
                 //'validator': 'validator',
                 'status': 'status'
         ].withDefault { 'date_transcribed' }
@@ -1283,9 +1290,11 @@ ORDER BY record_idx, name;
         if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
 
         final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
-        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'Invalidated')
+        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'In progress')
         final transcribedStatus = i18nService.message(code: 'status.transcribed', default: 'Transcribed')
         final savedStatus = i18nService.message(code: 'status.saved', default: 'Saved')
+
+        log.debug("invalidated status: ${invalidatedStatus}")
 
         final statusSnippet = """
             CASE WHEN t.is_valid = true THEN '$validatedStatus'
@@ -1309,8 +1318,13 @@ ORDER BY record_idx, name;
             querySnippet = ''
         }
 
+        def distinctTaskClause = ""
+        if (distinctTasks)  {
+            distinctTaskClause = " DISTINCT ON (t.id) "
+        }
+
         def withClause = "WITH \n${withClauses.join(',\n')}"
-        def selectClause = """SELECT
+        def selectClause = """SELECT $distinctTaskClause
             t.id,
             t.created,
             t.external_identifier,
@@ -1342,19 +1356,7 @@ ORDER BY record_idx, name;
         // (vu.first_name || ' ' || vu.last_name) AS "validator_display_name",
 
         def countClause = "SELECT count(DISTINCT t.id)"
-        /*
-        def queryClause = """FROM task t
-            JOIN project p ON t.project_id = p.id
-            LEFT OUTER JOIN (select DISTINCT ON (tr.task_id) * from transcription tr where tr.fully_transcribed_by = :userId ORDER BY tr.task_id) as tr on (t.id = tr.task_id)
-            LEFT OUTER JOIN catalog_numbers c on c.task_id = t.id
-            LEFT OUTER JOIN vp_user tu ON tr.fully_transcribed_by = tu.user_id
-            LEFT OUTER JOIN vp_user vu on t.fully_validated_by = vu.user_id
-            $additionalJoins
-            WHERE
-            $filter
-            $querySnippet
-            """.stripIndent()
-         */
+
         def queryClause = """FROM transcription tr
             JOIN task t ON (t.id = tr.task_id)
             JOIN project p ON t.project_id = p.id
@@ -1364,9 +1366,15 @@ ORDER BY record_idx, name;
             $querySnippet
             """.stripIndent()
 
-        def pagingClause = """
-            ORDER BY $sortColumn $order;
-        """.stripIndent()
+//        def pagingClause = """
+//            ORDER BY $sortColumn $order;
+//        """.stripIndent()
+        def pagingClause = "ORDER BY "
+        if (distinctTasks) {
+            pagingClause += " t.id "
+        } else {
+            pagingClause += " ${sortColumn} ${order} "
+        }
 
         def results = [:]
         final params = [userId: user.userId, project: project?.id, query: query]
@@ -1378,15 +1386,25 @@ ORDER BY record_idx, name;
 
         log.debug("Count query:\n$countQuery")
 
-        final rowsQuery = """
+        def rowsQuery = """
             $selectClause
             $queryClause
             $pagingClause
             """.stripIndent()
         // removed $withClause
 
-        log.debug("View list query:\n$rowsQuery")
-        log.debug("Params: $params")
+        if (distinctTasks) {
+            rowsQuery = """
+                SELECT * 
+                FROM (
+                $rowsQuery
+                ) pv
+                ORDER BY $sortColumn $order
+            """.stripIndent()
+        }
+
+        //log.debug("View list query:\n$rowsQuery")
+        //log.debug("Params: $params")
         log.debug("Took ${sw.stop()} to generate queries")
         sw.reset().start()
 

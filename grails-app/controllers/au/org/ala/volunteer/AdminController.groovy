@@ -23,6 +23,7 @@ class AdminController {
     def projectService
     def fullTextIndexService
     def eventSourceService
+    def institutionService
 
     def index() {
         if (!checkAdminAccess(true)) {
@@ -218,7 +219,7 @@ class AdminController {
         // Because this action is run by both Site admins (for IA's) and IA's (for user roles), check that that user
         // has permission to delete the selected role
         // Also check, in the case of IA's, that they are not deleting another institution's role.
-        def institution = (userRole.institution ? userRole.institution : userRole.project.institution)
+        def institution = (userRole.institution ? userRole.institution : userRole.project?.institution)
 
         if (userRole.role.name == BVPRole.INSTITUTION_ADMIN && !userService.isAdmin()) {
             log.error("Delete User Role: User ${currentUser.displayName} attempted deletion of Institution Admin role " +
@@ -735,12 +736,19 @@ class AdminController {
     }
 
     def projectSummaryReport() {
-        if (!checkAdminAccess(false)) {
+        if (!checkAdminAccess(true)) {
             render(view: '/notPermitted')
             return
         }
 
-        def projects = Project.list([sort:'id'])
+        def projects
+        if (userService.isInstitutionAdmin() && !userService.isSiteAdmin()) {
+            def institutionList = userService.getAdminInstitutionList()
+            projects = institutionService.listProjectsForInstititutionList(institutionList)
+        } else {
+            projects = Project.list([sort:'id'])
+        }
+
         def dates = taskService.getProjectDates()
         def projectSummaries = projectService.getProjectSummaryList(params, true)
         def summaryMap = projectSummaries.projectRenderList.collectEntries { [(it.project.id) : it ] }

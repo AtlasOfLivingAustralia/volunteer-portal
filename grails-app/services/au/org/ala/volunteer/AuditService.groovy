@@ -19,19 +19,25 @@ class AuditService {
         return viewedTasks ? viewedTasks[0] : null
     }
 
-    boolean isTaskLockedForTranscription(Task taskInstance, String userId) {
+    boolean isTaskLockedForTranscription(Task task, String userId) {
         long timeout = grailsApplication.config.viewedTask.timeout as long
-        return taskInstance.isLockedForTranscription(userId, timeout)
+        return task.isLockedForTranscription(userId, timeout)
     }
 
-    boolean isTaskLockedForValidation(Task taskInstance, String userId) {
-        ViewedTask lastView = getLastViewForTask(taskInstance)
+    boolean isTaskLockedForValidation(Task task, String userId) {
+        ViewedTask lastView = getLastViewForTask(task)
         String currentUser = userService.currentUserId
-        if (lastView) {
-            log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
-            def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
-            if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
-                return true
+
+        // If task has been fully transcribed, allow it to be validated straight away:
+        if (task.isFullyTranscribed) {
+            return false
+        } else {
+            if (lastView) {
+                log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
+                def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
+                if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
+                    return true
+                }
             }
         }
         return false

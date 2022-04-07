@@ -1,3 +1,7 @@
+%{-- ************************** --}%
+%{-- ****** DEPRECATED ******** --}%
+%{--  See: digivol-task layout  --}%
+%{-- ************************** --}%
 <%@ page import="au.org.ala.volunteer.ValidationType; au.org.ala.volunteer.ValidationRule; au.org.ala.volunteer.Template; au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <%@ page import="au.org.ala.volunteer.PicklistItem" %>
@@ -432,7 +436,7 @@
 
                 $(document).keypress(function(event) {
                     if ((event.which == 115 || event.which == 19) && event.ctrlKey && event.shiftKey) {
-                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
+                        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [mode: params.mode ?: ''])}");
                         e.preventDefault();
                     }
                     return true;
@@ -672,7 +676,7 @@
 
         function showTaskTimeoutMessage() {
             var options = {
-                url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator])}",
+                url: "${createLink(controller: 'transcribe', action: 'taskLockTimeoutFragment', params: [taskId: taskInstance.id, validator: validator, mode: params.mode ?: ''])}",
                         title: 'Task lock will expire soon!',
                         backdrop: 'static',
                         keyboard: false
@@ -694,7 +698,7 @@
         $("#btnSave").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id])}");
+                submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
             }
         });
 
@@ -706,13 +710,13 @@
         $("#btnValidate").click(function(e) {
             e.preventDefault();
             if (checkValidation()) {
-                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id])}");
+                submitFormWithAction("${createLink(controller: 'validate', action: 'validate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
             }
         });
 
         $("#btnDontValidate").click(function(e) {
             e.preventDefault();
-            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id])}");
+            submitFormWithAction("${createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: ''])}");
         });
 
         $("#btnWarningCancelSubmission").click(function(e) {
@@ -737,7 +741,7 @@
         $("#showNextFromProject, .btn-skip-n").click(function(e) {
             e.preventDefault();
             var skip = $(this).data('skip');
-            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id])}";
+            var url = "${createLink(controller: (validator) ? "validate" : "transcribe", action: 'showNextFromProject', id: taskInstance?.project?.id, params: [prevId: taskInstance?.id, mode: params.mode ?: ''])}";
             if (skip) url = url + '&skip='+skip;
             window.location = url;
         });
@@ -816,10 +820,10 @@
 
     function submitInvalid() {
     <g:if test="${validator}">
-        submitFormWithAction("${createLink(controller: 'validate', action: 'validate')}");
+        submitFormWithAction("${createLink(controller: 'validate', action: 'validate', mode: params.mode ?: '')}");
     </g:if>
     <g:else>
-        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save')}");
+        submitFormWithAction("${createLink(controller: 'transcribe', action: 'save', mode: params.mode ?: '')}");
     </g:else>
     }
 

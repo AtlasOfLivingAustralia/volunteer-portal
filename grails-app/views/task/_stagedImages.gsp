@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h3>Staged images (${images.size()})
+        <h3>Staged <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> (${images.size()})
 
             <div class="btn-group pull-right">
                 <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
@@ -9,12 +9,13 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
+                    <g:if test="${!isAudioProject}">
                     <li>
                         <a href="#" class="btnStageAddFieldDefinition"><i
                                 class="fa fa-plus"></i>&nbsp;Add a column</a>
                     </li>
                     <li class="divider"></li>
-
+                    </g:if>
                     <li>
                         <a href="#" id="btnExportTasksCSV"><i
                                 class="fa fa-file"></i>&nbsp;Export staged tasks as CSV</a>
@@ -22,7 +23,7 @@
                     <li class="divider"></li>
                     <li>
                         <a href="#" id="btnClearStagingArea"><i
-                                class="fa fa-trash"></i>&nbsp;Delete all images</a>
+                                class="fa fa-trash"></i>&nbsp;Delete all <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else></a>
                     </li>
                 </ul>
             </div>
@@ -75,10 +76,8 @@
                             <ul class="nav nav-pills nav-stacked" style="margin-left: 10px">
                                 <g:each in="${image.shadowFiles}" var="shadow">
                                     <li>
-                                        <div class="label">
-                                            <g:set var="shadowLabel"
-                                                   value="${shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")}"/>
-                                            <i class="fa fa-chevron-right"></i> ${shadowLabel}
+                                        <div class="label label-default">
+                                            <i class="fa fa-chevron-right"></i> <%= shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")%>
                                             <button class="btnDeleteShadowFile btn btn-xs btn-danger"
                                                title="Delete shadow file ${shadow.stagedFile.name}"
                                                filename="${shadow.stagedFile.name}"><i

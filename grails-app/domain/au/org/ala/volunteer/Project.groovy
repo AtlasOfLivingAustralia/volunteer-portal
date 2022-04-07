@@ -40,6 +40,7 @@ class Project implements Serializable {
     Date lastUpdated
     // Project of the Day Last Selected Date
     Date potdLastSelected
+    Long sizeInBytes = 0L
 
     Integer version
 
@@ -108,6 +109,7 @@ class Project implements Serializable {
         transcriptionsPerTask nullable: true
         thresholdMatchingTranscriptions nullable: true
         potdLastSelected nullable: true
+        sizeInBytes nullable: false
     }
 
     /**
@@ -235,4 +237,13 @@ class Project implements Serializable {
                 ]
     }
 
+    String getProjectSizeFormatted() {
+        String size
+        if (!archived) {
+            if (sizeInBytes > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(sizeInBytes))
+            else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+        } else {
+            size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+        }
+    }
 }

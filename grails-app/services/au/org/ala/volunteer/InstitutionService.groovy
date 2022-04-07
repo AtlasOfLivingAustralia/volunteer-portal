@@ -195,6 +195,24 @@ class InstitutionService {
     }
 
     /**
+     * Returns a list of all projects for a given list of institutions.
+     * @param institutionList the list of institutions for the user
+     * @return the list of projects for the provided institutions
+     */
+    def listProjectsForInstititutionList(def institutionList) {
+        if (!institutionList || institutionList?.size() == 0) {
+            return []
+        }
+
+        def result = Project.createCriteria().list {
+            'in'("institution", institutionList)
+            order('id', 'asc')
+        }
+
+        result
+    }
+
+    /**
      * Returns a simple count of projects within a given institution.
      * @param institution the institution to query.
      * @return the number of projects

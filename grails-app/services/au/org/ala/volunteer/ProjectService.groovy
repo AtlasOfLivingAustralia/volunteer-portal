@@ -108,7 +108,12 @@ class ProjectService {
                             }
                             tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
+
+                        // Reset disk usage to zero, as all tasks have been deleted.
+                        p.sizeInBytes = 0
+
                         log.info("Completed deleting all tasks for ${msg.projectId}")
+
                         session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
@@ -668,9 +673,12 @@ class ProjectService {
     def projectSize(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
-            [size: projectPath.directorySize(), error: null]
+            long sizeInBytes = projectPath.directorySize()
+            project.sizeInBytes = sizeInBytes
+            project.save(flush: true, failOnError: true)
+            [size: sizeInBytes, error: null]
         } catch (e) {
-            log.debug("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
+            log.warn("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
             [error: e, size: -1]
         }
     }
@@ -948,14 +956,22 @@ class ProjectService {
             log.debug("Projects list: ${projectList.size()}")
         }
 
-        // Randomly select a project from the list.
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, projectList.size() + 1);
-        Project projectToDisplay = projectList.get(randomIndex) as Project
-        log.debug("Project selected: ${projectToDisplay}")
-        projectToDisplay.potdLastSelected = new Date()
-        projectToDisplay.save(failOnError: true, flush: true)
+        Project projectToDisplay = null
+        if (projectList.size() > 1) {
+            // Randomly select a project from the list.
+            int randomIndex = ThreadLocalRandom.current().nextInt(0, ((projectList.size() - 1) > 0 ? projectList.size() - 1 : 1))
+            projectToDisplay = projectList.get(randomIndex) as Project
+        } else if (projectList.size() == 1) {
+            projectToDisplay = projectList.first() as Project
+        }
 
-        return projectToDisplay
+        if (projectToDisplay) {
+            log.debug("Project selected: ${projectToDisplay}")
+            projectToDisplay.potdLastSelected = new Date()
+            projectToDisplay.save(failOnError: true, flush: true)
+        }
+
+        return projectToDisplay.id
     }
 
     /**
@@ -983,7 +999,8 @@ class ProjectService {
         if (isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated) ||
                 isProjectComplete(frontPage.projectOfTheDay)) {
             log.debug("Yes, updating PotD...")
-            def project = selectRandomProject()
+            def projectId = selectRandomProject()
+            def project = Project.get(projectId)
             if (project) {
                 log.debug("New PotD: ${project}")
                 frontPage.projectOfTheDay = project

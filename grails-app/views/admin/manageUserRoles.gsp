@@ -264,7 +264,14 @@ $(function($) {
 
             bootbox.confirm(confirmMsg, function(result) {
                 if (result) {
-                    const url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}" + "?userRoleId=" + id;
+                    const params = new URLSearchParams(window.location.search);
+                    let url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}";
+                    let institution = params.get('institution');
+                    if (institution !== "" && institution !== undefined && institution !== null) {
+                        url += "?institution=" + institution + "&userRoleId=" + id;
+                    } else {
+                        url += "?userRoleId=" + id;
+                    }
                     console.log("url: " + url);
                     window.location = url;
                 }

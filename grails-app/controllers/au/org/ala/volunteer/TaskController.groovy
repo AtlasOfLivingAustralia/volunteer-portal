@@ -130,17 +130,31 @@ class TaskController {
             views?.values()?.each { List viewList ->
                 def max = viewList.max { it.lastView }
                 use (TimeCategory) {
-                    if (new Date(max.lastView) > 2.hours.ago && !max.skipped) {
-                        lockedMap[max.task?.id] = max
+                    if (new Date(max.lastView as long) > 2.hours.ago && !max.skipped) {
+                        // Lock if not fully transcribed
+                        // Lock if fully transcribed and opened by a validator
+                        if (!max.task?.isFullyTranscribed) {
+                            log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}], skipped: [${max.skipped}]")
+                            lockedMap[max.task?.id as long] = max
+                        } else {
+                            User viewingUser = User.findByUserId(max.userId as String)
+                            if (viewingUser) {
+                                def lastTranscription = max.task?.transcriptions?.max { it.dateFullyTranscribed }
+
+                                log.debug("Checking who the viewing user is: ${viewingUser}")
+                                log.debug("Viewing user is a validator: ${userService.userHasValidatorRole(viewingUser, project.id)}")
+                                log.debug("View date: ${max.lastView}, date fully transcribed: ${lastTranscription?.dateFullyTranscribed?.getTime()}")
+
+                                // If the last view came after the date/time of the last transcription, it was opened by a validator.
+                                if (max.lastView > lastTranscription?.dateFullyTranscribed?.getTime() &&
+                                        (userService.userHasValidatorRole(viewingUser, project.id) && currentUser != max.userId)) {
+                                    log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}] by ${max.userId} (current user ${currentUser}), skipped: [${max.skipped}]")
+                                    lockedMap[max.task?.id as long] = max
+                                }
+                            }
+                        }
                     }
                 }
-            }
-
-            // Get Project size (for Admin view)
-            def projectSize = 0
-            if (view == VIEW_TASK_LIST_ADMIN) {
-                projectSize = projectService.projectSize(project).size
-                if (projectSize < 0) projectSize = 0
             }
 
             def statusFilterList = [[key: "transcribed", value: "View transcribed tasks"],
@@ -158,7 +172,6 @@ class TaskController {
                      extraFields      : extraFields,
                      userInstance     : userInstance,
                      lockedMap        : lockedMap,
-                     projectSize      : projectSize,
                      statusFilterList : statusFilterList])
         } else {
             flash.message = "No project found for ID " + params.long('id')
@@ -268,10 +281,17 @@ class TaskController {
                         msg = "This task is being viewed/edited by another user, and is currently read-only"
                         readonly = true
                     } else if (task.fullyValidatedBy && task.isValid != null) {
-                        msg = "This task has been validated, and is currently read-only."
+                        if (task.isValid) {
+                            msg = "This task has been validated, and is currently read-only."
+                        } else {
+                            msg = "This task has been partially validated and is currently read-only."
+                        }
+
                         if (userService.isValidator(task.project)) {
                             def link = createLink(controller: 'validate', action: 'task', id: task.id) as String
-                            msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                            //msg += ' As a validator you may review/edit this task by clicking <a href="' + link + '">here</a>.'
+                            msg += """ As a validator, you may review/${(task.isValid ? "edit" : "continue validating")} 
+                                this task by clicking <a href='${link}'>here</a>.""".toString()
                         }
                         readonly = true
                     } else if (userTask && userTask != currentUser) {
@@ -357,7 +377,7 @@ class TaskController {
                     thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
                     image: multimediaService.getImageUrl(mm),
                 // TODO: replace these?
-                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy)?.displayName,
+                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy as String)?.displayName,
                     dateTranscribed: task.dateFullyTranscribed,
                     validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
                     dateValidated: task.dateFullyValidated,
@@ -521,11 +541,16 @@ class TaskController {
             return
         }
 
+        boolean isAudioProject = (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO)
+
         if (taskLoadService.isProjectLoadingAlready(projectId)) {
             flash.message = 'Please wait while existing staged images are loaded'
             redirect(controller: 'project', action: 'loadProgress', id: projectId)
         } else {
-            [projectInstance: project, hasDataFile: stagingService.projectHasDataFile(project), dataFileUrl:stagingService.dataFileUrl(project)]
+            [projectInstance: project,
+             hasDataFile: stagingService.projectHasDataFile(project),
+             dataFileUrl:stagingService.dataFileUrl(project),
+             isAudioProject: isAudioProject]
         }
     }
 

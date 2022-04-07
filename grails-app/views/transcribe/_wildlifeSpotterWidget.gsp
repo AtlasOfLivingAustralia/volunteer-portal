@@ -2,17 +2,18 @@
     display: inline-block, so no spaces between the divs
     --}%<g:each in="${imageInfos}" var="piItem" status="st"><div class="griditem bvpBadge"
                                                                            data-item-index="${st}">
-        <div class="thumbnail ct-thumbnail <g:if test="${!isAnswers}">ws-selector</g:if>" aria-selected="false" data-image-select-key="${st}" title="${g.message(code: 'wildlifespotter.widget.badge.title', args: [piItem.vernacularName])}">
-            %{--<span class="ct-badge ct-badge-sure" data-container="body"--}%
-                  %{--title="${g.message(code: 'cameratrap.widget.sure.badge.title', default: "There is definitely a {0} in the image", args: [piItem.key])}"><i--}%
-                    %{--class="fa fa-check-circle"></i></span>--}%
-            %{--<span class="ct-badge ct-badge-uncertain" data-container="body"--}%
-                  %{--title="${g.message(code: 'cameratrap.widget.uncertain.badge.title', default: "There could possibly be a {0} in the image", args: [piItem.key])}"><i--}%
-                    %{--class="fa fa-check-circle"></i></span>--}%
-            %{--<g:if test="${piItem.value.similarSpecies}">--}%
-
-
+        <g:if test="${piItem?.audio?.size() > 0}">
+            <div class="thumbnail ct-thumbnail <g:if test="${!isAnswers}">ws-selector</g:if>" aria-selected="false" data-image-select-key="${st}" title="${g.message(code: 'audiotranscribe.widget.badge.title', args: [piItem.vernacularName])}">
+        </g:if>
+        <g:else>
+            <div class="thumbnail ct-thumbnail <g:if test="${!isAnswers}">ws-selector</g:if>" aria-selected="false" data-image-select-key="${st}" title="${g.message(code: 'wildlifespotter.widget.badge.title', args: [piItem.vernacularName])}">
+        </g:else>
                 <g:if test="${!isAnswers}">
+                    %{-- If Audio --}%
+                    <g:if test="${piItem?.audio?.size() > 0}">
+                        <g:set var="audioSample" value="${piItem.audio[0]}" />
+                        <cl:audioSample prefix="audiotranscribe" name="${audioSample.hash}" format="${audioSample.ext}"/>
+                    </g:if>
                     <span class="ws-selected"><i class="fa fa-check"></i></span>
                     <span class="ws-info" data-container="body"><i class="fa fa-info-circle"></i></span>
                 </g:if>

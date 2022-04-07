@@ -179,7 +179,7 @@
 
             <div class="col-sm-4">
                 %{-- mini leaderboard --}%
-                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, projectId: projectInstance.id, maxContributors: 2]"/>
+                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, disableContribution: true, projectId: projectInstance.id, maxContributors: 2]"/>
             </div>
         </div>
     </div>

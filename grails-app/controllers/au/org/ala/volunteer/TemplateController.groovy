@@ -5,7 +5,7 @@ import com.google.common.hash.HashCode
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.FilenameUtils
-
+import org.h2.util.StringUtils
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
@@ -453,7 +453,10 @@ class TemplateController {
                         prevTask: null,
                         sequenceNumber: 0,
                         imageMetaData: imageMetaData,
-                        isPreview: true])
+                        isPreview: true,
+                        pageController: 'template',
+                        mode: params.mode ? params.mode : '',
+                        pageAction: 'preview'])
     }
 
     def exportFieldsAsCSV() {
@@ -571,6 +574,10 @@ class TemplateController {
      * @return
      */
     def wildlifeTemplateConfig(long id) {
+        redirect(action: 'spotterTemplateConfig', id: id)
+    }
+
+    def spotterTemplateConfig(long id) {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
             return
@@ -584,7 +591,9 @@ class TemplateController {
         }
 
         def viewParams2 = template.viewParams2 ?: [ categories: [], animals: [] ]
-        [id: id, templateInstance: template, viewParams2: viewParams2]
+        def viewName = "wildlifeTemplateConfig"
+        if (template.viewName == "audioTranscribe") viewName = "audioTemplateConfig"
+        render(view: viewName, model: [id: id, templateInstance: template, viewParams2: viewParams2])
     }
 
     /**
@@ -615,16 +624,20 @@ class TemplateController {
     /**
      * Upload image for Wildlife Spotter template picklists
      */
-    def uploadWildlifeImage() {
+    def uploadSpotterFile() {
         if (!userService.isInstitutionAdmin()) {
             respond status: SC_FORBIDDEN
             return
         }
 
         MultipartFile upload = request.getFile('animal') ?: request.getFile('entry')
+        def fileType = "wildlifespotter"
+        if (!StringUtils.isNullOrEmpty(params.fileType as String) && params.fileType == "audio") {
+            fileType = "audiotranscribe"
+        }
 
         if (upload) {
-            def file = fileUploadService.uploadImage('wildlifespotter', upload) { MultipartFile f, HashCode h ->
+            def file = fileUploadService.uploadImage(/* directory */ fileType, upload) { MultipartFile f, HashCode h ->
                 h.toString() + "." + fileUploadService.extension(f)
             }
             def hash = FilenameUtils.getBaseName(file.name)
