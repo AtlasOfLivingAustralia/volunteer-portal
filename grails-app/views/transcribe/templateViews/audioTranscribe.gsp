@@ -57,10 +57,6 @@
                                             class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}">
                                         ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
-%{--                                    <button type="button" id="btnDontValidate"--}%
-%{--                                            class="btn btn-danger bvp-submit-button ${validator ? '' : 'hidden'}">--}%
-%{--                                        ${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}--}%
-%{--                                    </button>--}%
                                 </g:else>
                             </div>
                         </div>
@@ -237,13 +233,6 @@
                         <div class="classificationRow">
                             <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
                             <button type="button" class="btn btn-mini btn-default animalDelete pull-right" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
-%{--                            <span class="animalNum pull-right">--}%
-%{--                                <select tabindex="-1" name="numAnimals" class="numAnimals form-control">--}%
-%{--                                    {{#options}}--}%
-%{--                                    <option value="{{val}}" {{selected}}>{{val}}</option>--}%
-%{--                                    {{/options}}--}%
-%{--                                </select>--}%
-%{--                            </span>--}%
                             <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton pull-right" tabindex="-1" style="display:none;">Save Comment</button>
                             <button type="button" aria-expanded="false" class="btn btn-link editCommentButton pull-right" tabindex="-1">Add Comment</button>
                         </div>

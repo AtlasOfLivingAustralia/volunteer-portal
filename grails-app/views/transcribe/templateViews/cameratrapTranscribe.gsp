@@ -295,10 +295,6 @@
                                     class="btn btn-success btn-lg bvp-submit-button ${validator ? '' : 'hidden'}">
                                 ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                             </button>
-%{--                            <button type="button" id="btnDontValidate"--}%
-%{--                                    class="btn btn-danger btn-lg bvp-submit-button ${validator ? '' : 'hidden'}">--}%
-%{--                                ${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}--}%
-%{--                            </button>--}%
                         </g:else>
                     </div>
                 </div>

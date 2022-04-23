@@ -6,6 +6,7 @@ import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
+import grails.plugin.cache.Cacheable
 import grails.transaction.NotTransactional
 import grails.transaction.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -323,25 +324,11 @@ class UserService {
         // - If the provided project matches the role's project, this is a project-level role - return true.
         log.debug("Checking if user has validator role")
         def user = User.findByUserId(userId)
-//        if (user) {
-//            def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
-//            def role = user.userRoles.find {
-//                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
-//                                                    projectId == null ||
-//                                                   (it.institution != null && it.institution?.id == projectInstitutionId) ||
-//                                                    it.project?.id == projectId)
-//            }
-//            if (role) {
-//                // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
-//                // indicating that they can validate tasks from any project and or institution)
-//                return true
-//            }
-//        }
 
-//        return false
         return userHasValidatorRole(user, projectId, projectInstitutionId)
     }
 
+    @Cacheable(value = 'UserHasValidator', key = "(#user?.id?.toString()?:'-1') + (#projectId?:'-1') + (#projectInstitutionId?:'-1')")
     boolean userHasValidatorRole(User user, Long projectId, Long projectInstitutionId = null) {
         if (user) {
 
@@ -374,6 +361,7 @@ class UserService {
      * @param role the role to query
      * @return true of the user has the role, false if not.
      */
+    @Cacheable(value = 'UserHasCasRole', key = "(#user?.id?.toString()?:'-1') + (#role?:'-1')")
     boolean hasCasRole(User user, String role) {
         if (!user) return false
         def serviceResults = [:]

@@ -163,7 +163,6 @@
                             </td>
                         </tr>
                     </table>
-%{--                    <cl:validationStatus task="${taskInstance}"/>--}%
                 </div>
             </div>
         </div>
