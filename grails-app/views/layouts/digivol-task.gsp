@@ -735,7 +735,7 @@
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = 2 * 60; // Seconds ####### ---> SET TO 90 FOR RELEASE
+        var taskLockTimeout = 90 * 60; // 90 mins in Seconds
         setPageTimeoutTimer();
 
         function setPageTimeoutTimer() {
@@ -969,7 +969,7 @@
     }
 
     $(document).ready(function() {
-        var bgSaveTimer = 2 * 60; // SET TO 15 FOR RELEASE
+        var bgSaveTimer = 15 * 60; // 15 minutes in seconds
         var timerInitial = 0;
 
     <g:if test="${!validator}">
