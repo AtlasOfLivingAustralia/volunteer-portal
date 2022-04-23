@@ -400,7 +400,7 @@ class ProjectController {
         bindData(project, params)
 
         if (params.institutionId) {
-            Institution institution = Institution.get(params.long('institutionId') as Long)
+            Institution institution = Institution.get(params.long('institutionId') as long)
             if (institution) {
                 project.institution = institution
             } else {
@@ -410,11 +410,8 @@ class ProjectController {
         }
 
         if (params.template) {
-            Template newTemplate = Template.get(params.long('template'))
-            ProjectType newProjectType = (params.projectType) ? ProjectType.get(params.long('projectType')) : project.projectType
-            log.debug("Project Type: ${project.projectType}, Template view name ${newTemplate.viewName}")
-            if ((newProjectType.name == ProjectType.PROJECT_TYPE_AUDIO && !newTemplate.viewName.contains("audio")) ||
-                    (newProjectType.name != ProjectType.PROJECT_TYPE_AUDIO && newTemplate.viewName.contains("audio"))) {
+            if (!isValidTemplateView(((params.projectType) ? ProjectType.get(params.long('projectType') as long) : project.projectType),
+                    Template.get(params.long('template') as long).viewName as String)) {
                 project.errors.rejectValue("template", "project.template.notcompatible",
                         "Template is not compatible with expedition type.")
             }
@@ -766,11 +763,8 @@ class ProjectController {
                     }
 
                     if (params.template) {
-                        Template newTemplate = Template.get(params.long('template'))
-                        ProjectType newProjectType = (params.projectType) ? ProjectType.get(params.long('projectType')) : project.projectType
-                        log.debug("Project Type: ${project.projectType}, Template view name ${newTemplate.viewName}")
-                        if ((newProjectType.name == ProjectType.PROJECT_TYPE_AUDIO && !newTemplate.viewName.contains("audio")) ||
-                                (newProjectType.name != ProjectType.PROJECT_TYPE_AUDIO && newTemplate.viewName.contains("audio"))) {
+                        if (!isValidTemplateView(((params.projectType) ? ProjectType.get(params.long('projectType')) : project.projectType),
+                            Template.get(params.long('template')).viewName)) {
                             project.errors.rejectValue("template", "project.template.notcompatible",
                                     "Template is not compatible with expedition type.")
                             return false
@@ -803,6 +797,12 @@ class ProjectController {
             }
         }
         return false
+    }
+
+    private isValidTemplateView(ProjectType projectType, String viewName) {
+        // log.debug("[isValidTemplateView]: ${(projectType.name == ProjectType.PROJECT_TYPE_AUDIO && viewName.contains("audio"))}")
+        return (projectType.name == ProjectType.PROJECT_TYPE_AUDIO && viewName.contains("audio") ||
+                projectType.name != ProjectType.PROJECT_TYPE_AUDIO && !viewName.contains("audio"))
     }
 
     private def generateActivationNotification(Project project) {
