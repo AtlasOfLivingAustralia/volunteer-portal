@@ -396,11 +396,17 @@ class VolunteerStatsService {
         def parameters = [:]
 
         if (tags?.size() > 0) {
-            def tagList = tags.join("','")
+            def tagParams = tags.withIndex().collectEntries { tag, index ->
+                [('tag' + index): tag]
+            }
+            log.debug("Tag string: ${tagParams}")
+
             labelJoin = """\
                 join project_labels on (project_labels.project_id = project.id) 
-                join label on (label.id = project_labels.label_id and label.value in ('${tagList}')) """
-            log.debug("tagList: ${tagList}")
+                join label on (label.id = project_labels.label_id and label.value in (${tagParams.keySet().collect { ':' + it }.join(',')})) """
+
+            parameters.putAll(tagParams)
+
             log.debug("labelJoin: ${labelJoin}")
         }
 
