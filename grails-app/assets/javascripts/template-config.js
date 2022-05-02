@@ -2,7 +2,7 @@ var templateId = T_CONF.templateId; //${templateInstance.id};
 var viewParams = T_CONF.viewParams; //<cl:json value="${viewParams2}"/>;
 var wstc = angular.module('wildlifespottertemplateconfig', ['ngAnimate', 'ngFileUpload']);
 
-function TemplateConfigController($http, $log, $timeout, $window, Upload) {
+var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload', function ($http, $log, $timeout, $window, Upload) {
     var self = this;
     self.model = _.defaults(viewParams, { animals: [], categories:[]});
 
@@ -505,6 +505,6 @@ function TemplateConfigController($http, $log, $timeout, $window, Upload) {
             bootbox.alert("Couldn't save WildlifeSpotter config");
         });
     };
-}
+}];
 
 wstc.controller('TemplateConfigController', TemplateConfigController);
