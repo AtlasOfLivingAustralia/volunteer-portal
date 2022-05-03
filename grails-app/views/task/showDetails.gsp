@@ -163,7 +163,6 @@
                             </td>
                         </tr>
                     </table>
-%{--                    <cl:validationStatus task="${taskInstance}"/>--}%
                 </div>
             </div>
         </div>
@@ -211,7 +210,7 @@
 <asset:javascript src="image-viewer" asset-defer=""/>
 
 <g:if test="${taskInstance?.project?.projectType?.name == ProjectType.PROJECT_TYPE_AUDIO}">
-<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js@6.1.0/dist/wavesurfer.js"></script>
 </g:if>
 
 <asset:script type="text/javascript">

@@ -5,7 +5,6 @@ import com.google.common.hash.HashCode
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.FilenameUtils
-import org.h2.util.StringUtils
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
@@ -632,7 +631,7 @@ class TemplateController {
 
         MultipartFile upload = request.getFile('animal') ?: request.getFile('entry')
         def fileType = "wildlifespotter"
-        if (!StringUtils.isNullOrEmpty(params.fileType as String) && params.fileType == "audio") {
+        if (!Strings.isNullOrEmpty(params.fileType as String) && params.fileType == "audio") {
             fileType = "audiotranscribe"
         }
 

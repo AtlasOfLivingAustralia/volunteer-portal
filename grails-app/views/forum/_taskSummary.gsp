@@ -48,7 +48,7 @@
 </div>
 <asset:javascript src="image-viewer" asset-defer=""/>
 %{--<asset:javascript src="transcribe/audiotranscribe" asset-defer=""/>--}%
-<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js@6.1.0/dist/wavesurfer.js"></script>
 <asset:script>
     $(document).ready(function () {
         setupPanZoom();

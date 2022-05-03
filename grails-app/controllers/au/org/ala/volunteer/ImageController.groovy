@@ -86,24 +86,11 @@ class ImageController {
         def imagesHome = grailsApplication.config.getProperty('images.home')
         File result = new File("$imagesHome${File.separator}$encodedPrefix", "${encodedName}.${format}")
 
-        if (result.exists()) {
-            sendImage(result, contentType(format))
-            return
-        }
-
-        File original = findImage(encodedPrefix, encodedName)
-        if (!original) {
+        if (!result.exists()) {
             response.sendError(SC_NOT_FOUND)
             return
         }
 
-        def originalImage = ImageIO.read(original)
-        if (!originalImage) {
-            log.warn("${original.path} could not be read as an image")
-            render([error: "${original.path} could not be read as an image"] as JSON, status: 500)
-            return
-        }
-        originalImage.flush()
         sendImage(result, contentType(format))
     }
 
