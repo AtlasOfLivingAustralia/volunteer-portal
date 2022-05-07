@@ -730,7 +730,7 @@ class VolunteerTagLib {
         def linkText = attrs.remove('linkText')
         out << "<a href="
         out << audioUrl(attrs, body)
-        out << " class=\"sm2_link\">"
+        out << " aria-label=\"Audio sample\" class=\"sm2_link\">"
         if (linkText) {
             out << linkText
         }

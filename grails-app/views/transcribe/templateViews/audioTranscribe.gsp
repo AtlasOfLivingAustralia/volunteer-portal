@@ -95,8 +95,8 @@
                                                 </div>
                                             </g:each>
                                             <div class="btn-group pull-right" role="group" aria-label="...">
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" class="btn btn-default btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-default btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
                                             </div>
                                         </div>
                                         <div id="ct-animals-no-filter">
