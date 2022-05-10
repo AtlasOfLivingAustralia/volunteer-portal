@@ -15,7 +15,6 @@
     <meta property="og:url"           content="${shareUrl}" />
     <meta property="og:type"          content="website" />
     <meta property="og:title"         content="${taskInstance.project.name} Task Details - ${taskInstance.externalIdentifier}" />
-    %{--<meta property="og:description"   content="Your description" />--}%
     <meta property="og:image"         content="${thumbnail}" />
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
@@ -161,7 +160,7 @@
                                         <div class="col-sm-6">
                                             <div class="row">
                                                 <div class="col-sm-4">
-                                                    ${(validator) ? 'Transcriber' : 'Your'} Notes
+                                                    <label for="recordValues.0.transcriberNotes">${(validator) ? 'Transcriber' : 'Your'} Notes</label>
                                                 </div>
 
                                                 <div class="col-sm-8">
@@ -175,7 +174,7 @@
                                         <div class="col-sm-6">
                                             <g:if test="${validator}">
                                                 <div class="row">
-                                                    <div class="col-sm-4">Validator Notes</div>
+                                                    <div class="col-sm-4"><label for="recordValues.0.validatorNotes">Validator Notes</label></div>
 
                                                     <div class="col-sm-8">
                                                         <g:textArea name="recordValues.0.validatorNotes"
