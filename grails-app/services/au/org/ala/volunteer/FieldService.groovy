@@ -33,32 +33,100 @@ class FieldService {
      * @param fieldNames
      * @return
      */
-    List findAllTasksByFieldValues(Project projectInstance, String query, Map params, List fieldNames = []) {
+    def findAllTasksByFieldValues(Project projectInstance, String query, Map params, def fieldNames = []) {
         query = query?.toLowerCase()
+        def queryParams = [projectId: projectInstance.id, query: '%' + query + '%']
 
-        def taskList
-
-        if (fieldNames) {
-            taskList = Field.executeQuery(
-                    """select distinct f.task from Field f
-               where f.superceded = false and
-               f.name in (:fieldNames) and
-               f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
-               """, [projectInstance: projectInstance, query: '%' + query + '%', fieldNames: fieldNames], params)
+        String statusFilterClause = " and (task.is_fully_transcribed = :transcribed and task.fully_validated_by :validatedClause)"
+        if (params.statusFilter && params.statusFilter == 'transcribed') {
+            statusFilterClause = statusFilterClause.replace(':validatedClause', 'is null')
+            queryParams.transcribed = true
+        } else if (params.statusFilter && params.statusFilter == 'validated') {
+            statusFilterClause = statusFilterClause.replace(':validatedClause', 'is not null')
+            queryParams.transcribed = true
+        } else if (params.statusFilter && params.statusFilter == 'not-transcribed') {
+            statusFilterClause = statusFilterClause.replace(':validatedClause', 'is null')
+            queryParams.transcribed = false
         } else {
-            taskList = Field.executeQuery(
-                    """select distinct f.task from Field f
-               where f.superceded = false and
-               f.task.project = :projectInstance and
-               (lower(f.value) like :query or lower(f.transcription.fullyTranscribedBy) like :query or lower(f.task.externalIdentifier) like :query)
-               """, [projectInstance: projectInstance, query: '%' + query + '%'], params)
+            statusFilterClause = ""
         }
 
-        taskList?.toList()
+        String fieldClause = " and f.name in (:fieldNames) "
+        if (fieldNames) {
+            queryParams.fieldNames = fieldNames
+        } else {
+            fieldClause = ""
+        }
+
+//        String queryString = """\
+//            select distinct f.task
+//            from Field f
+//            where f.superceded = false
+//            ${fieldClause}
+//            and f.task.project = :projectInstance
+//            ${statusFilterClause}
+//            and (lower(f.value) like :query
+//                or lower(f.transcription.fullyTranscribedBy) like :query
+//                or lower(f.task.externalIdentifier) like :query) """.stripIndent()
+        String queryString = """\
+            select distinct task.id, 
+                task.is_valid, 
+                task.number_of_matching_transcriptions,
+                task.external_identifier,
+                task.fully_validated_by
+            from field f
+            join task on (f.task_id = task.id)
+            left join transcription on (transcription.task_id = task.id)
+            left join vp_user u1 on (transcription.fully_transcribed_by = u1.user_id)
+            left join vp_user v1 on (task.fully_validated_by = v1.user_id)
+            where f.superceded = false
+            ${fieldClause}
+            and task.project_id = :projectId
+            ${statusFilterClause}
+            and (lower(f.value) like :query  
+                or lower(task.external_identifier) like :query 
+                or lower(concat(u1.first_name, ' ', u1.last_name)) like :query
+                or lower(concat(v1.first_name, ' ', v1.last_name)) like :query) """.stripIndent()
+
+        def sortClause = " order by "
+        switch (params.sort) {
+            case 'isValid':
+                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+                break
+            case 'numberOfMatchingTranscriptions':
+                sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "
+                break
+            case 'fullyValidatedBy':
+                sortClause += " task.fully_validated_by " + (params.order ?: 'asc')
+                break
+            case 'externalIdentifier':
+                sortClause += " task.external_identifier " + (params.order ?: 'asc')
+                break
+            default:
+                sortClause += " task." + (params.sort ?: 'id') + " " + (params.order ?: 'asc')
+                break
+        }
+
+        def selectQuery = queryString + sortClause + (params.max ? " limit ${params.max} " : "") +
+                (params.offset ? " offset ${params.offset} " : "")
+        def countQuery = "select count(*) as taskCount from (" + queryString + ") taskList"
+
+        log.debug("Field query: ${selectQuery}")
+
+        def sql = new Sql(dataSource)
+        def taskList = []
+        sql.eachRow(selectQuery, queryParams) { row ->
+            Task task = Task.get(row.id as long)
+            if (task) taskList.add(task)
+        }
+
+        def taskCount = sql.firstRow(countQuery, queryParams)?.taskCount
+
+        sql.close()
+        [taskList: taskList, taskCount: (taskCount ?: 0)]
     }
 
-    public int countAllTasksByFieldValueQuery(Project projectInstance, String query, List fieldNames = []) {
+    int countAllTasksByFieldValueQuery(Project projectInstance, String query, List fieldNames = []) {
 
         query = query?.toLowerCase()
         def count
@@ -173,6 +241,40 @@ class FieldService {
         def databaseFieldNames = sql.rows(select, [projectId: project.id])
         sql.close()
         databaseFieldNames
+    }
+
+    List findAllTasksByFieldAndFieldValue(Project project, String fieldName, String fieldValue, String sortFieldName = null) {
+        def select = """
+            SELECT distinct task_id
+            FROM field
+            JOIN task ON (task.id = field.task_id)
+            WHERE task.project_id = :projectId
+            AND field.name = :fieldName
+            AND field.value = :fieldValue
+        """
+
+        def params = [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue]
+
+        if (sortFieldName) {
+            select = """
+                ${select}
+                ORDER BY ${sortFieldName} ASC
+            """
+        }
+
+        log.debug("Query: ${select}")
+
+        def sql = new Sql(dataSource)
+        def taskList = []
+        sql.eachRow(select, params) { row ->
+            Task task = Task.get(row.task_id as long)
+            if (task) {
+                taskList.add(task)
+            }
+        }
+        sql.close()
+
+        taskList
     }
 
 }

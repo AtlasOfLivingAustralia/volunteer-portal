@@ -63,7 +63,7 @@
         </div>
     </div>
 </div>
-<asset:script>
+<asset:script type="text/javascript">
             jQuery(function($) {
                 $('#migrate-button').click(postData);
 

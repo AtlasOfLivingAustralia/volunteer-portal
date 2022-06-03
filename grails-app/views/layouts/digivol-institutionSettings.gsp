@@ -8,15 +8,19 @@
 
 <body class="admin">
 
-<cl:headerContent hideTitle="${true}" selectedNavItem="bvpadmin">
+<cl:headerContent hideTitle="${institutionInstance?.isApproved}"
+                  title="${institutionInstance?.isApproved ? '' : institutionInstance.name}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
                 [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                [link: createLink(controller: 'institutionAdmin', action: 'index'), label: 'Manage Institutions'],
-                [link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name]
+                [link: createLink(controller: 'institutionAdmin', action: 'index'), label: 'Manage Institutions'] //,
+                //[link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name]
         ]
+
+        if (institutionInstance?.isApproved) pageScope.crumbs
+                .add([link: createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id), label: institutionInstance.name])
     %>
-    <h1>Institution Settings - ${institutionInstance.name}</h1>
+    <h1>Institution <g:if test="${institutionInstance?.isApproved}">Settings</g:if><g:else>Application</g:else> - ${institutionInstance.name}</h1>
 </cl:headerContent>
 
 <div class="container">
@@ -33,7 +37,12 @@
 
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
-                        <div class="panel-heading text-right" >
+                        <g:if test="${!institutionInstance?.isApproved}">
+                            <div class="panel-heading text-right" style="padding-bottom: 2em;">
+                        </g:if>
+                        <g:else>
+                            <div class="panel-heading text-right">
+                        </g:else>
                             <h4 class="pull-left">${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
 
                             <div class="btn-group">

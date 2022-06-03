@@ -1,6 +1,6 @@
 <g:applyLayout name="${grailsApplication.config.ala.skin}">
 <head>
-    <title><cl:pageTitle title="Edit Project ${projectInstance?.name}"/></title>
+    <title><cl:pageTitle title="Edit Expedition ${projectInstance?.name}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
@@ -9,16 +9,18 @@
 <body class="admin">
 <div class="container">
 
-    <cl:headerContent hideTitle="${true}" title="${message(code: 'default.project.label', default: 'Edit Project')}" selectedNavItem="bvpadmin">
+    <cl:headerContent hideTitle="${true}" title="${message(code: 'default.project.label', default: 'Edit Expedition')}" selectedNavItem="bvpadmin">
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                    [link: createLink(controller: 'project', action: 'manage'), label: message(code: 'default.project.manage', default: 'Manage expeditions')],
                     [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel ?: ""]
             ]
         %>
-        <h1>Expedition Settings - ${projectInstance.name} <small><muted>${projectInstance.inactive ? '(Deactivated)' : ''}</muted>
-        </small></h1>
-        <cl:projectCreatedBy project="${projectInstance}"></cl:projectCreatedBy>
+        <h1>Expedition Settings - ${projectInstance.name}</h1>
+        <h2><g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
+            <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if></h2>
+        <cl:projectCreatedBy project="${projectInstance}" />
     </cl:headerContent>
 
     <div class="panel panel-default">
@@ -69,8 +71,26 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
+                                            <g:if test="${projectInstance.archived}">
+                                                <span class="expedition disabledMenuItem" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off"></i> Activate expedition</span>
+                                            </g:if>
+                                            <g:else>
                                             <a id="btnToggleActivation" class="${projectInstance.inactive ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}"
                                                href="#"> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}</a>
+                                            </g:else>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-share"></i>&nbsp;Expedition administration</g:link>
+                                        </li>
+                                        <li>
+                                            <g:link controller="project" action="index" id="${projectInstance.id}"><i class="fa fa-home"></i>&nbsp;Expedition home page</g:link>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <g:link controller="institutionMessage" action="create" params="${[projectId: projectInstance.id]}">
+                                                <i class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers
+                                            </g:link>
                                         </li>
                                         <li class="divider"></li>
                                         <li>

@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <!doctype html>
 <html>
 <head>
@@ -18,6 +19,7 @@
 <g:form method="post" class="form-horizontal">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
+    <g:hiddenField name="formType" value="${Project.EDIT_SECTION_TUTORIAL}" />
 
     <div class="form-group">
         <div class="col-md-12">

@@ -9,7 +9,7 @@ import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
 import grails.gorm.transactions.Transactional
 
-@AlaSecured("ROLE_VP_ADMIN")
+@AlaSecured(value="ROLE_VP_ADMIN", redirectController = "index", redirectAction="notPermitted")
 class AchievementDescriptionController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE", uploadBadgeImage: "POST", award: "POST", awardAll: "POST", enable: "POST"]

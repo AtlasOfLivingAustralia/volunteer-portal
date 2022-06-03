@@ -22,28 +22,13 @@
     <p><g:message code="admin.archive.download" /></p>
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <table class="table table-condensed">
-            <tr>
-                <th><g:message code="system.space.usable" default="Usable space"/></th>
-                <th><g:message code="system.space.free" default="Free space"/></th>
-                <th><g:message code="system.space.total" default="Total space"/></th>
-                <th><g:message code="system.space.percentFull" default="Percent full"/></th>
-            </tr>
-            <tr>
-                <td><cl:formatFileSize size="${imageStoreStats.usable}"/></td>
-                <td><cl:formatFileSize size="${imageStoreStats.free}"/></td>
-                <td><cl:formatFileSize size="${imageStoreStats.total}"/></td>
-                <td>${((imageStoreStats.total - imageStoreStats.free) / imageStoreStats.total) * 100.0}%</td>
-            </tr>
-        </table>
-    </div>
+
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
                     <g:form controller="project" action="archiveList" method="GET">
-                        <g:select class="form-control" name="institution" from="${Institution.list([sort: 'name', order: 'asc'])}"
+                        <g:select class="form-control" name="institution" from="${institutionList}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Filter by Institution -']" onchange="submit()" />
                     </g:form>

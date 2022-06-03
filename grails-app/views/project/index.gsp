@@ -46,7 +46,9 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <h1>${projectInstance.name}<g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if><g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="project.inactive" /></span></small></g:if></h1>
+                <h1>${projectInstance.name}</h1>
+                <h2><g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
+                    <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if></h2>
                 <div id="projectDescription" class="hidden">
                     <p>${raw(projectInstance.description)}</p><!-- end description -->
                     <a href="#" title="read more" class="readmore">Read more »</a>
@@ -76,13 +78,13 @@
                 </g:if>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
-                        <cl:ifAdmin>
+                        <cl:ifInstitutionAdmin project="${projectInstance}">
                             <g:link class="btn btn-warning " controller="task"
                                     action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
                             <g:link class="btn btn-warning " controller="project"
                                     action="edit" id="${projectInstance.id}"><i
                                     class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
-                        </cl:ifAdmin>
+                        </cl:ifInstitutionAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
                         <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
@@ -177,7 +179,7 @@
 
             <div class="col-sm-4">
                 %{-- mini leaderboard --}%
-                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, projectId: projectInstance.id, maxContributors: 2]"/>
+                <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, disableContribution: true, projectId: projectInstance.id, maxContributors: 2]"/>
             </div>
         </div>
     </div>

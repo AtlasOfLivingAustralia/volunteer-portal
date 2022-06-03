@@ -58,12 +58,8 @@
                                 </g:if>
                                 <g:else>
                                     <button type="button" id="btnValidate"
-                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}"><i
-                                            class="glyphicon glyphicon-ok glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.validate.label', default: 'Mark as Valid')}
-                                    </button>
-                                    <button type="button" id="btnDontValidate"
-                                            class="btn btn-danger bvp-submit-button ${validator ? '' : 'hidden'}"><i
-                                            class="glyphicon glyphicon-remove glyphicon glyphicon-white"></i>&nbsp;${message(code: 'default.button.dont.validate.label', default: 'Mark as Invalid')}
+                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}">
+                                        ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
                                 </g:else>
                             </div>

@@ -52,6 +52,8 @@ class TaskLoadService implements EventPublisher {
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext
+    def assetResourceLocator
+    def projectService
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -144,10 +146,10 @@ class TaskLoadService implements EventPublisher {
         create.settings().updatablePrimaryKeys = true
 
         create.transaction({ cfg ->
-            def ctx = DSL.using(cfg)
+            def txContext = DSL.using(cfg)
             imageData.each { imgData ->
 
-                def taskDesc = ctx.newRecord(TASK_DESCRIPTOR).with {
+                def taskDesc = txContext.newRecord(TASK_DESCRIPTOR).with {
                     projectId = project.id
                     projectName = project.name
                     imageUrl = imgData.url
@@ -160,7 +162,7 @@ class TaskLoadService implements EventPublisher {
                     def fieldName = kvp.key
                     def recordIndex = 0
 
-                    def matcher = nameIndexRegex.matcher(fieldName)
+                    def matcher = nameIndexRegex.matcher(fieldName as CharSequence)
                     if (matcher.matches()) {
                         fieldName = matcher.group(1)
                         recordIndex = Integer.parseInt(matcher.group(2))
@@ -176,7 +178,7 @@ class TaskLoadService implements EventPublisher {
                 def shadowFileRecords = imgData.shadowFiles?.collect { shadowFile ->
                     log.info("Adding shadow files pre task import ${taskDesc.id}: ${shadowFile.stagedFile.file}")
                     def filePath = shadowFile.stagedFile.file as String
-                    ctx.newRecord(SHADOW_FILE_DESCRIPTOR).with {
+                    txContext.newRecord(SHADOW_FILE_DESCRIPTOR).with {
                         taskDescriptorId = taskDesc.id
                         name = shadowFile.fieldName as String
                         recordIdx = shadowFile.recordIndex as Integer
@@ -186,7 +188,7 @@ class TaskLoadService implements EventPublisher {
                 }
 
                 if (shadowFileRecords) {
-                    create.batchInsert(shadowFileRecords).execute()
+                    txContext.batchInsert(shadowFileRecords).execute()
                 }
             }
         } as TransactionalRunnable)
@@ -409,6 +411,13 @@ class TaskLoadService implements EventPublisher {
     def doTaskLoad(Long projectId = null) {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
+            // Calculate project directory disk usage after completion
+            def project = Project.get(projectId)
+            if (project) {
+                def projectSize = projectService.projectSize(project).size as long
+                log.info("Project size: ${projectSize}")
+            }
+
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
         }
     }
@@ -927,13 +936,20 @@ class TaskLoadService implements EventPublisher {
     }
 
     private TaskService.FileMap completeMultimediaRecord(MultimediaRecord multimedia, long projectId) {
-            def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
-            if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, ${projectId}, ${multimedia.taskId}, ${multimedia.id}")
+        Project project = Project.get(projectId)
+
+        def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
+        if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, ${projectId}, ${multimedia.taskId}, ${multimedia.id}")
+
+        if (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+            multimedia.filePathToThumbnail = null
+        } else {
             filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-            multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
             multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
-            multimedia.mimeType = filePath.contentType
-            return filePath
+        }
+        multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
+        multimedia.mimeType = filePath.contentType
+        return filePath
     }
 
 

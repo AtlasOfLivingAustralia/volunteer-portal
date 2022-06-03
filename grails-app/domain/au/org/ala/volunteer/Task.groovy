@@ -34,7 +34,7 @@ class Task implements Serializable {
         multimedia cascade: 'all,delete-orphan'
         viewedTasks cascade: 'all,delete-orphan'
         fields cascade: 'all,delete-orphan'
-        comments cascade: 'all,delete-orphan'
+        //comments cascade: 'all,delete-orphan'
         transcriptions cascade: 'all,delete-orphan'
         //transcribedUUID type: 'pg-uuid'
         validatedUUID type: 'pg-uuid'
@@ -72,7 +72,7 @@ class Task implements Serializable {
             return true
         }
         int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
-        int transcriptionCount = transcriptions?.count{it.fullyTranscribedBy} ?: 0
+        int transcriptionCount = (int) (transcriptions?.count { it.fullyTranscribedBy } ?: 0)
         return transcriptionCount >= requiredTranscriptionCount
     }
 
@@ -132,13 +132,9 @@ class Task implements Serializable {
      * valid fields that have been approved (or transcribed) by a validator.
      */
     Set<Field> getTaskFields() {
-
         Set taskFields = fields.findAll{it.transcription == null}
 
-        log.debug('taskfields {}', taskFields)
         taskFields
-
-
     }
 
     /**
@@ -155,12 +151,19 @@ class Task implements Serializable {
         long timeoutWindow = System.currentTimeMillis() - timeoutInSeconds
         Set usersWhoCompletedTheirTranscriptions = transcriptions.findAll{it.fullyTranscribedBy}
                 .collect{it.fullyTranscribedBy}.toSet()
-        log.debug("Task; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
+        log.debug("[isLockedForTranscription] Task: ${id}; Users with transcriptions: ${usersWhoCompletedTheirTranscriptions}")
 
         boolean locked = false
         if (!usersWhoCompletedTheirTranscriptions.contains(userId)) {
             // Only views made by users that have not completed their transcription are relevant.
             Set currentViews = viewedTasks.findAll { view ->
+                // If this view's user is not in the list of completed transcriptions
+                // AND the view was less than 2hours ago
+                //     and the view's user is not the requesting user
+                //     and the view wasn't skipped
+                // Then the task is locked.
+                log.debug("View on this task by user: [${view.userId}], date: [${new Date(view.lastView)}]")
+                log.debug("Does view count towards locking: ${!(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)}")
                 return !(view.userId in usersWhoCompletedTheirTranscriptions) && (view.lastView > timeoutWindow && userId != view.userId && !view.skipped)
             }.collect{it.userId}.toSet()
 

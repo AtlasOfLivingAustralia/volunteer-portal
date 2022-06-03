@@ -13,7 +13,7 @@
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
-                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'default.list.label', args: [entityName])]
+                    [link: createLink(controller: 'template', action: 'list'), label: message(code: 'template.manage.label', default: "Manage Templates")]
             ]
         %>
         <div>
@@ -37,10 +37,10 @@
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
                             <label for="name" class="col-md-3 control-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-default" id="btnEditFields">Edit Fields</button>
+                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-default" id="btnEditFields" label="Edit Fields"/>
                                 <button class="btn btn-default" id="btnPreview">Preview Template</button>
                             </div>
                         </div>
@@ -73,8 +73,10 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
-                            <label class="col-md-3 control-label" for="supportMultipleTranscriptions"><g:message code="template.multipletanscriptions.label"
-                                                                                                  default="Support multiple transcriptions per task?"/></label>
+                            <label class="col-md-3 control-label" for="supportMultipleTranscriptions">
+                                <g:message code="template.multipletanscriptions.label"
+                                           default="Support multiple transcriptions per task?"/>
+                            </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
                                 <g:checkBox name="supportMultipleTranscriptions"
@@ -83,23 +85,64 @@
                             </div>
                         </div>
 
+                        <cl:ifSiteAdmin>
+                            <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
+                                <label class="col-md-3 control-label" for="isGlobal">
+                                    <g:message code="template.isglobal.label"
+                                               default="Is a Global Template (available to everyone)?"/>
+                                </label>
+                                <div class="col-md-6">
+                                    <div style="padding-top: 10px">
+                                        <g:checkBox name="isGlobal"
+                                                    checked="${templateInstance.isGlobal}"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
+                                <label class="col-md-3 control-label" for="isHidden">
+                                    <g:message code="template.ishidden.label"
+                                               default="Hide Template (hide from all editors)?"/>
+                                </label>
+                                <div class="col-md-6">
+                                    <div style="padding-top: 10px">
+                                        <g:checkBox name="isHidden"
+                                                    checked="${templateInstance.isHidden}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </cl:ifSiteAdmin>
+
                         <div id="row-view-params-json" class="form-group">
                             <label class="col-md-3 control-label"><g:message code="template.project.label"
                                                                                   default="Projects that use this template:"/></label>
 
                             <div class="col-md-6">
-                                <g:each in="${templateInstance?.project ?}" var="p">
-                                    <li class="form-control-static"><g:link controller="project" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+                                <g:each in="${projectUsageList}" var="project">
+                                    <ul>
+                                        <li class="form-control-static">${(project.key ? project.key : "No institution")}</li>
+                                        <ul>
+                                            <g:each in="${project.value}" var="proj">
+                                                <li><g:link controller="project" action="show" id="${proj.id}">${proj.name}</g:link></li>
+                                            </g:each>
+                                        </ul>
+                                    </ul>
                                 </g:each>
                             </div>
+                        </div>
+
                         </div>
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                <cl:ifSiteAdmin>
+                                    <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                                disabled="${templateInstance.projects?.size() > 0}"
+                                                title="${(templateInstance.projects?.size() > 0 ? "Delete is not allowed when template is linked to an existing expedition." : "Delete")}"
                                                 value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                                </cl:ifSiteAdmin>
                             </div>
                         </div>
                     </g:form>

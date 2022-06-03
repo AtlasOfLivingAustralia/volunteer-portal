@@ -38,7 +38,13 @@ class TutorialService {
     }
 
     def uploadTutorialFile(MultipartFile file) {
-        def filePath = createFilePath(file.originalFilename)
+        // Check if there's a file extension. If not, add it.
+        def fileExtn = '.pdf'
+        def fileName = file.originalFilename
+        if (!file.originalFilename.contains(fileExtn)) {
+            fileName += fileExtn
+        }
+        def filePath = createFilePath(fileName)
         def newFile = new File(filePath);
         file.transferTo(newFile);
     }
@@ -85,7 +91,9 @@ class TutorialService {
                 title = matcher.group(2)
             }
 
-            title = title.subSequence(0, title.lastIndexOf('.'))
+            // If there's no file extension, make sure we don't throw an exception.
+            int fileExtnSep = title.lastIndexOf('.')
+            if (fileExtnSep > 0) title = title.subSequence(0, fileExtnSep)
 
             if (!tutorials[group]) {
                 tutorials[group] = []
@@ -98,8 +106,6 @@ class TutorialService {
             tutorials['-'] = []
         }
 
-
         return tutorials
     }
-
 }

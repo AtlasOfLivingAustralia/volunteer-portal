@@ -38,6 +38,9 @@ class Project implements Serializable {
 
     Date dateCreated
     Date lastUpdated
+    // Project of the Day Last Selected Date
+    Date potdLastSelected
+    Long sizeInBytes = 0L
 
     Integer version
 
@@ -50,6 +53,14 @@ class Project implements Serializable {
     static final Integer DEFAULT_TRANSCRIPTIONS_PER_TASK = 1
     static final Integer DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS = 0
 
+    static final String EDIT_SECTION_GENERAL = 'general'
+    static final String EDIT_SECTION_IMAGE = 'image'
+    static final String EDIT_SECTION_BG_IMAGE = 'bgImage'
+    static final String EDIT_SECTION_PICKLIST = 'picklist'
+    static final String EDIT_SECTION_TASK = 'task'
+    static final String EDIT_SECTION_MAP = 'map'
+    static final String EDIT_SECTION_TUTORIAL = 'tutorial'
+
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription]
     static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
@@ -60,7 +71,6 @@ class Project implements Serializable {
         autoTimestamp true
         description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
-        projectAssociations cascade: 'all,delete-orphan'
         template lazy: false
         harvestableByAla defaultValue: false
         version defaultValue: '0'
@@ -86,7 +96,6 @@ class Project implements Serializable {
         featuredImageCopyright nullable: true
         backgroundImageAttribution nullable: true
         backgroundImageOverlayColour nullable: true
-        inactive nullable: true
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
@@ -99,6 +108,8 @@ class Project implements Serializable {
         extractImageExifData nullable: true
         transcriptionsPerTask nullable: true
         thresholdMatchingTranscriptions nullable: true
+        potdLastSelected nullable: true
+        sizeInBytes nullable: false
     }
 
     /**
@@ -199,4 +210,40 @@ class Project implements Serializable {
         name ?: ''
     }
 
+    static def getCloneableFields() {
+        // Don't include anything from hasMany. Do them manually.
+        return ['description',
+                'tutorialLinks',
+                'showMap',
+                'shortDescription',
+                'featuredOwner',
+                'institution',
+                'leaderIconIndex',
+                'featuredImageCopyright',
+                'backgroundImageAttribution',
+                'backgroundImageOverlayColour',
+                'collectionEventLookupCollectionCode',
+                'localityLookupCollectionCode',
+                'picklistInstitutionCode',
+                'mapInitZoomLevel',
+                'mapInitLatitude',
+                'mapInitLongitude',
+                'imageSharingEnabled',
+                'extractImageExifData',
+                'transcriptionsPerTask',
+                'thresholdMatchingTranscriptions',
+                'template',
+                'projectType'
+                ]
+    }
+
+    String getProjectSizeFormatted() {
+        String size
+        if (!archived) {
+            if (sizeInBytes > 0) size = PrettySize.toPrettySize(BigInteger.valueOf(sizeInBytes))
+            else size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+        } else {
+            size = PrettySize.toPrettySize(BigInteger.valueOf(0))
+        }
+    }
 }

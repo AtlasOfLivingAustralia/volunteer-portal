@@ -1,18 +1,17 @@
 package au.org.ala.volunteer
 
-import au.org.ala.volunteer.jooq.tables.ProjectLabels
 import com.google.common.base.Stopwatch
 import grails.events.EventPublisher
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
+import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
+import groovy.time.TimeCategory
 import groovy.transform.Immutable
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.SimpleType
 import groovyx.gpars.actor.Actors
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.io.FileUtils
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.DSLContext
@@ -23,26 +22,25 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
-import java.security.Principal
+import javax.sql.DataSource
+import java.util.concurrent.ThreadLocalRandom
 
 import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
 import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
 import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
-import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
-import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
-import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
 import static au.org.ala.volunteer.jooq.tables.Label.LABEL
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.ProjectLabels.PROJECT_LABELS
+import static au.org.ala.volunteer.jooq.tables.ProjectType.PROJECT_TYPE
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.condition
-import static org.jooq.impl.DSL.count
+import static org.jooq.impl.DSL.*
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
-import static org.jooq.impl.DSL.not
 import static org.jooq.impl.DSL.nvl as jNvl
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.sum as jSum
@@ -64,7 +62,7 @@ class ProjectService implements EventPublisher {
     private static final Condition getACTIVE_ONLY() { PROJECT.INACTIVE.eq(false) | PROJECT.INACTIVE.isNull() }
 
     def userService
-    def taskService
+    DataSource dataSource
     LinkGenerator grailsLinkGenerator
     def projectTypeService
     def forumService
@@ -111,7 +109,12 @@ class ProjectService implements EventPublisher {
                             }
                             tasks = Task.findAllByProjectAndIdGreaterThan(p, lastId, [sort: 'id', order: 'asc', max: 100])
                         }
+
+                        // Reset disk usage to zero, as all tasks have been deleted.
+                        p.sizeInBytes = 0
+
                         log.info("Completed deleting all tasks for ${msg.projectId}")
+
                         session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
@@ -126,6 +129,17 @@ class ProjectService implements EventPublisher {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    /**
+     * Returns boolean if the user is an admin for the project or not.
+     * @param project the project in question
+     * @return true if user is admin, false if not.
+     */
+    def isAdminForProject(Project project) {
+        if (!project) return false
+        def currentUser = userService.currentUserId
+        return currentUser != null && (userService.isSiteAdmin() || userService.isInstitutionAdmin(project?.institution))
     }
 
     @Transactional(readOnly = true)
@@ -190,6 +204,27 @@ class ProjectService implements EventPublisher {
         projectInstance.save(flush: flush, failOnError: failOnError)
     }
 
+    def createProject(Project project) {
+        def user = userService.getCurrentUser()
+
+        try {
+            // Set inactive and created by
+            project.featuredLabel = project.name
+            project.featuredOwner = project.institution.name
+            project.inactive = true
+            project.createdBy = user
+            project.save(failOnError: true, flush: true)
+
+            // sign the creator up for project forum topic notifications
+            forumService.watchProject(user, project, true)
+        } catch (Exception ex) {
+            log.error("Unable to save Project: ${ex.getMessage()}", ex)
+            return false
+        }
+
+        true
+    }
+
     /**
      * Sends an email notification to the configured email with the included message. Project notifications are sent
      * to the configured address (notifications.project.address).
@@ -221,7 +256,7 @@ class ProjectService implements EventPublisher {
 
 
         if (!projectInstance) {
-            return;
+            return
         }
 
         // First need to delete the staging profile, if it exists, and to do that you need to delete all its items first
@@ -319,16 +354,15 @@ class ProjectService implements EventPublisher {
     }
 
     private static ProjectType guessProjectType(Project project) {
-
         def viewName = project.template.viewName.toLowerCase()
 
         if (viewName.contains("journal") || viewName.contains("fieldnotebook") || viewName.contains("observationDiary")) {
-            return ProjectType.findByName("fieldnotes")
+            return ProjectType.findByName(ProjectType.PROJECT_TYPE_FIELDNOTES)
         } else if (viewName.contains('camera trap') || viewName.contains('wild count') || viewName.contains('wildcount')) {
-            return ProjectType.findByName("cameratraps")
+            return ProjectType.findByName(ProjectType.PROJECT_TYPE_CAMERATRAP)
         }
 
-        return ProjectType.findByName("specimens")
+        return ProjectType.findByName(ProjectType.PROJECT_TYPE_SPECIMEN)
     }
 
     private ProjectSummary makeProjectSummary(Project project, Number taskCount, Number transcribedCount, Number fullyValidatedCount, Number transcriberCount, Number validatorCount) {
@@ -367,7 +401,7 @@ class ProjectService implements EventPublisher {
 
     def makeSummaryListForInstitution(Institution institution, String tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter) {
         def conditions = [PROJECT.INSTITUTION_ID.eq(institution.id)]
-        if (!userService.isInstitutionAdmin(institution)) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             conditions += ACTIVE_ONLY
         }
         makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, false)
@@ -416,7 +450,7 @@ class ProjectService implements EventPublisher {
         )
     }
 
-    private static def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
+    private def generateProjectSummariesQuery(DSLContext context, Collection<? extends Condition> whereClauses, def tag, String q, String sort, Integer offset, Integer max, String order, ProjectStatusFilterType statusFilter, ProjectActiveFilterType activeFilter, boolean countUsers) {
 
         switch (activeFilter) {
             case ProjectActiveFilterType.showActiveOnly:
@@ -426,7 +460,17 @@ class ProjectService implements EventPublisher {
                 whereClauses += PROJECT.INACTIVE.eq(true)
                 break
             case ProjectActiveFilterType.showArchivedOnly:
-                whereClauses += PROJECT.ARCHIVED.eq(true)
+                // Note CD: removed static declaration off method to do this. I couldn't find any reason
+                // for it to remain static...
+                // This option is only given to Admins and IA's. IA's should only see their institutions archived projects.
+                if (!userService.isAdmin()) {
+                    log.debug("Project summary, Not an admin but has institution admin...")
+                    def institutionAdminList = userService.getAdminInstitutionList()
+                    def institutionAdminClause = [PROJECT.ARCHIVED.eq(true), PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                    whereClauses += institutionAdminClause
+                } else {
+                    whereClauses += PROJECT.ARCHIVED.eq(true)
+                }
                 break
         }
 
@@ -533,7 +577,8 @@ class ProjectService implements EventPublisher {
                 ).select(taskJoinTable.fields()).
                 from(fromClause).
                 where(whereClauses).
-                orderBy(sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
+                orderBy(coalesce(PROJECT.INACTIVE, false).sort(SortOrder.ASC),
+                        sortCondition.sort(order == 'desc' ? SortOrder.DESC : SortOrder.ASC))
         if (offset && max) return query.offset(offset).limit(max)
         else if (offset) return query.offset(offset)
         else if (max) return query.limit(max)
@@ -549,7 +594,15 @@ class ProjectService implements EventPublisher {
         if (userService.isAdmin()) {
             conditions = []
         } else {
-            conditions = [ACTIVE_ONLY]
+            //conditions = [ACTIVE_ONLY]
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions = [jOr(institutionAdminClause)]
+            } else {
+                conditions = [ACTIVE_ONLY]
+            }
         }
 
         //params?.q, params?.sort, params?.int('offset') ?: 0, params?.int('max') ?: 0, params?.order
@@ -570,7 +623,14 @@ class ProjectService implements EventPublisher {
             conditions += PROJECT.PROJECT_TYPE_ID.eq(projectType.id)
         }
         if (!userService.isAdmin()) {
-            conditions += ACTIVE_ONLY
+            if (userService.isInstitutionAdmin()) {
+                log.debug("Project summary, Not an admin but has institution admin...")
+                def institutionAdminList = userService.getAdminInstitutionList()
+                def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionAdminList*.id)]
+                conditions += jOr(institutionAdminClause)
+            } else {
+                conditions += ACTIVE_ONLY
+            }
         }
 
 //        def filter = ProjectSummaryFilter.composeProjectFilter(statusFilter, activeFilter)
@@ -581,7 +641,7 @@ class ProjectService implements EventPublisher {
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
             def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
-            def file = new File(filePath);
+            def file = new File(filePath)
             if (!file.exists()) {
                 return
             }
@@ -614,9 +674,12 @@ class ProjectService implements EventPublisher {
     def projectSize(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
-            [size: projectPath.directorySize(), error: null]
+            long sizeInBytes = projectPath.directorySize()
+            project.sizeInBytes = sizeInBytes
+            project.save(flush: true, failOnError: true)
+            [size: sizeInBytes, error: null]
         } catch (e) {
-            log.error("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
+            log.warn("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
             [error: e, size: -1]
         }
     }
@@ -642,6 +705,27 @@ class ProjectService implements EventPublisher {
         } else {
             [:]
         }
+    }
+
+    /**
+     * Checks if the current project is complete. Returns true if all tasks have been transcribed. Returns false if
+     * not or the project parameter is null.
+     * @param project The project to check
+     * @return true if project has been completed, false if not.
+     */
+    def isProjectComplete(Project project) {
+        if (!project) {
+            return true
+        } else {
+            def projectMap = calculateCompletion([project])
+            final projectCounts = projectMap[project.id]
+            if (projectCounts) {
+                def transcribed = (projectCounts.transcribed / projectCounts.total) * 100.0
+                return (transcribed == 100)
+            }
+        }
+
+        return false
     }
 
     def writeArchive(Project project, OutputStream outputStream) {
@@ -678,12 +762,33 @@ class ProjectService implements EventPublisher {
         }
     }
 
+    def cloneProject(Project sourceProject, String newName) {
+        def newProject = new Project(name: newName, featuredLabel: newName, inactive: true,
+                createdBy: userService.getCurrentUser())
+
+        def cloneableFields = Project.getCloneableFields()
+        cloneableFields.each { field ->
+            newProject."${field}" = sourceProject."${field}"
+            log.debug("Source value: " + sourceProject."${field}")
+            log.debug("New value: " + newProject."${field}")
+        }
+
+        def sourceLabels = sourceProject.labels
+        sourceLabels.each { Label label ->
+            newProject.addToLabels(label)
+        }
+
+        newProject.save(failOnError: true, flush: true)
+
+        return newProject
+    }
+
     static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
-        String entryName = entryPath + path.getName();
+        String entryName = entryPath + path.getName()
 
         if (path.isFile()) {
-            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName);
-            zos.putArchiveEntry(zipEntry);
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(path, entryName)
+            zos.putArchiveEntry(zipEntry)
             path.withInputStream { fis ->
                 zos << fis
             }
@@ -756,6 +861,12 @@ class ProjectService implements EventPublisher {
         }
     }
 
+    /**
+     * @deprecated countDistinct projection for createCriteria() clashes with Jooq. Moved this method to
+     * VolunteerStatsService.
+     * @param projectsInLabels
+     * @return
+     */
     def getTranscriberCountForTag(def projectsInLabels = null) {
 
         if (projectsInLabels?.size() > 0) {
@@ -778,6 +889,129 @@ class ProjectService implements EventPublisher {
             return result[0]
         } else {
             return 0
+        }
+    }
+
+    /**
+     * Randomly select a project from active, non-archived projects. Only selects from projects that have not been
+     * perviously selected in the last 5 days (to prevent frequent reselection) and is less than 90% completed.
+     *
+     * @return the randomly selected project. If no active, unarchived projects exist, return null.
+     */
+    def selectRandomProject() {
+        def startDate = null
+        def endDate = new Date()
+        use(TimeCategory) {
+            startDate = endDate - 5.days
+        }
+        if (!startDate) startDate = new Date()
+        log.debug("Random project selection time frame: ${startDate}")
+
+        def query = """\
+            select p.id,
+                   sum(case when ta.is_fully_transcribed = true then 1 else 0 end) as transcribed, 
+                   sum(case when ta.fully_validated_by is not null then 1 else 0 end) as validated,
+                   count(ta.id) as total_tasks,
+                   (100.0*(cast(sum(case when ta.is_fully_transcribed = true then 1 else 0 end) as decimal(7,2)) / count(ta.id))) as completion
+              from project p
+              join task ta on (ta.project_id = p.id)
+            where p.archived = false
+              and p.inactive = false
+              and (p.potd_last_selected <= :startDate or p.potd_last_selected is null)
+            group by p.id, name
+            having sum(case when ta.fully_validated_by is not null then 1 else 0 end) < count(ta.id) """.stripIndent()
+
+        def sql = new Sql(dataSource)
+        def projectList = []
+        def backupList = []
+        def results = sql.rows(query, [startDate: startDate.toTimestamp()])
+
+        if (results.size() > 0) {
+            results.each { row ->
+                Project project = Project.get(row.id as long)
+                if (project && row.completion < 100.0) projectList.add(project)
+                else if (project) backupList.add(project)
+            }
+        }
+
+        log.debug("Project Lists to choose from: projectList: ${projectList.size()}")
+        log.debug("Project Lists to choose from: backupList: ${backupList.size()}")
+
+        // Backup checking. If there are no projects that are open and yet to be transcribed, use the
+        // backup list (projects needing validation). If that list is empty, just grab the list of projects.
+        if (projectList.size() == 0 && backupList.size() > 0) {
+            log.debug("Project list is empty, going to backupList")
+            projectList = backupList
+        } else if (projectList.size() == 0 && backupList.size() == 0) {
+            log.debug("No projects to choose from, getting any project")
+            projectList = Project.createCriteria().list {
+                and {
+                    eq('archived', false)
+                    eq('inactive', false)
+                    or {
+                        lt('potdLastSelected', startDate)
+                        isNull('potdLastSelected')
+                    }
+                }
+            } as List
+            log.debug("Projects list: ${projectList.size()}")
+        }
+
+        Project projectToDisplay = null
+        if (projectList.size() > 1) {
+            // Randomly select a project from the list.
+            int randomIndex = ThreadLocalRandom.current().nextInt(0, ((projectList.size() - 1) > 0 ? projectList.size() - 1 : 1))
+            projectToDisplay = projectList.get(randomIndex) as Project
+        } else if (projectList.size() == 1) {
+            projectToDisplay = projectList.first() as Project
+        }
+
+        if (projectToDisplay) {
+            log.debug("Project selected: ${projectToDisplay}")
+            projectToDisplay.potdLastSelected = new Date()
+            projectToDisplay.save(failOnError: true, flush: true)
+        }
+
+        return projectToDisplay.id
+    }
+
+    /**
+     * Determines if the difference between the current datetime is a time that allows for a new random project to be
+     * selected.
+     * @param randomProjectDateUpdated the last datetime the random project was updated.
+     * @return
+     */
+    def isTimeToUpdateRandomProject(Date randomProjectDateUpdated) {
+        def currentDate = new Date().getAt(Calendar.DAY_OF_YEAR)
+        if (!randomProjectDateUpdated) return true
+        def lastDate = randomProjectDateUpdated.getAt(Calendar.DAY_OF_YEAR)
+        // If we've gone over to the next year, return true.
+        if (currentDate < lastDate) return true
+        return currentDate - lastDate >= 1
+    }
+
+    /**
+     * Intended to be called from index page, checks if time to update the project of the day. If so, gets a new
+     * project and updates the frontpage parameter.
+     * @param frontPage The front page details.
+     */
+    def checkProjectOfTheDay(FrontPage frontPage) {
+        log.debug("Checking if it's time to change the PotD")
+        if (isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated) ||
+                isProjectComplete(frontPage.projectOfTheDay)) {
+            log.debug("Yes, updating PotD...")
+            def projectId = selectRandomProject()
+            def project = Project.get(projectId)
+            if (project) {
+                log.debug("New PotD: ${project}")
+                frontPage.projectOfTheDay = project
+                frontPage.randomProjectDateUpdated = new Date()
+                frontPage.save(failOnError: true, flush: true)
+            }
+            return frontPage.projectOfTheDay
+        } else {
+            log.debug("Using existing PotD: ${frontPage.projectOfTheDay}")
+            return frontPage.projectOfTheDay
         }
     }
 }

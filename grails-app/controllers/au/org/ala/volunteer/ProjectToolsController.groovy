@@ -3,41 +3,43 @@ package au.org.ala.volunteer
 class ProjectToolsController {
 
     def projectToolsService
-    def userService
+    def projectService
 
     def matchRecordedByIdFromPicklist() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long('id'))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.id)
-        if (projectInstance) {
-            def fieldsModified = projectToolsService.updateKeyFieldFromPicklistField(projectInstance, "recordedBy", "recordedByID")
+
+        if (project) {
+            def fieldsModified = projectToolsService.updateKeyFieldFromPicklistField(project, "recordedBy", "recordedByID")
             flash.message = "${fieldsModified} fields updated."
         }
-        redirect(controller: 'task', action: 'projectAdmin', id: projectInstance?.id)
+        redirect(controller: 'task', action: 'projectAdmin', id: project?.id)
     }
 
     def reindexProjectTasks() {
-        if (!userService.isAdmin()) {
-            redirect(uri: "/")
+        def project = Project.get(params.long('id'))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
             return
         }
-        def projectInstance = Project.get(params.id)
-        if (projectInstance) {
+
+        if (project) {
             def c = Task.createCriteria()
             def taskList = c.list {
-                eq("project", projectInstance)
+                eq("project", project)
                 projections {
                     property("id")
                 }
-            }
+            } as List<Long>
             taskList.each { long taskId ->
                 DomainUpdateService.scheduleTaskIndex(taskId)
             }
             flash.message = "${taskList.size()} tasks scheduled for indexing."
         }
 
-        redirect(controller: 'task', action: 'projectAdmin', id: projectInstance?.id)
+        redirect(controller: 'task', action: 'projectAdmin', id: project?.id)
     }
 }

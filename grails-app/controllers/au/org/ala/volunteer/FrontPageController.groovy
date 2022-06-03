@@ -3,12 +3,14 @@ package au.org.ala.volunteer
 import grails.events.EventPublisher
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.util.concurrent.TimeUnit
 
 class FrontPageController implements EventPublisher {
 
     def userService
     def fileUploadService
     def settingsService
+    def projectService
 
     def index() {
         redirect(action: "edit", params: params)
@@ -16,9 +18,9 @@ class FrontPageController implements EventPublisher {
 
     def edit() {
         if (userService.isAdmin()) {
-            ['frontPage':FrontPage.instance()]
+            ['frontPage': FrontPage.instance()]
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -27,7 +29,7 @@ class FrontPageController implements EventPublisher {
         if (userService.isAdmin()) {
             def frontPage = FrontPage.instance();
 
-            frontPage.projectOfTheDay = Project.get(Long.parseLong(params['projectOfTheDay']))
+            frontPage.randomProjectOfTheDay = params['randomProjectOfTheDay'] == 'on'
             frontPage.numberOfContributors = params.int('numberOfContributors') ?: 10
             frontPage.useGlobalNewsItem = params['useGlobalNewsItem'] == "on"
 
@@ -44,7 +46,24 @@ class FrontPageController implements EventPublisher {
 
             frontPage.heroImageAttribution = params['heroImageAttribution']
 
-            frontPage.save()
+            // If Random Project of the Day is selected, and it hasn't been updated today, then update.
+            if (frontPage.randomProjectOfTheDay &&
+                    projectService.isTimeToUpdateRandomProject(frontPage.randomProjectDateUpdated)) {
+                def potdId = projectService.selectRandomProject()
+                Project potd = Project.get(potdId)
+                if (potd) {
+                    frontPage.projectOfTheDay = potd
+                    frontPage.randomProjectDateUpdated = new Date()
+                } else {
+                    flash.message = message(code: 'frontPage.randomProject.fail', default: 'Unable to select random project.') as String
+                    redirect(action: "edit", params: params)
+                    return
+                }
+            } else {
+                frontPage.projectOfTheDay = (params['projectOfTheDay'] ? Project.get(Long.parseLong(params['projectOfTheDay'])) : frontPage.projectOfTheDay)
+            }
+
+            frontPage.save(failOnError: true, flush: true)
 
             log.info("System Message update: $systemMessageUpdated and ${frontPage.systemMessage}")
             if (systemMessageUpdated) {
@@ -52,10 +71,11 @@ class FrontPageController implements EventPublisher {
                 notify(FrontPageService.ALERT_MESSAGE, frontPage.systemMessage)
             }
 
-            flash.message = "${message(code: 'default.updated.message', args: [message(code: 'frontPage.label', default: 'Front Page'), ''])}"
-            redirect(action: "edit", params: params)
+            flash.message = message(code: 'default.updated.message',
+                        args: [message(code: 'frontPage.label', default: 'Front Page'), '']) as String
+            redirect(action: "edit")
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -77,7 +97,7 @@ class FrontPageController implements EventPublisher {
             }
             redirect(action: 'edit')
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -86,7 +106,7 @@ class FrontPageController implements EventPublisher {
             def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
             respond logos
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -108,7 +128,7 @@ class FrontPageController implements EventPublisher {
                 redirect(action: 'edit')
             }
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 
@@ -124,7 +144,7 @@ class FrontPageController implements EventPublisher {
                 response.sendError(400)
             }
         } else {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
         }
     }
 

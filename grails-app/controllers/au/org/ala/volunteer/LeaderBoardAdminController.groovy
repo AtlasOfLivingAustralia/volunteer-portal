@@ -4,7 +4,7 @@ import au.org.ala.web.AlaSecured
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 
-@AlaSecured("ROLE_VP_ADMIN")
+@AlaSecured(value="ROLE_VP_ADMIN", redirectController = "index", redirectAction="notPermitted")
 class LeaderBoardAdminController {
 
     def settingsService

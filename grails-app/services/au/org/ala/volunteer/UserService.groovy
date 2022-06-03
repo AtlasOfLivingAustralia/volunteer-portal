@@ -2,32 +2,37 @@ package au.org.ala.volunteer
 
 import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
+import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
+import com.google.common.base.Strings
+import grails.plugin.cache.Cacheable
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpServletRequest
-import java.sql.Connection
+import java.security.MessageDigest
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Transactional
 class UserService {
 
+    def dataSource
     def authService
     def grailsApplication
     def emailService
-    //def CustomPageRenderer customPageRenderer
     def groovyPageRenderer
     def messageSource
     def freemarkerService
     def fullTextIndexService
+    UserDetailsClient userDetailsClient
 
     /** Recorded as the user id when changes are made automatically */
     public static final String SYSTEM_USER = "system"
@@ -52,16 +57,78 @@ class UserService {
                 user.created = new Date()
                 user.firstName = firstName
                 user.lastName = lastName
-                def savedUser = user.save(flush: true)
-                // Notify admins that a new user has registered
-                notifyNewUser(savedUser, displayName)
+                user.save(flush: true)
             }
         }
     }
 
+    /**
+     * Registers a new user within DigiVol for the user provided. All fields must exist and must not already exist in the
+     * user table.
+     * @param userDetails the details of the user.
+     * @return the new user.
+     */
+    def registerUserFromDetails(def userDetails) {
+        if (isSiteAdmin()) {
+            if (userDetails && userDetails.userId && userDetails.email && userDetails.firstName && userDetails.lastName) {
+                if (User.findByUserId(userDetails.userId as String) == null) {
+                    log.debug("Registering new user: ${userDetails.firstName} ${userDetails.lastName} (UserId=${userDetails.userId})")
+                    User user = new User()
+                    user.userId = userDetails.userId
+                    user.email = userDetails.email
+                    user.created = new Date()
+                    user.firstName = userDetails.firstName
+                    user.lastName = userDetails.lastName
+                    user.save(flush: true)
+                }
+            }
+        }
+    }
+
+    def findAuthUserByEmail(String email) {
+        if (Strings.isNullOrEmpty(email)) {
+            return null
+        }
+        log.debug("Calling CAS Auth Service, looking for user: ${email}")
+        def user = getAuthUserForUserId(email, true)
+        log.debug("user: ${user}")
+        if (user) {
+            log.debug("Found! ${user}")
+            return [userId: user.userId, firstName: user.firstName, lastName: user.lastName, email: user.userName]
+        } else {
+            return null
+        }
+    }
+
+    UserDetails getAuthUserForUserId(String userId, boolean includeProps = true) {
+        if (!userId) return null // this would have failed anyway
+        def call = userDetailsClient.getUserDetails(userId, includeProps)
+        try {
+            def response = call.execute()
+            log.debug("Response: ${response}")
+
+            if (response.successful) {
+                return response.body()
+            } else {
+                log.warn("Failed to retrieve user details for userId: $userId, includeProps: $includeProps. Error was: ${response.message()}")
+            }
+        } catch (Exception ex) {
+            log.error("Exception caught trying get find user details for $userId.", ex)
+        }
+        return null
+    }
+
+    /**
+     * Sends email to list of users.
+     * Deprecated in favour of daily digest to DigiVol contact address.
+     * @param user
+     * @param displayName
+     * @see {@link au.org.ala.volunteer.NewUserDigestNotifierJob}
+     * @deprecated
+     */
     @NotTransactional
     private void notifyNewUser(User user, String displayName) {
-        def interestedUsers = getUsersWithRole(BVPRole.SITE_ADMIN)
+        def interestedUsers = [] //getUsersWithRole(BVPRole.SITE_ADMIN)
         def message = groovyPageRenderer.render(view: '/user/newUserRegistrationMessage', model: [user: user, displayName: displayName])
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
 
@@ -91,7 +158,7 @@ class UserService {
                 it['email'] = deet.userName // this is actually the email address
             }
         }
-        return users;
+        return users
     }
 
     int countActiveUsers() {
@@ -102,40 +169,22 @@ class UserService {
         return (user.transcribedCount ?: 0) + (user.validatedCount ?: 0)
     }
 
-    public boolean isInstitutionAdmin(Institution institution) {
-
-        def userId = currentUserId
-
-        if (!userId) {
-            return false;
-        }
-
-        if (isSiteAdmin()) {
-            return true
-        }
-
-        // to do - check the institution admin roles for this user
-
-        return false
-    }
-
-    boolean isSiteAdmin() {
-
-        def userId = currentUserId
-
-        if (!userId) {
-            return false;
-        }
-
-        // If  the user has been granted the ALA-AUTH ROLE_BVP_ADMIN....
-        if (authService.userInRole(CASRoles.ROLE_ADMIN)) {
-            return true
-        }
-
-        def user = User.findByUserId(userId)
-        if (user) {
-            def siteAdminRole = Role.findByNameIlike(BVPRole.SITE_ADMIN)
-            def userRole = user.userRoles.find { it.role.id == siteAdminRole.id }
+    /**
+     * Determines if the current user holds the institution admin role for a specific institution.
+     * To find if a user holds the institution admin role for any institution, call
+     * {@link UserService#isInstitutionAdmin()}.
+     * <b>Note:</b> Will return FALSE if user is a site admin, unless they hold the institution admin role.
+     *
+     * @param institution the specific institution to check against the user.
+     * @return true if user has the institution admin role. False returned if not.
+     */
+    boolean isInstitutionAdmin(Institution institution) {
+        def user = User.findByUserId(currentUserId)
+        if (user && institution) {
+            def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+            def userRole = user.userRoles.find {
+                it.role.id == institutionAdminRole.id && it.institution.id == institution.id
+            }
             if (userRole) {
                 return true
             }
@@ -145,12 +194,105 @@ class UserService {
     }
 
     /**
+     * Returns a list of users who hold the institution admin role for a given project's institution.
+     * @param project
+     * @return
+     */
+    List<User> getInstitutionAdminsForProject(Project project) {
+        if (!project) return []
+
+        // log.debug("Getting institution admins for project: [${project.id}]")
+
+        def role = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+        // log.debug("role: ${role}")
+        // log.debug("institution: ${project.institution}")
+
+        def userRoles = UserRole.findAllByRoleAndInstitution(role, project.institution)
+        // log.debug("User roles: ${userRoles}")
+
+        def users = userRoles.collect {
+            it.user
+        }
+
+        users
+    }
+
+    /**
+     * Determines if the current user holds the institution admin role for any institution.
+     * To find if a user holds the institution admin role for a specific institution, call
+     * {@link UserService#isInstitutionAdmin(Institution)}
+     * <br />
+     * <b>Note:</b> Will also return true if user is a site admin.
+     *
+     * @return true if user has the institution admin role. False returned if not.
+     */
+    boolean isInstitutionAdmin() {
+
+        def userId = currentUserId
+        if (!userId) {
+            return false
+        }
+
+        // If User is a Site Admin, return true for any institution.
+        if (isSiteAdmin()) {
+            return true
+        }
+
+        def user = User.findByUserId(userId)
+        if (user) {
+            def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+            def userRole = user.userRoles.find {
+                it.role.id == institutionAdminRole.id
+            }
+            if (userRole) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * Returns a list of institutions the current user holds the Institution Admin for.
+     */
+    def getAdminInstitutionList() {
+        def user = currentUser
+        if (!user) {
+            return []
+        }
+
+        def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+        def userRoleList = user.userRoles.findAll { UserRole userRole ->
+            userRole.role.id == institutionAdminRole.id
+        }
+        def institutionList = []
+        userRoleList.each { UserRole userRole ->
+            def institution = userRole.getLinkedInstitution()
+            if (institution) institutionList.add(institution)
+        }
+        institutionList.sort { Institution a, Institution b ->
+            a?.name <=> b?.name
+        }
+
+        return institutionList
+    }
+
+    boolean isSiteAdmin() {
+        def userId = currentUserId
+        if (!userId) {
+            return false
+        }
+
+        return authService.userInRole(CASRoles.ROLE_ADMIN)
+    }
+
+    /**
      * returns true if the current user can validate tasks from the specified project
      * @param project
      * @return
      */
-    public boolean isValidator(Project project) {
-        isValidatorForProjectId(project?.id, project?.institution?.id)
+    boolean isValidator(Project project) {
+        return isValidatorForProjectId(project?.id, project?.institution?.id)
     }
 
     /**
@@ -159,16 +301,14 @@ class UserService {
      * @param institutionId (optional) where the project belongs to (if any)
      * @return true if user has validator access, false if user does not.
      */
-    public boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId) {
-
+    boolean isValidatorForProjectId(Long projectId, Long projectInstitutionId = null) {
         def userId = currentUserId
-
-        if (!userId || !projectId) {
-            return false;
+        if (!userId) {
+            return false
         }
 
-        // Site administrator can validate anything
-        if (isSiteAdmin()) {
+        // Site administrator/institution admin can validate anything
+        if (isSiteAdmin() || isInstitutionAdmin(Project.get(projectId)?.institution)) {
             return true
         }
 
@@ -185,35 +325,72 @@ class UserService {
         // - If the provided project matches the role's project, this is a project-level role - return true.
         log.debug("Checking if user has validator role")
         def user = User.findByUserId(userId)
+
+        return userHasValidatorRole(user, projectId, projectInstitutionId)
+    }
+
+    @Cacheable(value = 'UserHasValidator', key = "(#user?.id?.toString()?:'-1') + (#projectId?:'-1') + (#projectInstitutionId?:'-1')")
+    boolean userHasValidatorRole(User user, Long projectId, Long projectInstitutionId = null) {
         if (user) {
-            def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
-            def userRole = user.userRoles.find {
-                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) /* global-level */ ||
-                                                    //projectId == null ||
-                                                    it.institution?.id == projectInstitutionId /* institution-level */ ||
-                                                    it.project?.id == projectId /* project-level */)
+
+            if (hasCasRole(user, CASRoles.ROLE_VALIDATOR) || hasCasRole(user, CASRoles.ROLE_ADMIN)) {
+                log.debug("[userHasValidatorRole]: User has CAS Validator role/CAS Site Admin, granting validator.")
+                return true
             }
-            if (userRole) {
-                log.debug("Found userRole: ${userRole}")
-                // a role exists for the current user and the specified project/institution (or the user has a role
-                // with a null project and null institution indicating that they can validate tasks from any project
-                // and or institution)
-                return true;
+
+            def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
+            def role = user.userRoles.find {
+                it.role.id == validatorRole.id && ((it.institution == null && it.project == null) ||
+                        projectId == null ||
+                        (it.institution != null && it.institution?.id == projectInstitutionId) ||
+                        it.project?.id == projectId)
+            }
+            if (role) {
+                // a role exists for the current user and the specified project/institution (or the user has a role with a null project and null institution
+                // indicating that they can validate tasks from any project and or institution)
+                log.debug("[userHasValidatorRole]: User has the validator role, returning true.")
+                return true
             }
         }
 
-        return false;
+        return false
     }
 
-    public String getCurrentUserId() {
+    /**
+     * Checks with the ALA user service if a given user has a given role.
+     * @param user The user to query
+     * @param role the role to query
+     * @return true of the user has the role, false if not.
+     */
+    @Cacheable(value = 'UserHasCasRole', key = "(#user?.id?.toString()?:'-1') + (#role?:'-1')")
+    boolean hasCasRole(User user, String role) {
+        if (!user) return false
+        def serviceResults = [:]
+        try {
+            log.debug("[hasCasRole]: User: ${user}, Role: ${role}")
+            serviceResults = authService.getUserDetailsById([user.userId], true)
+            def userFromService = serviceResults?.users?.get(user.userId)
+            def userRoles = user.userRoles
+            def roleObjs = userRoles*.role
+            def currentRoles = (roleObjs*.name + userFromService?.roles).toSet()
+            log.debug("[hasCasRole]: ALA service roles: ${currentRoles}")
+            //log.debug("${currentRoles?.intersect([role])?.isEmpty()}")
+            log.debug("[hasCasRole]: role check: [${!currentRoles?.intersect([role])?.isEmpty()}]")
+            return !currentRoles?.intersect([role])?.isEmpty()
+        } catch (Exception e) {
+            log.warn("[hasCasRole]: Couldn't get user details from web service", e)
+        }
+    }
+
+    String getCurrentUserId() {
         return authService.userId
     }
 
-    public String getCurrentUserEmail() {
+    String getCurrentUserEmail() {
         return authService.email
     }
 
-    public User getCurrentUser() {
+    User getCurrentUser() {
         def userId = currentUserId
         if (userId) {
             return User.findByUserId(userId)
@@ -228,7 +405,7 @@ class UserService {
 
     def isForumModerator(Project project = null) {
 
-        if (isAdmin()) {
+        if (isAdmin() || isInstitutionAdmin(project?.institution)) {
             return true
         }
 
@@ -239,6 +416,88 @@ class UserService {
         if (!user) return false
         def moderators = getUsersWithRole("forum_moderator", projectInstance, user)
         return moderators.find { it?.userId == user?.userId }
+    }
+
+    /**
+     * Retrieves a list of all users who have non-admin roles. Only accessible by admins.
+     * @param params A map of query parameters
+     * @return a map containing the list of user roles and the total number of records for pagination.
+     */
+    def listUserRoles(Map parameters) {
+        if (!isInstitutionAdmin()) {
+            return [:]
+        }
+        def results = new ArrayList<UserRole>();
+        def clause = []
+        def pValues = [:]
+        String institutionClause
+        String projectClause
+
+        if (!parameters.max) {
+            parameters.max = 25
+        }
+
+        if (!parameters.offset) {
+            parameters.offset = 0
+        }
+
+        if (parameters.institution) {
+            clause.add("and (i.id = :institutionId or p.institution_id = :institutionId)")
+            pValues.institutionId = parameters.institution
+        }
+
+        if (parameters.institutionList && parameters.projectList) {
+            institutionClause = " i.id in (" + parameters.institutionList.collect { it.id }.join(",") + ") "
+            projectClause = " p.id in (" + parameters.projectList.collect { it.id }.join(",") + ") "
+            clause.add(" and (" + institutionClause + " OR " + projectClause + ")")
+        }
+
+        if (!Strings.isNullOrEmpty(parameters.q as String)) {
+            clause.add(" and p.name ilike '%${parameters.q}%' ")
+        }
+
+        if (!Strings.isNullOrEmpty(parameters.userid as String)) {
+            clause.add(" and u.user_id = ${parameters.userid} ")
+        }
+
+        def query = """\
+            select u.id as user_role_id, 
+                u.project_id, 
+                u.institution_id, 
+                u.user_id, 
+                role.name, 
+                i.name as institution_name, 
+                p.name as project_name,
+                vp_user.last_name
+            from user_role u
+                join role on (role.id = u.role_id)
+                join vp_user on (vp_user.id = u.user_id)
+                left outer join institution i on (i.id = u.institution_id)
+                left outer join project p on (p.id = u.project_id)
+            where role.name in ('${BVPRole.VALIDATOR}', '${BVPRole.FORUM_MODERATOR}') 
+            """.stripIndent()
+
+        clause.each {
+            query += it
+        }
+
+        query += "order by i.name, role.name, last_name"
+
+        log.debug("Role query: ${query}")
+
+        def sql = new Sql(dataSource)
+        sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int) { row ->
+            UserRole userRole = UserRole.get(row.user_role_id as long)
+            results.add(userRole)
+        }
+
+        def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
+        def countRows = sql.firstRow(countQuery, pValues)
+
+        def returnMap = [userRoleList: results, totalCount: countRows.row_count_total]
+
+        sql.close()
+        return returnMap
     }
 
     /**
@@ -320,7 +579,7 @@ class UserService {
         }
 
         int activityCount = 0
-        UserActivity activity;
+        UserActivity activity
 
         while (activityCount < 100 && (activity = _userActivityQueue.poll()) != null) {
             if (activity) {
@@ -349,7 +608,7 @@ class UserService {
             return
         }
 
-        long millis = new Date().getTime() - (seconds * 1000);
+        long millis = new Date().getTime() - (seconds * 1000)
 
         def targetDate = new Date(millis)
         // find all user activity records whose timeLastActivity is older than this time...
@@ -518,7 +777,7 @@ class UserService {
 
     // Retrieves all the data required for the notebook functionality
     Map appendNotebookFunctionalityToModel(Map model) {
-        Stopwatch sw = Stopwatch.createStarted();
+        Stopwatch sw = Stopwatch.createStarted()
         final query = freemarkerService.runTemplate(UserController.ALA_HARVESTABLE, [userId: model.userInstance.userId])
         final agg = UserController.SPECIES_AGG_TEMPLATE
 
@@ -573,5 +832,19 @@ class UserService {
                 expeditionCount: expeditions ? expeditions[0] : 0,
                 userPercent: userPercent
         ]
+    }
+
+    /**
+     * Generates a hash for encoding user information. Generates an MD5 hash.
+     * Returns null if no user exists or no hash suffix exists in the {@link User} class.
+     *
+     * @param user the User object
+     * @return the md5 hash
+     */
+    def getUserHash(User user) {
+        if (!user) return null
+        if (!User.HASH_SUFFIX) return null
+        def userHash = "${user.id}+${User.HASH_SUFFIX}".toString()
+        return MessageDigest.getInstance("MD5").digest(userHash.bytes).encodeHex().toString()
     }
 }

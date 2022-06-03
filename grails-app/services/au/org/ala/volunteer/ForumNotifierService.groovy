@@ -16,19 +16,28 @@ class ForumNotifierService {
     def messageSource
 
     List<User> getModeratorsForTopic(ForumTopic topic) {
+        log.debug("Getting moderators for forum topic")
         List<User> results = []
 
-        Project projectInstance = null
+        Project project = null
 
         if (topic?.instanceOf(ProjectForumTopic)) {
-            projectInstance = (topic as ProjectForumTopic).project
+            project = (topic as ProjectForumTopic).project
         } else if (topic?.instanceOf(TaskForumTopic)) {
-            projectInstance = (topic as TaskForumTopic).task?.project
+            project = (topic as TaskForumTopic).task?.project
         }
-        results = userService.getUsersWithRole("forum_moderator", projectInstance)
+        results = userService.getUsersWithRole("forum_moderator", project)
 
-        if (projectInstance) {
-            def watchList = getUsersInterestedInProject(projectInstance)
+        if (project) {
+            // Include institution admins for the project's institution
+            def institutionAdmins = userService.getInstitutionAdminsForProject(project)
+            institutionAdmins.each {
+                log.debug("Adding institution admin: ${it.displayName}")
+                results << it
+            }
+
+            // And people watching the forum
+            def watchList = getUsersInterestedInProject(project)
             watchList?.each { user ->
                 if (!results.contains(user)) {
                     results << user
@@ -39,9 +48,9 @@ class ForumNotifierService {
         return results
     }
 
-    List<User> getUsersInterestedInProject(Project projectInstance) {
+    List<User> getUsersInterestedInProject(Project project) {
         def list = new ArrayList<User>()
-        ProjectForumWatchList watchList = ProjectForumWatchList.findByProject(projectInstance)
+        ProjectForumWatchList watchList = ProjectForumWatchList.findByProject(project)
         if (watchList) {
             watchList.users?.each { user ->
                 list << user

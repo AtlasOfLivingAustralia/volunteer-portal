@@ -70,11 +70,11 @@
 
 <cl:headerContent title="${message(code: 'default.institutionlist.label', default: "Institutions")}"
                   selectedNavItem="institutions">
-    <cl:ifAdmin>
+    <cl:ifSiteAdmin>
         </div>
         <div class="col-sm-2">
             <a class="btn btn-primary" href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage</a>
-    </cl:ifAdmin>
+    </cl:ifSiteAdmin>
 </cl:headerContent>
 
 <section id="main-content">
@@ -175,7 +175,7 @@
             </div><!-- /.col-sm-8 -->
 
             <div class="col-sm-4">
-                <g:render template="/leaderBoard/stats"/>
+                <g:render template="/leaderBoard/stats" model="[disableContribution: true, disableForumActivity: true]"/>
             </div>
         </div>
     </div>

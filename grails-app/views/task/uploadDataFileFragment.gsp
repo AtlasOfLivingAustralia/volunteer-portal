@@ -39,6 +39,6 @@
     });
 
     // Initialize input type file
-    $('input[type=file]').bootstrapFileInput();
+    $('#dataFile').bootstrapFileInput();
 
 </script>

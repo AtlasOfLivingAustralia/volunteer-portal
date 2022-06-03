@@ -10,7 +10,7 @@ class ValidationRuleController {
 
     def list() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def validationRules = ValidationRule.list(params)
@@ -19,7 +19,7 @@ class ValidationRuleController {
 
     def delete() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def rule = ValidationRule.get(params.int("id"));
@@ -34,7 +34,7 @@ class ValidationRuleController {
 
     def addRule() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def rule = new ValidationRule(name: "<New rule>")
@@ -43,7 +43,7 @@ class ValidationRuleController {
 
     def edit() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def rule = ValidationRule.get(params.int("id"))
@@ -53,7 +53,7 @@ class ValidationRuleController {
     def update() {
         log.debug("This is the update action...")
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def rule = ValidationRule.get(params.int("id"))

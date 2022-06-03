@@ -65,7 +65,7 @@ class EventSourceController implements RxController {
                                                 log.error("Exception converting data to JSON", e)
                                             }
                                         }.curry(esm.data)
-                                        log.info("EventSourceController sending id: ${esm.id} event: ${esm.event} data: ${esm.data} comment: ${esm.comment}")
+                                        log.debug("EventSourceController sending id: ${esm.id} event: ${esm.event} data: ${esm.data} comment: ${esm.comment}")
                                         rx.event((Closure)data, comment: esm.comment, id: esm.id, event: esm.event)
                                 }
                             }

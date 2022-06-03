@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.Project" %>
 <!doctype html>
 <html>
 <head>
@@ -20,6 +21,7 @@
 
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
+    <g:hiddenField name="formType" value="${Project.EDIT_SECTION_MAP}" />
 
     <div class="form-group">
         <label for="showMap" class="checkbox col-md-6">

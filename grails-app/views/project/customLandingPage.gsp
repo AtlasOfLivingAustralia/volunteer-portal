@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}"/>
+    <g:set var="entityName" value="${message(code: 'project.label', default: 'Expedition')}"/>
     <title><cl:pageTitle title="${g.message(code:"default.list.label", args:['Expedition'])}"/></title>
 
     <g:set var="bgurl" value="${landingPageInstance.landingPageImage ? cl.imageUrlPrefix(type: 'landingPage', name: landingPageInstance.landingPageImage) : asset.assetPath(src: 'wildlifespotter.jpg')}" />
@@ -13,7 +13,7 @@
 
 <body class="digivol">
 
-    <cl:headerContent title="${landingPageInstance.title}" selectedNavItem="${landingPageInstance.shortUrl}" complexBodyMarkup="true"></cl:headerContent>
+    <cl:headerContent title="${landingPageInstance.title}" selectedNavItem="${landingPageInstance.shortUrl}" complexBodyMarkup="true" />
 
     <div class="a-feature wildlifespotter" style="background-image: url('${bgurl}');">
         <div class="container">
@@ -113,7 +113,7 @@
                 </div>
                 <div class="col-sm-4">
                     %{--<g:set var="model" value="${[institutionName: 'Wildlife Spotter', projectType: projectType, tagName, tags]}" />--}%
-                    <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType]" />
+                    <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType, disableContribution: true, disableForumActivity: true]" />
                 </div>
             </div>
         </div>

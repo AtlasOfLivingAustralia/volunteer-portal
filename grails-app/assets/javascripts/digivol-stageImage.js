@@ -132,13 +132,16 @@ function digivolStageFiles (config, self) {
         updateStagedImageDisplay();
     }
 
+    var imageFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'text/plain'];
+    var audioFileTypes = ['audio/aac', 'audio/wav', 'audio/mpeg', 'audio/x-m4a', 'audio/ogg', 'audio/vnd.dlna.adts']
+
     var r = new Resumable({
-        target: config.uploadFileUrl,
+        target: (config.isAudioProject) ? config.uploadAudioUrl : config.uploadFileUrl,
         query: query,
         chunkRetryInterval: 1000,
         withCredentials: true,
         xhrTimeout: 30000,
-        fileType: ['image/jpeg', 'image/png', 'image/gif', 'text/plain'],
+        fileType: (config.isAudioProject) ? audioFileTypes : imageFileTypes,
         fileTypeErrorCallback: function (file, errorCount) {
             console.log("fileTypeErrorCallback", file, errorCount);
         },

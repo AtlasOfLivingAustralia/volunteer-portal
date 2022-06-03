@@ -17,6 +17,7 @@ import org.springframework.web.context.support.ServletContextResource
 class BootStrap {
 
     def projectTypeService
+    def projectService
     GrailsApplication grailsApplication
     def auditService
     def sessionFactory
@@ -49,7 +50,7 @@ class BootStrap {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
         }
 
-        def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.SITE_ADMIN]
+        def internalRoles = [BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR, BVPRole.INSTITUTION_ADMIN]
 
         internalRoles.each { role ->
             ensureRoleExists(role)
@@ -57,6 +58,29 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
+    }
+
+    /**
+     * This is to initialise the project sizes for release 6.1.0.
+     * Disable this in next release.
+     * DEPRECATED
+     */
+    private void initProjectSize() {
+        log.info("Initialising project sizes...")
+
+        def projectList = Project.findAllByArchived(false)
+        int count = 0
+
+        projectList.each { project ->
+            if (project.sizeInBytes == 0L) {
+                def size = projectService.projectSize(project).size as long
+                if (size > 0) {
+                    log.info("Project [${project.id}] ${project.name} calculated to be ${size} bytes.")
+                }
+            }
+        }
+
+        log.info("Completed Project Size initialisation for ${projectList.size()} projects.")
     }
 
     private void fixTaskLastViews() {
@@ -102,7 +126,19 @@ class BootStrap {
 
     private void prepareProjectTypes() {
         log.info("Checking project types...")
-        def builtIns = [[name:'specimens', label:'Specimens', icon:'/public/images/2.0/iconLabels.png'], [name:'fieldnotes', label: 'Field notes', icon:'/public/images/2.0/iconNotes.png'], [name: 'cameratraps', label: 'Camera Traps', icon: '/public/images/2.0/iconWild.png']]
+        def builtIns = [
+                [name: ProjectType.PROJECT_TYPE_SPECIMEN,
+                 label: 'Specimens',
+                 icon: '/public/images/2.0/iconLabels.png'],
+                [name: ProjectType.PROJECT_TYPE_FIELDNOTES,
+                 label: 'Field notes',
+                 icon: '/public/images/2.0/iconNotes.png'],
+                [name: ProjectType.PROJECT_TYPE_CAMERATRAP,
+                 label: 'Camera Traps',
+                 icon: '/public/images/2.0/iconWild.png'],
+                [name: ProjectType.PROJECT_TYPE_AUDIO,
+                 label: 'Audio',
+                 icon: '/public/images/2.0/iconWild.png']]
         builtIns.each {
             def projectType = ProjectType.findByName(it.name)
             if (!projectType) {
@@ -183,7 +219,7 @@ class BootStrap {
             wildLifeSpotter.title = 'Wildlife Spotter'
             wildLifeSpotter.shortUrl = 'wildlife-spotter'
             wildLifeSpotter.enabled = true
-            ProjectType cameraTraps = ProjectType.findByName('cameratraps')
+            ProjectType cameraTraps = ProjectType.findByName(ProjectType.PROJECT_TYPE_CAMERATRAP)
             wildLifeSpotter.projectType = cameraTraps
             wildLifeSpotter.bodyCopy = ''
             wildLifeSpotter.numberOfContributors = 10
@@ -231,8 +267,8 @@ class BootStrap {
             return null;
         }
 
-        String.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate, len) ?: '' }
-        GString.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate.toString(), len) }
+        String.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate.toString(), len as int) ?: '' }
+        GString.metaClass.'intro' = { len -> return StringUtils.abbreviate(delegate.toString(), len as int) }
 
         String.metaClass.'toTitleCase' = { return WebUtils.makeTitleFromCamelCase(delegate.toString()) }
         GString.metaClass.'toTitleCase' = { return WebUtils.makeTitleFromCamelCase(delegate.toString()) }

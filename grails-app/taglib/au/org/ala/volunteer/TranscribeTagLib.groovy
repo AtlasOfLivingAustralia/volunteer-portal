@@ -349,6 +349,102 @@ class TranscribeTagLib {
         return w
     }
 
+    def audioSampleWave = { attrs, body ->
+        def prefix = attrs.remove('prefix') as String
+        def name = attrs.remove('name') as String
+        def format = (attrs.remove('format') ?: 'wav') as String
+        def template = attrs.remove('template')?.toBoolean()
+        if (prefix && name) {
+            def audioFileUrl = multimediaService.getSampleAudioUrl(prefix, name, format)
+
+        }
+    }
+
+    def audioWaveViewer = { attrs, body ->
+        def multimedia = attrs.multimedia as Multimedia
+        def waveColour = attrs.waveColour ?: '#d5502a'
+
+        if (multimedia) {
+            def mb = new MarkupBuilder(out)
+            def audioFileUrl = taskService.getAudioMetaData(multimedia)
+
+            if (!audioFileUrl) {
+                def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/audio/klankbeeld_suburb-sunday-713am.wav")
+                audioFileUrl = resource(file:'/klankbeeld_suburb-sunday-713am.wav')
+
+                mb.div(class:'alert alert-danger') {
+                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
+                        mkp.yieldUnescaped('&times;')
+                    }
+                    span() {
+                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    }
+                }
+            }
+
+            mb.div(id:'audio-parent-container') {
+                mb.div(id:'audio-container') {
+                    mb.div(id:'waveform', style:'padding: 1px; border-radius: 5px; border: 1px solid #ddd;') {
+                        mkp.yieldUnescaped('<!-- Here be the waveform -->')
+                    }
+
+                    mb.div(id:'wave-controls') {
+                        mb.div(id:'row') {
+                            mb.div(class:'col-sm-12', style:'padding-top:10px; padding-left:0px;') {
+                                mkp.yieldUnescaped("""
+                                    <a id="wave-play" class="btn btn-default" data-action="play" style="padding-top: 5px;">
+                                        <i class="fa fa-play"></i>
+                                        Play /
+                                        <i class="fa fa-pause"></i>
+                                        Pause
+                                    </a>
+                                """)
+                            }
+                        }
+                    }
+                }
+            }
+
+            asset.script([type: 'text/javascript', 'asset-defer': ''],
+                """   
+                // Create an instance
+                let wavesurfer = {};
+                
+                // Init & load audio file
+                document.addEventListener('DOMContentLoaded', function() {
+                    wavesurfer = WaveSurfer.create({
+                        container: document.querySelector('#waveform'),
+                        backgroundColor: 'white',
+                        waveColor: '#a1a1a1',
+                        progressColor: '${waveColour}',
+                        cursorColor: 'black',
+                        cursorWidth: 1,
+                        height: 300,
+                        hideScrollbar: true,
+                        scrollParent: false,
+                        fillParent: true,
+                        barMinHeight: 50,
+                        barHeight: 70,
+                        normalize: true
+                    });
+                
+                    wavesurfer.on('error', function(e) {
+                        console.warn(e);
+                    });
+                
+                    // Load audio from URL
+                    wavesurfer.load('${audioFileUrl}');
+                
+                    // Play button
+                    var button = document.querySelector('[data-action="play"]');
+                    button.addEventListener('click', wavesurfer.playPause.bind(wavesurfer));
+                    
+                });
+                """.toString()
+            )
+        }
+    }
+
     /**
      * @attr multimedia
      * @attr elementId
@@ -359,24 +455,21 @@ class TranscribeTagLib {
      */
     def imageViewer = { attrs, body ->
         def multimedia = attrs.multimedia as Multimedia
-        if (multimedia) {
 
+        if (multimedia) {
             int rotate = 0
             if (attrs.rotate) {
                 rotate = attrs.rotate
             }
 
             def mb = new MarkupBuilder(out)
-
             def imageMetaData = taskService.getImageMetaData(multimedia, rotate)
 
             if (!imageMetaData) {
-
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
-
-
                 def sampleUrl = resource(file:'/sample-task.jpg')
                 imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
+
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
                         mkp.yieldUnescaped('&times;')
@@ -407,17 +500,18 @@ class TranscribeTagLib {
                                 }
                             }
                         }
+
                         if (!attrs.hideShowInOtherWindow) {
                             div(class:'show-image-control') {
                                 a(id:'showImageWindow', href:'#', title:'Show image in a separate window', ('data-container'): 'body') {
                                     mkp.yield('Show image in a separate window')
                                 }
                             }
-
                         }
                     }
                 }
             }
+
             if (attrs.height) {
                 asset.script([type: 'text/javascript', 'asset-defer': ''], "   \$(document).ready(function() { if (setImageViewerHeight) { setImageViewerHeight(${attrs.height}); } } );" )
 //                mb.script(type:"text/javascript") {
@@ -686,9 +780,11 @@ class TranscribeTagLib {
 
     def taskSequence = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        Task taskInstance = attrs.task
+        Task taskInstance = attrs.task as Task
         boolean isPreview = attrs.isPreview
         Project project = taskInstance.project
+
+        log.debug("Loading task sequence for task: ${taskInstance.id}")
 
         Field field = null
 
@@ -697,6 +793,8 @@ class TranscribeTagLib {
         if (taskInstance.id) {
             field = fieldService.getFieldForTask(taskInstance, "sequenceGroupId")
         }
+
+        log.debug("Field: ${field}")
 
         Map tasks = [previous:[], current: [:], next:[]]
         if (!field) {
@@ -709,43 +807,47 @@ class TranscribeTagLib {
             def seqToTaskId = taskService.findByProjectAndFieldValues(project.id, 'sequenceNumber', allSeqNos)
             def taskIds = seqToTaskId.values() + taskInstance.id
             Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(taskIds)
+
             sequenceNumbers.previous.each { seqNo ->
                 def seq = seqNo as String
                 tasks.previous << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
+
             tasks.current = [sequenceNumber: sequenceNumber, multimedia: taskIdToMM[taskInstance.id]]
             sequenceNumbers.next.each { seqNo ->
                 def seq = seqNo as String
                 tasks.next << [sequenceNumber:seqNo, multimedia: taskIdToMM[seqToTaskId[seq]]]
             }
-        }
-        else {
-
+        } else {
             // Get other tasks with the same sequenceGroupId
             String sequenceGroupId = field.value
-            QueryResults<Task> results = fullTextIndexService.findProjectTasksByFieldValue(project, "sequenceGroupId",sequenceGroupId, "sequenceNumber")
+            //QueryResults<Task> results = fullTextIndexService.findProjectTasksByFieldValue(project, "sequenceGroupId", sequenceGroupId, "sequenceNumber")
+            List<Task> allTasks = fieldService.findAllTasksByFieldAndFieldValue(project, "sequenceGroupId", sequenceGroupId, "task_id")
+
+            log.debug("Sequence Group: ${sequenceGroupId}")
 
             // The results are sorted by sequence number
-            List<Task> allTasks = results.list
+            //List<Task> allTasks = results.list
             Map<Long, Multimedia> taskIdToMM = multimediaService.findImagesForTasks(allTasks*.id)
+            log.debug("allTasks size: ${allTasks?.size()}")
+            log.debug("taskIdToMM size: ${taskIdToMM?.size()}")
 
             int taskIndex = allTasks.indexOf(taskInstance)
-            int minIndex = Math.max(0, taskIndex-attrs.count)
-            int maxIndex = Math.min(allTasks.size()-1, taskIndex+attrs.count)
+            int minIndex = Math.max(0, taskIndex - attrs.count as int)
+            int maxIndex = Math.min(allTasks.size() - 1, taskIndex + attrs.count as int)
 
-            for (int i=minIndex; i<taskIndex; i++) {
+            for (int i = minIndex; i < taskIndex; i++) {
                 tasks.previous << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
+
             tasks.current = [sequenceNumber:taskIndex, multimedia: taskIdToMM[allTasks[taskIndex].id]]
-            for (int i=taskIndex+1; i<=maxIndex; i++) {
+            for (int i = taskIndex + 1; i <= maxIndex; i++) {
                 tasks.next << [sequenceNumber:i, multimedia: taskIdToMM[allTasks[i].id]]
             }
-
-
         }
-        log.debug("taskSequence: {}", sw)
-        return tasks
 
+        log.debug("taskSequence: ${sw}")
+        return tasks
     }
 
     def transcriptionLogoUrl = { attrs, body ->

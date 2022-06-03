@@ -10,8 +10,10 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FileUtils
 import org.apache.http.client.utils.URIBuilder
+import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.beans.factory.annotation.Value
-
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -27,6 +29,7 @@ class VolunteerTagLib {
     def achievementService
     def taskService
     def adminService
+    def templateService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -126,8 +129,26 @@ class VolunteerTagLib {
         }
     }
 
+    /**
+     * Prints the contents if the user is a Site Admin OR an Institution Admin
+     */
     def ifAdmin = {attrs, body ->
         if (isAdmin()) {
+            out << body()
+        }
+    }
+
+    /**
+     * Prints the contents if the user is a Site Admin
+     */
+    def ifSiteAdmin = {attrs, body ->
+        if (isSiteAdmin()) {
+            out << body()
+        }
+    }
+
+    def ifNotSiteAdmin = {attrs, body ->
+        if (!isSiteAdmin()) {
             out << body()
         }
     }
@@ -136,17 +157,57 @@ class VolunteerTagLib {
      * @attr institution The institution to test against
      */
     def ifInstitutionAdmin = { attrs, body ->
-        if (isInstitutionAdmin(attrs.institution)) {
+        if (isSiteAdmin()) {
             out << body()
+        } else if (attrs.institution && isInstitutionAdmin(attrs.institution as Institution)) {
+            out << body()
+        } else if (attrs.project) {
+            Project p = attrs.project as Project
+            if (isInstitutionAdmin(p.institution)) {
+                out << body()
+            }
+        }
+    }
+
+    /**
+     * Displays a button for use with templates. It checks if the user has access to edit the template passed in
+     * the parameters and displays an active or disabled button depending on the permission returned.
+     * Required attributes:
+     * @attr template the template instance
+     * @attr styleClass the CSS class to add to the button
+     * @attr id the HTML ID of the element
+     * @attr label the button label
+     */
+    def templateEditableButton = {attrs, body ->
+        def editAllowed = false
+        if (isSiteAdmin()) {
+            editAllowed = true
+        } else if (attrs.template) {
+            def templatePermissions = templateService.getTemplatePermissions(attrs.template)
+            if (templatePermissions.canEdit) {
+                editAllowed = true
+            }
+        }
+
+        if (editAllowed) {
+            out << "<button class=\"${attrs.styleClass}\" id=\"${attrs.id}\">${attrs.label}</button>"
+        } else {
+            out << "<button class=\"${attrs.styleClass}\" style=\\\"pointer-events: auto;\\\" id=\"${attrs.id}\" " +
+                    "title=\"${message(code:'template.edit.button.nopermission', default:'Not allowed')}\" disabled>${attrs.label}</button>"
         }
     }
 
     private boolean isInstitutionAdmin(Institution institution) {
-        return isAdmin() || userService.isInstitutionAdmin(institution)
+        //return isAdmin() || userService.isInstitutionAdmin(institution)
+        return userService.isInstitutionAdmin(institution)
+    }
+
+    private boolean isSiteAdmin() {
+        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {
-        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
+        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin() || userService.isInstitutionAdmin()
     }
 
     /**
@@ -358,11 +419,11 @@ class VolunteerTagLib {
             if (validator) {
                 def status = "Not yet validated"
                 def badgeClass = "label"
-                if (taskInstance.isValid == false) {
-                    status = "Marked as invalid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-danger"
+                if (!taskInstance.isValid) {
+                    status = "Partially validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    badgeClass = "label label-warning"
                 } else if (taskInstance.isValid) {
-                    status = "Marked as Valid by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
+                    status = "Validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "label label-success"
                 }
                 mb.span(class:badgeClass) {
@@ -561,6 +622,10 @@ class VolunteerTagLib {
                 fullUrl = multimediaService.getImageUrl(mm)
             }
 
+            if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+                url = resource(file:'/icons-audio-52.png')
+            }
+
             if (!url) {
                 // sample
                 url = resource(file:'/sample-task-thumbnail.jpg')
@@ -569,8 +634,11 @@ class VolunteerTagLib {
                 fullUrl = resource(file: '/sample-task.jpg')
             }
 
-            if (url) {
+            if (url && task.project.projectType.name != ProjectType.PROJECT_TYPE_AUDIO) {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
+            } else {
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" />"
                 if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             }
 
@@ -645,7 +713,7 @@ class VolunteerTagLib {
         def alt = attrs.remove('alt')
         def cssClass = attrs.remove('class')
         out << "<img src="
-        out << sizedImageUrl(attrs,body)
+        out << sizedImageUrl(attrs, body)
         if (cssClass) {
             out << " class=\"${cssClass.encodeAsHTML()}\""
         }
@@ -656,6 +724,17 @@ class VolunteerTagLib {
             out << " alt=\"${alt.encodeAsHTML()}\""
         }
         out << "/>"
+    }
+
+    def audioSample = { attrs, body ->
+        def linkText = attrs.remove('linkText')
+        out << "<a href="
+        out << audioUrl(attrs, body)
+        out << " aria-label=\"Audio sample\" class=\"sm2_link\">"
+        if (linkText) {
+            out << linkText
+        }
+        out << "</a>"
     }
 
     def sizedImageUrl = { attrs, body ->
@@ -669,6 +748,14 @@ class VolunteerTagLib {
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 
+    def audioUrl = { attrs, body ->
+        def prefix = attrs.remove('prefix')
+        def name = attrs.remove('name')
+        def format = attrs.remove('format') ?: 'wav'
+        def template = attrs.remove('template')?.toBoolean()
+        String url = g.createLink(controller: 'image', action: 'audioFile', params: [prefix: prefix, name: name, format: format])
+        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+    }
 
     /**
      * @id The id of the institution
@@ -939,8 +1026,8 @@ class VolunteerTagLib {
     }
 
     Closure formatFileSize = { attrs, body ->
-        def size = attrs.remove('size')
-        return FileUtils.byteCountToDisplaySize(size)
+        def size = attrs.remove('size') as long
+        return PrettySize.toPrettySize(size)
     }
 
     /**
@@ -1037,29 +1124,118 @@ function notify() {
     def transcriberNames = { attrs ->
 
         def taskInstance = attrs.task as Task
-
         Set transcribers = new HashSet()
         if (taskInstance) {
-
             taskInstance.transcriptions.each {
                 if (it.dateFullyTranscribed) {
                     transcribers << it.fullyTranscribedBy
                 }
             }
 
-
             def mb = new MarkupBuilder(out)
-            transcribers.each { transcriberUserId ->
-                User user = User.findByUserId(transcriberUserId)
+            def transcribeUsers = transcribers ? User.findAllByUserIdInList(transcribers.toList()) : []
+            if (transcribeUsers.size() > 1) {
                 mb.p {
-                    mkp.yieldUnescaped(g.link(controller:'user', action:'show', id:user?.id) {
-                        cl.userDetails(id:transcriberUserId, displayName:true)
-                    })
+                    transcribeUsers.eachWithIndex { user, idx ->
+                        mkp.yieldUnescaped(g.link(controller: 'user', action: 'show', id: user.id) {
+                            cl.userDetails(id: user.userId, displayName: true)
+                        })
+                        if (idx + 1 < transcribeUsers.size()) mkp.yieldUnescaped('<br />')
+                    }
                 }
+            } else if (transcribeUsers.size() > 0) {
+                def user = transcribeUsers.first()
+                out << "<a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a>"
+            }
+        }
+    }
 
+    /**
+     * Renders the options for a select list of templates, organised into categories.
+     * @attr templateList REQUIRED the list of maps - [template, category]
+     * @attr currentTemplateId REQUIRED the current selected template
+     */
+    def templateSelectOptions = { attrs ->
+        log.debug("Current template ID: ${attrs.currentTemplateId}")
+        def category = ""
+        def output = ""
+        log.debug("Template count: ${attrs.templateList?.size()}")
+        attrs.templateList.each { Map row ->
+            Template template = row.template as Template
+            if (category != row.category) {
+                category = row.category
+                if (output.length() > 0) output += "</optgroup>"
+                output += "<optgroup label='${getTemplateCategory(category)}'>"
+            }
+
+            if (!template.isHidden || userService.isSiteAdmin()) {
+                output += "<option value='${template.id}' ${(attrs.currentTemplateId == template.id ? 'selected' : '')}>${template}${(attrs.currentTemplateId == template.id ? ' (Current)' : '')}</option>"
+            } else if (template.isHidden && attrs.currentTemplateId == template.id) {
+                output += "<option value='${template.id}' selected>${template} (Current)</option>"
             }
         }
 
+        out << output
+    }
+
+    /**
+     * Returns a Category name for the category code provided.
+     *
+     * @param categoryCode the code, either c1, c2, c3 or c4.
+     * @return the name of the category.
+     */
+    private def getTemplateCategory(def categoryCode) {
+        def category
+        switch (categoryCode) {
+            case 'c1': category = "Global Templates"
+                break
+            case 'c2': category = "Hidden Templates"
+                break
+            case 'c4': category = "Unassigned Templates (templates not assigned to an expedition)"
+                break
+            default: category = "Available Templates"
+
+        }
+        return category
+    }
+
+    /**
+     * Builds a Project select list with projects grouped into Insitutions.
+     * @attr inactiveFlag The inactive flag to use (include active or inactive projects)
+     * @attr archiveFlag The archive flag to use
+     * @attr selectedProject the current project to display as selected
+     */
+    def projectSelectGrouped = { attrs ->
+        boolean inactive = false
+        boolean archived = false
+        def output = ""
+        def currInstitution = 0
+        if (attrs.inactiveFlag) inactive = attrs.inactiveFlag
+        if (attrs.archiveFlag) archived = attrs.archiveFlag
+        def projectList = Project.createCriteria().list {
+            and {
+                eq('inactive', inactive)
+                eq('archived', archived)
+            }
+            'institution' {
+                order('name', 'asc')
+            }
+            order('name', 'asc')
+        }
+        projectList.each { Project project ->
+            if (currInstitution != project.institution.id) {
+                currInstitution = project.institution.id
+                if (output.length() > 0) output += "</optgroup>"
+                output += "<optgroup label='${project.institution.name}'>"
+            }
+            if (project.id == attrs.selectedProject) {
+                output += "<option value='${project.id}' selected>${project.name}</option>"
+            } else {
+                output += "<option value='${project.id}'>${project.name}</option>"
+            }
+        }
+
+        out << output
     }
 
 }

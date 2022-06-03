@@ -11,7 +11,7 @@ class SettingController {
 
     def index() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 
@@ -36,7 +36,7 @@ class SettingController {
 
     def editSetting() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def key = params.settingKey
@@ -54,7 +54,7 @@ class SettingController {
 
     def saveSetting() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
         def key = params.settingKey as String
@@ -91,7 +91,7 @@ class SettingController {
 
     def sendTestEmail() {
         if (!userService.isAdmin()) {
-            redirect(uri: "/")
+            render(view: '/notPermitted')
             return
         }
 

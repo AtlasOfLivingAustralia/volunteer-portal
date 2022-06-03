@@ -15,7 +15,7 @@
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
             ]
         %>
-        <a href="${createLink(action: 'addRule')}" class="btn btn-primary"><i
+        <a href="${createLink(action: 'addRule')}" class="btn btn-success"><i
                 class="icon-plus icon-white"></i>&nbsp;Add new rule</a>
     </cl:headerContent>
     <div class="panel panel-default">

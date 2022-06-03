@@ -1,13 +1,16 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.util.Environment
 import grails.util.Holders
 import groovy.sql.Sql
 
+import javax.sql.DataSource
+
 class NewUserDigestNotifierJob {
     def userService
     def mailService
-    def dataSource
+    DataSource dataSource
     def concurrent = false
 
     def description = "Notify admin users about new users who have completed their first five transcriptions"
@@ -23,41 +26,57 @@ class NewUserDigestNotifierJob {
     }
 
     def execute() {
+        // TODO Replace this with EmailService code (code duplication)
         if (grailsApplication.config.getProperty('digest.enabled', Boolean, false)) {
             /* Configure properties file like this: digest.address=email1,email2 */
-            def recipient = grailsApplication.config.getProperty('digest.address', List, [])
-            def threshold = grailsApplication.config.getProperty('digest.threshold', Integer, 5)
+            List recipient = grailsApplication.config.getProperty('digest.address', List, [])
+            int threshold = 1 // day
+            String fromAddress = grailsApplication.config.getProperty('grails.mail.default.from',
+                    "DigiVol <noreply@volunteer.ala.org.au>")
+
             if (!recipient) {
-                throw new IllegalStateException("New user transcriptions digest email is enabled but no email address (digest.address) was specified")
+                throw new IllegalStateException("New user transcriptions digest email is enabled but no email address " +
+                        "(digest.address) was specified")
+            }
+
+            if (threshold <= 0) {
+                throw new IllegalStateException("New user transcriptions digest email is enabled but threshold " +
+                        "(digest.threshold) has been configured with an invalid value")
             }
             log.info("New User Digest Notifier job starting at ${new Date()}")
             try {
                 def sql = new Sql(dataSource)
+                String query = """\
+                    select u.id, u.created, count(date_fully_transcribed) as numTranscriptions
+                    from vp_user u
+                    left join transcription t on t.fully_transcribed_by = u.user_id
+                    where created >= (current_timestamp - interval '${threshold} day')
+                    group by u.id, u.created
+                    order by created desc;""".stripIndent()
 
-                def userIds = sql.rows("""
-SELECT t.fully_transcribed_by
-FROM transcription t
-GROUP BY t.fully_transcribed_by
-HAVING
-  sum(CASE WHEN date_fully_transcribed < (current_timestamp - interval '1 day') THEN 1 ELSE 0 END) < ?
-  AND
-  count(date_fully_transcribed) >= ?;
-""", [threshold, threshold]).collect { it[0] }
-                //def newTranscribers = userService.detailsForUserIds(userIds)
+                def userList = []
+                sql.eachRow(query) { row ->
+                    User user = User.get(row.id as long)
+                    if (user) {
+                        userList.add([user: user, transcribeCount: row.numTranscriptions])
+                    }
+                }
 
-                if (userIds) {
-                    log.info("Found {} user ids for new user digest", userIds.size())
-                    def users = User.findAllByUserIdInList(userIds)
+                def subj = "DigiVol: New Transcribers"
+                def subjPrefix = grailsApplication.config.getProperty('grails.mail.subjectPrefix', String, '') as String
+                log.debug("subjPrefix: ${subjPrefix}")
+                log.info("Emailing ${Environment.current} user digest.")
+                def subjectToSend = (!Strings.isNullOrEmpty(subjPrefix) || !Environment.PRODUCTION) ? "[${subjPrefix}] ${subj}" : subj
 
-                    if (users) {
-
-                        log.debug("Emailling $recipient with new transcribers: $users")
-                        mailService.sendMail {
-                            to recipient
-                            subject "DigiVol: New Transcribers"
-                            body( view:"/mail/newTranscribers",
-                                    model: [newTranscribers: users])
-                        }
+                if (userList) {
+                    log.info("Found ${userList.size()} user ids for new user digest")
+                    log.debug("Emailling $recipient with new user digest.")
+                    mailService.sendMail {
+                        from fromAddress
+                        to recipient
+                        subject subjectToSend
+                        body(view:"/mail/newTranscribers",
+                                model: [newTranscribers: userList, threshold: threshold])
                     }
                 } else {
                     log.debug("No new users found for digest")

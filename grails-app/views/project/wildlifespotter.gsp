@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.Project" %>
+<%@ page import="au.org.ala.volunteer.ProjectType; au.org.ala.volunteer.ProjectActiveFilterType; au.org.ala.volunteer.ProjectStatusFilterType; au.org.ala.volunteer.Project" %>
 
 <html>
 <head>
@@ -112,7 +112,7 @@
                     </g:else>
                 </div>
                 <div class="col-sm-4">
-                    <g:render template="/leaderBoard/stats" model="[institutionName: 'Wildlife Spotter', tagName: 'cameratraps']"/>
+                    <g:render template="/leaderBoard/stats" model="[disableContribution: true, institutionName: 'Wildlife Spotter', tagName: ProjectType.PROJECT_TYPE_CAMERATRAP]"/>
                 </div>
             </div>
         </div>
