@@ -18,6 +18,28 @@
         </resources>
     </cache-template>
 
+    <cache alias="UserHasValidator">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap>5000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="UserHasCasRole">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="minutes">60</ttl>
+        </expiry>
+        <resources>
+            <heap>5000</heap>
+        </resources>
+    </cache>
+
     <cache alias="userDetailsCache">
         <key-type>java.io.Serializable</key-type>
         <value-type>java.io.Serializable</value-type>
@@ -51,11 +73,44 @@
         </resources>
     </cache>
 
+    <cache alias="MainVolunteerStats">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="minutes">60</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+        </resources>
+    </cache>
+
     <cache alias="MainVolunteerContribution">
         <key-type>java.io.Serializable</key-type>
         <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="StatsTranscriptionTime">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="days">1</ttl>
+        </expiry>
+        <resources>
+            <heap>1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="StatsHourlyContribution">
+        <key-type>java.io.Serializable</key-type>
+        <value-type>java.io.Serializable</value-type>
+        <expiry>
+            <ttl unit="days">1</ttl>
         </expiry>
         <resources>
             <heap>1000</heap>
