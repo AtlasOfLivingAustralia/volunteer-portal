@@ -361,7 +361,7 @@ class UserService {
      * @param role the role to query
      * @return true of the user has the role, false if not.
      */
-    //@Cacheable(value = 'UserHasCasRole', key = "(#user?.id?.toString()?:'-1') + (#role?:'-1')")
+    @Cacheable(value = 'UserHasCasRole', key = "(#user?.id?.toString()?:'-1') + (#role?:'-1')")
     boolean hasCasRole(User user, String role) {
         if (!user) return false
         def serviceResults = [:]
