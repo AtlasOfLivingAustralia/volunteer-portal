@@ -58,12 +58,12 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
-        initProjectSize()
     }
 
     /**
      * This is to initialise the project sizes for release 6.1.0.
      * Disable this in next release.
+     * DEPRECATED
      */
     private void initProjectSize() {
         log.info("Initialising project sizes...")
