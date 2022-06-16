@@ -371,10 +371,19 @@ class UserService {
             serviceResults = authService.getUserDetailsById([user.userId], true)
             def userFromService = serviceResults?.users?.get(user.userId)
             def userRoles = user.userRoles
+            log.debug("userRoles: ${userRoles}")
             def roleObjs = userRoles*.role
-            def currentRoles = (roleObjs*.name + userFromService?.roles).toSet()
+            log.debug("roleObjs: ${roleObjs}")
+            def currentRoles
+            if (roleObjs) {
+                log.debug("role names: ${roleObjs*.name}")
+                currentRoles = (roleObjs*.name + userFromService?.roles).toSet()
+            } else {
+                currentRoles = userFromService?.roles
+            }
             log.debug("[hasCasRole]: ALA service roles: ${currentRoles}")
-            //log.debug("${currentRoles?.intersect([role])?.isEmpty()}")
+            if (!currentRoles) return false
+
             log.debug("[hasCasRole]: role check: [${!currentRoles?.intersect([role])?.isEmpty()}]")
             return !currentRoles?.intersect([role])?.isEmpty()
         } catch (Exception e) {
