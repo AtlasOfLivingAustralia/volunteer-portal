@@ -366,13 +366,19 @@ class TranscribeTagLib {
 
         if (multimedia) {
             def mb = new MarkupBuilder(out)
-            def audioFileUrl = taskService.getAudioMetaData(multimedia)
+            def audioFileUrl = null
+
+            try {
+                audioFileUrl = taskService.getAudioMetaData(multimedia)
+            } catch (Exception e) {
+                log.error("Unable to get audio file metadata for ${multimedia?.filePath}")
+            }
 
             if (!audioFileUrl) {
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/audio/klankbeeld_suburb-sunday-713am.wav")
-                audioFileUrl = resource(file:'/klankbeeld_suburb-sunday-713am.wav')
+                audioFileUrl = resource(file: '/klankbeeld_suburb-sunday-713am.wav')
 
-                mb.div(class:'alert alert-danger') {
+                mb.div(class: 'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
                         mkp.yieldUnescaped('&times;')
                     }
@@ -463,12 +469,22 @@ class TranscribeTagLib {
             }
 
             def mb = new MarkupBuilder(out)
-            def imageMetaData = taskService.getImageMetaData(multimedia, rotate)
+            def imageMetaData = null
+
+            try {
+                imageMetaData = taskService.getImageMetaData(multimedia, rotate)
+            } catch (Exception e) {
+                log.error("Unable to get image file metadata for ${multimedia?.filePath}")
+            }
 
             if (!imageMetaData) {
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
                 def sampleUrl = resource(file:'/sample-task.jpg')
-                imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl, 0)
+                try {
+                    imageMetaData = taskService.getImageMetaDataFromFile(sampleFile, sampleUrl?.toString(), 0)
+                } catch(Exception e) {
+                    log.error("Unable to get image file metadata for sample file.")
+                }
 
                 mb.div(class:'alert alert-danger') {
                     button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {

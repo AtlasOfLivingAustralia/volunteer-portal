@@ -997,28 +997,31 @@ ORDER BY record_idx, name;
         return Task.findById(taskId)
     }
 
-
     Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
         taskInstance.multimedia.each { multimedia ->
-            imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+            try {
+                imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+            } catch(Exception e) {
+                log.error("Unable to get image metadata for resource: ${multimedia?.filePath}, skipping.")
+            }
         }
 
         return imageMetaData
     }
 
-    @Cacheable(value='getAudioMetaData', key="(#multimedia?.id?:0)")
+    @Cacheable(value='getAudioMetaData', key={"(#multimedia?.id?:0)"})
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
         if (path) {
             return multimediaService.getImageUrl(multimedia)
         } else {
-            return null
+            throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
         }
     }
 
-    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
+    @Cacheable(value='getImageMetaData', key={"(#multimedia?.id?:0) + '-' + (#rotate?:0)"} )
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
         def path = multimedia?.filePath
         if (path) {
@@ -1035,17 +1038,18 @@ ORDER BY record_idx, name;
 
             return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
-        return null
+
+        throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI ?: resource?.filename ?: '')}" + "-" + "${(imageUrl ?: '')}" + "-" + rotate })
+    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI?.toString() ?: resource?.filename ?: '')}" + "-" + "${(imageUrl ?: '')}" + "-" + rotate })
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
-            log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whoel stack trace
+            log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
         }
 
         if (image) {
@@ -1057,9 +1061,9 @@ ORDER BY record_idx, name;
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            log.warn("Could not read image file: $resource - could not get image metadata")
+            log.error("Could not read image file: $resource - could not get image metadata")
+            throw new IOException("Could not read image file: $resource - could not get image metadata")
         }
-        return null
     }
 
 
@@ -1145,7 +1149,7 @@ ORDER BY record_idx, name;
         def sql = new Sql(dataSource)
         def row = sql.firstRow(select)
 
-        row ? row[0] as Integer : null
+        row ? row[0] as Integer : 0
     }
 
     Map getAdjacentTasksBySequence(Task task) {

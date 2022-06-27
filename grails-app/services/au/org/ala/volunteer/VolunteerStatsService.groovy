@@ -34,7 +34,7 @@ class VolunteerStatsService {
      * @param disableHonourBoard flag whether honour board has been disabled
      * @return transcriber stats on the given parameters
      */
-    @Cacheable(value = 'MainVolunteerStats', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#disableStats?.toString()) + (#disableHonourBoard?.toString())")
+    @Cacheable(value = 'MainVolunteerStats', key = { "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#disableStats?.toString()) + (#disableHonourBoard?.toString())" })
     def generateStats(long institutionId, String projectTypeName, List<String> tags, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
 
@@ -213,7 +213,7 @@ class VolunteerStatsService {
      * @param maxContributors maximum number of contributors to collect
      * @return a map containing the contribution information.
      */
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors?.toString())")
+    @Cacheable(value = 'MainVolunteerContribution', key = { "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors?.toString())" })
     def generateContributors(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
