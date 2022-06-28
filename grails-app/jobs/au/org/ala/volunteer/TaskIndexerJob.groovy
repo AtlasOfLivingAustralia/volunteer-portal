@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class TaskIndexerJob {
 
     def domainUpdateService

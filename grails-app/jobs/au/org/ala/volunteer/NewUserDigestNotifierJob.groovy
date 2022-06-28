@@ -4,9 +4,11 @@ import com.google.common.base.Strings
 import grails.util.Environment
 import grails.util.Holders
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 
 import javax.sql.DataSource
 
+@Slf4j
 class NewUserDigestNotifierJob {
     def userService
     def mailService
