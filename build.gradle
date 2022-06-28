@@ -142,6 +142,8 @@ dependencies {
     profile "org.grails.profiles:web"
     compile "com.bertramlabs.plugins:asset-pipeline-grails:$assetPipelineVersion"
     assets "com.bertramlabs.plugins:sass-asset-pipeline:$assetPipelineVersion"
+    runtime "com.zaxxer:HikariCP:4.0.3"
+
     //testCompile "org.grails:grails-plugin-testing" // Moved in upgrade to Grails 3.3.11
     testCompile "org.grails:grails-test-mixins:3.3.0" // For legacy @TestMixin and @TestFor
     testCompile "org.grails.plugins:geb"

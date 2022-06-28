@@ -278,6 +278,7 @@ hibernate:
 dataSource:
     dbCreate: validate
     pooled: true
+    poolName: 'grails-hikari'
     jmxExport: true
     driverClassName: org.postgresql.Driver
 #    username: root
