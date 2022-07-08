@@ -274,6 +274,11 @@ hibernate:
         region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     #SQL="trace,stdout"
     #type="trace,stdout"
+    jdbc:
+        lob:
+            non_contextual_creation: true
+        temp:
+            use_jdbc_metadata_defaults: false
 
 dataSource:
     dbCreate: validate
