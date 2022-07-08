@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
-class Task implements Serializable {
+import grails.gorm.async.AsyncEntity
+
+class Task implements Serializable, AsyncEntity<Task> {
 
     //Project project
     Long id

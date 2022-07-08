@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
+import groovy.util.logging.Slf4j
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Slf4j
 class ForumNotifierService {
 
     // This is deliberate so that if the mails service fails to send it wont kill the requests current transaction

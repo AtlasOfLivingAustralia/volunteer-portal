@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import groovy.transform.ToString
+import groovy.util.logging.Slf4j
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 //@Transactional(readOnly = true)
+@Slf4j
 class DomainUpdateService {
 
     def grailsApplication

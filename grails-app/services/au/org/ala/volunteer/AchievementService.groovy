@@ -6,6 +6,7 @@ import grails.events.annotation.Subscriber
 import grails.gorm.DetachedCriteria
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
+import groovy.util.logging.Slf4j
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig
 import org.elasticsearch.action.search.SearchResponse
@@ -28,6 +29,7 @@ import static org.hibernate.FetchMode.*
 
 @Consumer
 @Transactional
+@Slf4j
 class AchievementService implements EventPublisher {
 
     public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
