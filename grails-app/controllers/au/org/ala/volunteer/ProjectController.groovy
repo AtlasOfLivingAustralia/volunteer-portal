@@ -922,7 +922,8 @@ class ProjectController {
 
                 try {
                     f.inputStream.withCloseable {
-                        project.setBackgroundImage(it, f.contentType)
+                        //project.setBackgroundImage(it, f.contentType)
+                        projectService.setBackgroundImage(project, it, f.contentType)
                     }
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
@@ -950,7 +951,8 @@ class ProjectController {
         if (project) {
             project.backgroundImageAttribution = null
             project.backgroundImageOverlayColour = null
-            project.setBackgroundImage(null,null)
+            //project.setBackgroundImage(null,null)
+            projectService.setBackgroundImage(project, null, null)
         }
 
         flash.message = "Background image settings have been deleted."

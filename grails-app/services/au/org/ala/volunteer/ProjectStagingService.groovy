@@ -64,7 +64,8 @@ class ProjectStagingService {
         def backgroundImageFile = new File(getProjectBackgroundImagePath(projectDescriptor))
         if (backgroundImageFile?.exists()) {
             backgroundImageFile.withInputStream {
-                project.setBackgroundImage(it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
+                //project.setBackgroundImage(it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
+                projectService.setBackgroundImage(project, it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
             }
         }
 

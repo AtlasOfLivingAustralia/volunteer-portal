@@ -167,35 +167,6 @@ class Project implements Serializable {
         }
     }
 
-    /**
-     * Saves the uploaded background image or deletes the existing one if argument is null.  Consumes the inputstream
-     * but doesn't close it
-     * @param multipartFile
-     */
-    void setBackgroundImage(InputStream inputStream, String contentType) {
-        if (inputStream && contentType) {
-            // Save image
-            String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
-            def filePath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.${fileExtension}"
-            def file = new File(filePath)
-            file.getParentFile().mkdirs()
-            file.withOutputStream {
-              it << inputStream
-            }
-        } else {
-            // Remove image if exists
-            String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
-            String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
-            File fileJpg = new File(localPathJpg)
-            File filePng = new File(localPathPng)
-            if (fileJpg.exists()) {
-                fileJpg.delete()
-            } else if (filePng.exists()) {
-                filePng.delete()
-            }
-        }
-    }
-
     @SuppressWarnings('unused')
     void setFeaturedImage(String image) {
         // do nothing
