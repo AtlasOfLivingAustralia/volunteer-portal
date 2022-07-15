@@ -20,6 +20,7 @@ class VolunteerStatsService {
     def userService
     def leaderBoardService
     def institutionService
+    def projectService
     LinkGenerator grailsLinkGenerator
 
     /**
@@ -176,7 +177,7 @@ class VolunteerStatsService {
             if (topic instanceof ProjectForumTopic) {
                 def forumProject = ((ProjectForumTopic) topic).project
                 forumName = forumProject.name
-                thumbnail = forumProject.featuredImage
+                thumbnail = projectService.getFeaturedImage(forumProject)
                 forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: forumProject.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task

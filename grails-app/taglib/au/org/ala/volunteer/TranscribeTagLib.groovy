@@ -33,6 +33,7 @@ class TranscribeTagLib {
     def grailsLinkGenerator
     def fieldService
     def fullTextIndexService
+    def projectService
 
     static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers', 'taskSequence']
 
@@ -871,7 +872,7 @@ class TranscribeTagLib {
         if (task?.project?.institution) {
             out << institutionService.getLogoImageUrl(task.project.institution)
         } else if (task?.project) {
-            out << task.project.featuredImage
+            out << projectService.getFeaturedImage(task.project)
         } else {
             out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
         }

@@ -12,6 +12,7 @@ class ForumTagLib {
     MarkdownService markdownService
     TaskService taskService
     MultimediaService multimediaService
+    ProjectService projectService
     @Lazy ForumService forumService = grailsApplication.mainContext.getBean('forumService')
 
     /**
@@ -217,7 +218,9 @@ class ForumTagLib {
                                         }
                                     }
                                     if (topic instanceof ProjectForumTopic) {
-                                        delegate.img(src: (topic as ProjectForumTopic).project.featuredImage, width: '40')
+                                        def projectFeaturedImage = projectService.getFeaturedImage((topic as ProjectForumTopic).project)
+                                        //delegate.img(src: (topic as ProjectForumTopic).project.featuredImage, width: '40')
+                                        delegate.img(src: projectFeaturedImage, width: '40')
                                     } else if (topic instanceof TaskForumTopic) {
                                         def mm = (topic as TaskForumTopic).task.multimedia?.first()
                                         if (mm) {

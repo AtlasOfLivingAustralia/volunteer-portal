@@ -18,7 +18,7 @@
 
 <div class="text-center">
     <div class="thumbnail display-inline-block">
-        <img src="${projectInstance?.featuredImage}" class="img-responsive" style="width: 600px;"/>
+        <img src="<cl:featuredImageUrl project="${projectInstance}"/>" class="img-responsive" style="width: 600px;"/>
         <div class="caption">
             <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}
         </div>

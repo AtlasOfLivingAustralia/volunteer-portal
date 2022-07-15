@@ -30,6 +30,7 @@ class VolunteerTagLib {
     def taskService
     def adminService
     def templateService
+    def projectService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -64,7 +65,9 @@ class VolunteerTagLib {
     }
 
     def isNotLoggedIn = { attrs, body ->
+        log.info("Is not logged in: ")
         if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            log.info("true")
             out << body()
         }
     }
@@ -195,6 +198,31 @@ class VolunteerTagLib {
             out << "<button class=\"${attrs.styleClass}\" style=\\\"pointer-events: auto;\\\" id=\"${attrs.id}\" " +
                     "title=\"${message(code:'template.edit.button.nopermission', default:'Not allowed')}\" disabled>${attrs.label}</button>"
         }
+    }
+
+    /**
+     * @attr project The Project.
+     */
+    def hasProjectBackgroundImage = {attrs, body ->
+        String bgImagePath = projectService.getBackgroundImage(attrs.project as Project)
+        if (bgImagePath) {
+            out << body()
+        }
+    }
+
+    def hasNoProjectBackgroundImage = { attrs, body ->
+        String bgImagePath = projectService.getBackgroundImage(attrs.project as Project)
+        if (!bgImagePath) {
+            out << body()
+        }
+    }
+
+    def backgroundImageUrl = { attrs, body ->
+        out << projectService.getBackgroundImage(attrs.project as Project)
+    }
+
+    def featuredImageUrl = { attrs, body ->
+        out << projectService.getFeaturedImage(attrs.project as Project)
     }
 
     private boolean isInstitutionAdmin(Institution institution) {

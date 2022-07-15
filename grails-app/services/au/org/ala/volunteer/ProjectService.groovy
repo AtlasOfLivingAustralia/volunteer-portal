@@ -1047,4 +1047,46 @@ class ProjectService implements EventPublisher {
             }
         }
     }
+
+    /**
+     * Retrieves background image url
+     * @return background image url or null if non existent
+     */
+    String getBackgroundImage(Project project) {
+        if (!project) return null
+
+        String localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image"
+        String localPathJpg = "${localPath}.jpg"
+        String localPathPng = "${localPath}.png"
+        File fileJpg = new File(localPathJpg)
+        File filePng = new File(localPathPng)
+
+        if (fileJpg.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.jpg"
+        } else if (filePng.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.png"
+        } else {
+            return null
+        }
+    }
+
+    /**
+     * Gets the projects featured image url.
+     * @param project the project to search
+     * @return the String url of the image file or a default base image if none exists. Returns null if project is not provided.
+     */
+    String getFeaturedImage(Project project) {
+        if (!project) return null
+        // Check to see if there is a feature image for this expedition by looking in its project directory.
+        // If one exists, use it, otherwise use a default image...
+        def localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+        def file = new File(localPath)
+        if (!file.exists()) {
+            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
+        } else {
+            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def infix = urlPrefix.endsWith('/') ? '' : '/'
+            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
+        }
+    }
 }
