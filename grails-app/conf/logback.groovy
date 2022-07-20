@@ -115,6 +115,7 @@ for (String name: debug_logger) logger(name, DEBUG, [DEBUG_LOG], false)
 logger('org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport', INFO, [SLOW_QUERIES], false)
 
 final error = [
+        'org.hibernate.orm.deprecation'
 ]
 
 final warn = [
