@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
+import grails.gorm.transactions.Transactional
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
 import org.springframework.web.context.request.RequestContextHolder
@@ -94,6 +95,7 @@ class DomainUpdateService {
         return _backgroundQueue.size() + currentlyProcessing.get()
     }
 
+    @Transactional
     def processTaskQueue(int maxTasks = 10000) {
         int taskCount = 0
         QueueTask jobDescriptor = null
