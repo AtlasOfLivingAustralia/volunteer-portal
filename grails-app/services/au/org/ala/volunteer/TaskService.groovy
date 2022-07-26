@@ -1042,7 +1042,7 @@ ORDER BY record_idx, name;
         throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI?.toString() ?: resource?.filename ?: '')}" + "-" + "${(imageUrl ?: '')}" + "-" + rotate })
+    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI?.toString() ?: resource?.filename ?: '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
