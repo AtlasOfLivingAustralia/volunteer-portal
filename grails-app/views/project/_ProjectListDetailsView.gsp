@@ -7,7 +7,7 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
-                                    <img src="${projectSummary.project?.featuredImage}" class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
+                                    <cl:featuredImage project="${projectSummary.project}" class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}" />
                                 </a>
                                 <div class="text-center">
                                     <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">

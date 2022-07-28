@@ -72,7 +72,7 @@
                         <%-- Project thumbnail --%>
                         <div class="col-sm-2">
                             <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectSummary.project.id])}">
-                                <img src="<cl:featuredImageUrl project="${projectSummary.project}"/>" width="147" height="81" style="padding-top: 5px"/>
+                                <cl:featuredImage project="${projectSummary.project}" width="147" height="81" style="padding-top: 5px" />
                             </a>
                         </div>
                         <%-- Name and progress bar --%>

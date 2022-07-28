@@ -131,10 +131,10 @@ class Project implements Serializable {
         institution ? institution.name : featuredOwner
     }
 
-    @SuppressWarnings('unused')
-    void setFeaturedImage(String image) {
-        // do nothing
-    }
+//    @SuppressWarnings('unused')
+//    void setFeaturedImage(String image) {
+//        // do nothing
+//    }
 
     // Executed after an object has been updated
     def afterUpdate() {

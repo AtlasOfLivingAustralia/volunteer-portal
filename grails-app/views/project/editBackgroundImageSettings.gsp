@@ -21,7 +21,7 @@
 <cl:hasProjectBackgroundImage project="${projectInstance}">
 <div class="text-center">
     <div class="thumbnail display-inline-block">
-        <img src="<cl:backgroundImageUrl project="projectInstance" />" class="img-responsive" style="width: 600px;"/>
+        <cl:backgroundImage project="${projectInstance}" class="img-responsive" style="width: 600px;" />
     </div>
 </div>
 </cl:hasProjectBackgroundImage>

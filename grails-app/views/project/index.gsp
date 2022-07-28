@@ -86,7 +86,7 @@
             </div>
             <div class="col-sm-4">
                 <cl:hasNoProjectBackgroundImage project="${projectInstance}">
-                    <img src="<cl:featuredImageUrl project="${projectInstance}"/>" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
+                    <cl:featuredImage project="${projectInstance}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive" />
                 </cl:hasNoProjectBackgroundImage>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
