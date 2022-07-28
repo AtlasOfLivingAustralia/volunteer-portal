@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 //import com.google.common.base.Stopwatch
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.StringUtils
 
 class TranscribeController {
@@ -35,6 +36,7 @@ class TranscribeController {
 
     }
 
+    @Transactional
     def task() {
 //        Stopwatch sw = Stopwatch.createStarted()
 
