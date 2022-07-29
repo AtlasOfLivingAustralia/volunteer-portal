@@ -24,7 +24,7 @@ class EventSourceService {
 
     static final int QUEUE_CAPACITY = 3 // browsers will allow ~6 connections, so this is plenty.
 
-    def userService
+    //def userService
 
     static transactional = false
     static readOnly = true
