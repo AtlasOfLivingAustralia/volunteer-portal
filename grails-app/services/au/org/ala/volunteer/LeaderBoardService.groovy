@@ -330,6 +330,8 @@ class LeaderBoardService {
 //            map[row[0]] = row[1]
 //        }
 
+        sql.close()
+
         return map
     }
 
@@ -472,6 +474,8 @@ class LeaderBoardService {
 //        results.each { row ->
 //            map[row[0]] = row[1]
 //        }
+
+        sql.close()
 
         return map
     }

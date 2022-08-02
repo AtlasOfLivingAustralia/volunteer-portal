@@ -266,6 +266,7 @@ class VolunteerStatsService {
             sql.eachRow(query) { row ->
                 latestTranscribers.add(LatestTranscribers.findByFullyTranscribedByAndMaxDate(row.fully_transcribed_by as String, (row.max_date as Date).toTimestamp()))
             }
+            sql.close()
         } else {
             latestTranscribers = LatestTranscribers.withCriteria {
                 if (institution) {
@@ -372,6 +373,7 @@ class VolunteerStatsService {
         """.stripIndent()
         def sql = new Sql(dataSource)
         sql.execute(query)
+        sql.close()
     }
 
     def cleanUpTables(String tempTableName) {
@@ -449,6 +451,8 @@ class VolunteerStatsService {
             projectList.add(row.project_id)
         }
 
+        sql.close()
+
         projectList
     }
 
@@ -503,6 +507,8 @@ class VolunteerStatsService {
 
         log.debug("Got transcriber count in ${sw.stop().elapsed(MILLISECONDS)}ms")
 
+        sql.close()
+        
         [tasks: taskCount, transcriptions: transcribedTaskCount, transcribers: transcriberCount, projectsInLabels: projectList, projectTempTable: tempTableName]
     }
 

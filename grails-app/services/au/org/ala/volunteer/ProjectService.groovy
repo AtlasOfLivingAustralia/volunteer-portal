@@ -972,6 +972,8 @@ class ProjectService implements EventPublisher {
             projectToDisplay.save(failOnError: true, flush: true)
         }
 
+        sql.close()
+
         return projectToDisplay.id
     }
 

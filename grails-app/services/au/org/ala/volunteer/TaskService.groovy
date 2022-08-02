@@ -649,6 +649,7 @@ WHERE
         def lists = sql.rows(select, [userId: userId, projectId: project?.id]).collect { row ->  row.task_id }
 
         log.debug("Returning validated tasks: " + sw.stop())
+        sql.close()
 
         return lists
     }
@@ -703,6 +704,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
         def count = sql.firstRow(select, [userId: userId, projectId: project?.id]).values()[0]
 
         log.debug("Returning validated task count: " + sw.stop())
+        sql.close()
 
         return count
     }
@@ -808,6 +810,7 @@ ORDER BY record_idx, name;
         def validatorNotes = Field.findByTaskAndNameAndSuperceded(task, 'validatorNotes', false)?.value
 
         log.debug("Returning validated task fields: ${sw.stop()}")
+        sql.close()
 
         return [recordValues: recordValues, validatorDisplayName: validatorDisplayName, validatorNotes: validatorNotes]
     }
@@ -939,6 +942,7 @@ ORDER BY record_idx, name;
             def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
             results.add(taskRow)
         }
+        sql.close()
 
         return results
     }
@@ -994,6 +998,7 @@ ORDER BY record_idx, name;
         if (row) {
             taskId = row[0] as int
         }
+        sql.close()
         return Task.findById(taskId)
     }
 
@@ -1148,7 +1153,7 @@ ORDER BY record_idx, name;
 
         def sql = new Sql(dataSource)
         def row = sql.firstRow(select)
-
+        sql.close()
         row ? row[0] as Integer : 0
     }
 
@@ -1452,6 +1457,8 @@ ORDER BY record_idx, name;
                 results.viewList.each { it.unread = unreadIds.contains(it.id) }
             }
         }
+
+        sql.close()
 
         return results
     }
