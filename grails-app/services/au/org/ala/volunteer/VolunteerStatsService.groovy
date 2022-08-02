@@ -508,7 +508,7 @@ class VolunteerStatsService {
         log.debug("Got transcriber count in ${sw.stop().elapsed(MILLISECONDS)}ms")
 
         sql.close()
-        
+
         [tasks: taskCount, transcriptions: transcribedTaskCount, transcribers: transcriberCount, projectsInLabels: projectList, projectTempTable: tempTableName]
     }
 

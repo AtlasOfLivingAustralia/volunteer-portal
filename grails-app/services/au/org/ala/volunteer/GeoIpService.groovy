@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import au.org.ala.volunteer.freegeoip.FreeGeoipClient
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import grails.gorm.transactions.NotTransactional
 import grails.plugin.cache.Cacheable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,8 +11,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.annotation.PostConstruct
 
 class GeoIpService {
-
-    static transactional = false
 
     def grailsApplication
     FreeGeoipClient geoipClient

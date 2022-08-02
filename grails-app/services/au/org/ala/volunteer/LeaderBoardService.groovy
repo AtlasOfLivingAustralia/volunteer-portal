@@ -6,8 +6,6 @@ import javax.sql.DataSource
 
 class LeaderBoardService {
 
-    static transactional = false
-
     final static EMPTY_LEADERBOARD_WINNER = [userId: 0, name:'', email:'', score:0]
 
     private static Date getTodaysDate() {

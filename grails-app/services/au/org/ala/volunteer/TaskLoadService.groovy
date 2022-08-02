@@ -47,8 +47,6 @@ import static org.jooq.impl.DSL.when
 class TaskLoadService implements EventPublisher {
 
     // explicity control transactions with jooq
-    static transactional =  false
-
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext

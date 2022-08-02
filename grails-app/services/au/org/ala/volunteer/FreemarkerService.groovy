@@ -7,8 +7,6 @@ import freemarker.template.TemplateExceptionHandler
 
 class FreemarkerService {
 
-    static transactional = false
-
     Configuration cfg
     StringTemplateLoader loader
 

@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartFile
 
 class FileUploadService {
 
-    static transactional = false
-
     def grailsApplication
 
     List<Map> uploadImages(String directory, Map<String, List<MultipartFile>> fileMap) {
