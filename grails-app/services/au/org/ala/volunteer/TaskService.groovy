@@ -1463,4 +1463,26 @@ ORDER BY record_idx, name;
         return results
     }
 
+    /**
+     * Updates the properties of this Task that marks it as validated.
+     * @param task The task being validated
+     * @param userId the user who validated the task.
+     * @param isValid true if the Task is considered valid.
+     * @param validationDate the Date the task was validated (defaults to now)
+     */
+    void validate(Task task, String userId, boolean isValid, Date validationDate = new Date()) {
+        if (!task || !userId) return
+        if (!task.fullyValidatedBy) {
+            task.fullyValidatedBy = userId
+        }
+        if (!task.dateFullyValidated) {
+            task.dateFullyValidated = validationDate
+        }
+        if (!task.validatedUUID) {
+            task.validatedUUID = UUID.randomUUID()
+        }
+        if (isValid) {
+            task.isValid = true
+        }
+    }
 }
