@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import groovy.util.logging.Slf4j
 import spock.lang.Specification
 
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
@@ -12,7 +13,6 @@ import static au.org.ala.volunteer.helper.TaskDataHelper.*
 @TestFor(ValidationService)
 @Mock([Task, Project, Template, Field, ViewedTask, Transcription])
 class ValidationServiceSpec extends Specification {
-
 
     Task task
     Set taskSet
@@ -25,11 +25,11 @@ class ValidationServiceSpec extends Specification {
        // task.project.template.viewParams.transcriptionsPerTask = "3"
         task.project.transcriptionsPerTask = 3
         task.project.thresholdMatchingTranscriptions = 3
+        task.isValid = false
         task.save()
 
         taskSet = new HashSet()
         taskSet << task.id
-
 
         fieldSyncService = Mock(FieldSyncService)
         service.fieldSyncService = fieldSyncService
@@ -75,6 +75,17 @@ class ValidationServiceSpec extends Specification {
         for (int i=0; i<3; i++) {
             transcribe(task, Integer.toString(i), fields())
         }
+        log.info("Setting up stub")
+        System.out.println("[sysout] Setting up stub ")
+        def mockTaskService = Stub(TaskService)
+        mockTaskService.validate(_, _, _) >> { Task task, String user, boolean _isValid ->
+            log.info("Testing validate()")
+            System.out.println("[sysout] Testing validate()")
+            task.fullyValidatedBy = UserService.SYSTEM_USER
+            task.isValid = true
+        }
+
+        service.taskService = mockTaskService
 
         when:
         service.autoValidate(taskSet)
@@ -84,7 +95,6 @@ class ValidationServiceSpec extends Specification {
         task.isValid == true
         task.fullyValidatedBy == UserService.SYSTEM_USER
         1 * fieldSyncService.syncFields(task, _, UserService.SYSTEM_USER, false, true, true)
-
     }
 
     void "Fully transcribed Tasks with transcriptions that have identical field records should be auto-validated"() {
@@ -92,6 +102,13 @@ class ValidationServiceSpec extends Specification {
         for (int i=0; i<3; i++) {
             transcribe(task, Integer.toString(i), recFields())
         }
+        def mockTaskService = Stub(TaskService) {
+            validate(_, _, _) >> { Task task, String username, boolean _isValid ->
+                task.fullyValidatedBy = UserService.SYSTEM_USER
+                task.isValid = true
+            }
+        }
+        service.taskService = mockTaskService
 
         when:
         service.autoValidate(taskSet)
@@ -189,6 +206,13 @@ class ValidationServiceSpec extends Specification {
             fields[0].put("validatorNotes", "Validator $i")
             transcribe(task, Integer.toString(i), fields)
         }
+        def mockTaskService = Stub(TaskService) {
+            validate(_, _, _) >> { Task task, String username, boolean _isValid ->
+                task.fullyValidatedBy = "system"
+                task.isValid = true
+            }
+        }
+        service.taskService = mockTaskService
 
         when:
         service.autoValidate(taskSet)
@@ -205,6 +229,15 @@ class ValidationServiceSpec extends Specification {
         for (int i=0; i<2; i++) {
             transcribe(task, Integer.toString(i), fields())
         }
+        def mockTaskService = Stub(TaskService) {
+            validate(_, _, _) >> { Task task, String username, boolean _isValid ->
+                task.isFullyTranscribed = true
+                task.fullyValidatedBy = "system"
+                task.isValid = true
+            }
+        }
+        service.taskService = mockTaskService
+
         when:
         service.autoValidate(taskSet)
 
