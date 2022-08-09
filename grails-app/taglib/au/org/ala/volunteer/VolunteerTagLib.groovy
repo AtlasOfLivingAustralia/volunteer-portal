@@ -65,9 +65,7 @@ class VolunteerTagLib {
     }
 
     def isNotLoggedIn = { attrs, body ->
-        log.info("Is not logged in: ")
         if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
-            log.info("true")
             out << body()
         }
     }
