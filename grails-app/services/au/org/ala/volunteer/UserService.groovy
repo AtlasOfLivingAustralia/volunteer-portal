@@ -508,13 +508,16 @@ class UserService {
         log.debug("Role query: ${query}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int) { row ->
+        def processUser = { def row ->
             UserRole userRole = UserRole.get(row.user_role_id as long)
             results.add(userRole)
         }
 
+        if (pValues) sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int, processUser)
+        else sql.eachRow(query, parameters.offset as int, parameters.max as int, processUser)
+
         def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
-        def countRows = sql.firstRow(countQuery, pValues)
+        def countRows = pValues ? sql.firstRow(countQuery, pValues) : sql.firstRow(countQuery)
 
         def returnMap = [userRoleList: results, totalCount: countRows.row_count_total]
 

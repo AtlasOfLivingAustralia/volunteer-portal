@@ -278,7 +278,6 @@ class TemplateService {
             }
         }
 
-
         // Add the clauses
         clause.eachWithIndex { line, idx ->
             if (idx == 0) query += " where "
@@ -315,13 +314,18 @@ class TemplateService {
         log.debug("Offset: ${params.offset as int}, max: ${params.max as int}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, parameters, (params.offset as int) + 1, params.max as int) { row ->
+        // Postgres driver is funny about empty lists/maps
+        def processTemplate = { def row ->
             Template template = Template.get(row.template_id as long)
             if (template) results.add(template)
         }
 
+        if (parameters) sql.eachRow(query, parameters, (params.offset as int) + 1, params.max as int, processTemplate)
+        else sql.eachRow(query, (params.offset as int) + 1, params.max as int, processTemplate)
+
+
         def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
-        def countRows = sql.firstRow(countQuery, parameters)
+        def countRows = parameters ? sql.firstRow(countQuery, parameters) : sql.firstRow(countQuery)
 
         def returnMap = [templateList: results, totalCount: countRows.row_count_total]
 
