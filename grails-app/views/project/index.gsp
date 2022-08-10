@@ -26,10 +26,10 @@
     <cl:hasProjectBackgroundImage project="${projectInstance}">
         .a-feature.expedition {
         <g:if test="${projectInstance.backgroundImageOverlayColour}">
-            background-image: linear-gradient(${projectInstance.backgroundImageOverlayColour}, ${projectInstance.backgroundImageOverlayColour}), url(<cl:backgroundImageUrl project="projectInstance"/>);
+            background-image: linear-gradient(${projectInstance.backgroundImageOverlayColour}, ${projectInstance.backgroundImageOverlayColour}), url(<cl:backgroundImageUrl project="${projectInstance}"/>);
         </g:if>
         <g:else>
-            background-image: url(<cl:backgroundImageUrl project="projectInstance"/>);
+            background-image: url(<cl:backgroundImageUrl project="${projectInstance}"/>);
         </g:else>
         }
     </cl:hasProjectBackgroundImage>
