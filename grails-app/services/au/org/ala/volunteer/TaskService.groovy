@@ -1154,7 +1154,7 @@ ORDER BY record_idx, name;
         def sql = new Sql(dataSource)
         def row = sql.firstRow(select)
         sql.close()
-        row ? row[0] as Integer : 0
+        row && row[0] != null ? row[0] as Integer : 0
     }
 
     Map getAdjacentTasksBySequence(Task task) {
