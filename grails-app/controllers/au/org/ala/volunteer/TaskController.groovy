@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.springframework.web.multipart.MultipartFile
@@ -27,6 +28,7 @@ class TaskController {
     def auditService
     def multimediaService
     def projectService
+    def projectStagingService
 
     def projectAdmin() {
         def currentUser = userService.currentUserId
@@ -561,20 +563,11 @@ class TaskController {
             return
         }
 
-        def profile = ProjectStagingProfile.findByProject(project)
-        if (!profile) {
-            profile = new ProjectStagingProfile(project: project)
-            profile.save(flush: true, failOnError: true)
-        }
-
-        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
-            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex,
-                    format: "^(.*)\$", fieldName: "externalIdentifier"))
-        }
+        def profile = projectStagingService.findProjectStagingProfile(project)
 
         cache false
         def images = stagingService.buildTaskMetaDataList(project)
-        render template:'stagedImages', model: [images: images, profile:profile]
+        render template:'stagedImages', model: [images: images, profile: profile]
     }
 
     def editStagingFieldFragment() {
