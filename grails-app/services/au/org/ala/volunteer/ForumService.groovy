@@ -439,4 +439,45 @@ class ForumService {
 
     }
 
+    def createForumTopic(Task task, Map parameters) {
+        return createForumTopicOfAnyType(task, null, parameters)
+    }
+
+    def createForumTopic(Project project, Map parameters) {
+        return createForumTopicOfAnyType(null, project, parameters)
+    }
+
+    def createForumTopic(Map parameters) {
+        return createForumTopicOfAnyType(null, null, parameters)
+    }
+
+    private def createForumTopicOfAnyType(Task task, Project project, Map parameters) {
+        ForumTopic topic = null
+        if (task && !project) {
+            // Task forum topic
+            topic = new TaskForumTopic(task: task, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else if (!task && project) {
+            // Project forum topic
+            topic = new ProjectForumTopic(project: project, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else {
+            // Site forum topic
+            topic = new SiteForumTopic(title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        }
+
+        topic.lastReplyDate = topic.dateCreated
+        topic.save(flush: true, failOnError: true)
+
+        def firstMessage = new ForumMessage(topic: topic, text: parameters.text, date: topic.dateCreated, user: topic.creator)
+        firstMessage.save(flush: true, failOnError: true)
+
+        scheduleNewTopicNotification(topic, firstMessage)
+
+        topic
+    }
 }
