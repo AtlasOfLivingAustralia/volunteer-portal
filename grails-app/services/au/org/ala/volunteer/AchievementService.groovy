@@ -15,6 +15,7 @@ import org.hibernate.FetchMode
 import org.hibernate.transform.DistinctRootEntityResultTransformer
 import org.hibernate.transform.ResultTransformer
 import org.ocpsoft.prettytime.PrettyTime
+import org.springframework.web.multipart.MultipartFile
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
 
@@ -35,7 +36,6 @@ class AchievementService implements EventPublisher {
     public static final String ACHIEVEMENT_AWARDED = 'achievement.awarded'
     public static final String ACHIEVEMENT_VIEWED = 'achievement.viewed'
 
-    def taskService
     def grailsApplication
     def fullTextIndexService
     def grailsLinkGenerator
@@ -102,7 +102,7 @@ class AchievementService implements EventPublisher {
         }
 
         final newAchievements = achievements
-                .find { evaluateAchievement(it, userId)}
+                .find { evaluateAchievement(it as AchievementDescription, userId)}
 
         if (newAchievements) {
             final user = User.findByUserId(userId)
@@ -114,7 +114,7 @@ class AchievementService implements EventPublisher {
                 if (!aaSaved || aa.hasErrors()) {
                     log.error("Couldn't save achievement {} for user {} due to {}", it, user, aa?.errors)
                 } else {
-                    notify(AchievementService.ACHIEVEMENT_AWARDED, aaSaved)
+                    notify(ACHIEVEMENT_AWARDED, aaSaved)
                 }
 
             }
@@ -219,8 +219,6 @@ class AchievementService implements EventPublisher {
     }
 
     def cleanImageDir(List<String> badges) {
-
-
         def stream
         def c = Closer.create()
         try {
@@ -341,4 +339,89 @@ class AchievementService implements EventPublisher {
         return msg
     }
 
+    /**
+     * Adds a badge to an Achievement description. Returns a map of fields that can be resolved to JSON.
+     * @param f the MultipartFile object representing the badge image
+     * @param achievement the AchivementDescription to attach the badge to
+     * @return json Map containing the filename (if successful) or an error message.
+     */
+    def addBadgeToAchievement(MultipartFile f, AchievementDescription achievement) {
+        boolean result
+        def json = [:]
+
+        String filename = UUID.randomUUID().toString() + '.' + contentTypeToExtension(f.contentType)
+        result = uploadToLocalPath(f, filename)
+
+        if (result) {
+            json.put('filename', filename)
+            if (achievement) {
+                achievement.badge = filename
+                achievement.save(flush: true)
+            }
+        } else {
+            json.put('error', "Failed to upload image. Unknown error!")
+        }
+
+        json
+    }
+
+    /**
+     * Uploads an image to the Achievment storage location
+     * @param mpfile the MultipartFile object representing the image.
+     * @param filename the name to give the file
+     * @return true if uploaded successful, false if not.
+     */
+    private boolean uploadToLocalPath(MultipartFile mpfile, String filename) {
+        if (!mpfile) {
+            return false
+        }
+
+        try {
+            def file = new File(badgeImageFilePrefix, filename)
+            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+                throw new RuntimeException("Failed to create institution directories: ${file.getParentFile().getAbsolutePath()}")
+            }
+            mpfile.transferTo(file);
+            return true
+        } catch (Exception ex) {
+            log.error("AchievementService.uploadToLocalPath: Failed to upload achievement badge", ex)
+            return false
+        }
+    }
+
+    /**
+     * Returns the specific file extension for the content type. Returns no-length string if content type isn't known.
+     * Valid content types:
+     * <ul><li>image/png</li>
+     * <li>image/jpg</li>
+     * <li>image/jpeg</li>
+     * <li>image/gif</li>
+     * <li>image/webp</li>
+     * <li>image/tiff</li>
+     * <li>image/tiff-fx</li>
+     * <li>image/bmp</li>
+     * <li>image/x-bmp</li></ul>
+     * @param contentType the content type of the file
+     * @return the selected file extension
+     */
+    private static String contentTypeToExtension(String contentType) {
+        switch (contentType.toLowerCase()) {
+            case 'image/png':
+                return 'png'
+            case 'image/jpeg':
+                return 'jpg'
+            case 'image/gif':
+                return 'gif'
+            case 'image/webp':
+                return 'webp'
+            case 'image/tiff':
+            case 'image/tiff-fx':
+                return 'tiff'
+            case 'image/bmp':
+            case 'image/x-bmp':
+                return 'bmp'
+            default:
+                return ''
+        }
+    }
 }
