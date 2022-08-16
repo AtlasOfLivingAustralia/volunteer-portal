@@ -270,9 +270,7 @@ class TranscribeController {
 
                     try {
                         if (actualView) {
-                            actualView.lastView = System.currentTimeMillis()
-                            actualView.lastUpdated = new Date()
-                            actualView.save(flush: true, failOnError: true)
+                            taskService.updateLastView(actualView, System.currentTimeMillis())
                         }
                     } catch (Exception e) {
                         log.error("Error updating last view during auto save of transcription. Exception message is: ${e.getMessage()}", e)
@@ -431,6 +429,7 @@ class TranscribeController {
         def hideControls = params.boolean("hideControls") ?: false
         def hideShowInOtherWindow = params.boolean("hideShowInOtherWindow") ?: false
         def hidePinImage = params.boolean("hidePinImage") ?: false
+        log.debug("Loading image for task: ${multimedia}")
         [multimedia: multimedia, height: height, rotate: rotate, hideControls: hideControls, hideShowInOtherWindow: hideShowInOtherWindow, hidePinImage: hidePinImage]
     }
 

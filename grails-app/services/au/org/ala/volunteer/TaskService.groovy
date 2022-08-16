@@ -1494,4 +1494,16 @@ ORDER BY record_idx, name;
             task.isValid = true
         }
     }
+
+    /**
+     * Updates the last view timestamp of a task view (e.g. for Background saving a task).
+     * @param viewedTask the task view to update
+     * @param lastView the timestamp the task was last viewed.
+     */
+    void updateLastView(ViewedTask viewedTask, Long lastView) {
+        if (!viewedTask) return
+        viewedTask.lastView = lastView
+        viewedTask.lastUpdated = new Date()
+        viewedTask.save(flush: true, failOnError: true)
+    }
 }
