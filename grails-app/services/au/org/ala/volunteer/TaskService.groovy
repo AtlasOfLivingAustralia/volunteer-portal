@@ -1016,7 +1016,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    @Cacheable(value='getAudioMetaData', key={"(#multimedia?.id?:0)"})
+    @Cacheable(value='getAudioMetaData', key={ "${multimedia?.id ?: 0}" })
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
         if (path) {
@@ -1026,8 +1026,17 @@ ORDER BY record_idx, name;
         }
     }
 
-    @Cacheable(value='getImageMetaData', key={"(#multimedia?.id?:0) + '-' + (#rotate?:0)"} )
-    ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
+    /**
+     * Returns Image meta data for a task image. If the rotate parameter is provided, the image is rotated by that
+     * number of degrees.<br/>
+     * Cached.
+     * @param multimedia The image multimedia object
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata.
+     */
+    @Cacheable(value = 'getImageMetaData', key = { "${multimedia?.id ?: 0}-${rotate}" })
+    ImageMetaData getImageMetaData(Multimedia multimedia, int rotate) {
+        log.debug("Image metadata, rotate: ${rotate}")
         def path = multimedia?.filePath
         if (path) {
             def imageUrl = multimediaService.getImageUrl(multimedia)
