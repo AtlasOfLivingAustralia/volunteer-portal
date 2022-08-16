@@ -35,7 +35,7 @@ class VolunteerStatsService {
      * @param disableHonourBoard flag whether honour board has been disabled
      * @return transcriber stats on the given parameters
      */
-    @Cacheable(value = 'MainVolunteerStats', key = { "${institutionId?.toString() ?: '-1'}-${projectId?.toString() ?: '-1'}-${projectTypeName ?: ''}-${tags?.toString() ?: '[]'}-${disableStats?.toString()}-${disableHonourBoard?.toString()}" })
+    @Cacheable(value = 'MainVolunteerStats', key = { "${institutionId?.toString() ?: '-1'}-${projectTypeName ?: ''}-${tags?.toString() ?: '[]'}-${disableStats?.toString()}-${disableHonourBoard?.toString()}" })
     def generateStats(long institutionId, String projectTypeName, List<String> tags, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
 
