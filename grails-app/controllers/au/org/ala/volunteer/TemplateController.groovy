@@ -70,6 +70,7 @@ class TemplateController {
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
+    @Transactional
     def save() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -124,6 +125,7 @@ class TemplateController {
         }
     }
 
+    @Transactional
     def update() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -186,17 +188,10 @@ class TemplateController {
         def template = Template.get(params.long('id'))
         if (template) {
             try {
-                // First got to delete all the template_fields...
-                def fields = TemplateField.findAllByTemplate(template)
-                if (fields) {
-                    fields.each { it.delete(flush: true) }
-                }
-                // Now can delete template proper
-                template.delete(flush: true)
-
+                templateService.deleteTemplate(template)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), "'${template.name}'"])}"
                 redirect(action: "list", params: params)
-            } catch (DataIntegrityViolationException e) {
+            } catch (Exception e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
                 log.error(message, e)

@@ -2,7 +2,6 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Strings
 import com.google.common.io.Resources
-import grails.core.GrailsApplication
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
@@ -13,7 +12,6 @@ import java.util.regex.Pattern
 
 class TemplateService {
 
-    GrailsApplication grailsApplication
     def userService
     DataSource dataSource
 
@@ -38,6 +36,21 @@ class TemplateService {
         })
 
         return newTemplate
+    }
+
+    /**
+     * Deletes a template from the database
+     * @param template the template to delete
+     */
+    @Transactional
+    def deleteTemplate(Template template) {
+        // First got to delete all the template_fields...
+        def fields = TemplateField.findAllByTemplate(template)
+        if (fields) {
+            fields.each { it.delete(flush: true) }
+        }
+        // Now can delete template proper
+        template.delete(flush: true)
     }
 
     /**
