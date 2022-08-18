@@ -480,4 +480,36 @@ class ForumService {
 
         topic
     }
+
+    /**
+     * Adds a forum message to the topic.
+     * @param topic the topic to add the message to
+     * @param parameters the parameters of the message.
+     * @return the newly created forum message
+     */
+    def addForumMessage(ForumTopic topic, Map parameters) {
+        if (!topic) return
+        ForumMessage message = new ForumMessage(topic: topic, user: parameters.user as User,
+                replyTo: parameters.replyTo as ForumMessage, date: new Date(), text: parameters.text)
+        message.save(flush:true, failOnError: true)
+
+        parameters.watchTopic == 'on' ? watchTopic(parameters.user as User, topic) : unwatchTopic(parameters.user as User, topic)
+        scheduleTopicNotification(topic, message)
+
+        message
+    }
+
+    /**
+     * Increments the view count of a forum topic
+     * @param topic the topic to update
+     */
+    void incrementTopicView(ForumTopic topic) {
+        if (!topic) return
+        def hql = """
+                UPDATE ForumTopic
+                SET views = views + 1
+                WHERE id = :id
+            """
+        ForumTopic.executeUpdate(hql, [id: topic.id])
+    }
 }

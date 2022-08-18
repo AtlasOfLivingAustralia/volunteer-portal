@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 
 class ForumController {
 
@@ -180,7 +181,7 @@ class ForumController {
                     parameters.featured = params.featured == 'on'
                 }
             }
-            topic = forumService.createForumTopic(project, parameters)
+            topic = forumService. createForumTopic(project, parameters)
         } else {
             // new general discussion topic
             if (userService.isForumModerator(null)) {
@@ -219,6 +220,7 @@ class ForumController {
         return true
     }
 
+    @Transactional
     def updateTopic() {
 
         def topic = ForumTopic.get(params.int('topicId'))
@@ -252,11 +254,9 @@ class ForumController {
     }
 
     def viewForumTopic() {
-        def topic = ForumTopic.get(params.id)
+        def topic = ForumTopic.get(params.id as long)
         if (topic) {
-            topic.lock()
-            topic.views++
-            topic.save()
+            forumService.incrementTopicView(topic)
         } else {
             // No longer exists.
             flash.message = "Topic not found, either deleted or incorrect ID."
@@ -363,44 +363,35 @@ class ForumController {
     }
 
     def saveNewTopicMessage() {
-        def topic = ForumTopic.get(params.topicId)
-        def user = userService.currentUser
-        ForumMessage replyTo = null
-        if (params.replyTo) {
-            replyTo = ForumMessage.get(params.int("replyTo"))
-        }
+        def topic = ForumTopic.get(params.topicId as long)
+//        def user = userService.currentUser
+        def msgParams = [:]
+        //ForumMessage replyTo = null
+        msgParams.user = userService.currentUser
+        msgParams.watchTopic = params.watchTopic
 
-        if (replyTo == null) {
-            replyTo = forumService.getFirstMessageForTopic(topic)
+        if (params.replyTo) {
+            msgParams.replyTo = ForumMessage.get(params.int("replyTo"))
+            if (!msgParams.replyTo) msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
         }
+//
+//        if (msgParams.replyTo == null) {
+//            msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
+//        }
 
         def errors = []
-
-        if (topic && params.messageText && user) {
+        if (topic && params.messageText && msgParams.user) {
 
             def text = params.messageText as String
             def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-
-            text = markdownService.sanitize(text)
+            msgParams.text = markdownService.sanitize(text)
 
             if (text.length() > maxSize) {
                 errors << "The message text is too long. It needs to be less than ${maxSize} characters"
             }
 
             if (!errors) {
-                ForumMessage message = new ForumMessage(topic: topic, user: user, replyTo: replyTo, date: new Date(), text: params.messageText)
-                message.save(flush:true, failOnError: true)
-
-                def currentUser = userService.currentUser
-
-                if (params.watchTopic == 'on') {
-                    forumService.watchTopic(currentUser, topic)
-                } else {
-                    forumService.unwatchTopic(currentUser, topic)
-                }
-
-                forumService.scheduleTopicNotification(topic, message)
-
+                forumService.addForumMessage(topic, msgParams)
                 redirect(action: 'viewForumTopic', id: topic?.id)
                 return
             }

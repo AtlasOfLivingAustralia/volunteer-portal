@@ -2,10 +2,12 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
 import grails.plugins.csv.CSVWriter
 import org.hibernate.FlushMode
+import org.jooq.Transaction
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 
@@ -180,6 +182,7 @@ class AdminController {
      * @param props the properties for the role (i.e. institution, project, both or null).
      * @return
      */
+    @Transactional
     private def createUserRole(User user, Role role, def props) {
         if (!user || !role) return null
 
@@ -719,6 +722,7 @@ class AdminController {
         respond projectsWithScores, model: [projectsWithScores: projectsWithScores]
     }
 
+    @Transactional
     def doMigrateProjectsToInstitutions() {
         if (userService.isAdmin()) {
             def cmd = request.JSON
