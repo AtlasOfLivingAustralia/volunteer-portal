@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import com.naleid.grails.MarkdownService
+import grails.gorm.transactions.Transactional
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
 
@@ -35,11 +36,16 @@ class ForumTagLib {
 
             Project projectInstance = null
             if (topic.instanceOf(ProjectForumTopic)) {
+                log.debug("Project topic")
                 def projectTopic = topic as ProjectForumTopic
                 projectInstance = projectTopic.project
             } else if (topic.instanceOf(TaskForumTopic)) {
+                log.debug("Task topic")
                 def taskTopic = topic as TaskForumTopic
                 projectInstance = taskTopic.task.project
+                projectInstance.attach()
+                log.debug("Project in taglib: ${projectInstance}")
+                log.debug("Institution in taglib: ${projectInstance?.institution}")
             }
 
             def replies = forumService.getTopicMessages(topic, params)
