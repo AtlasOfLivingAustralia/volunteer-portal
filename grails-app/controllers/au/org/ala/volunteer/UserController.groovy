@@ -118,6 +118,7 @@ class UserController {
     /**
      * Adds a new user opt-out request.
      */
+    @Transactional
     def addUserOptOut() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')

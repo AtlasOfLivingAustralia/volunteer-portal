@@ -4,6 +4,7 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.io.FileUtils
 import org.jooq.DSLContext
@@ -447,6 +448,7 @@ class ProjectController {
         }
     }
 
+    @Transactional
     def toggleProjectInactivity(Project project) {
         if (!project) {
             render status: 404

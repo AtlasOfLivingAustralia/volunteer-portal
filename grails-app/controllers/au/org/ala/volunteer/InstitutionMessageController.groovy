@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 
 class InstitutionMessageController {
 
@@ -164,6 +165,7 @@ class InstitutionMessageController {
     /**
      * Updates an existing message.
      */
+    @Transactional
     def update() {
         log.debug("Institution Message Update...")
         if (checkAdminAccess(true)) {
@@ -226,6 +228,7 @@ class InstitutionMessageController {
     /**
      * Approves a message and sends emails to volunteers.
      */
+    @Transactional
     def approveMessage() {
         if (checkAdminAccess(false)) {
             InstitutionMessage iMessage = InstitutionMessage.get(params.long('id'))
@@ -328,6 +331,7 @@ class InstitutionMessageController {
     /**
      * Saves a new message to the Database.
      */
+    @Transactional
     def save() {
         log.debug("Institution Message Save...")
 
@@ -396,6 +400,7 @@ class InstitutionMessageController {
     /**
      * Delete's a message. Only a non-approved message can be deleted by a Site Admin.
      */
+    @Transactional
     def delete() {
         log.debug("Institution Message Delete...")
 
@@ -467,6 +472,7 @@ class InstitutionMessageController {
      * @param id the user ID
      * @param refKey the reference verification key. Both this and userID are required to invoke the action.
      */
+    @Transactional
     def optOut(User requestingUser) {
         // Check params has a user ID and refKey hash.
         User user = userService.getCurrentUser()

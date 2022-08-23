@@ -127,6 +127,7 @@ class TranscribeController {
     /**
      * Save the values of selected fields to their picklists, if the value does not already exist...
      */
+    @Transactional
     def updatePicklists(Task task) {
 
         // Add the name of the picklist here if it is to be updated with user entered values

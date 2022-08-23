@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 
 class PicklistItemController {
 
@@ -49,6 +50,7 @@ class PicklistItemController {
         render([] as JSON)
     }
 
+    @Transactional
     def updateLocality () {
         def picklist = Picklist.findByName("verbatimLocality")
         def name = params.name

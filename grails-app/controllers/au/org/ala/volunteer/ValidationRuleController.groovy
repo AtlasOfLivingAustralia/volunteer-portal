@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.gorm.transactions.Transactional
+
 class ValidationRuleController {
 
     def userService
@@ -50,6 +52,7 @@ class ValidationRuleController {
         [rule: rule]
     }
 
+    @Transactional
     def update() {
         log.debug("This is the update action...")
         if (!userService.isAdmin()) {

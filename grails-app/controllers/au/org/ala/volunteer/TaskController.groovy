@@ -718,6 +718,7 @@ class TaskController {
         redirect(action: 'staging', params: [projectId: project?.id])
     }
 
+    @Transactional
     def saveFieldDefinition() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
@@ -752,6 +753,7 @@ class TaskController {
         redirect(action: 'staging', params: [projectId: project?.id])
     }
 
+    @Transactional
     def updateFieldDefinitionType() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
@@ -768,6 +770,7 @@ class TaskController {
         redirect(action: 'staging', params: [projectId: project?.id])
     }
 
+    @Transactional
     def updateFieldDefinitionFormat() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
