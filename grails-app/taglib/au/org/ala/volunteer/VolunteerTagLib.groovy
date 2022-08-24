@@ -513,6 +513,7 @@ class VolunteerTagLib {
 
     def transcribers = { attrs ->
         def taskInstance = attrs.task as Task
+        taskInstance.attach()
 
         int transcribedCount = 0
         taskInstance?.transcriptions?.each { transcription ->
