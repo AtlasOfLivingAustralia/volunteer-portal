@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
-class ViewedTask implements Serializable {
+import grails.gorm.async.AsyncEntity
+
+class ViewedTask implements Serializable, AsyncEntity<ViewedTask> {
 
   String userId
   Integer numberOfViews = 0
