@@ -9,7 +9,6 @@ class AuditService {
     def userService
 
     ViewedTask getLastViewForTask(Task taskInstance) {
-
         def c = ViewedTask.createCriteria()
         def viewedTasks = c.list {
             eq("task", taskInstance)
@@ -24,18 +23,23 @@ class AuditService {
         return task.isLockedForTranscription(userId, timeout)
     }
 
-    boolean isTaskLockedForValidation(Task task, String userId) {
+    boolean isTaskLockedForValidation(Task task) {
         ViewedTask lastView = getLastViewForTask(task)
         String currentUser = userService.currentUserId
+        //log.debug("[isTaskLockedForValidation] Requesting user: ${currentUser}, lastView: ${lastView.userId}|${lastView.lastView}, task.lastUpdated: ${task.dateLastUpdated.getTime()}")
 
-        // If task has been fully transcribed, allow it to be validated straight away:
-        if (task.isFullyTranscribed) {
-            return false
-        } else {
+        // If task is already validated, we don't mind if multiple users look at it - it's considered completed.
+        if (!task.dateFullyValidated) {
             if (lastView) {
-                log.debug "userId = " + currentUser + " || prevUserId = " + lastView.userId + " || prevLastView = " + lastView.lastView
                 def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
                 if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
+                    // Task was viewed inside the lock timeout - potentially locked...
+                    // However, if this view was before the task was last updated, then assume view was from the last
+                    // transcription (not yet validated) (and update was from setting is_fully_transcribed).
+                    if (lastView.lastView <= task.dateLastUpdated.getTime()) {
+                        //log.debug("Last view comes before dateLastUpdated: allow validation")
+                        return false
+                    }
                     return true
                 }
             }

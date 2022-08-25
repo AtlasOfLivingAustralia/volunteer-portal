@@ -119,42 +119,16 @@ class TaskController {
                 }
             }
 
-            def views = [:]
-            if (taskInstanceList) {
-                def c = ViewedTask.createCriteria()
-                views = c {
-                    'in'("task", taskInstanceList)
-                }
-                views = views?.groupBy { ((ViewedTask) it).task }
-            }
-
+            // Check each task for any views that might be locking them.
             def lockedMap = [:]
-            views?.values()?.each { List viewList ->
-                def max = viewList.max { it.lastView }
-                use (TimeCategory) {
-                    if (new Date(max.lastView as long) > 2.hours.ago && !max.skipped) {
-                        // Lock if not fully transcribed
-                        // Lock if fully transcribed and opened by a validator
-                        if (!max.task?.isFullyTranscribed) {
-                            log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}], skipped: [${max.skipped}]")
-                            lockedMap[max.task?.id as long] = max
-                        } else {
-                            User viewingUser = User.findByUserId(max.userId as String)
-                            if (viewingUser) {
-                                def lastTranscription = max.task?.transcriptions?.max { it.dateFullyTranscribed }
-
-                                log.debug("Checking who the viewing user is: ${viewingUser}")
-                                log.debug("Viewing user is a validator: ${userService.userHasValidatorRole(viewingUser, project.id)}")
-                                log.debug("View date: ${max.lastView}, date fully transcribed: ${lastTranscription?.dateFullyTranscribed?.getTime()}")
-
-                                // If the last view came after the date/time of the last transcription, it was opened by a validator.
-                                if (max.lastView > lastTranscription?.dateFullyTranscribed?.getTime() &&
-                                        (userService.userHasValidatorRole(viewingUser, project.id) && currentUser != max.userId)) {
-                                    log.debug("Task locked; id: [${max.task?.id}], last view: [${new Date(max.lastView as long)}] by ${max.userId} (current user ${currentUser}), skipped: [${max.skipped}]")
-                                    lockedMap[max.task?.id as long] = max
-                                }
-                            }
-                        }
+            taskInstanceList.each { Task task ->
+                if (!task.isFullyTranscribed) {
+                    if (auditService.isTaskLockedForTranscription(task, currentUser)) {
+                        lockedMap[task.id as long] = auditService.getLastViewForTask(task)
+                    }
+                } else {
+                    if (auditService.isTaskLockedForValidation(task)) {
+                        lockedMap[task.id as long] = auditService.getLastViewForTask(task)
                     }
                 }
             }
