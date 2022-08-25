@@ -61,9 +61,6 @@
                                             <a href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
                                                 ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}
                                             </a>
-%{--                                        <g:link controller="validate" action="task" id="${taskInstance.id}">--}%
-%{--                                            ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}--}%
-%{--                                        </g:link>--}%
                                     </g:if>
                                     <g:else>
                                         <div>
