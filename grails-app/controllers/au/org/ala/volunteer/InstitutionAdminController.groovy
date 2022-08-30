@@ -110,7 +110,18 @@ class InstitutionAdminController {
         }
 
         institution.isApproved = (params.isApproved == 'true')
-        institution.createdBy = userService.getCurrentUser()
+
+        // If submitted by a user not logged in, try to find a user by email:
+        if (!userService.getCurrentUser()) {
+            if (params.contactEmail) {
+                def contact = User.findByEmail(params.contactEmail as String)
+                if (contact) {
+                    institution.createdBy = contact
+                }
+            }
+        } else {
+            institution.createdBy = userService.getCurrentUser()
+        }
 
         institution.save(flush: true)
 
@@ -199,17 +210,22 @@ class InstitutionAdminController {
         institution.isApproved = true
         institution.save(flush: true, failOnError: true)
 
-        // Make creator Institution Admin
-        def creator = institution.createdBy
+        // Make creator Institution Admin. If no creator, make the approver Institution admin.
+        def newAdmin = null
         def currentUser = userService.getCurrentUser()
+        if (institution.createdBy) {
+            newAdmin = institution.createdBy
+        } else {
+            newAdmin = currentUser
+        }
         def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
-        def userRole = new UserRole(user: creator, role: role, institution: institution, createdBy: currentUser)
+        def userRole = new UserRole(user: newAdmin, role: role, institution: institution, createdBy: currentUser)
         userRole.save(flush: true, failOnError: true)
 
         // Email notification
-        if (creator.email) {
-            log.debug("Institution approved, Recipient: ${creator.email}")
-            sendApplicationApprovalNotification(institution, creator.email)
+        if (newAdmin.email) {
+            log.debug("Institution approved, Recipient: ${newAdmin.email}")
+            sendApplicationApprovalNotification(institution, newAdmin.email)
         }
 
         flash.message = message(code: 'institution.approved.message',
@@ -247,33 +263,35 @@ class InstitutionAdminController {
     }
 
     @Transactional
-    def delete(Institution institutionInstance) {
+    def delete(Institution institution) {
 
-        if (institutionInstance == null) {
+        if (institution == null) {
             notFound()
             return
         }
 
-        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
             render(view: '/notPermitted')
             return
         }
 
-        def projects = Project.findAllByInstitution(institutionInstance)
+        def projects = Project.findAllByInstitution(institution)
         if (projects) {
             flash.message = "This institution has projects associated with it, and cannot be deleted at this time."
             redirect action: "index", method: "GET"
             return
         }
 
-        institutionInstance.delete flush: true
+        // If no projects, remove any roles attached to this institution, then delete.
+        userService.removeAllRoles(institution)
+        institution.delete(flush: true)
 
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message',
-                         args: [message(code: 'institution.label', default: 'Institution'), institutionInstance.name]) as String
+                         args: [message(code: 'institution.label', default: 'Institution'), institution.name]) as String
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NO_CONTENT }

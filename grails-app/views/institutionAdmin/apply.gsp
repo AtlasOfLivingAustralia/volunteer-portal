@@ -37,7 +37,7 @@
                         </ul>
                     </g:hasErrors>
 
-                    <g:form action="save" class="form-horizontal">
+                    <form action="applySave" method="POST" class="form-horizontal">
                         <input type="hidden" name="isApproved" value="false" />
                             <g:render template="form"/>
                         <div class="form-group">
@@ -46,7 +46,7 @@
                                                 value="${message(code: 'institution.apply.submit.label', default: 'Submit')}"/>
                             </div>
                         </div>
-                    </g:form>
+                    </form>
                 </div>
             </div>
         </div>
