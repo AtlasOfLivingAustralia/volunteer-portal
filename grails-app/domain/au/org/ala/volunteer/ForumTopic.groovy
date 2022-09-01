@@ -32,6 +32,7 @@ class ForumTopic {
 
     static mapping = {
         priority enumType:"ordinal"
+        messages fetch: 'join'
     }
 
 }
