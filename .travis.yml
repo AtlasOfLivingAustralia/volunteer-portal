@@ -8,6 +8,7 @@ branches:
   - master
   - develop
   - feature/grails33upgrade
+  - /^test\/.*$/
 services:
   - postgresql
 addons:
