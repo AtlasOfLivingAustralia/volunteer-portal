@@ -12,6 +12,7 @@ class UrlMappings {
         name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')
         "/institution/apply?"(controller: 'institutionAdmin', action: 'apply')
         "/institution/applyConfirm?"(controller: 'institutionAdmin', action: 'applyConfirm')
+        "/institution/applySave?"(controller: 'institutionAdmin', action: 'save')
         "/message/$action?/$id?"(controller: 'institutionMessage')
         "/admin/label/$action?" (controller: 'label')
         "/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
