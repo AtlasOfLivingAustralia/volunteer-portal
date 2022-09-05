@@ -5,3 +5,4 @@
 //= require bootbox
 //= require digivol-notifications
 //= require bvp-common
+//= require amplify
