@@ -340,6 +340,16 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
+        def queryStringParams = """
+            ${params.sort ? "sort=" + (params.sort as String) + "&" : "" }
+            ${params.order ? "order=" + (params.order as String) + "&" : ""}
+            ${params.q ? "q=" + (params.q as String) + "&" : ""}
+            ${params.statusFilter ? "statusFilter=" + (params.statusFilter as String) + "&" : ""}
+            ${params.activeFilter ? "activeFilter=" + (params.activeFilter as String) + "&" : ""}
+            ${params.offset ? "offset=" + (params.offset as String) + "&" : ""}
+            ${params.max ? "max=" + (params.max as String) + "&" : ""}
+        """.stripIndent().trim()
+        log.debug("Query String: ${queryStringParams}")
 
         def model = [
                 landingPageInstance: landingPage,
@@ -348,7 +358,8 @@ class ProjectController {
                 projects: projectSummaryList.projectRenderList,
                 filteredProjectsCount: projectSummaryList.matchingProjectCount,
                 numberOfUncompletedProjects: numberOfUncompletedProjects,
-                totalUsers: User.countByTranscribedCountGreaterThan(0)
+                totalUsers: User.countByTranscribedCountGreaterThan(0),
+                queryStringParams: queryStringParams
         ]
 
         render(view: 'customLandingPage', model: model)
