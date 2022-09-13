@@ -289,12 +289,23 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
+        def queryStringParams = """
+            ${params.sort ? "sort=" + (params.sort as String) + "&" : "" }
+            ${params.order ? "order=" + (params.order as String) + "&" : ""}
+            ${params.q ? "q=" + (params.q as String) + "&" : ""}
+            ${params.statusFilter ? "statusFilter=" + (params.statusFilter as String) + "&" : ""}
+            ${params.activeFilter ? "activeFilter=" + (params.activeFilter as String) + "&" : ""}
+            ${params.offset ? "offset=" + (params.offset as String) + "&" : ""}
+            ${params.max ? "max=" + (params.max as String) + "&" : ""}
+        """.stripIndent().trim().replaceAll("[\\\r\\\n]+", "")
+        log.debug("Query String: ${queryStringParams}")
 
         [
             projects: projectSummaryList.projectRenderList,
             filteredProjectsCount: projectSummaryList.matchingProjectCount,
             numberOfUncompletedProjects: numberOfUncompletedProjects,
-            totalUsers: User.countByTranscribedCountGreaterThan(0)
+            totalUsers: User.countByTranscribedCountGreaterThan(0),
+            queryStringParams: queryStringParams
         ]
     }
 
@@ -348,7 +359,7 @@ class ProjectController {
             ${params.activeFilter ? "activeFilter=" + (params.activeFilter as String) + "&" : ""}
             ${params.offset ? "offset=" + (params.offset as String) + "&" : ""}
             ${params.max ? "max=" + (params.max as String) + "&" : ""}
-        """.stripIndent().trim()
+        """.stripIndent().trim().replaceAll("[\\\r\\\n]+", "")
         log.debug("Query String: ${queryStringParams}")
 
         def model = [
