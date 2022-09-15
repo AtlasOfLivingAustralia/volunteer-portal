@@ -3,14 +3,17 @@ package au.org.ala.volunteer
 import grails.orm.PagedResultList
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
+import groovy.util.logging.Slf4j
 
 @Transactional
+@Slf4j
 class ForumService {
 
     def grailsApplication
     def userService
     def settingsService
     def forumNotifierService
+    def dataSource
 
     def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def max = params.max ?: 10
@@ -64,39 +67,32 @@ class ForumService {
 
             def hql = """
                 SELECT topic
-                FROM ForumTopic topic
-                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
+                FROM SiteForumTopic topic
+                ORDER BY sticky desc, priority desc, size(topic.messages) 
             """
+            hql = hql + " " + leOrder
             def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
 
-
-            return [topics: topics, totalCount: ForumTopic.count() ]
+            return [topics: topics, totalCount: SiteForumTopic.count() ]
         } else {
-            def c = SiteForumTopic.createCriteria()
-            def results = c.list(max:max, offset: offset) {
-                and {
-                    if (includeDeleted) {
-                        eq("deleted", true)
-                    } else {
-                        or {
-                            isNull("deleted")
-                            eq("deleted", false)
-                        }
-                    }
-                }
-                and {
-                    order("sticky", "desc")
-                    order("priority", "desc")
-                    order(sort, leOrder)
-                }
-                if (params?.max) {
-                    maxResults(params.max as Integer)
-                }
-                if (params?.offset) {
-                    firstResult(params.offset as Integer)
-                }
+            def hql = """
+                FROM SiteForumTopic topic
+                WHERE :deleteClause
+            """
+
+            def deleteClause = ""
+            if (includeDeleted) {
+                deleteClause = "deleted = true"
+            } else {
+                deleteClause = "(deleted IS NULL OR deleted = false)"
             }
-            return [topics: results, totalCount: results.totalCount ]
+            hql = hql.replace(":deleteClause", deleteClause)
+
+            def topics = ForumTopic.executeQuery("SELECT DISTINCT topic " + hql +
+                    "ORDER BY sticky DESC, priority DESC, " + sort + " " + leOrder, [max: max, offset: offset])
+            def totalCount = ForumTopic.executeQuery("SELECT COUNT(distinct topic.id) as numTopics " + hql)
+
+            return [topics: topics, totalCount: totalCount ]
         }
     }
 
