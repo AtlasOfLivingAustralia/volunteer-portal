@@ -200,7 +200,10 @@ class TaskService {
         def sortClause = " order by "
         switch (params.sort) {
             case 'isValid':
-                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+//                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+                sortClause += " CASE WHEN (task.is_valid = true) THEN 3 " +
+                        "WHEN (task.is_valid = false) THEN 2 " +
+                        "WHEN (task.is_valid IS NULL AND task.is_fully_transcribed IS NOT NULL) THEN 1 ELSE 0 END " + (params.order ?: 'asc') + ", task.id ASC "
                 break
             case 'numberOfMatchingTranscriptions':
                 sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "
