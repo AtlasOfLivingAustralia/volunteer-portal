@@ -57,43 +57,42 @@ class ForumService {
     }
 
     def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-
         def max = params?.max ?: 10
         def offset = params?.offset ?: 0
         def sort = params?.sort ?: "lastReplyDate"
         def leOrder = params?.order ?: "desc"
 
-        if (sort == 'replies') {
-
-            def hql = """
-                SELECT topic
-                FROM SiteForumTopic topic
-                ORDER BY sticky desc, priority desc, size(topic.messages) 
-            """
-            hql = hql + " " + leOrder
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
-
-            return [topics: topics, totalCount: SiteForumTopic.count() ]
-        } else {
-            def hql = """
-                FROM SiteForumTopic topic
-                WHERE :deleteClause
-            """
-
-            def deleteClause = ""
-            if (includeDeleted) {
-                deleteClause = "deleted = true"
-            } else {
-                deleteClause = "(deleted IS NULL OR deleted = false)"
-            }
-            hql = hql.replace(":deleteClause", deleteClause)
-
-            def topics = ForumTopic.executeQuery("SELECT DISTINCT topic " + hql +
-                    "ORDER BY sticky DESC, priority DESC, " + sort + " " + leOrder, [max: max, offset: offset])
-            def totalCount = ForumTopic.executeQuery("SELECT COUNT(distinct topic.id) as numTopics " + hql)
-
-            return [topics: topics, totalCount: totalCount ]
+        def deleteClause = ""
+        if (!includeDeleted) {
+            deleteClause = "WHERE (deleted IS NULL OR deleted = false) "
         }
+
+        def topicQuery = """
+            SELECT topic
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        topicQuery = topicQuery.replace(":deleteClause", deleteClause)
+
+        def countQuery = """
+            SELECT COUNT(DISTINCT topic.id) as topicCount
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        countQuery = countQuery.replace(":deleteClause", deleteClause)
+
+        def sortClause = "ORDER BY sticky DESC, priority DESC, "
+        if (sort == 'replies') {
+            sortClause = sortClause + "size(topic.messages) " + leOrder
+        } else {
+            sortClause = sortClause + sort + " " + leOrder
+        }
+
+        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset])
+        def totalCount = ForumTopic.executeQuery(countQuery)?.first()
+        log.debug("TotalCount: ${totalCount}")
+
+        return [topics: topics, totalCount: totalCount]
     }
 
     PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
