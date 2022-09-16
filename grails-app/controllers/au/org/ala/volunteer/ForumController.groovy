@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 
 class ForumController {
 
@@ -132,16 +133,14 @@ class ForumController {
 
     def insertForumTopic() {
 
-        def title = params.title
-        def text = params.text
-
+        def parameters = [title: params.title, text: params.text]
         def messages = []
 
-        if (!title) {
+        if (!parameters.title) {
             messages << "You must enter a title for your forum topic"
         }
 
-        if (!text) {
+        if (!parameters.text) {
             messages << "You must enter a message for your forum topic"
         }
 
@@ -151,61 +150,50 @@ class ForumController {
             return
         }
 
-        def locked = false
-        def sticky = false
-        def priority = ForumTopicPriority.Normal
-        def featured = false
-
+        parameters.locked = false
+        parameters.sticky = false
+        parameters.priority = ForumTopicPriority.Normal
+        parameters.featured = false
 
         ForumTopic topic = null
         if (params.taskId) {
-            def taskInstance = Task.get(params.int("taskId"))
-            if (taskInstance) {
-                if (userService.isForumModerator(taskInstance.project)) {
-                    locked = params.locked == 'on'
-                    sticky = params.sticky == 'on'
+            def task = Task.get(params.int("taskId"))
+            if (task) {
+                if (userService.isForumModerator(task.project)) {
+                    parameters.locked = params.locked == 'on'
+                    parameters.sticky = params.sticky == 'on'
                     if (params.priotity) {
-                        priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
                     }
-                    featured = params.featured == 'on'
+                    parameters.featured = params.featured == 'on'
                 }
             }
-            topic = new TaskForumTopic(task: taskInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
+            topic = forumService.createForumTopic(task, parameters)
         } else if (params.projectId) {
-            def projectInstance = Project.get(params.int("projectId"))
-            if (projectInstance) {
-                if (userService.isForumModerator(projectInstance)) {
-                    locked = params.locked == 'on'
-                    sticky = params.sticky == 'on'
+            def project = Project.get(params.int("projectId"))
+            if (project) {
+                if (userService.isForumModerator(project)) {
+                    parameters.locked = params.locked == 'on'
+                    parameters.sticky = params.sticky == 'on'
                     if (params.priotity) {
-                       priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
                     }
-                    featured = params.featured == 'on'
+                    parameters.featured = params.featured == 'on'
                 }
             }
-            topic = new ProjectForumTopic(project: projectInstance, title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
+            topic = forumService. createForumTopic(project, parameters)
         } else {
             // new general discussion topic
             if (userService.isForumModerator(null)) {
-                locked = params.locked == 'on'
-                sticky = params.sticky == 'on'
+                parameters.locked = params.locked == 'on'
+                parameters.sticky = params.sticky == 'on'
                 if (params.priotity) {
-                    priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+                    parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
                 }
-                featured = params.featured == 'on'
+                parameters.featured = params.featured == 'on'
             }
-            topic = new SiteForumTopic(title: title, creator: userService.currentUser, dateCreated: new Date(), priority: priority, locked: locked, sticky: sticky, featured: featured)
+            topic = forumService.createForumTopic(parameters)
         }
-
-        // SO that it gets sorted correctly!
-        topic.lastReplyDate = topic.dateCreated
-
-        topic.save(flush: true, failOnError: true)
-
-        def firstMessage = new ForumMessage(topic: topic, text: text, date: topic.dateCreated, user: topic.creator)
-        firstMessage.save(flush: true, failOnError: true)
-
-        forumService.scheduleNewTopicNotification(topic, firstMessage)
 
         if (params.watchTopic == 'on') {
             forumService.watchTopic(topic.creator, topic)
@@ -232,6 +220,7 @@ class ForumController {
         return true
     }
 
+    @Transactional
     def updateTopic() {
 
         def topic = ForumTopic.get(params.int('topicId'))
@@ -265,11 +254,9 @@ class ForumController {
     }
 
     def viewForumTopic() {
-        def topic = ForumTopic.get(params.id)
+        def topic = ForumTopic.get(params.id as long)
         if (topic) {
-            topic.lock()
-            topic.views++
-            topic.save()
+            forumService.incrementTopicView(topic)
         } else {
             // No longer exists.
             flash.message = "Topic not found, either deleted or incorrect ID."
@@ -376,44 +363,35 @@ class ForumController {
     }
 
     def saveNewTopicMessage() {
-        def topic = ForumTopic.get(params.topicId)
-        def user = userService.currentUser
-        ForumMessage replyTo = null
-        if (params.replyTo) {
-            replyTo = ForumMessage.get(params.int("replyTo"))
-        }
+        def topic = ForumTopic.get(params.topicId as long)
+//        def user = userService.currentUser
+        def msgParams = [:]
+        //ForumMessage replyTo = null
+        msgParams.user = userService.currentUser
+        msgParams.watchTopic = params.watchTopic
 
-        if (replyTo == null) {
-            replyTo = forumService.getFirstMessageForTopic(topic)
+        if (params.replyTo) {
+            msgParams.replyTo = ForumMessage.get(params.int("replyTo"))
+            if (!msgParams.replyTo) msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
         }
+//
+//        if (msgParams.replyTo == null) {
+//            msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
+//        }
 
         def errors = []
-
-        if (topic && params.messageText && user) {
+        if (topic && params.messageText && msgParams.user) {
 
             def text = params.messageText as String
             def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-
-            text = markdownService.sanitize(text)
+            msgParams.text = markdownService.sanitize(text)
 
             if (text.length() > maxSize) {
                 errors << "The message text is too long. It needs to be less than ${maxSize} characters"
             }
 
             if (!errors) {
-                ForumMessage message = new ForumMessage(topic: topic, user: user, replyTo: replyTo, date: new Date(), text: params.messageText)
-                message.save(flush:true, failOnError: true)
-
-                def currentUser = userService.currentUser
-
-                if (params.watchTopic == 'on') {
-                    forumService.watchTopic(currentUser, topic)
-                } else {
-                    forumService.unwatchTopic(currentUser, topic)
-                }
-
-                forumService.scheduleTopicNotification(topic, message)
-
+                forumService.addForumMessage(topic, msgParams)
                 redirect(action: 'viewForumTopic', id: topic?.id)
                 return
             }

@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.plugin.cache.Cacheable
 import groovy.sql.Sql
 
@@ -20,6 +20,7 @@ class VolunteerStatsService {
     def userService
     def leaderBoardService
     def institutionService
+    def projectService
     LinkGenerator grailsLinkGenerator
 
     /**
@@ -34,7 +35,7 @@ class VolunteerStatsService {
      * @param disableHonourBoard flag whether honour board has been disabled
      * @return transcriber stats on the given parameters
      */
-    @Cacheable(value = 'MainVolunteerStats', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#disableStats?.toString()) + (#disableHonourBoard?.toString())")
+    @Cacheable(value = 'MainVolunteerStats', key = { "${institutionId?.toString() ?: '-1'}-${projectTypeName ?: ''}-${tags?.toString() ?: '[]'}-${disableStats?.toString()}-${disableHonourBoard?.toString()}" })
     def generateStats(long institutionId, String projectTypeName, List<String> tags, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
 
@@ -176,7 +177,7 @@ class VolunteerStatsService {
             if (topic instanceof ProjectForumTopic) {
                 def forumProject = ((ProjectForumTopic) topic).project
                 forumName = forumProject.name
-                thumbnail = forumProject.featuredImage
+                thumbnail = projectService.getFeaturedImage(forumProject)
                 forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: forumProject.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
@@ -213,7 +214,7 @@ class VolunteerStatsService {
      * @param maxContributors maximum number of contributors to collect
      * @return a map containing the contribution information.
      */
-    @Cacheable(value = 'MainVolunteerContribution', key = "(#institutionId?.toString()?:'-1') + (#projectId?.toString()?:'-1') + (#projectTypeName?:'') + (#tags?.toString()?:'[]') + (#maxContributors?.toString())")
+    @Cacheable(value = 'MainVolunteerContribution', key = { "${institutionId?.toString() ?: '-1'}-${projectId?.toString() ?: '-1'}-${projectTypeName ?: ''}-${tags?.toString() ?: '[]'}-${maxContributors?.toString()}" })
     def generateContributors(long institutionId, long projectId, String projectTypeName, List<String> tags, int maxContributors) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
@@ -265,6 +266,7 @@ class VolunteerStatsService {
             sql.eachRow(query) { row ->
                 latestTranscribers.add(LatestTranscribers.findByFullyTranscribedByAndMaxDate(row.fully_transcribed_by as String, (row.max_date as Date).toTimestamp()))
             }
+            sql.close()
         } else {
             latestTranscribers = LatestTranscribers.withCriteria {
                 if (institution) {
@@ -371,6 +373,7 @@ class VolunteerStatsService {
         """.stripIndent()
         def sql = new Sql(dataSource)
         sql.execute(query)
+        sql.close()
     }
 
     def cleanUpTables(String tempTableName) {
@@ -448,6 +451,8 @@ class VolunteerStatsService {
             projectList.add(row.project_id)
         }
 
+        sql.close()
+
         projectList
     }
 
@@ -501,6 +506,8 @@ class VolunteerStatsService {
         def transcriberCount = result.size()
 
         log.debug("Got transcriber count in ${sw.stop().elapsed(MILLISECONDS)}ms")
+
+        sql.close()
 
         [tasks: taskCount, transcriptions: transcribedTaskCount, transcribers: transcriberCount, projectsInLabels: projectList, projectTempTable: tempTableName]
     }

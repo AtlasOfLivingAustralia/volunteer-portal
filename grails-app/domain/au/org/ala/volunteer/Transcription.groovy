@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
-class Transcription implements Serializable {
+import grails.gorm.async.AsyncEntity
+
+class Transcription implements Serializable, AsyncEntity<Transcription> {
 
     Long id
   //  Long taskId

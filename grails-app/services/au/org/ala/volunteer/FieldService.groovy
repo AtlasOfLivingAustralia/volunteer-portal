@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import javax.sql.DataSource
 
@@ -17,10 +17,10 @@ class FieldService {
         def sort = "f.task." + (params.sort?:"id")
         def order = params.order?:"asc"
         def fieldValues = Field.executeQuery(
-                """select f from Field f
-               where f.name = :name and f.superceded = false and f.recordIdx = 0 and
-               f.task in (:list) order by ${sort} ${order}""",
-                [name: fieldName, list: taskList])
+            """select f from Field f
+            where f.name = :name and f.superceded = false and f.recordIdx = 0 and
+                f.task in (:list) """,
+            [name: fieldName, list: taskList], [sort: sort, order: order])
         fieldValues.toList()
     }
 

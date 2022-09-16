@@ -4,11 +4,12 @@ import com.google.common.base.Strings
 import grails.util.Environment
 import grails.util.Holders
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 
 import javax.sql.DataSource
 
+@Slf4j
 class NewUserDigestNotifierJob {
-    def userService
     def mailService
     DataSource dataSource
     def concurrent = false
@@ -43,9 +44,10 @@ class NewUserDigestNotifierJob {
                 throw new IllegalStateException("New user transcriptions digest email is enabled but threshold " +
                         "(digest.threshold) has been configured with an invalid value")
             }
+            def sql
             log.info("New User Digest Notifier job starting at ${new Date()}")
             try {
-                def sql = new Sql(dataSource)
+                sql = new Sql(dataSource)
                 String query = """\
                     select u.id, u.created, count(date_fully_transcribed) as numTranscriptions
                     from vp_user u
@@ -81,8 +83,10 @@ class NewUserDigestNotifierJob {
                 } else {
                     log.debug("No new users found for digest")
                 }
-             } catch (Exception e) {
+            } catch (Exception e) {
                 log.error("Update users job failed with exception", e)
+            } finally {
+                sql.close()
             }
         }
         log.info("New User Digest Notifier job finishing at ${new Date()}")

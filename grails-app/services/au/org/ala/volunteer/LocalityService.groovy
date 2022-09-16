@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 import org.hibernate.FlushMode
 import org.hibernate.Criteria
@@ -172,8 +172,6 @@ class LocalityService {
         return results;
     }
 
-
-
     private synchronized String findState(String query) {
         if (_allStates == null) {
             _allStates = new ArrayList<String>()
@@ -185,6 +183,7 @@ class LocalityService {
                     _allStates.add(state)
                 }
             }
+            sql.close()
         }
 
         for (String state : _allStates) {

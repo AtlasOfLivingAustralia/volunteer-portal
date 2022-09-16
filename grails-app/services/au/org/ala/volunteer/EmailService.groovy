@@ -8,8 +8,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 class EmailService {
 
-    static transactional = false
-
     private static Queue<QueuedEmailMessage> _queuedMessages = new ConcurrentLinkedQueue<QueuedEmailMessage>()
 
     def mailService

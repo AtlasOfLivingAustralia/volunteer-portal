@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @AlaSecured(value="ROLE_VP_ADMIN", redirectController = "index", redirectAction="notPermitted")
 class AchievementDescriptionController {
@@ -34,6 +34,7 @@ class AchievementDescriptionController {
         respond new AchievementDescription()
     }
 
+    @Transactional
     def save(AchievementDescription achievementDescriptionInstance) {
         if (achievementDescriptionInstance == null) {
             notFound()
@@ -77,6 +78,7 @@ class AchievementDescriptionController {
         }
     }
 
+    @Transactional
     def update(AchievementDescription achievementDescriptionInstance) {
         if (achievementDescriptionInstance == null) {
             notFound()
@@ -101,6 +103,7 @@ class AchievementDescriptionController {
         }
     }
 
+    @Transactional
     def delete(AchievementDescription achievementDescriptionInstance) {
 
         if (achievementDescriptionInstance == null) {
@@ -137,7 +140,6 @@ class AchievementDescriptionController {
         def id = params.long("id");
         def achievement = id ? AchievementDescription.get(id) : null
 
-
         def json = [:]
         def status = OK
         if (request instanceof MultipartHttpServletRequest) {
@@ -149,19 +151,26 @@ class AchievementDescriptionController {
                     json.put("error", "Image must be one of: ${allowedMimeTypes}")
                     status = BAD_REQUEST
                 } else {
-                    boolean result
-                    String filename = UUID.randomUUID().toString() + '.' + contentTypeToExtension(f.contentType)
-                    result = uploadToLocalPath(f, filename)
+//                    boolean result
+//                    String filename = UUID.randomUUID().toString() + '.' + contentTypeToExtension(f.contentType)
+//                    result = uploadToLocalPath(f, filename)
+//
+//                    if (result) {
+//                        json.put('filename', filename)
+//                        if (achievement) {
+//                            achievement.badge = filename
+//                            achievement.save(flush: true)
+//                        }
+//                    } else {
+//                        json.put('error', "Failed to upload image. Unknown error!")
+//                        status = INTERNAL_SERVER_ERROR
+//                    }
+                    def result = achievementService.addBadgeToAchievement(f, achievement)
 
-                    if (result) {
-                        json.put('filename', filename)
-                        if (achievement) {
-                            achievement.badge = filename
-                            achievement.save(flush: true)
-                        }
-                    } else {
-                        json.put('error', "Failed to upload image. Unknown error!")
+                    if (result?.error) {
                         status = INTERNAL_SERVER_ERROR
+                    } else {
+                        json.putAll(result)
                     }
                 }
             } else {
@@ -272,6 +281,7 @@ class AchievementDescriptionController {
         render users as JSON
     }
 
+    @Transactional
     def enable(AchievementDescription achievementDescriptionInstance) {
         def enabledParam = params.boolean('enabled') ?: false
         achievementDescriptionInstance.enabled = enabledParam

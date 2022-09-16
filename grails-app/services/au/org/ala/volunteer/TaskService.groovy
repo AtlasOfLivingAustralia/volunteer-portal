@@ -4,8 +4,8 @@ import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.plugin.cache.CacheEvict
 import grails.plugin.cache.Cacheable
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.imgscalr.Scalr
 import org.jooq.DSLContext
@@ -58,7 +58,7 @@ class TaskService {
      */
     Integer countValidUserTranscriptionsForProject(String userId, Project project) {
         String hql = "select count(distinct t.id) from Task t join t.transcriptions trans with trans.fullyTranscribedBy = :userId where t.isValid = :valid"
-        Map params = [userId: userId, valid:true]
+        def params = [userId: userId, valid:true]
         if (project) {
             hql += " and t.project = :project"
             params.project = project
@@ -283,8 +283,9 @@ class TaskService {
         int matches = 0
         log.debug("Processing results for user_id: [${userId}], jump: [${jump}], lastId: [${lastId}]")
         results?.find { result ->
-            Task task = Task.get(result[0])
-            log.debug("Checking ${task}")
+            Task task = Task.get(result[0] as long)
+            log.debug("Checking task ${result[0]}")
+            log.debug("Task: ${task}")
 
             // If locked or skipped, move onto next task.
             if (!task.isLockedForTranscription(userId, timeoutWindow) && !task.wasSkippedByUser(userId)) {
@@ -343,7 +344,7 @@ class TaskService {
 
         if (results) {
             def taskResult = results.last()
-            task = Task.get(taskResult[0])
+            task = Task.get(taskResult[0] as long)
         }
 
         task
@@ -491,7 +492,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
+            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
@@ -509,7 +510,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project {}) found a task: {}", project.id, task.id)
+            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
             return task
         }
 
@@ -638,16 +639,17 @@ WHERE
         }
 
         String select = """
-WITH
-${getNotificationWithClauses(projectQuery).join(',\n')}
-(SELECT * FROM updated_task_ids) UNION (SELECT * FROM validator_notes_task_ids)
-"""
+            WITH
+            ${getNotificationWithClauses(projectQuery).join(',\n')}
+            (SELECT * FROM updated_task_ids) UNION (SELECT * FROM validator_notes_task_ids)
+            """.stripIndent()
 
         def sql = new Sql(dataSource)
 
         def lists = sql.rows(select, [userId: userId, projectId: project?.id]).collect { row ->  row.task_id }
 
         log.debug("Returning validated tasks: " + sw.stop())
+        sql.close()
 
         return lists
     }
@@ -702,6 +704,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
         def count = sql.firstRow(select, [userId: userId, projectId: project?.id]).values()[0]
 
         log.debug("Returning validated task count: " + sw.stop())
+        sql.close()
 
         return count
     }
@@ -725,7 +728,7 @@ SELECT COUNT(*) FROM (SELECT * FROM updated_task_ids UNION SELECT * FROM validat
             isNotNull("isValid")
             gt("dateFullyTranscribed", recentDate)
             order('dateLastUpdated','desc')
-        }
+        } as List<Task>
 
          if (log.isInfoEnabled()) {
             sw.stop()
@@ -807,6 +810,7 @@ ORDER BY record_idx, name;
         def validatorNotes = Field.findByTaskAndNameAndSuperceded(task, 'validatorNotes', false)?.value
 
         log.debug("Returning validated task fields: ${sw.stop()}")
+        sql.close()
 
         return [recordValues: recordValues, validatorDisplayName: validatorDisplayName, validatorNotes: validatorNotes]
     }
@@ -846,7 +850,7 @@ ORDER BY record_idx, name;
         }
 
         try {
-            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            def dir = new File("${grailsApplication.config.images.home}/${projectId}/${taskId}/${multimediaId}")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
@@ -933,11 +937,12 @@ ORDER BY record_idx, name;
 
         def results = []
 
-        def sql = new Sql(dataSource: dataSource)
+        def sql = new Sql(dataSource)
         sql.eachRow(select, [userid: userid, projectId: projectId, labelTextFilter: '%' + labelTextFilter + '%']) { row ->
             def taskRow = [id: row.id, lastEdit: row.lastEdit, isValid: row.isValid, project: row.project ]
             results.add(taskRow)
         }
+        sql.close()
 
         return results
     }
@@ -991,34 +996,47 @@ ORDER BY record_idx, name;
         int taskId = -1
         def row = sql.firstRow(select, [projectId: project.id, fieldName: fieldName, fieldValue: fieldValue])
         if (row) {
-            taskId = row[0]
+            taskId = row[0] as int
         }
+        sql.close()
         return Task.findById(taskId)
     }
 
-
-    public Map getImageMetaData(Task taskInstance) {
+    Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
         taskInstance.multimedia.each { multimedia ->
-            imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+            try {
+                imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+            } catch(Exception e) {
+                log.error("Unable to get image metadata for resource: ${multimedia?.filePath}, skipping.")
+            }
         }
 
         return imageMetaData
     }
 
-    @Cacheable(value='getAudioMetaData', key="(#multimedia?.id?:0)")
+    @Cacheable(value='getAudioMetaData', key={ "${multimedia?.id ?: 0}" })
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
         if (path) {
             return multimediaService.getImageUrl(multimedia)
         } else {
-            return null
+            throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
         }
     }
 
-    @Cacheable(value='getImageMetaData', key="(#multimedia?.id?:0) + '-' + (#rotate?:0)")
-    ImageMetaData getImageMetaData(Multimedia multimedia, int rotate = 0) {
+    /**
+     * Returns Image meta data for a task image. If the rotate parameter is provided, the image is rotated by that
+     * number of degrees.<br/>
+     * Cached.
+     * @param multimedia The image multimedia object
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata.
+     */
+    @Cacheable(value = 'getImageMetaData', key = { "${multimedia?.id ?: 0}-${rotate}" })
+    ImageMetaData getImageMetaData(Multimedia multimedia, int rotate) {
+        log.debug("Image metadata, rotate: ${rotate}")
         def path = multimedia?.filePath
         if (path) {
             def imageUrl = multimediaService.getImageUrl(multimedia)
@@ -1034,10 +1052,11 @@ ORDER BY record_idx, name;
 
             return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
-        return null
+
+        throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key="(#resource?.URI ?: #resource?.filename ?: '') + '-' + (#imageUrl ?: '') + '-' + (#rotate)")
+    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI?.toString() ?: resource?.filename ?: '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
@@ -1056,9 +1075,9 @@ ORDER BY record_idx, name;
             }
             return new ImageMetaData(width: width, height: height, url: imageUrl)
         } else {
-            log.warn("Could not read image file: $resource - could not get image metadata")
+            log.error("Could not read image file: $resource - could not get image metadata")
+            throw new IOException("Could not read image file: $resource - could not get image metadata")
         }
-        return null
     }
 
 
@@ -1127,26 +1146,27 @@ ORDER BY record_idx, name;
         task.dateFullyValidated = null
     }
 
-    @CacheEvict(value = 'findMaxSequenceNumber', key='#projectId')
+    @CacheEvict(value = 'findMaxSequenceNumber', key = { projectId })
     void clearMaxSequenceNumber(long projectId) {
-        log.debug('max sequence number cleared for project {}', projectId)
+        log.debug('max sequence number cleared for project ${projectId}')
     }
 
-    @Cacheable(value = 'findMaxSequenceNumber', key='#project?.id?:-1')
+    @Cacheable(value = 'findMaxSequenceNumber', key = { project?.id ?: -1 })
     Integer findMaxSequenceNumber(Project project) {
         def select ="""
             WITH task_ids AS (SELECT id FROM task WHERE project_id = ${project.id})
-            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) FROM FIELD f WHERE f.task_id IN (SELECT id FROM task_ids) AND f.name = 'sequenceNumber';
-        """
+            SELECT MAX(CASE WHEN f.value~E'^\\\\d+\$' THEN f.value::integer ELSE 0 END) 
+            FROM FIELD f 
+            WHERE f.task_id IN (SELECT id FROM task_ids) 
+            AND f.name = 'sequenceNumber'; """
 
-        def sql = new Sql(dataSource: dataSource)
-
+        def sql = new Sql(dataSource)
         def row = sql.firstRow(select)
-
-        row ? row[0] : null
+        sql.close()
+        row && row[0] != null ? row[0] as Integer : 0
     }
 
-    public Map getAdjacentTasksBySequence(Task task) {
+    Map getAdjacentTasksBySequence(Task task) {
         def results = [:]
         if (!task) {
             return results
@@ -1440,14 +1460,50 @@ ORDER BY record_idx, name;
 
             // add additional info for notifications tab
             if (selectedTab == 0 && results.viewList) {
-                def ids = results.viewList.collect { it.id }
+                def ids = results.viewList.collect { it.id } as List<Integer>
                 def unreadIds = getLastViewedBeforeValidation(project, user.userId, ids)
 
                 results.viewList.each { it.unread = unreadIds.contains(it.id) }
             }
         }
 
+        sql.close()
+
         return results
     }
 
+    /**
+     * Updates the properties of this Task that marks it as validated.
+     * @param task The task being validated
+     * @param userId the user who validated the task.
+     * @param isValid true if the Task is considered valid.
+     * @param validationDate the Date the task was validated (defaults to now)
+     */
+    void validate(Task task, String userId, boolean isValid, Date validationDate = new Date()) {
+        if (!task || !userId) return
+        if (!task.fullyValidatedBy) {
+            task.fullyValidatedBy = userId
+        }
+        if (!task.dateFullyValidated) {
+            task.dateFullyValidated = validationDate
+        }
+        if (!task.validatedUUID) {
+            task.validatedUUID = UUID.randomUUID()
+        }
+        if (isValid) {
+            task.isValid = true
+        }
+    }
+
+    /**
+     * Updates the last view timestamp of a task view (e.g. for Background saving a task).
+     * @param viewedTask the task view to update
+     * @param lastView the timestamp the task was last viewed.
+     */
+    void updateLastView(ViewedTask viewedTask, Long lastView) {
+        if (!viewedTask) return
+        viewedTask.lastView = lastView
+        viewedTask.lastUpdated = new Date()
+        viewedTask.save(flush: true, failOnError: true)
+    }
 }

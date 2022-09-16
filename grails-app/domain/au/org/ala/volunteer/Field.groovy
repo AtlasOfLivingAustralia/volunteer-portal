@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
-class Field implements Serializable {
+import grails.gorm.async.AsyncEntity
+
+class Field implements Serializable, AsyncEntity<Field> {
 
   String name
   String value

@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
-import au.org.ala.web.UserDetails
+import grails.gorm.transactions.Transactional
+import groovy.util.logging.Slf4j
 import io.reactivex.Observable
 import io.reactivex.subjects.Subject
 import io.reactivex.subjects.UnicastSubject
@@ -14,17 +15,14 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.TimeUnit
 
+@Slf4j
 @Consumer
+@Transactional(readOnly=true)
 class EventSourceService {
 
     static final String NEW_MESSAGE = 'event.source.new.message'
 
     static final int QUEUE_CAPACITY = 3 // browsers will allow ~6 connections, so this is plenty.
-
-    def userService
-
-    static transactional = false
-    static readOnly = true
 
     private final ConcurrentMap<String, ConcurrentLinkedQueue<Subject>> ongoingRequests = new ConcurrentHashMap<>()
 

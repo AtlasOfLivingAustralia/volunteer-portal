@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
 
 @Transactional
@@ -13,8 +13,6 @@ class ForumService {
     def forumNotifierService
 
     def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
-
-
         def max = params.max ?: 10
         def offset = params.offset ?: 0
         def sort = params.sort ?: "lastReplyDate"
@@ -24,15 +22,12 @@ class ForumService {
             def hql = """
                 SELECT topic
                 FROM ProjectForumTopic topic
-                WHERE project_id = ${project.id}
+                WHERE project_id = :projectId
                 ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
             """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
-
+            def topics = ForumTopic.executeQuery(hql, [projectId: project.id], [max: max, offset: offset])
 
             return [topics: topics, totalCount: ForumTopic.count() ]
-
-
         }
 
         // All other sort types (other than replies)
@@ -444,4 +439,77 @@ class ForumService {
 
     }
 
+    def createForumTopic(Task task, Map parameters) {
+        return createForumTopicOfAnyType(task, null, parameters)
+    }
+
+    def createForumTopic(Project project, Map parameters) {
+        return createForumTopicOfAnyType(null, project, parameters)
+    }
+
+    def createForumTopic(Map parameters) {
+        return createForumTopicOfAnyType(null, null, parameters)
+    }
+
+    private def createForumTopicOfAnyType(Task task, Project project, Map parameters) {
+        ForumTopic topic = null
+        if (task && !project) {
+            // Task forum topic
+            topic = new TaskForumTopic(task: task, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else if (!task && project) {
+            // Project forum topic
+            topic = new ProjectForumTopic(project: project, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else {
+            // Site forum topic
+            topic = new SiteForumTopic(title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        }
+
+        topic.lastReplyDate = topic.dateCreated
+        topic.save(flush: true, failOnError: true)
+
+        def firstMessage = new ForumMessage(topic: topic, text: parameters.text, date: topic.dateCreated, user: topic.creator)
+        firstMessage.save(flush: true, failOnError: true)
+
+        scheduleNewTopicNotification(topic, firstMessage)
+
+        topic
+    }
+
+    /**
+     * Adds a forum message to the topic.
+     * @param topic the topic to add the message to
+     * @param parameters the parameters of the message.
+     * @return the newly created forum message
+     */
+    def addForumMessage(ForumTopic topic, Map parameters) {
+        if (!topic) return
+        ForumMessage message = new ForumMessage(topic: topic, user: parameters.user as User,
+                replyTo: parameters.replyTo as ForumMessage, date: new Date(), text: parameters.text)
+        message.save(flush:true, failOnError: true)
+
+        parameters.watchTopic == 'on' ? watchTopic(parameters.user as User, topic) : unwatchTopic(parameters.user as User, topic)
+        scheduleTopicNotification(topic, message)
+
+        message
+    }
+
+    /**
+     * Increments the view count of a forum topic
+     * @param topic the topic to update
+     */
+    void incrementTopicView(ForumTopic topic) {
+        if (!topic) return
+        def hql = """
+                UPDATE ForumTopic
+                SET views = views + 1
+                WHERE id = :id
+            """
+        ForumTopic.executeUpdate(hql, [id: topic.id])
+    }
 }

@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.plugin.cache.Cacheable
 import groovy.sql.Sql
 
@@ -86,8 +86,8 @@ class StatsService {
 
         }
 
+        sql.close()
         return results.sort { it.month }.collect { [c : [ [v: it.month], [v: it.count] ] ] }
-
     }
 
     def getNewUser(Date startDate, Date endDate, Institution institution) {
@@ -187,6 +187,7 @@ class StatsService {
         def volunteerScores = sql.firstRow(selectCached, params)
         log.debug("Took ${sw} to get cached volunteer counts")
 
+        sql.close()
         return [newVolunteers: newVolunteers['count'],
                 totalVolunteers: totalVolunteers['count'],
                 cachedNewVolunteers: volunteerScores['newVolunteers'],
@@ -262,6 +263,7 @@ class StatsService {
             results.add(taskRow)
         }
 
+        sql.close()
         return results
     }
 
@@ -306,6 +308,7 @@ class StatsService {
             def transcriberTask = [row.display_name, row.count]
             results.add(transcriberTask)
         }
+        sql.close()
 
         return results
     }
@@ -356,6 +359,7 @@ class StatsService {
             def transcriberTask = [row.display_name, row.name, row.count ]
             results.add(transcriberTask)
         }
+        sql.close()
 
         return results
     }
@@ -407,6 +411,7 @@ class StatsService {
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
+        sql.close()
 
         return results
     }
@@ -458,6 +463,7 @@ class StatsService {
             def taskByDay = [row.day, row.taskCount ]
             results.add(taskByDay)
         }
+        sql.close()
 
         return results
     }
@@ -478,6 +484,7 @@ class StatsService {
             def taskByInstitution = [row.featured_owner, row.task_count ]
             results.add(taskByInstitution)
         }
+        sql.close()
 
         return results
     }
@@ -509,6 +516,8 @@ class StatsService {
                 }
 
         def header = [[ id: 'institution', label: 'Institution', type: 'string' ]] + columns.collect { [ id: it, label: it, type: 'number']}
+        sql.close()
+
         return [header: header, statsData: data]
     }
 
@@ -529,11 +538,12 @@ class StatsService {
             def validationsByInstitution = [row.featured_owner, row.task_count ]
             results.add(validationsByInstitution)
         }
+        sql.close()
 
         return results
     }
 
-    @Cacheable(value = 'StatsHourlyContribution', key = "(#institution?.id?.toString()?:'-1') + (#startDate?.getTime()?:'-1') + (#endDate?.getTime()?:'-1')")
+    @Cacheable(value = 'StatsHourlyContribution', key = { "${institution?.id?.toString() ?: '-1'}-${startDate?.getTime() ?: '-1'}-${endDate?.getTime() ?: '-1'}" })
     def getHourlyContributions(Date startDate, Date endDate, Institution institution) {
         def taskView = ""
         def taskJoin = ""
@@ -599,11 +609,12 @@ class StatsService {
             def validationsByInstitution = [row.hour, row.contribution ]
             results.add(validationsByInstitution)
         }
+        sql.close()
 
         return results
     }
 
-    @Cacheable(value = 'StatsTranscriptionTime', key = "(#institution?.id?.toString()?:'-1') + (#startDate?.getTime()?:'-1') + (#endDate?.getTime()?:'-1')")
+    @Cacheable(value = 'StatsTranscriptionTime', key = { "${institution?.id?.toString() ?: '-1'}-${startDate?.getTime() ?: '-1'}-${endDate?.getTime() ?: '-1'}" })
     def getTranscriptionTimeByProjectType(Date startDate, Date endDate, Institution institution) {
         def institutionClause = ""
         def params = [:]
@@ -646,6 +657,7 @@ class StatsService {
             def transcriptionTimesByProjectType = [row.label, row.avg]
             results.add(transcriptionTimesByProjectType)
         }
+        sql.close()
 
         return results
     }

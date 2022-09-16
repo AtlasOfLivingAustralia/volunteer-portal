@@ -7,6 +7,7 @@ import au.org.ala.volunteer.jooq.tables.records.ProjectRecord
 import au.org.ala.volunteer.jooq.tables.records.ShadowFileDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskRecord
+import grails.events.EventPublisher
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
@@ -43,11 +44,9 @@ import static org.jooq.impl.DSL.when
 
 // Transactions will be controlled explicitly
 @Slf4j
-class TaskLoadService {
+class TaskLoadService implements EventPublisher {
 
     // explicity control transactions with jooq
-    static transactional =  false
-
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext

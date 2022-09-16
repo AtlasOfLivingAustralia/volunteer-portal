@@ -2,9 +2,8 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Strings
 import com.google.common.io.Resources
-import grails.core.GrailsApplication
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
 
@@ -13,7 +12,6 @@ import java.util.regex.Pattern
 
 class TemplateService {
 
-    GrailsApplication grailsApplication
     def userService
     DataSource dataSource
 
@@ -38,6 +36,21 @@ class TemplateService {
         })
 
         return newTemplate
+    }
+
+    /**
+     * Deletes a template from the database
+     * @param template the template to delete
+     */
+    @Transactional
+    def deleteTemplate(Template template) {
+        // First got to delete all the template_fields...
+        def fields = TemplateField.findAllByTemplate(template)
+        if (fields) {
+            fields.each { it.delete(flush: true) }
+        }
+        // Now can delete template proper
+        template.delete(flush: true)
     }
 
     /**
@@ -278,7 +291,6 @@ class TemplateService {
             }
         }
 
-
         // Add the clauses
         clause.eachWithIndex { line, idx ->
             if (idx == 0) query += " where "
@@ -315,13 +327,18 @@ class TemplateService {
         log.debug("Offset: ${params.offset as int}, max: ${params.max as int}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, parameters, (params.offset as int) + 1, params.max as int) { row ->
+        // Postgres driver is funny about empty lists/maps
+        def processTemplate = { def row ->
             Template template = Template.get(row.template_id as long)
             if (template) results.add(template)
         }
 
+        if (parameters) sql.eachRow(query, parameters, (params.offset as int) + 1, params.max as int, processTemplate)
+        else sql.eachRow(query, (params.offset as int) + 1, params.max as int, processTemplate)
+
+
         def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
-        def countRows = sql.firstRow(countQuery, parameters)
+        def countRows = parameters ? sql.firstRow(countQuery, parameters) : sql.firstRow(countQuery)
 
         def returnMap = [templateList: results, totalCount: countRows.row_count_total]
 

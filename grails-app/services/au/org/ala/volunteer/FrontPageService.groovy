@@ -1,5 +1,7 @@
 package au.org.ala.volunteer
 
+import grails.events.EventPublisher
+import grails.events.annotation.Subscriber
 import groovy.sql.Sql
 import reactor.spring.context.annotation.Consumer
 import reactor.spring.context.annotation.Selector
@@ -11,7 +13,7 @@ import javax.sql.DataSource
 import java.util.concurrent.ThreadLocalRandom
 
 @Consumer
-class FrontPageService {
+class FrontPageService implements EventPublisher {
 
     public static final String ALERT_MESSAGE = 'alertMessage'
 
@@ -39,6 +41,7 @@ class FrontPageService {
         new Message.EventSourceMessage(event: ALERT_MESSAGE, data: message)
     }
 
+//    @Subscriber(FrontPageService.ALERT_MESSAGE)
     @Selector(FrontPageService.ALERT_MESSAGE)
     void alertMessage(String alert) {
         try {

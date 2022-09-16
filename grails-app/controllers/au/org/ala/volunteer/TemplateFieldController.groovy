@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import grails.gorm.transactions.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 
 class TemplateFieldController {
@@ -8,6 +9,7 @@ class TemplateFieldController {
 
     def userService
 
+    @Transactional
     def save() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -43,6 +45,7 @@ class TemplateFieldController {
         }
     }
 
+    @Transactional
     def update() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')

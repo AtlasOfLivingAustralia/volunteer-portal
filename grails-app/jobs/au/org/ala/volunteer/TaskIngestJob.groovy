@@ -1,5 +1,8 @@
 package au.org.ala.volunteer
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class TaskIngestJob {
 
     def concurrent = false
@@ -16,7 +19,7 @@ class TaskIngestJob {
         log.debug("Executing TaskIngestJob")
         def projectId = context.mergedJobDataMap.get('project')
         try {
-            taskLoadService.doTaskLoad(projectId)
+            taskLoadService.doTaskLoad(projectId as Long)
         } catch (Exception e) {
             log.error("Task Ingest job failed with exception", e)
         }

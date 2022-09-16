@@ -2,9 +2,10 @@ package au.org.ala.volunteer
 
 import grails.async.Promises
 import grails.converters.JSON
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonSlurper
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang.NotImplementedException
 import org.elasticsearch.index.query.FilterBuilders
 import org.elasticsearch.index.query.QueryBuilders
@@ -34,7 +35,7 @@ import javax.annotation.PreDestroy
 import static au.org.ala.volunteer.BenchmarkUtils.benchmark
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder
 
-
+@Slf4j
 @Transactional(readOnly = true)
 class FullTextIndexService {
 

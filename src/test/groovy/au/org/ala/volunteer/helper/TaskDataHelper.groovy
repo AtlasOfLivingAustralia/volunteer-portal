@@ -73,8 +73,22 @@ class TaskDataHelper {
 
     }
 
+    /**
+     * Performs the same job as taskService.validate(). Domain no longer likes modifying parameters.
+     * @param task the task
+     * @param userId the user
+     */
     static void validate(Task task, String userId) {
-        task.validate(userId, true)
+        if (!task.fullyValidatedBy) {
+            task.fullyValidatedBy = userId
+        }
+        if (!task.dateFullyValidated) {
+            task.dateFullyValidated = new Date()
+        }
+        if (!task.validatedUUID) {
+            task.validatedUUID = UUID.randomUUID()
+        }
+        task.isValid = true
         task.save(flush: true, failOnError: true)
     }
 

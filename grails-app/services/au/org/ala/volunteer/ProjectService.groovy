@@ -1,7 +1,8 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
-import grails.transaction.Transactional
+import grails.events.EventPublisher
+import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -46,7 +47,7 @@ import static org.jooq.impl.DSL.sum as jSum
 import static org.jooq.impl.DSL.when as jWhen
 
 @Transactional
-class ProjectService {
+class ProjectService implements EventPublisher {
 
     static final String TASK_COUNT_COLUMN = 'taskCount'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
@@ -971,6 +972,8 @@ class ProjectService {
             projectToDisplay.save(failOnError: true, flush: true)
         }
 
+        sql.close()
+
         return projectToDisplay.id
     }
 
@@ -1011,6 +1014,81 @@ class ProjectService {
         } else {
             log.debug("Using existing PotD: ${frontPage.projectOfTheDay}")
             return frontPage.projectOfTheDay
+        }
+    }
+
+    /**
+     * Saves the uploaded background image or deletes the existing one if argument is null.  Consumes the inputstream
+     * but doesn't close it
+     * @param multipartFile
+     */
+    void setBackgroundImage(Project project, InputStream inputStream, String contentType) {
+        if (!project) {
+            throw new IllegalArgumentException("Set background image - project must be provided")
+        }
+
+        if (inputStream && contentType) {
+            // Save image
+            String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
+            def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.${fileExtension}"
+            def file = new File(filePath)
+            file.getParentFile().mkdirs()
+            file.withOutputStream {
+                it << inputStream
+            }
+        } else {
+            // Remove image if exists
+            String localPathJpg = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.jpg"
+            String localPathPng = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.png"
+            File fileJpg = new File(localPathJpg)
+            File filePng = new File(localPathPng)
+            if (fileJpg.exists()) {
+                fileJpg.delete()
+            } else if (filePng.exists()) {
+                filePng.delete()
+            }
+        }
+    }
+
+    /**
+     * Retrieves background image url
+     * @return background image url or null if non existent
+     */
+    String getBackgroundImage(Project project) {
+        if (!project) return null
+
+        String localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image"
+        String localPathJpg = "${localPath}.jpg"
+        String localPathPng = "${localPath}.png"
+        File fileJpg = new File(localPathJpg)
+        File filePng = new File(localPathPng)
+
+        if (fileJpg.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.jpg"
+        } else if (filePng.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.png"
+        } else {
+            return null
+        }
+    }
+
+    /**
+     * Gets the projects featured image url.
+     * @param project the project to search
+     * @return the String url of the image file or a default base image if none exists. Returns null if project is not provided.
+     */
+    String getFeaturedImage(Project project) {
+        if (!project) return null
+        // Check to see if there is a feature image for this expedition by looking in its project directory.
+        // If one exists, use it, otherwise use a default image...
+        def localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+        def file = new File(localPath)
+        if (!file.exists()) {
+            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
+        } else {
+            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def infix = urlPrefix.endsWith('/') ? '' : '/'
+            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
         }
     }
 }

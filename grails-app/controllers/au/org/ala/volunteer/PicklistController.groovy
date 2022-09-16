@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
 import org.apache.commons.lang3.StringEscapeUtils
 import org.springframework.dao.DataIntegrityViolationException
@@ -109,6 +110,7 @@ class PicklistController {
         }
     }
 
+    @Transactional
     def loadWildcount(Picklist picklistInstance) {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -252,6 +254,7 @@ class PicklistController {
         return [picklistInstance: picklist]
     }
 
+    @Transactional
     def save () {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -327,6 +330,7 @@ class PicklistController {
         }
     }
 
+    @Transactional
     def update () {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')

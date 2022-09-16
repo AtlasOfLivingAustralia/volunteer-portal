@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
@@ -118,6 +118,7 @@ class UserController {
     /**
      * Adds a new user opt-out request.
      */
+    @Transactional
     def addUserOptOut() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')

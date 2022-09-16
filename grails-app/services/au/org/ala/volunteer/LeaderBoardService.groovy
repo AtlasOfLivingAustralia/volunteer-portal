@@ -1,13 +1,10 @@
 package au.org.ala.volunteer
 
-
+import grails.gorm.transactions.NotTransactional
 import groovy.sql.Sql
-
 import javax.sql.DataSource
 
 class LeaderBoardService {
-
-    static transactional = false
 
     final static EMPTY_LEADERBOARD_WINNER = [userId: 0, name:'', email:'', score:0]
 
@@ -331,6 +328,8 @@ class LeaderBoardService {
 //            map[row[0]] = row[1]
 //        }
 
+        sql.close()
+
         return map
     }
 
@@ -473,6 +472,8 @@ class LeaderBoardService {
 //        results.each { row ->
 //            map[row[0]] = row[1]
 //        }
+
+        sql.close()
 
         return map
     }

@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 /**
@@ -13,6 +13,7 @@ class ValidationService {
     private static final Set CAMERATRAP_EXCLUDED_FIELDS = new HashSet([DarwinCoreField.transcriberNotes.name(), DarwinCoreField.validatorNotes.name(), 'comment'])
 
     FieldSyncService fieldSyncService
+    TaskService taskService
 
     /**
      * This method is called when a Transcription or Task is changed, we check to see if any of the
@@ -191,7 +192,7 @@ class ValidationService {
         }
 
         // Copy this transcription to the Task and mark the Task as validated.
-        task.validate(UserService.SYSTEM_USER, true)
+        taskService.validate(task, UserService.SYSTEM_USER, true)
         Map fieldsByRecordIndex = [:].withDefault{[:]}
         // Copy the "validated" transcription data into the Task fields as required.
         Set fields = validatedTranscription.fields

@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import retrofit2.Call
@@ -89,6 +90,7 @@ class InstitutionAdminController {
         respond institution
     }
 
+    @Transactional
     def save(Institution institution) {
         if (params.entry != 'APPLY' && !userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
@@ -180,6 +182,7 @@ class InstitutionAdminController {
         respond institutionInstance
     }
 
+    @Transactional
     def approve(Institution institution) {
         if (institution == null) {
             notFound()
@@ -214,6 +217,7 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
+    @Transactional
     def update(Institution institution) {
         if (institution == null) {
             notFound()
@@ -242,6 +246,7 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
+    @Transactional
     def delete(Institution institutionInstance) {
 
         if (institutionInstance == null) {
@@ -275,6 +280,7 @@ class InstitutionAdminController {
         }
     }
 
+    @Transactional
     def quickCreate(String cid) {
         if (!userService.isSiteAdmin()) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")

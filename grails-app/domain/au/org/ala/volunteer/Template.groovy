@@ -18,6 +18,7 @@ class Template implements Serializable {
 
     static mapping = {
         version false
+        viewParams fetch: 'join'
         viewParams2 type: JsonbMapType
     }
 
@@ -41,4 +42,5 @@ class Template implements Serializable {
     def getTemplateMap() {
         return [id: id, name: name, isGlobal: isGlobal, isHidden: isHidden]
     }
+
 }

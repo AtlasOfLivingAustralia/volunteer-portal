@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.hibernate.Session

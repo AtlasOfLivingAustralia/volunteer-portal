@@ -45,7 +45,9 @@ abstract class FlybernateSpec extends Specification {
         propertySources.addFirst(new MapPropertySource("defaults", getConfiguration()))
         Config config = new PropertySourcesConfig(propertySources)
 
-        flyway.setDataSource(config.getProperty('dataSource.url'), config.getProperty('dataSource.username'), config.getProperty('dataSource.password'))
+        flyway.setDataSource(config.getProperty('environments.test.dataSource.url'),
+                config.getProperty('environments.test.dataSource.username'),
+                config.getProperty('environments.test.dataSource.password'))
 
         flyway.setLocations('db/migration')
         flyway.clean()

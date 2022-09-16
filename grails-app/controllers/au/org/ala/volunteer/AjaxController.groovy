@@ -296,6 +296,7 @@ class AjaxController {
             results.add(project)
         }
 
+        sql.close()
         render results as JSON
     }
 

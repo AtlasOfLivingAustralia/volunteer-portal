@@ -1,7 +1,7 @@
 <table class="table table-striped table-condensed">
     <g:each in="${projectList}" var="project">
         <tr projectId="${project.id}">
-            <td style="width: 125px"><img src="${project.featuredImage}" style="height: 75px"/></td>
+            <td style="width: 125px"><cl:featuredImage project="${project}" style="height: 75px;"/></td>
             <td>
                 <strong>${project.name}</strong>
                 <br/>

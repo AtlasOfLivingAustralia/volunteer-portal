@@ -94,7 +94,13 @@
         <div class="row">
             <div class="col-md-6">
                 <g:link controller="project" action="index" id="${frontPage.projectOfTheDay?.id}">
-                    <img src="" realsrc="${frontPage.projectOfTheDay?.featuredImage}" class="img-responsive cropme featured-exp-img" style="width:100%;height:312px;" data-error-url="${resource(file: '/banners/default-expedition-large.jpg')}" ></g:link>
+                    <cl:featuredImage project="${frontPage.projectOfTheDay}"
+                                      preLoad="true"
+                                      class="img-responsive cropme featured-exp-img"
+                                      style="width:100%;height:312px;"
+                                      dataErrorUrl="${resource(file: '/banners/default-expedition-large.jpg')}" />
+
+                </g:link>
             </div>
 
             <div class="col-md-6">

@@ -4,6 +4,7 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.io.FileUtils
 import org.jooq.DSLContext
@@ -447,6 +448,7 @@ class ProjectController {
         }
     }
 
+    @Transactional
     def toggleProjectInactivity(Project project) {
         if (!project) {
             render status: 404
@@ -922,7 +924,8 @@ class ProjectController {
 
                 try {
                     f.inputStream.withCloseable {
-                        project.setBackgroundImage(it, f.contentType)
+                        //project.setBackgroundImage(it, f.contentType)
+                        projectService.setBackgroundImage(project, it, f.contentType)
                     }
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
@@ -950,7 +953,8 @@ class ProjectController {
         if (project) {
             project.backgroundImageAttribution = null
             project.backgroundImageOverlayColour = null
-            project.setBackgroundImage(null,null)
+            //project.setBackgroundImage(null,null)
+            projectService.setBackgroundImage(project, null, null)
         }
 
         flash.message = "Background image settings have been deleted."

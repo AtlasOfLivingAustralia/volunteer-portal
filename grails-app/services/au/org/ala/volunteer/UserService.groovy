@@ -5,10 +5,11 @@ import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Transactional
+import groovy.sql.Sql
 import com.google.common.base.Strings
 import grails.plugin.cache.Cacheable
-import grails.transaction.NotTransactional
-import grails.transaction.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.elasticsearch.action.search.SearchResponse
@@ -138,17 +139,30 @@ class UserService {
 
     def getUserCounts(List<String> ineligibleUsers = [], Integer limit = null) {
         def params = ineligibleUsers ? [ineligibleUsers: ineligibleUsers] : [:]
+        log.debug("params: ${params}")
         def args = [:]
         if (limit) {
             args['max'] = limit
         }
-        def users = User.executeQuery("""
+
+        def ineligibleUserClause = ""
+        if (ineligibleUsers.size() > 0) {
+            log.debug("Adding user clause")
+            ineligibleUserClause = "and userId not in (:ineligibleUsers)"
+        }
+
+        def query = """
             select new map(concat(firstName, ' ', lastName) as displayName, email as email, transcribedCount as transcribed, validatedCount as validated, (transcribedCount + validatedCount) as total, userId as userId, id as id)
             from User
             where (transcribedCount > 0 or validatedCount > 0)
-            ${ ineligibleUsers ? 'and userId not in (:ineligibleUsers)' : ''}
+            :ineligibleUserClause
             order by (transcribedCount + validatedCount) desc
-        """, params, args)
+        """.stripIndent()
+        String userQuery = query.replace(":ineligibleUserClause", ineligibleUserClause)
+        log.debug("user query: ${userQuery}")
+
+        def users = User.executeQuery(userQuery, params, args)
+
         def deets = authService.getUserDetailsById(users.collect { it['userId'] })
         if (deets) {
             users.each {
@@ -328,7 +342,7 @@ class UserService {
         return userHasValidatorRole(user, projectId, projectInstitutionId)
     }
 
-    @Cacheable(value = 'UserHasValidator', key = "(#user?.id?.toString()?:'-1') + (#projectId?:'-1') + (#projectInstitutionId?:'-1')")
+    @Cacheable(value = 'UserHasValidator', key = { "${user?.id?.toString() ?: '-1'}-${projectId ?: '-1'}-${projectInstitutionId ?: '-1'}" })
     boolean userHasValidatorRole(User user, Long projectId, Long projectInstitutionId = null) {
         if (user) {
 
@@ -361,7 +375,7 @@ class UserService {
      * @param role the role to query
      * @return true of the user has the role, false if not.
      */
-    @Cacheable(value = 'UserHasCasRole', key = "(#user?.id?.toString()?:'-1') + (#role?:'-1')")
+    @Cacheable(value = 'UserHasCasRole', key = { "${user?.id?.toString() ?: '-1'}-${role ?: '-1'}" })
     boolean hasCasRole(User user, String role) {
         if (!user) return false
         def serviceResults = [:]
@@ -494,13 +508,16 @@ class UserService {
         log.debug("Role query: ${query}")
 
         def sql = new Sql(dataSource)
-        sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int) { row ->
+        def processUser = { def row ->
             UserRole userRole = UserRole.get(row.user_role_id as long)
             results.add(userRole)
         }
 
+        if (pValues) sql.eachRow(query, pValues, parameters.offset as int, parameters.max as int, processUser)
+        else sql.eachRow(query, parameters.offset as int, parameters.max as int, processUser)
+
         def countQuery = "select count(*) as row_count_total from (" + query + ") as countQuery"
-        def countRows = sql.firstRow(countQuery, pValues)
+        def countRows = pValues ? sql.firstRow(countQuery, pValues) : sql.firstRow(countQuery)
 
         def returnMap = [userRoleList: results, totalCount: countRows.row_count_total]
 
