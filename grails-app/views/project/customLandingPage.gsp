@@ -60,8 +60,13 @@
                         <div class="col-sm-6">
                             <div class="card-filter">
                                 <div class="btn-group pull-right" role="group" aria-label="...">
-                                    <a href="${createLink(action:'list', params:[mode:'grid'])}" class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                    <a href="${createLink(action:'list')}" class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                    <a href="?${queryStringParams}mode=grid" class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}">
+                                        <i class="glyphicon glyphicon-th-large "></i>
+                                    </a>
+                                    <a href="?${queryStringParams}mode=list"
+                                       class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}">
+                                        <i class="glyphicon glyphicon-th-list"></i>
+                                    </a>
                                 </div>
 
                                 <div class="custom-search-input body">
