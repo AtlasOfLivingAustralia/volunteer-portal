@@ -58,22 +58,16 @@ class FieldService {
             fieldClause = ""
         }
 
-//        String queryString = """\
-//            select distinct f.task
-//            from Field f
-//            where f.superceded = false
-//            ${fieldClause}
-//            and f.task.project = :projectInstance
-//            ${statusFilterClause}
-//            and (lower(f.value) like :query
-//                or lower(f.transcription.fullyTranscribedBy) like :query
-//                or lower(f.task.externalIdentifier) like :query) """.stripIndent()
         String queryString = """\
             select distinct task.id, 
                 task.is_valid, 
                 task.number_of_matching_transcriptions,
                 task.external_identifier,
-                task.fully_validated_by
+                task.fully_validated_by,
+                CASE WHEN (task.is_valid = true) THEN 3 
+                    WHEN (task.is_valid = false) THEN 2 
+                    WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = TRUE) THEN 1 
+                    ELSE 0 END AS task_status
             from field f
             join task on (f.task_id = task.id)
             left join transcription on (transcription.task_id = task.id)
@@ -94,7 +88,7 @@ class FieldService {
 //                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
                 sortClause += " CASE WHEN (task.is_valid = true) THEN 3 " +
                         "WHEN (task.is_valid = false) THEN 2 " +
-                        "WHEN (task.is_valid IS NULL AND task.is_fully_transcribed IS NOT NULL) THEN 1 ELSE 0 END " + (params.order ?: 'asc') + ", task.id ASC "
+                        "WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = true) THEN 1 ELSE 0 END " + (params.order ?: 'asc') + ", task.id ASC "
                 break
             case 'numberOfMatchingTranscriptions':
                 sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "
