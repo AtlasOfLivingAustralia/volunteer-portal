@@ -57,13 +57,14 @@ function digivolNotify(config, self) {
   var alertNotify = null;
 
   function alertMessage(data) {
+    var isClosed = amplify.store.sessionStorage("bvp_notify_close");
     if (alertNotify != null) {
       if (data) {
         alertNotify.update('message', data);
       } else {
         alertNotify.close();
       }
-    } else if (data) {
+    } else if (data && (!isClosed)) {
       alertNotify = $.notify({
         icon: config.alertIconClass,
         message: data
@@ -71,6 +72,7 @@ function digivolNotify(config, self) {
         type: config.alertType,
         onClose: function() {
           alertNotify = null;
+          amplify.store.sessionStorage("bvp_notify_close", true);
         }
       });
     }
