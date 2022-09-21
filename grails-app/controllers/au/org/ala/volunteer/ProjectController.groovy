@@ -289,15 +289,15 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
-        def queryStringParams = """
-            ${params.sort ? "sort=" + (params.sort as String) + "&" : "" }
-            ${params.order ? "order=" + (params.order as String) + "&" : ""}
-            ${params.q ? "q=" + (params.q as String) + "&" : ""}
-            ${params.statusFilter ? "statusFilter=" + (params.statusFilter as String) + "&" : ""}
-            ${params.activeFilter ? "activeFilter=" + (params.activeFilter as String) + "&" : ""}
-            ${params.offset ? "offset=" + (params.offset as String) + "&" : ""}
-            ${params.max ? "max=" + (params.max as String) + "&" : ""}
-        """.stripIndent().trim().replaceAll("[\\\r\\\n]+", "")
+        def queryStringParams = [
+                sort: params.sort,
+                order: params.order,
+                q: params.q,
+                statusFilter: params.statusFilter,
+                activeFilter: params.activeFilter,
+                offset: params.offset,
+                max: params.max
+        ]
         log.debug("Query String: ${queryStringParams}")
 
         [
@@ -351,15 +351,19 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
-        def queryStringParams = """
-            ${params.sort ? "sort=" + (params.sort as String) + "&" : "" }
-            ${params.order ? "order=" + (params.order as String) + "&" : ""}
-            ${params.q ? "q=" + (params.q as String) + "&" : ""}
-            ${params.statusFilter ? "statusFilter=" + (params.statusFilter as String) + "&" : ""}
-            ${params.activeFilter ? "activeFilter=" + (params.activeFilter as String) + "&" : ""}
-            ${params.offset ? "offset=" + (params.offset as String) + "&" : ""}
-            ${params.max ? "max=" + (params.max as String) + "&" : ""}
-        """.stripIndent().trim().replaceAll("[\\\r\\\n]+", "")
+        def queryStringParams = [
+                sort: params.sort,
+                order: params.order,
+                statusFilter: params.statusFilter,
+                activeFilter: params.activeFilter,
+                offset: params.offset,
+                max: params.max,
+                shortUrl: shortUrl // This is needed to make customLandingPage links
+            ]
+        if (params.resetSearch) {
+            queryStringParams.remove('q')
+            params.remove('resetSearch')
+        }
         log.debug("Query String: ${queryStringParams}")
 
         def model = [
