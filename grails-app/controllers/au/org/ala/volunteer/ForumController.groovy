@@ -352,6 +352,7 @@ class ForumController {
 
     def deleteTopicMessage() {
         def message = ForumMessage.get(params.int("messageId"))
+        def topicId = message?.topic?.id
         def currentUser = userService.currentUser
         if (message && currentUser) {
             if (!forumService.isMessageEditable(message, currentUser)) {
@@ -359,7 +360,11 @@ class ForumController {
             }
             forumService.deleteMessage(message)
         }
-        redirect(action:'viewForumTopic', id: message?.topic?.id)
+        if (topicId) {
+            redirect(action: 'viewForumTopic', id: topicId)
+        } else {
+            redirect(action: 'index')
+        }
     }
 
     def saveNewTopicMessage() {

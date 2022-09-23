@@ -400,6 +400,9 @@ class ForumService {
             it.delete(flush: true)
         }
 
+        // Remove message from topic
+        ForumTopic forumTopic = message.topic
+        forumTopic.removeFromMessages(message)
         message.delete(flush: true)
     }
 
