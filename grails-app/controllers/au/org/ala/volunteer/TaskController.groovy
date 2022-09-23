@@ -787,6 +787,7 @@ class TaskController {
         redirect(action: 'staging', params: [projectId: project?.id])
     }
 
+    @Transactional
     def deleteFieldDefinition() {
         def project = Project.get(params.int("projectId"))
         if (!projectService.isAdminForProject(project)) {
