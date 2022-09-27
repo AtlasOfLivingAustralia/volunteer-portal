@@ -55,13 +55,28 @@
                                 %{--Camera Trap Expeditions--}%
                                 %{--<div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> expeditions</div>--}%
                             %{--</h2>--}%
+                            <g:if test="${params.q}">
+                                Expeditions matching:
+                                    <span class="tag currentFilter">
+                                        <span>${params.q}</span>
+                                        <a href="${createLink(mapping: 'landingPage', params: queryStringParams + [resetSearch: true])}">
+                                            <i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i>
+                                        </a>
+                                    </span>
+                            </g:if>
                         </div>
 
                         <div class="col-sm-6">
                             <div class="card-filter">
                                 <div class="btn-group pull-right" role="group" aria-label="...">
-                                    <a href="${createLink(action:'list', params:[mode:'grid'])}" class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                    <a href="${createLink(action:'list')}" class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                    <a href="${createLink(mapping: 'landingPage', params: queryStringParams + [mode: 'grid'])}"
+                                       class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}">
+                                        <i class="glyphicon glyphicon-th-large "></i>
+                                    </a>
+                                    <a href="${createLink(mapping: 'landingPage', params: queryStringParams)}"
+                                       class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}">
+                                        <i class="glyphicon glyphicon-th-list"></i>
+                                    </a>
                                 </div>
 
                                 <div class="custom-search-input body">
