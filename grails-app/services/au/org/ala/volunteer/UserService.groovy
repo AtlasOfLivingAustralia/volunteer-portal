@@ -342,7 +342,7 @@ class UserService {
         return userHasValidatorRole(user, projectId, projectInstitutionId)
     }
 
-    @Cacheable(value = 'UserHasValidator', key = { "${user?.id?.toString() ?: '-1'}-${projectId ?: '-1'}-${projectInstitutionId ?: '-1'}" })
+    @Cacheable(value = 'UserHasValidator', key = { "${user ? (user.id ? user.id.toString() : '-1') : '-1'}-${projectId ?: '-1'}-${projectInstitutionId ?: '-1'}" })
     boolean userHasValidatorRole(User user, Long projectId, Long projectInstitutionId = null) {
         if (user) {
 
@@ -375,7 +375,7 @@ class UserService {
      * @param role the role to query
      * @return true of the user has the role, false if not.
      */
-    @Cacheable(value = 'UserHasCasRole', key = { "${user?.id?.toString() ?: '-1'}-${role ?: '-1'}" })
+    @Cacheable(value = 'UserHasCasRole', key = { "${user ? (user.id ? user.id.toString() : '-1') : '-1'}-${projectId ?: '-1'}-${role ?: '-1'}" })
     boolean hasCasRole(User user, String role) {
         if (!user) return false
         def serviceResults = [:]
