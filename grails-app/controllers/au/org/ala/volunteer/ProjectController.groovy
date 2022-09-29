@@ -472,7 +472,8 @@ class ProjectController {
             flash.message = "The expedition status was not able to be updated."
             render(view: '/notPermitted')
         } else {
-            if (!project.inactive) {
+            def isNotifyEnabled = (true == grailsApplication.config.notifications.project.enabled)
+            if (!project.inactive && isNotifyEnabled) {
                 generateActivationNotification(project)
             }
             flash.message = "The expedition status has been updated."
