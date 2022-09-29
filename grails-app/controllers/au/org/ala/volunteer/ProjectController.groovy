@@ -785,9 +785,12 @@ class ProjectController {
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
-                if (((oldInactiveFlag != newInactive) && (!newInactive))) {
-                    log.info("Project was activated Sending project activation notification")
-                    generateActivationNotification(project)
+                def isNotifyEnabled = (true == grailsApplication.config.notifications.project.enabled)
+                if (isNotifyEnabled) {
+                    if (((oldInactiveFlag != newInactive) && (!newInactive))) {
+                        log.info("Project was activated Sending project activation notification")
+                        generateActivationNotification(project)
+                    }
                 }
                 if (project.template.isHidden) {
                     flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
