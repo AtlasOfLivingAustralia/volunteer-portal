@@ -200,6 +200,7 @@ class AdminController {
      * Deletes the selected Institution Admin {@link UserRole}.
      * Called via AJAX (Returns JSON).
      */
+    @Transactional
     def deleteUserRole() {
         if (!checkAdminAccess(true)) {
             render(view: '/notPermitted')
@@ -257,6 +258,7 @@ class AdminController {
 
     }
 
+    @Transactional
     def addUserRole() {
         if (!checkAdminAccess(true)) {
             render(view: '/notPermitted')
