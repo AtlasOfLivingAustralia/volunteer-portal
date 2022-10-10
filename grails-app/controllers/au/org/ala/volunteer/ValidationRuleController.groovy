@@ -19,6 +19,7 @@ class ValidationRuleController {
         [validationRules: validationRules, totalCount: ValidationRule.count]
     }
 
+    @Transactional
     def delete() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
@@ -34,6 +35,7 @@ class ValidationRuleController {
         redirect(action: "list")
     }
 
+    @Transactional
     def addRule() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
