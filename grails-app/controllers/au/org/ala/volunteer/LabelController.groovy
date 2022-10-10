@@ -1,10 +1,12 @@
 package au.org.ala.volunteer
 
+import grails.gorm.transactions.Transactional
+
 import static org.springframework.http.HttpStatus.*
 
 class LabelController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [save: "POST", update: "PUT", delete: "POST"]
 
     def userService
 
@@ -17,6 +19,7 @@ class LabelController {
         }
     }
 
+    @Transactional
     def save(Label labelInstance) {
         if (userService.isAdmin()) {
 
@@ -30,7 +33,7 @@ class LabelController {
                 return
             }
 
-            labelInstance.save flush: true
+            labelInstance.save(flush: true, failOnError: true)
 
             request.withFormat {
                 form multipartForm {
@@ -44,6 +47,7 @@ class LabelController {
         }
     }
 
+    @Transactional
     def update(Label labelInstance) {
         if (userService.isAdmin()) {
 
@@ -57,7 +61,7 @@ class LabelController {
                 return
             }
 
-            labelInstance.save flush: true
+            labelInstance.save(flush: true, failOnError: true)
 
             request.withFormat {
                 form multipartForm {
@@ -71,18 +75,20 @@ class LabelController {
         }
     }
 
+    @Transactional
     def delete(Label labelInstance) {
+        log.debug("Deleting label id: ${params.id}")
         if (userService.isAdmin()) {
             if (labelInstance == null) {
                 notFound()
                 return
             }
 
-            labelInstance.delete flush: true
+            labelInstance.delete(flush: true, failOnError: true)
 
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.id])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'Label.label', default: 'Label'), labelInstance.value])
                     redirect action: "index", method: "GET"
                 }
                 '*' { render status: NO_CONTENT }
