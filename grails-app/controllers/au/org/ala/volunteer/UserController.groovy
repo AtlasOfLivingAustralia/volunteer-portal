@@ -104,6 +104,7 @@ class UserController {
      * Deletes a user's opt-out record.
      * @param userOptOut the opt-out record to delete.
      */
+    @Transactional
     def deleteOptOut(UserOptOut userOptOut) {
         if (!userOptOut || !userService.isAdmin()) {
             render(view: '/notPermitted')
