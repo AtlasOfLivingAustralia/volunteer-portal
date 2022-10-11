@@ -168,7 +168,11 @@ class TaskService {
                 COALESCE(task.number_of_matching_transcriptions, 0),
                 task.external_identifier,
                 task.fully_validated_by,
-                concat(vu.last_name, ' ', vu.first_name) as validator
+                concat(vu.last_name, ' ', vu.first_name) as validator,
+                CASE WHEN (task.is_valid = true) THEN 3 
+                    WHEN (task.is_valid = false) THEN 2 
+                    WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = TRUE) THEN 1 
+                    ELSE 0 END AS task_status
             from task
             join project on (project.id = task.project_id)
             left join vp_user vu on (vu.user_id = task.fully_validated_by)
@@ -200,7 +204,10 @@ class TaskService {
         def sortClause = " order by "
         switch (params.sort) {
             case 'isValid':
-                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+//                sortClause += " task.is_valid " + (params.order ?: 'asc') + ", task.id asc "
+                sortClause += " CASE WHEN (task.is_valid = true) THEN 3 " +
+                        "WHEN (task.is_valid = false) THEN 2 " +
+                        "WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = TRUE) THEN 1 ELSE 0 END " + (params.order ?: 'asc') + ", task.id ASC "
                 break
             case 'numberOfMatchingTranscriptions':
                 sortClause += " COALESCE(task.number_of_matching_transcriptions, 0) " + (params.order ?: 'asc') + ", task.id asc "

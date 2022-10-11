@@ -133,7 +133,14 @@
                                 <td style="text-align: center;">
                                     <g:if test="${taskInstance.isValid == true}">Validated</g:if>
                                     <g:elseif test="${taskInstance.isValid == false}">In Progress</g:elseif>
-                                    <g:elseif test="${taskInstance.isFullyTranscribed}">Transcribed</g:elseif>
+                                    <g:else>
+                                        <g:if test="${taskInstance.isFullyTranscribed}">
+                                            Transcribed
+                                        </g:if>
+                                        <g:else>
+                                            New
+                                        </g:else>
+                                    </g:else>
                                 </td>
 
                                 <td style="text-align: center;">
