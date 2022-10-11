@@ -91,7 +91,7 @@ class LabelControllerSpec extends Specification {
     void "Test that the delete action deletes an instance if it exists"() {
         when:"The delete action is called for a null instance"
             request.contentType = FORM_CONTENT_TYPE
-            request.method = 'DELETE'
+            request.method = 'POST'
             controller.delete(null)
 
         then:"A 404 is returned"
@@ -165,7 +165,7 @@ class LabelControllerSpec extends Specification {
 
         when:"The delete action is executed with a valid instance"
             request.contentType = FORM_CONTENT_TYPE
-            request.method = 'DELETE'
+            request.method = 'POST'
             populateValidParams(params)
             def label = new Label(params)
             controller.delete(label)
