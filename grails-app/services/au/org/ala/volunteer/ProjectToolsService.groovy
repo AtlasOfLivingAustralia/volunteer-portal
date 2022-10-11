@@ -1,19 +1,20 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Strings
+import grails.gorm.transactions.Transactional
 import org.hibernate.FlushMode
 
 class ProjectToolsService {
 
     def sessionFactory
 
+    @Transactional
     def updateKeyFieldFromPicklistField(Project projectInstance, String lookupField, String keyField) {
 
         if (!projectInstance.picklistInstitutionCode) {
             log.error("Project does not have a picklist institution code set. Aborting.")
             return
         }
-
 
         def picklist = Picklist.findByName(lookupField)
         if (!picklist) {
@@ -41,7 +42,8 @@ class ProjectToolsService {
         def cache = [:]
         try {
 
-            sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
+            // Commented out flush mode in grails 3 upgrade, causes transaction not in progress errors.
+            // sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
             def tasksProcessed = 0
             def fieldsUpdated = 0
             taskMap.each { kvp ->
@@ -102,7 +104,8 @@ class ProjectToolsService {
             log.debug("Finished. ${tasksProcessed} tasks processed. ${fieldsUpdated} fields modified or inserted.")
             return fieldsUpdated
         } finally {
-            sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
+            // Commented out flush mode in grails 3 upgrade, causes transaction not in progress errors.
+            // sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
         }
 
     }
