@@ -1506,4 +1506,22 @@ ORDER BY record_idx, name;
         viewedTask.lastUpdated = new Date()
         viewedTask.save(flush: true, failOnError: true)
     }
+
+    /**
+     * Returns a map of user activity (views).
+     * @return a Map of user activity grouped by User.
+     */
+    def getUserActivity() {
+        def lastActivities = ViewedTask.executeQuery("select vt.userId, to_timestamp(max(vt.lastView)/1000) from ViewedTask vt group by vt.userId").collectEntries { [(it[0]): it[1]] }
+        lastActivities
+    }
+
+    /**
+     * Returns a Map of transcription counts grouped by user (Transcription.fullyTranscribedBy).
+     * @return a Map of transcription counts grouped by user
+     */
+    def getProjectTranscriptionCounts() {
+        def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
+        projectCounts
+    }
 }
