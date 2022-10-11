@@ -409,14 +409,14 @@ class TaskLoadService implements EventPublisher {
     def doTaskLoad(Long projectId = null) {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
-            // Calculate project directory disk usage after completion
-            def project = Project.get(projectId)
-            if (project) {
-                def projectSize = projectService.projectSize(project).size as long
-                log.info("Project size: ${projectSize}")
-            }
-
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
+        }
+
+        // Calculate project directory disk usage after completion
+        def project = Project.get(projectId)
+        if (project) {
+            def projectSize = projectService.projectSize(project).size as long
+            log.info("Project size: ${projectSize}")
         }
     }
 
