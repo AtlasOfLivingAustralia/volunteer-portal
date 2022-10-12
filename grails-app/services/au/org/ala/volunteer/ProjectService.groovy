@@ -682,12 +682,6 @@ class ProjectService implements EventPublisher {
         }
     }
 
-    def projectSize(List<Project> projects) {
-        projects.collectEntries {
-            [(it.id) : projectSize(it)]
-        }
-    }
-
     /**
      * Resets a project file usage size to zero. Used mainly with the delete tasks actor.
      * @param project the project to reset.

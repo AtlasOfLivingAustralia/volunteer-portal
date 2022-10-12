@@ -413,10 +413,8 @@ class TaskLoadService implements EventPublisher {
         }
 
         // Calculate project directory disk usage after completion
-        def project = Project.get(projectId)
-        if (project) {
-            def projectSize = projectService.projectSize(project).size as long
-            log.info("Project size: ${projectSize}")
+        if (projectId) {
+            projectService.projectSize(projectId)
         }
     }
 
