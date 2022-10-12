@@ -398,8 +398,8 @@ class TranscribeController {
         } else {
             log.debug("No available tasks were found.")
 
-            def isEnabled = (true == grailsApplication.config.notifications.project.enabled)
-            if (isEnabled) {
+            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+            if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
                 if (isComplete(project)) {
                     log.info("Project was completed; Sending project completion notification")
                     def message = groovyPageRenderer.render(view: '/project/projectCompleteNotification', model: [projectName: project.name])
