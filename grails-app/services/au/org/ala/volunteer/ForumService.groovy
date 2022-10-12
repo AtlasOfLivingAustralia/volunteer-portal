@@ -400,10 +400,33 @@ class ForumService {
             it.delete(flush: true)
         }
 
-        // Remove message from topic
+        // Does the message have any replies that need to be reassigned
+        // Get the list of replies and reassign their reply to ID to the original post.
+        def messageList = getMessageReplies(message)
+        def op = getFirstMessageForTopic(message.topic)
+        messageList.each {msg ->
+            msg.replyTo = op
+            msg.save(flush: true)
+        }
+
+        // Remove message from topic then delete
         ForumTopic forumTopic = message.topic
         forumTopic.removeFromMessages(message)
+        forumTopic.discard()
         message.delete(flush: true)
+    }
+
+    /**
+     * Returns a list of all forum messages that are replies to a given message.
+     * @param message the message to query on
+     * @return a list of messages that are replies to a given message.
+     */
+    def getMessageReplies(ForumMessage message) {
+        def replies = []
+        if (message) {
+            replies = ForumMessage.findAllByReplyTo(message)
+        }
+        replies
     }
 
     def countTaskTopics(Project projectInstance) {
