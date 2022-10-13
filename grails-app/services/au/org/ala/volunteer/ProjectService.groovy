@@ -708,6 +708,7 @@ class ProjectService implements EventPublisher {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
             long sizeInBytes = projectPath.directorySize()
+            project.merge() // In case something has opened a project instance (sometimes happens with task load)
             project.sizeInBytes = sizeInBytes
             project.save(flush: true, failOnError: true)
             [size: sizeInBytes, error: null]
