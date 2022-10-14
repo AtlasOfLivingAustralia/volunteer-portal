@@ -413,9 +413,9 @@ class TaskLoadService implements EventPublisher {
         }
 
         // Calculate project directory disk usage after completion
-        if (projectId) {
-            projectService.projectSize(projectId)
-        }
+//        if (projectId) {
+//            projectService.projectSize(projectId)
+//        }
     }
 
     private int doTaskLoadIteration(Long projectId = null) {
@@ -511,7 +511,6 @@ class TaskLoadService implements EventPublisher {
         }
 
         return dequeuedTasks
-
     }
 
     private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->
@@ -649,6 +648,15 @@ class TaskLoadService implements EventPublisher {
                 if (count) {
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: project.createdById, event: 'createTasks', data: [project: project.name, count: count, success: true]))
                 }
+
+                def projectSizeInBytes = projectService.getProjectSizeInBytes(id)
+
+                def updateProjectSize = create
+                        .update(PROJECT)
+                        .set(PROJECT.SIZE_IN_BYTES, projectSizeInBytes)
+                        .where(PROJECT.ID.eq(id))
+                        .execute()
+                log.debug("Updated project disk usage: ${projectSizeInBytes}")
             }
         }
 
