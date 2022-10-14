@@ -709,21 +709,22 @@ class ProjectService implements EventPublisher {
      * @param projectId the project to query
      * @return a long value of the amount of disk in bytes that the project is using.
      */
-    def getProjectSizeInBytes(long projectId) {
+    long getProjectSizeInBytes(Long projectId) {
         Project project = Project.get(projectId)
+        long sizeInBytes = 0L
+
         if (project) {
             final projectPath = new File(grailsApplication.config.images.home as String, project.id.toString())
             try {
-                long sizeInBytes = projectPath.directorySize()
+                sizeInBytes = projectPath.directorySize()
                 log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
-                return sizeInBytes
-                //return projectPath.directorySize()
             } catch (Exception e) {
                 log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
             }
         }
 
-        return 0L
+        log.debug("Returning ${sizeInBytes}")
+        sizeInBytes
     }
 
     def projectSize(Project project) {

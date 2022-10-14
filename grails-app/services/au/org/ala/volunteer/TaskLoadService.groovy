@@ -410,12 +410,18 @@ class TaskLoadService implements EventPublisher {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
-        }
 
-        // Calculate project directory disk usage after completion
-//        if (projectId) {
-//            projectService.projectSize(projectId)
-//        }
+            def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
+            log.info("Updating project disk usage: ${projectSizeInBytes}")
+
+            DSLContext create = jooqContext()
+            def updateProjectSize = create
+                    .update(PROJECT)
+                    .set(PROJECT.SIZE_IN_BYTES, projectSizeInBytes)
+                    .where(PROJECT.ID.eq(projectId))
+                    .execute()
+            log.info("Updated ${updateProjectSize} projects.")
+        }
     }
 
     private int doTaskLoadIteration(Long projectId = null) {
@@ -648,15 +654,6 @@ class TaskLoadService implements EventPublisher {
                 if (count) {
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: project.createdById, event: 'createTasks', data: [project: project.name, count: count, success: true]))
                 }
-
-                def projectSizeInBytes = projectService.getProjectSizeInBytes(id)
-
-                def updateProjectSize = create
-                        .update(PROJECT)
-                        .set(PROJECT.SIZE_IN_BYTES, projectSizeInBytes)
-                        .where(PROJECT.ID.eq(id))
-                        .execute()
-                log.debug("Updated project disk usage: ${projectSizeInBytes}")
             }
         }
 
