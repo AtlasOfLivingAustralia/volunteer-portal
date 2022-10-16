@@ -228,6 +228,7 @@ bootRun {
 
 springBoot {
     layout = WAR
+    mainClass = 'au.org.ala.volunteer.Application'
 }
 
 bootRepackage {
