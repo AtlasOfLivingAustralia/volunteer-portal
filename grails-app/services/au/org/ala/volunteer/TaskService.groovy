@@ -1023,7 +1023,7 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
-    @Cacheable(value='getAudioMetaData', key={ "${multimedia?.id ?: 0}" })
+    @Cacheable(value='getAudioMetaData', key={ "${(multimedia ? multimedia.id : 0)}" })
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
         if (path) {
@@ -1041,7 +1041,7 @@ ORDER BY record_idx, name;
      * @param rotate the number of degrees to rotate the image (0 is do not rotate)
      * @return the image metadata.
      */
-    @Cacheable(value = 'getImageMetaData', key = { "${multimedia?.id ?: 0}-${rotate}" })
+    @Cacheable(value = 'getImageMetaData', key = { "${(multimedia ? multimedia.id : 0)}-${rotate}" })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate) {
         log.debug("Image metadata, rotate: ${rotate}")
         def path = multimedia?.filePath
@@ -1063,7 +1063,7 @@ ORDER BY record_idx, name;
         throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
-    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource?.URI?.toString() ?: resource?.filename ?: '')}-${(imageUrl ?: '')}-${rotate}"})
+    @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource ? (resource.URI ? resource.URI.toString() : (resource.filename ?: '')) : '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
 
         BufferedImage image
@@ -1158,7 +1158,7 @@ ORDER BY record_idx, name;
         log.debug('max sequence number cleared for project ${projectId}')
     }
 
-    @Cacheable(value = 'findMaxSequenceNumber', key = { project?.id ?: -1 })
+    @Cacheable(value = 'findMaxSequenceNumber', key = { (project ? project.id : -1) })
     Integer findMaxSequenceNumber(Project project) {
         def select ="""
             WITH task_ids AS (SELECT id FROM task WHERE project_id = ${project.id})
