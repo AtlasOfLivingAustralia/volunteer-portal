@@ -397,10 +397,14 @@ class TranscribeController {
             redirect(action: 'task', id: taskInstance.id, params: redirectParams)
         } else {
             log.debug("No available tasks were found.")
-            if (isComplete(project)) {
-                log.info("Project was completed; Sending project completion notification")
-                def message = groovyPageRenderer.render(view: '/project/projectCompleteNotification', model: [projectName: project.name])
-                projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_COMPLETION)
+
+            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+            if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+                if (isComplete(project)) {
+                    log.info("Project was completed; Sending project completion notification")
+                    def message = groovyPageRenderer.render(view: '/project/projectCompleteNotification', model: [projectName: project.name])
+                    projectService.emailNotification(project, message, ProjectService.NOTIFICATION_TYPE_COMPLETION)
+                }
             }
             render(view: 'noTasks', model: [complete: params.complete])
         }

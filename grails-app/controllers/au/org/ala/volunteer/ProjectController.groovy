@@ -498,7 +498,9 @@ class ProjectController {
             flash.message = "The expedition status was not able to be updated."
             render(view: '/notPermitted')
         } else {
-            if (!project.inactive) {
+            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+            if (!project.inactive && new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+//            if (isNotifyEnabled) {
                 generateActivationNotification(project)
             }
             flash.message = "The expedition status has been updated."
@@ -810,9 +812,12 @@ class ProjectController {
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
-                if (((oldInactiveFlag != newInactive) && (!newInactive))) {
-                    log.info("Project was activated Sending project activation notification")
-                    generateActivationNotification(project)
+                def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+                if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+                    if (((oldInactiveFlag != newInactive) && (!newInactive))) {
+                        log.info("Project was activated Sending project activation notification")
+                        generateActivationNotification(project)
+                    }
                 }
                 if (project.template.isHidden) {
                     flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
