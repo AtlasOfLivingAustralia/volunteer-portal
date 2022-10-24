@@ -263,6 +263,12 @@ class TemplateController {
                 }
                 field.displayOrder--
                 field.save()
+            } else if (field.displayOrder == 1) {
+                flash.message = message(code: 'templateField.moveup.max', args: [field.label ?: '', field.fieldType]) as String
+            } else if (field.displayOrder == null) {
+                def max = getLastDisplayOrder(field.template)
+                field.displayOrder = max + 1
+                flash.message = message(code: 'templateField.add.order', args: [field.label ?: '', field.fieldType]) as String
             }
         }
 
@@ -284,7 +290,7 @@ class TemplateController {
             }
 
             def max = getLastDisplayOrder(field.template)
-            if (field.displayOrder < max ) {
+            if (field.displayOrder != null && field.displayOrder < max ) {
                 def successor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder + 1)
                 if (successor) {
                     // swap their positions
@@ -293,6 +299,11 @@ class TemplateController {
                 }
                 field.displayOrder++
                 field.save()
+            } else if (field.displayOrder != null && field.displayOrder == max) {
+                flash.message = message(code: 'templateField.movedown.max', args: [field.label ?: '', field.fieldType]) as String
+            } else if (field.displayOrder == null) {
+                field.displayOrder = max + 1
+                flash.message = message(code: 'templateField.add.order', args: [field.label ?: '', field.fieldType]) as String
             }
         }
 
