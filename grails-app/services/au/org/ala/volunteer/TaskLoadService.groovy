@@ -409,14 +409,18 @@ class TaskLoadService implements EventPublisher {
     def doTaskLoad(Long projectId = null) {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
-            // Calculate project directory disk usage after completion
-            def project = Project.get(projectId)
-            if (project) {
-                def projectSize = projectService.projectSize(project).size as long
-                log.info("Project size: ${projectSize}")
-            }
-
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
+
+            def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
+            log.info("Updating project disk usage: ${projectSizeInBytes}")
+
+            DSLContext create = jooqContext()
+            def updateProjectSize = create
+                    .update(PROJECT)
+                    .set(PROJECT.SIZE_IN_BYTES, projectSizeInBytes)
+                    .where(PROJECT.ID.eq(projectId))
+                    .execute()
+            log.info("Updated ${updateProjectSize} projects.")
         }
     }
 
@@ -513,7 +517,6 @@ class TaskLoadService implements EventPublisher {
         }
 
         return dequeuedTasks
-
     }
 
     private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->

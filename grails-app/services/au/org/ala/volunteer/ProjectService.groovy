@@ -89,13 +89,13 @@ class ProjectService implements EventPublisher {
                         while (tasks) {
                             log.debug("Iterating, Deleting ${tasks.size()} tasks")
                             if (log.isDebugEnabled()) {
-                                log.debug("Deleting tasks ${tasks*.id}")
+                                log.debug("Deleting tasks")
                             }
                             for (Task task : tasks) {
+                                log.debug("Deleting task ${task}")
                                 lastId = task.id
                                 try {
-                                    if (msg.deleteImages) multimediaService.deleteAllMultimediaForTask(task)
-                                    task.delete()
+                                    deleteTask(task, msg.deleteImages)
                                 } catch (e) {
                                     log.error("Exception while deleting task ${task.id}: ${e.getMessage()}", e)
                                     throw e
@@ -111,15 +111,17 @@ class ProjectService implements EventPublisher {
                         }
 
                         // Reset disk usage to zero, as all tasks have been deleted.
-                        p.sizeInBytes = 0
+                        resetProjectSize(p)
 
                         log.info("Completed deleting all tasks for ${msg.projectId}")
-
-                        session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
                 } catch (e) {
                     log.error("Error encountered deleting tasks and/or images: ${e.getMessage()}", e)
+
+                    // Did a partial delete, update project size.
+                    projectSize(msg.projectId)
+
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: -1, error: e.message, complete: true]))
                 }
             }
@@ -129,6 +131,21 @@ class ProjectService implements EventPublisher {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    /**
+     * Deletes a task from the database. If parameter deleteImages is true, any multimedia for the task will be deleted also.
+     * @param t the task to delete
+     * @param deleteImages if true, deletes all multimedia for the task.
+     */
+    private def deleteTask(Task t, boolean deleteImages) {
+        try {
+            if (deleteImages) multimediaService.deleteAllMultimediaForTask(t)
+            t.delete()
+        } catch (e) {
+            log.error("Exception while deleting task ${t.id}: ${e.getMessage()}", e)
+            throw e
+        }
     }
 
     /**
@@ -665,16 +682,56 @@ class ProjectService implements EventPublisher {
         }
     }
 
-    def projectSize(List<Project> projects) {
-        projects.collectEntries {
-            [(it.id) : projectSize(it)]
+    /**
+     * Resets a project file usage size to zero. Used mainly with the delete tasks actor.
+     * @param project the project to reset.
+     */
+    def resetProjectSize(Project project) {
+        if (project) {
+            project.sizeInBytes = 0
+            project.save(flush: true, failOnError: true)
         }
+    }
+
+    /**
+     * Calls the projectSize method if the project is not known. Used mainly by the delete task Actor.
+     * @param projectId the ID of the project to update.
+     */
+    def projectSize(long projectId) {
+        Project project = Project.get(projectId)
+        if (project) {
+            projectSize(project)
+        }
+    }
+
+    /**
+     * Returns the amount of disk that a given project is using (from task images)
+     * @param projectId the project to query
+     * @return a long value of the amount of disk in bytes that the project is using.
+     */
+    long getProjectSizeInBytes(Long projectId) {
+        Project project = Project.get(projectId)
+        long sizeInBytes = 0L
+
+        if (project) {
+            final projectPath = new File(grailsApplication.config.images.home as String, project.id.toString())
+            try {
+                sizeInBytes = projectPath.directorySize()
+                log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
+            } catch (Exception e) {
+                log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+            }
+        }
+
+        log.debug("Returning ${sizeInBytes}")
+        sizeInBytes
     }
 
     def projectSize(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
             long sizeInBytes = projectPath.directorySize()
+            project.merge() // In case something has opened a project instance (sometimes happens with task load)
             project.sizeInBytes = sizeInBytes
             project.save(flush: true, failOnError: true)
             [size: sizeInBytes, error: null]
