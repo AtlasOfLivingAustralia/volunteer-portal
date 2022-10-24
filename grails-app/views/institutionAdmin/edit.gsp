@@ -33,6 +33,10 @@
             <g:render template="form" model="[mode: 'edit']"/>
             <div class="form-group">
                 <div class="col-md-offset-3 col-md-9">
+                <g:if test="${!institutionInstance?.isApproved && !institutionInstance.createdBy}">
+                    <b>Note:</b> This institution's contact/admin does not have an ALA account. You will be assigned
+                    Institution Admin when approving this institution.<br /><br />
+                </g:if>
                     <g:submitButton class="save btn btn-primary" name="update"
                                     value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                     <g:if test="${!institutionInstance?.isApproved}">

@@ -872,4 +872,19 @@ class UserService {
         def userHash = "${user.id}+${User.HASH_SUFFIX}".toString()
         return MessageDigest.getInstance("MD5").digest(userHash.bytes).encodeHex().toString()
     }
+
+    /**
+     * Removes all roles for an institution.
+     * @param institution the institution to filter on.
+     */
+    def removeAllRoles(Institution institution) {
+        if (!institution) return
+
+        def userRoles = UserRole.findAllByInstitution(institution)
+        if (userRoles.size() > 0) {
+            userRoles.each { userRole ->
+                userRole.delete(flush: true)
+            }
+        }
+    }
 }
