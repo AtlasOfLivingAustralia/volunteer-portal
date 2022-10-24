@@ -9,34 +9,30 @@
     <asset:script type="text/javascript">
             $(document).ready(function () {
                 // clear the temporarily saved state, now that it is known that the task was saved
-                amplify.store("bvp_task_${taskInstance.id}", null);
+                amplify.store("bvp_task_${taskInstance?.id}", null);
             });
     </asset:script>
 
 </head>
+<body class="admin  ">
 
-<body class="admin">
-<cl:navbar selected="expeditions"/>
+<cl:headerContent title="Thank you - we are done for now !" crumbLabel="Thanks - we're done!"/>
 
-<header id="page-header">
-    <div class="inner">
-        <cl:messages/>
-        <nav id="breadcrumb">
-            <ol>
-                <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                <li class="last">Thanks - we're done!</li>
-            </ol>
-        </nav>
-        <hgroup>
-            <h1>Thank you - we are done for now !</h1>
-        </hgroup>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+                    <p style="text-align: center">There are currently no new tasks ready to validate, please check back later</p>
+
+                    <p style="text-align: center"><g:link controller="task" action="projectAdmin" id="${projectId}">Click here to return to the Expedition admin menu</g:link>.</p>
+                </div>
+            </div>
+
+        </div>
     </div>
-</header>
-
-<div class="inner">
-    <p>There are currently no new tasks ready to be validated.</p>
-
-    <p>Please check back later for more validation tasks.</p>
 </div>
 </body>
+
 </html>
