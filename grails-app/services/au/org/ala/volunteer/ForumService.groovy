@@ -3,14 +3,17 @@ package au.org.ala.volunteer
 import grails.orm.PagedResultList
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
+import groovy.util.logging.Slf4j
 
 @Transactional
+@Slf4j
 class ForumService {
 
     def grailsApplication
     def userService
     def settingsService
     def forumNotifierService
+    def dataSource
 
     def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
         def max = params.max ?: 10
@@ -54,50 +57,42 @@ class ForumService {
     }
 
     def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-
         def max = params?.max ?: 10
         def offset = params?.offset ?: 0
         def sort = params?.sort ?: "lastReplyDate"
         def leOrder = params?.order ?: "desc"
 
-        if (sort == 'replies') {
-
-            def hql = """
-                SELECT topic
-                FROM ForumTopic topic
-                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
-            """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
-
-
-            return [topics: topics, totalCount: ForumTopic.count() ]
-        } else {
-            def c = SiteForumTopic.createCriteria()
-            def results = c.list(max:max, offset: offset) {
-                and {
-                    if (includeDeleted) {
-                        eq("deleted", true)
-                    } else {
-                        or {
-                            isNull("deleted")
-                            eq("deleted", false)
-                        }
-                    }
-                }
-                and {
-                    order("sticky", "desc")
-                    order("priority", "desc")
-                    order(sort, leOrder)
-                }
-                if (params?.max) {
-                    maxResults(params.max as Integer)
-                }
-                if (params?.offset) {
-                    firstResult(params.offset as Integer)
-                }
-            }
-            return [topics: results, totalCount: results.totalCount ]
+        def deleteClause = ""
+        if (!includeDeleted) {
+            deleteClause = "WHERE (deleted IS NULL OR deleted = false) "
         }
+
+        def topicQuery = """
+            SELECT topic
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        topicQuery = topicQuery.replace(":deleteClause", deleteClause)
+
+        def countQuery = """
+            SELECT COUNT(DISTINCT topic.id) as topicCount
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        countQuery = countQuery.replace(":deleteClause", deleteClause)
+
+        def sortClause = "ORDER BY sticky DESC, priority DESC, "
+        if (sort == 'replies') {
+            sortClause = sortClause + "size(topic.messages) " + leOrder
+        } else {
+            sortClause = sortClause + sort + " " + leOrder
+        }
+
+        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset])
+        def totalCount = ForumTopic.executeQuery(countQuery)?.first()
+        log.debug("TotalCount: ${totalCount}")
+
+        return [topics: topics, totalCount: totalCount]
     }
 
     PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
@@ -405,7 +400,33 @@ class ForumService {
             it.delete(flush: true)
         }
 
+        // Does the message have any replies that need to be reassigned
+        // Get the list of replies and reassign their reply to ID to the original post.
+        def messageList = getMessageReplies(message)
+        def op = getFirstMessageForTopic(message.topic)
+        messageList.each {msg ->
+            msg.replyTo = op
+            msg.save(flush: true)
+        }
+
+        // Remove message from topic then delete
+        ForumTopic forumTopic = message.topic
+        forumTopic.removeFromMessages(message)
+        forumTopic.discard()
         message.delete(flush: true)
+    }
+
+    /**
+     * Returns a list of all forum messages that are replies to a given message.
+     * @param message the message to query on
+     * @return a list of messages that are replies to a given message.
+     */
+    def getMessageReplies(ForumMessage message) {
+        def replies = []
+        if (message) {
+            replies = ForumMessage.findAllByReplyTo(message)
+        }
+        replies
     }
 
     def countTaskTopics(Project projectInstance) {

@@ -36,16 +36,12 @@ class ForumTagLib {
 
             Project projectInstance = null
             if (topic.instanceOf(ProjectForumTopic)) {
-                log.debug("Project topic")
                 def projectTopic = topic as ProjectForumTopic
                 projectInstance = projectTopic.project
             } else if (topic.instanceOf(TaskForumTopic)) {
-                log.debug("Task topic")
                 def taskTopic = topic as TaskForumTopic
                 projectInstance = taskTopic.task.project
                 projectInstance.attach()
-                log.debug("Project in taglib: ${projectInstance}")
-                log.debug("Institution in taglib: ${projectInstance?.institution}")
             }
 
             def replies = forumService.getTopicMessages(topic, params)
