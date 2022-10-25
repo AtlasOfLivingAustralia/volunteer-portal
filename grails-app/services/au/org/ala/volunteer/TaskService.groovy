@@ -477,7 +477,6 @@ class TaskService {
      * @return
      */
     Task getNextTaskForValidationForProject(String userId, Project project) {
-
         if (!project || !userId) {
             return null
         }
@@ -486,7 +485,7 @@ class TaskService {
         def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
         def tasks
 
-        tasks = Task.createCriteria().list([max:1]) {
+        tasks = Task.createCriteria().list {
             eq("project", project)
             eq("isFullyTranscribed", true)
             isNull("fullyValidatedBy")
@@ -498,10 +497,13 @@ class TaskService {
         }
 
         if (tasks) {
-            def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
+            log.debug("Tasks: ${tasks}")
+
+            def task = tasks.first()
+            log.debug("Search for unviewed tasks found a task: ${task.id}")
             return task
         }
+        log.debug("No unviewed tasks available, searching for tasks that user has already viewed")
 
         // Finally, we'll have to serve up a task that this user has seen before
         tasks = Task.createCriteria().list([max:1]) {
@@ -517,7 +519,7 @@ class TaskService {
 
         if (tasks) {
             def task = tasks.last()
-            log.debug("getNextTaskForValidationForProject(project ${project.id}) found a task: ${task.id}")
+            log.debug("Search for viewed tasks found a task: ${task.id}")
             return task
         }
 
@@ -566,10 +568,7 @@ class TaskService {
                 }
             }
         }
-
-        log.debug("Task last viewed: ${skippedTask.lastViewed}, by ${skippedTask.lastViewedBy}")
     }
-
 
     private final static List<String> getNotificationWithClauses(projectQuery, boolean unseenOnly = true) { [
 """transcribed_and_validated_tasks AS (
