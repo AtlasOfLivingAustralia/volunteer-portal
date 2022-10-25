@@ -273,20 +273,21 @@ class ForumService {
 
         if (sort == 'replies') {
             def hql = """
-                SELECT topic
+                SELECT distinct topic
                 FROM ForumTopic topic
-                ORDER BY featured asc, size(topic.messages) ${leOrder}
+                ORDER BY featured asc, size(topic.messages) 
             """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+            def topics = ForumTopic.executeQuery(hql + leOrder, [max: max, offset: offset])
             return [topics: topics, totalCount: topics.size()]
         } else {
-            def c = ForumTopic.createCriteria()
-            def results = c.list(max: max, offset: offset) {
-                isNotNull('lastReplyDate')
-                order("featured", "asc")
-                order(sort, leOrder)
-            }
-            return [topics: results, totalCount: results.totalCount]
+            def hql = """
+                SELECT distinct topic
+                FROM ForumTopic topic
+                WHERE lastReplyDate IS NOT NULL
+                ORDER BY featured asc,  
+            """
+            def topics = ForumTopic.executeQuery(hql + sort + ' ' + leOrder, [max: max, offset: offset])
+            return [topics: topics, totalCount: topics.size()]
         }
     }
 

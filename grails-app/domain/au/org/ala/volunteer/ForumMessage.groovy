@@ -20,6 +20,10 @@ class ForumMessage {
         replyTo nullable: true
     }
 
+    static mapping = {
+        user fetch: 'join'
+    }
+
     def beforeInsert() {
 
         ForumTopic.withNewSession {
