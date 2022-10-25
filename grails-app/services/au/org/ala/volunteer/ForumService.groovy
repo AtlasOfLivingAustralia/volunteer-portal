@@ -273,7 +273,7 @@ class ForumService {
 
         if (sort == 'replies') {
             def hql = """
-                SELECT distinct topic
+                SELECT topic
                 FROM ForumTopic topic
                 ORDER BY featured asc, size(topic.messages) 
             """
@@ -281,7 +281,7 @@ class ForumService {
             return [topics: topics, totalCount: topics.size()]
         } else {
             def hql = """
-                SELECT distinct topic
+                SELECT topic
                 FROM ForumTopic topic
                 WHERE lastReplyDate IS NOT NULL
                 ORDER BY featured asc,  
