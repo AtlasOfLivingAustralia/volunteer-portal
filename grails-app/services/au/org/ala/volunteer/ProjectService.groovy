@@ -1,7 +1,8 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
-import grails.transaction.Transactional
+import grails.events.EventPublisher
+import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -46,7 +47,7 @@ import static org.jooq.impl.DSL.sum as jSum
 import static org.jooq.impl.DSL.when as jWhen
 
 @Transactional
-class ProjectService {
+class ProjectService implements EventPublisher {
 
     static final String TASK_COUNT_COLUMN = 'taskCount'
     static final String TRANSCRIBED_COUNT_COLUMN = 'transcribedCount'
@@ -88,13 +89,13 @@ class ProjectService {
                         while (tasks) {
                             log.debug("Iterating, Deleting ${tasks.size()} tasks")
                             if (log.isDebugEnabled()) {
-                                log.debug("Deleting tasks ${tasks*.id}")
+                                log.debug("Deleting tasks")
                             }
                             for (Task task : tasks) {
+                                log.debug("Deleting task ${task}")
                                 lastId = task.id
                                 try {
-                                    if (msg.deleteImages) multimediaService.deleteAllMultimediaForTask(task)
-                                    task.delete()
+                                    deleteTask(task, msg.deleteImages)
                                 } catch (e) {
                                     log.error("Exception while deleting task ${task.id}: ${e.getMessage()}", e)
                                     throw e
@@ -110,15 +111,17 @@ class ProjectService {
                         }
 
                         // Reset disk usage to zero, as all tasks have been deleted.
-                        p.sizeInBytes = 0
+                        resetProjectSize(p)
 
                         log.info("Completed deleting all tasks for ${msg.projectId}")
-
-                        session.flush()
                         notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: count, complete: true]))
                     }
                 } catch (e) {
                     log.error("Error encountered deleting tasks and/or images: ${e.getMessage()}", e)
+
+                    // Did a partial delete, update project size.
+                    projectSize(msg.projectId)
+
                     notify(EventSourceService.NEW_MESSAGE, new Message.EventSourceMessage(to: msg.userId, event: 'deleteTasks', data: [projectId: msg.projectId, count: -1, error: e.message, complete: true]))
                 }
             }
@@ -128,6 +131,21 @@ class ProjectService {
     @PreDestroy
     def shutdown() {
         deleteTasksActor.stop()
+    }
+
+    /**
+     * Deletes a task from the database. If parameter deleteImages is true, any multimedia for the task will be deleted also.
+     * @param t the task to delete
+     * @param deleteImages if true, deletes all multimedia for the task.
+     */
+    private def deleteTask(Task t, boolean deleteImages) {
+        try {
+            if (deleteImages) multimediaService.deleteAllMultimediaForTask(t)
+            t.delete()
+        } catch (e) {
+            log.error("Exception while deleting task ${t.id}: ${e.getMessage()}", e)
+            throw e
+        }
     }
 
     /**
@@ -664,16 +682,56 @@ class ProjectService {
         }
     }
 
-    def projectSize(List<Project> projects) {
-        projects.collectEntries {
-            [(it.id) : projectSize(it)]
+    /**
+     * Resets a project file usage size to zero. Used mainly with the delete tasks actor.
+     * @param project the project to reset.
+     */
+    def resetProjectSize(Project project) {
+        if (project) {
+            project.sizeInBytes = 0
+            project.save(flush: true, failOnError: true)
         }
+    }
+
+    /**
+     * Calls the projectSize method if the project is not known. Used mainly by the delete task Actor.
+     * @param projectId the ID of the project to update.
+     */
+    def projectSize(long projectId) {
+        Project project = Project.get(projectId)
+        if (project) {
+            projectSize(project)
+        }
+    }
+
+    /**
+     * Returns the amount of disk that a given project is using (from task images)
+     * @param projectId the project to query
+     * @return a long value of the amount of disk in bytes that the project is using.
+     */
+    long getProjectSizeInBytes(Long projectId) {
+        Project project = Project.get(projectId)
+        long sizeInBytes = 0L
+
+        if (project) {
+            final projectPath = new File(grailsApplication.config.images.home as String, project.id.toString())
+            try {
+                sizeInBytes = projectPath.directorySize()
+                log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
+            } catch (Exception e) {
+                log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+            }
+        }
+
+        log.debug("Returning ${sizeInBytes}")
+        sizeInBytes
     }
 
     def projectSize(Project project) {
         final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
         try {
             long sizeInBytes = projectPath.directorySize()
+            project.merge() // In case something has opened a project instance (sometimes happens with task load)
             project.sizeInBytes = sizeInBytes
             project.save(flush: true, failOnError: true)
             [size: sizeInBytes, error: null]
@@ -971,6 +1029,8 @@ class ProjectService {
             projectToDisplay.save(failOnError: true, flush: true)
         }
 
+        sql.close()
+
         return projectToDisplay.id
     }
 
@@ -1011,6 +1071,81 @@ class ProjectService {
         } else {
             log.debug("Using existing PotD: ${frontPage.projectOfTheDay}")
             return frontPage.projectOfTheDay
+        }
+    }
+
+    /**
+     * Saves the uploaded background image or deletes the existing one if argument is null.  Consumes the inputstream
+     * but doesn't close it
+     * @param multipartFile
+     */
+    void setBackgroundImage(Project project, InputStream inputStream, String contentType) {
+        if (!project) {
+            throw new IllegalArgumentException("Set background image - project must be provided")
+        }
+
+        if (inputStream && contentType) {
+            // Save image
+            String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
+            def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.${fileExtension}"
+            def file = new File(filePath)
+            file.getParentFile().mkdirs()
+            file.withOutputStream {
+                it << inputStream
+            }
+        } else {
+            // Remove image if exists
+            String localPathJpg = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.jpg"
+            String localPathPng = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.png"
+            File fileJpg = new File(localPathJpg)
+            File filePng = new File(localPathPng)
+            if (fileJpg.exists()) {
+                fileJpg.delete()
+            } else if (filePng.exists()) {
+                filePng.delete()
+            }
+        }
+    }
+
+    /**
+     * Retrieves background image url
+     * @return background image url or null if non existent
+     */
+    String getBackgroundImage(Project project) {
+        if (!project) return null
+
+        String localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image"
+        String localPathJpg = "${localPath}.jpg"
+        String localPathPng = "${localPath}.png"
+        File fileJpg = new File(localPathJpg)
+        File filePng = new File(localPathPng)
+
+        if (fileJpg.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.jpg"
+        } else if (filePng.exists()) {
+            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.png"
+        } else {
+            return null
+        }
+    }
+
+    /**
+     * Gets the projects featured image url.
+     * @param project the project to search
+     * @return the String url of the image file or a default base image if none exists. Returns null if project is not provided.
+     */
+    String getFeaturedImage(Project project) {
+        if (!project) return null
+        // Check to see if there is a feature image for this expedition by looking in its project directory.
+        // If one exists, use it, otherwise use a default image...
+        def localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+        def file = new File(localPath)
+        if (!file.exists()) {
+            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
+        } else {
+            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def infix = urlPrefix.endsWith('/') ? '' : '/'
+            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
         }
     }
 }

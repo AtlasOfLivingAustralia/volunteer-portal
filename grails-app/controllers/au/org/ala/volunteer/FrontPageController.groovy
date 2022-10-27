@@ -1,11 +1,11 @@
 package au.org.ala.volunteer
 
-import grails.transaction.Transactional
+import grails.events.EventPublisher
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
-
 import java.util.concurrent.TimeUnit
 
-class FrontPageController {
+class FrontPageController implements EventPublisher {
 
     def userService
     def fileUploadService

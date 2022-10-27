@@ -147,8 +147,47 @@ security:
     cas:
         adminRole: "ROLE_VP_ADMIN"
         validatorRole: "ROLE_VP_VALIDATOR"
-        uriFilterPattern: '/validate/save.*,/validate/.*,/user/.*,/project/((?!index).)*,/task/((?!summary).)*,/newsItem/.*,/picklist/.*,/admin,/admin/.*,/frontPage/.*,/ajax/userReport,/ws/userReport,/transcribe/.*,/taskComment/((?!getCommentsAjax).)*,/locality/.*,/collectionEvent/.*,/ajax/keepSessionAlive.*,/ws/keepSessionAlive.*,/forum/.*,/template/.*,/monitoring,/metrics,/metrics/.*,/ws/acceptAchievements,/ajax/acceptAchievements,/project/createNewProject.*,/message/.*'
-        authenticateOnlyIfLoggedInPattern: '/,/;jsessionid=.*,/project/index/.*,/task/summary/.*,/tutorials/.*,/institution/.*,/buildInfo,/events/.*,/es,/eventSource.*,/wildlife-spotter,/message/.*'
+        uriFilterPattern:
+            - "/validate/save*"
+            - "/validate/*"
+            - "/user/*"
+            - "/project/*"
+            - "/task/*"
+            - "/newsItem/*"
+            - "/picklist/*"
+            - "/admin"
+            - "/admin/*"
+            - "/frontPage/*"
+            - "/ajax/userReport"
+            - "/ws/userReport"
+            - "/transcribe/*"
+            - "/taskComment/*"
+            - "/locality/*"
+            - "/collectionEvent/*"
+            - "/ajax/keepSessionAlive*"
+            - "/ws/keepSessionAlive*"
+            - "/forum/*"
+            - "/template/*"
+            - "/monitoring"
+            - "/metrics"
+            - "/metrics/*"
+            - "/ws/acceptAchievements"
+            - "/ajax/acceptAchievements"
+            - "/project/createNewProject*"
+            - "/message/*"
+        authenticateOnlyIfLoggedInPattern:
+            - "/"
+            - "/;jsessionid=*"
+            - "/project/index/*"
+            - "/task/summary/*"
+            - "/tutorials/*"
+            - "/institution/*"
+            - "/buildInfo"
+            - "/events/*"
+            - "/es"
+            - "/eventSource*"
+            - "/wildlife-spotter"
+            - "/message/*"
         uriExclusionFilterPattern: '/assets/.*,/static/.*,/fonts/.*,/images/.*,/css/.*,/js/.*,/less/.*,/image/.*'
 
 bvp:
@@ -274,10 +313,16 @@ hibernate:
         region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     #SQL="trace,stdout"
     #type="trace,stdout"
+    jdbc:
+        lob:
+            non_contextual_creation: true
+        temp:
+            use_jdbc_metadata_defaults: false
 
 dataSource:
     dbCreate: validate
     pooled: true
+    poolName: 'grails-hikari'
     jmxExport: true
     driverClassName: org.postgresql.Driver
 #    username: root

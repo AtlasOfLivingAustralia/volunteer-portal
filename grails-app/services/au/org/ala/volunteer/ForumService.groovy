@@ -1,20 +1,21 @@
 package au.org.ala.volunteer
 
 import grails.orm.PagedResultList
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
+import groovy.util.logging.Slf4j
 
 @Transactional
+@Slf4j
 class ForumService {
 
     def grailsApplication
     def userService
     def settingsService
     def forumNotifierService
+    def dataSource
 
     def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
-
-
         def max = params.max ?: 10
         def offset = params.offset ?: 0
         def sort = params.sort ?: "lastReplyDate"
@@ -24,15 +25,12 @@ class ForumService {
             def hql = """
                 SELECT topic
                 FROM ProjectForumTopic topic
-                WHERE project_id = ${project.id}
+                WHERE project_id = :projectId
                 ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
             """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
-
+            def topics = ForumTopic.executeQuery(hql, [projectId: project.id], [max: max, offset: offset])
 
             return [topics: topics, totalCount: ForumTopic.count() ]
-
-
         }
 
         // All other sort types (other than replies)
@@ -59,50 +57,42 @@ class ForumService {
     }
 
     def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-
         def max = params?.max ?: 10
         def offset = params?.offset ?: 0
         def sort = params?.sort ?: "lastReplyDate"
         def leOrder = params?.order ?: "desc"
 
-        if (sort == 'replies') {
-
-            def hql = """
-                SELECT topic
-                FROM ForumTopic topic
-                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
-            """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
-
-
-            return [topics: topics, totalCount: ForumTopic.count() ]
-        } else {
-            def c = SiteForumTopic.createCriteria()
-            def results = c.list(max:max, offset: offset) {
-                and {
-                    if (includeDeleted) {
-                        eq("deleted", true)
-                    } else {
-                        or {
-                            isNull("deleted")
-                            eq("deleted", false)
-                        }
-                    }
-                }
-                and {
-                    order("sticky", "desc")
-                    order("priority", "desc")
-                    order(sort, leOrder)
-                }
-                if (params?.max) {
-                    maxResults(params.max as Integer)
-                }
-                if (params?.offset) {
-                    firstResult(params.offset as Integer)
-                }
-            }
-            return [topics: results, totalCount: results.totalCount ]
+        def deleteClause = ""
+        if (!includeDeleted) {
+            deleteClause = "WHERE (deleted IS NULL OR deleted = false) "
         }
+
+        def topicQuery = """
+            SELECT topic
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        topicQuery = topicQuery.replace(":deleteClause", deleteClause)
+
+        def countQuery = """
+            SELECT COUNT(DISTINCT topic.id) as topicCount
+            FROM SiteForumTopic topic
+            :deleteClause
+        """
+        countQuery = countQuery.replace(":deleteClause", deleteClause)
+
+        def sortClause = "ORDER BY sticky DESC, priority DESC, "
+        if (sort == 'replies') {
+            sortClause = sortClause + "size(topic.messages) " + leOrder
+        } else {
+            sortClause = sortClause + sort + " " + leOrder
+        }
+
+        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset])
+        def totalCount = ForumTopic.executeQuery(countQuery)?.first()
+        log.debug("TotalCount: ${totalCount}")
+
+        return [topics: topics, totalCount: totalCount]
     }
 
     PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
@@ -285,18 +275,19 @@ class ForumService {
             def hql = """
                 SELECT topic
                 FROM ForumTopic topic
-                ORDER BY featured asc, size(topic.messages) ${leOrder}
+                ORDER BY featured asc, size(topic.messages) 
             """
-            def topics = ForumTopic.executeQuery(hql, [max: max, offset: offset])
+            def topics = ForumTopic.executeQuery(hql + leOrder, [max: max, offset: offset])
             return [topics: topics, totalCount: topics.size()]
         } else {
-            def c = ForumTopic.createCriteria()
-            def results = c.list(max: max, offset: offset) {
-                isNotNull('lastReplyDate')
-                order("featured", "asc")
-                order(sort, leOrder)
-            }
-            return [topics: results, totalCount: results.totalCount]
+            def hql = """
+                SELECT topic
+                FROM ForumTopic topic
+                WHERE lastReplyDate IS NOT NULL
+                ORDER BY featured asc,  
+            """
+            def topics = ForumTopic.executeQuery(hql + sort + ' ' + leOrder, [max: max, offset: offset])
+            return [topics: topics, totalCount: topics.size()]
         }
     }
 
@@ -410,7 +401,33 @@ class ForumService {
             it.delete(flush: true)
         }
 
+        // Does the message have any replies that need to be reassigned
+        // Get the list of replies and reassign their reply to ID to the original post.
+        def messageList = getMessageReplies(message)
+        def op = getFirstMessageForTopic(message.topic)
+        messageList.each {msg ->
+            msg.replyTo = op
+            msg.save(flush: true)
+        }
+
+        // Remove message from topic then delete
+        ForumTopic forumTopic = message.topic
+        forumTopic.removeFromMessages(message)
+        forumTopic.discard()
         message.delete(flush: true)
+    }
+
+    /**
+     * Returns a list of all forum messages that are replies to a given message.
+     * @param message the message to query on
+     * @return a list of messages that are replies to a given message.
+     */
+    def getMessageReplies(ForumMessage message) {
+        def replies = []
+        if (message) {
+            replies = ForumMessage.findAllByReplyTo(message)
+        }
+        replies
     }
 
     def countTaskTopics(Project projectInstance) {
@@ -444,4 +461,77 @@ class ForumService {
 
     }
 
+    def createForumTopic(Task task, Map parameters) {
+        return createForumTopicOfAnyType(task, null, parameters)
+    }
+
+    def createForumTopic(Project project, Map parameters) {
+        return createForumTopicOfAnyType(null, project, parameters)
+    }
+
+    def createForumTopic(Map parameters) {
+        return createForumTopicOfAnyType(null, null, parameters)
+    }
+
+    private def createForumTopicOfAnyType(Task task, Project project, Map parameters) {
+        ForumTopic topic = null
+        if (task && !project) {
+            // Task forum topic
+            topic = new TaskForumTopic(task: task, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else if (!task && project) {
+            // Project forum topic
+            topic = new ProjectForumTopic(project: project, title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        } else {
+            // Site forum topic
+            topic = new SiteForumTopic(title: parameters.title, creator: userService.currentUser,
+                    dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
+        }
+
+        topic.lastReplyDate = topic.dateCreated
+        topic.save(flush: true, failOnError: true)
+
+        def firstMessage = new ForumMessage(topic: topic, text: parameters.text, date: topic.dateCreated, user: topic.creator)
+        firstMessage.save(flush: true, failOnError: true)
+
+        scheduleNewTopicNotification(topic, firstMessage)
+
+        topic
+    }
+
+    /**
+     * Adds a forum message to the topic.
+     * @param topic the topic to add the message to
+     * @param parameters the parameters of the message.
+     * @return the newly created forum message
+     */
+    def addForumMessage(ForumTopic topic, Map parameters) {
+        if (!topic) return
+        ForumMessage message = new ForumMessage(topic: topic, user: parameters.user as User,
+                replyTo: parameters.replyTo as ForumMessage, date: new Date(), text: parameters.text)
+        message.save(flush:true, failOnError: true)
+
+        parameters.watchTopic == 'on' ? watchTopic(parameters.user as User, topic) : unwatchTopic(parameters.user as User, topic)
+        scheduleTopicNotification(topic, message)
+
+        message
+    }
+
+    /**
+     * Increments the view count of a forum topic
+     * @param topic the topic to update
+     */
+    void incrementTopicView(ForumTopic topic) {
+        if (!topic) return
+        def hql = """
+                UPDATE ForumTopic
+                SET views = views + 1
+                WHERE id = :id
+            """
+        ForumTopic.executeUpdate(hql, [id: topic.id])
+    }
 }

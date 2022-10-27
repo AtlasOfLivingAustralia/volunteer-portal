@@ -149,7 +149,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="thumbnail">
-                                <img src="${projectInstance.featuredImage}" alt="${projectInstance.name}" title="${projectInstance.name}">
+                                <cl:featuredImage project="${projectInstance}" alt="${projectInstance.name}" title="${projectInstance.name}" />
                                 <g:if test="${projectInstance.featuredImageCopyright}">
                                     <div class="caption">
                                         <g:message code="image.attribution.prefix" /> ${projectInstance.featuredImageCopyright}

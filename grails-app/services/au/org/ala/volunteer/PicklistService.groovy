@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
 import au.com.bytecode.opencsv.CSVReader
-import grails.transaction.Transactional
+import grails.plugins.csv.CSVReaderUtils
+import grails.gorm.transactions.Transactional
+//import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.hibernate.FlushMode
 
 @Transactional
@@ -50,7 +52,6 @@ class PicklistService {
         def pattern = ~/^(['"])(.*)(\1)$/
         int rowsProcessed = 0
         try {
-            sessionFactory.currentSession.setFlushMode(FlushMode.MANUAL)
             csvdata.eachLine { tokens ->
                 def value = tokens[0]
                 def m = pattern.matcher(value)
@@ -62,7 +63,7 @@ class PicklistService {
                 if (tokens.size() > 1) {
                     picklistItem.key = tokens[1] // optional second value as "key"
                 }
-                picklistItem.save()
+                picklistItem.save(flush: true)
                 rowsProcessed++
                 if (rowsProcessed % 2000 == 0) {
                     // Doing this significantly speeds up imports...
@@ -74,9 +75,6 @@ class PicklistService {
         } catch (e) {
             log.error(e)
             throw e
-        } finally {
-            sessionFactory.currentSession.flush()
-            sessionFactory.currentSession.setFlushMode(FlushMode.AUTO)
         }
     }
 

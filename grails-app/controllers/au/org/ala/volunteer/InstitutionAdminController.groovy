@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import retrofit2.Call
@@ -89,6 +90,7 @@ class InstitutionAdminController {
         respond institution
     }
 
+    @Transactional
     def save(Institution institution) {
         if (params.entry != 'APPLY' && !userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
@@ -108,7 +110,18 @@ class InstitutionAdminController {
         }
 
         institution.isApproved = (params.isApproved == 'true')
-        institution.createdBy = userService.getCurrentUser()
+
+        // If submitted by a user not logged in, try to find a user by email:
+        if (!userService.getCurrentUser()) {
+            if (params.contactEmail) {
+                def contact = User.findByEmail(params.contactEmail as String)
+                if (contact) {
+                    institution.createdBy = contact
+                }
+            }
+        } else {
+            institution.createdBy = userService.getCurrentUser()
+        }
 
         institution.save(flush: true)
 
@@ -180,6 +193,7 @@ class InstitutionAdminController {
         respond institutionInstance
     }
 
+    @Transactional
     def approve(Institution institution) {
         if (institution == null) {
             notFound()
@@ -196,17 +210,22 @@ class InstitutionAdminController {
         institution.isApproved = true
         institution.save(flush: true, failOnError: true)
 
-        // Make creator Institution Admin
-        def creator = institution.createdBy
+        // Make creator Institution Admin. If no creator, make the approver Institution admin.
+        def newAdmin = null
         def currentUser = userService.getCurrentUser()
+        if (institution.createdBy) {
+            newAdmin = institution.createdBy
+        } else {
+            newAdmin = currentUser
+        }
         def role = Role.findByName(BVPRole.INSTITUTION_ADMIN)
-        def userRole = new UserRole(user: creator, role: role, institution: institution, createdBy: currentUser)
+        def userRole = new UserRole(user: newAdmin, role: role, institution: institution, createdBy: currentUser)
         userRole.save(flush: true, failOnError: true)
 
         // Email notification
-        if (creator.email) {
-            log.debug("Institution approved, Recipient: ${creator.email}")
-            sendApplicationApprovalNotification(institution, creator.email)
+        if (newAdmin.email) {
+            log.debug("Institution approved, Recipient: ${newAdmin.email}")
+            sendApplicationApprovalNotification(institution, newAdmin.email)
         }
 
         flash.message = message(code: 'institution.approved.message',
@@ -214,6 +233,7 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
+    @Transactional
     def update(Institution institution) {
         if (institution == null) {
             notFound()
@@ -242,39 +262,43 @@ class InstitutionAdminController {
         redirect(action: 'edit', id: institution.id)
     }
 
-    def delete(Institution institutionInstance) {
+    @Transactional
+    def delete(Institution institution) {
 
-        if (institutionInstance == null) {
+        if (institution == null) {
             notFound()
             return
         }
 
-        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institutionInstance)) {
+        if (!userService.isSiteAdmin() && !userService.isInstitutionAdmin(institution)) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")
             flash.message = "You do not have permission to view this page"
             render(view: '/notPermitted')
             return
         }
 
-        def projects = Project.findAllByInstitution(institutionInstance)
+        def projects = Project.findAllByInstitution(institution)
         if (projects) {
             flash.message = "This institution has projects associated with it, and cannot be deleted at this time."
             redirect action: "index", method: "GET"
             return
         }
 
-        institutionInstance.delete flush: true
+        // If no projects, remove any roles attached to this institution, then delete.
+        userService.removeAllRoles(institution)
+        institution.delete(flush: true)
 
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message',
-                         args: [message(code: 'institution.label', default: 'Institution'), institutionInstance.name]) as String
+                         args: [message(code: 'institution.label', default: 'Institution'), institution.name]) as String
                 redirect action: "index", method: "GET"
             }
             '*' { render status: NO_CONTENT }
         }
     }
 
+    @Transactional
     def quickCreate(String cid) {
         if (!userService.isSiteAdmin()) {
             log.error("Admin access requested by ${userService.getCurrentUser()}, failed security check, redirecting.")

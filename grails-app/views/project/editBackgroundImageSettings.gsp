@@ -18,18 +18,18 @@
     <strong>The darker the image the better!</strong>
 </div>
 
-<g:if test="${projectInstance?.backgroundImage}">
+<cl:hasProjectBackgroundImage project="${projectInstance}">
 <div class="text-center">
     <div class="thumbnail display-inline-block">
-        <img src="${projectInstance?.backgroundImage}" class="img-responsive" style="width: 600px;"/>
+        <cl:backgroundImage project="${projectInstance}" class="img-responsive" style="width: 600px;" />
     </div>
 </div>
-</g:if>
-<g:else>
+</cl:hasProjectBackgroundImage>
+<cl:hasNoProjectBackgroundImage project="${projectInstance}">
     <div class="alert alert-info">
         No background image uploaded yet.
     </div>
-</g:else>
+</cl:hasNoProjectBackgroundImage>
 
 
 <g:form action="uploadBackgroundImage" controller="project" method="post" enctype="multipart/form-data"

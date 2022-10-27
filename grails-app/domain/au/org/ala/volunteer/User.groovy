@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
-class User {
+import grails.gorm.async.AsyncEntity
+
+class User implements AsyncEntity<User> {
 
     String userId
     String email

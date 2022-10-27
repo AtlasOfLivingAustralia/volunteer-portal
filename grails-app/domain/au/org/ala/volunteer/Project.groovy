@@ -63,7 +63,8 @@ class Project implements Serializable {
 
     static belongsTo = [template: Template, projectType: ProjectType]
     static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription]
-    static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
+    //static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
+    static transients = ['requiredNumberOfTranscriptions']
 
     static mapping = {
         cache true
@@ -130,76 +131,10 @@ class Project implements Serializable {
         institution ? institution.name : featuredOwner
     }
 
-    String getFeaturedImage() {
-        // Check to see if there is a feature image for this expedition by looking in its project directory.
-        // If one exists, use it, otherwise use a default image...
-        def localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-image.jpg"
-        def file = new File(localPath)
-        if (!file.exists()) {
-            return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
-
-        } else {
-            def urlPrefix = grailsApplication.config.images.urlPrefix
-            def infix = urlPrefix.endsWith('/') ? '' : '/'
-            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${id}/expedition-image.jpg"
-        }
-    }
-
-    /**
-     * Retrieves background image url
-     * @return background image url or null if non existent
-     */
-    String getBackgroundImage() {
-
-        String localPath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image"
-        //String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
-        //String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
-        String localPathJpg = "${localPath}.jpg"
-        String localPathPng = "${localPath}.png"
-        File fileJpg = new File(localPathJpg)
-        File filePng = new File(localPathPng)
-        if (fileJpg.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.jpg"
-        } else if (filePng.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${id}/expedition-background-image.png"
-        } else {
-            return null
-        }
-    }
-
-    /**
-     * Saves the uploaded background image or deletes the existing one if argument is null.  Consumes the inputstream
-     * but doesn't close it
-     * @param multipartFile
-     */
-    void setBackgroundImage(InputStream inputStream, String contentType) {
-        if (inputStream && contentType) {
-            // Save image
-            String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
-            def filePath = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.${fileExtension}"
-            def file = new File(filePath)
-            file.getParentFile().mkdirs()
-            file.withOutputStream {
-              it << inputStream
-            }
-        } else {
-            // Remove image if exists
-            String localPathJpg = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.jpg"
-            String localPathPng = "${grailsApplication.config.images.home}/project/${id}/expedition-background-image.png"
-            File fileJpg = new File(localPathJpg)
-            File filePng = new File(localPathPng)
-            if (fileJpg.exists()) {
-                fileJpg.delete()
-            } else if (filePng.exists()) {
-                filePng.delete()
-            }
-        }
-    }
-
-    @SuppressWarnings('unused')
-    void setFeaturedImage(String image) {
-        // do nothing
-    }
+//    @SuppressWarnings('unused')
+//    void setFeaturedImage(String image) {
+//        // do nothing
+//    }
 
     // Executed after an object has been updated
     def afterUpdate() {

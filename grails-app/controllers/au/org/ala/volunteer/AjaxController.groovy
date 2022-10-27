@@ -10,6 +10,7 @@ import com.google.common.collect.Sets
 import com.google.gson.Gson
 import grails.converters.JSON
 import grails.converters.XML
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -102,6 +103,7 @@ class AjaxController {
         return stats
     }
 
+    @Transactional
     def userReport() {
         setNoCache()
 
@@ -159,7 +161,7 @@ class AjaxController {
 
         def asyncLastActivities = ViewedTask.async.withStatelessSession {
             def sw2 = Stopwatch.createStarted()
-            def lastActivities = ViewedTask.executeQuery("select vt.userId, to_timestamp(max(vt.lastView)/1000) from ViewedTask vt group by vt.userId").collectEntries { [(it[0]): it[1]] }
+            def lastActivities = taskService.getUserActivity()
             sw2.stop()
             log.debug("UserReport viewedTasks took ${sw2.toString()}")
             lastActivities
@@ -167,7 +169,7 @@ class AjaxController {
 
         def asyncProjectCounts = Transcription.async.withStatelessSession {
             def sw4 = Stopwatch.createStarted()
-            def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
+            def projectCounts = taskService.getProjectTranscriptionCounts()
             sw4.stop()
             log.debug("UserReport projectCounts took ${sw4.toString()}")
             projectCounts
@@ -296,6 +298,7 @@ class AjaxController {
             results.add(project)
         }
 
+        sql.close()
         render results as JSON
     }
 

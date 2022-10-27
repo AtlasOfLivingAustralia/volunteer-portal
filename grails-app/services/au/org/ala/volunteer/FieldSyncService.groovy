@@ -1,7 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.lang3.StringUtils
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +12,7 @@ import static au.org.ala.volunteer.jooq.tables.VpUser.VP_USER
 class FieldSyncService {
 
     ValidationService validationService
+    TaskService taskService
 
     @Autowired
     Closure<DSLContext> jooqContextFactory
@@ -308,7 +309,7 @@ class FieldSyncService {
 //                user?.save(flush: true)
                 incrementValidationCount(user.id)
             }
-            task.validate(transcriberUserId, isValid, now)
+            taskService.validate(task, transcriberUserId, isValid, now)
         }
 
         if (isValid != null) {

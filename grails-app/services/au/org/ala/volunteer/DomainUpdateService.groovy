@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
+import grails.gorm.transactions.Transactional
 import groovy.transform.ToString
+import groovy.util.logging.Slf4j
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -9,6 +11,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 //@Transactional(readOnly = true)
+@Slf4j
 class DomainUpdateService {
 
     def grailsApplication
@@ -92,6 +95,7 @@ class DomainUpdateService {
         return _backgroundQueue.size() + currentlyProcessing.get()
     }
 
+    @Transactional
     def processTaskQueue(int maxTasks = 10000) {
         int taskCount = 0
         QueueTask jobDescriptor = null

@@ -23,7 +23,7 @@ class ValidateController {
 
         if (task) {
 
-            if (auditService.isTaskLockedForValidation(task, currentUser)) {
+            if (auditService.isTaskLockedForValidation(task)) {
                 def lastView = auditService.getLastViewForTask(task)
                 // task is already being viewed by another user (with timeout period)
                 log.debug("Task ${task.id} is currently locked by ${lastView.userId}. Returning to admin list.")
@@ -249,7 +249,7 @@ class ValidateController {
         // Retrieve the details of the template
         if (taskInstance && taskInstance.id == previousId && currentUser != prevUserId) {
             log.debug "1."
-            render(view: 'noTasks')
+            render(view: 'noTasks', model: [projectId: project.id])
         } else if (taskInstance && project) {
             log.debug "2."
             redirect(action: 'task', id: taskInstance.id, params: [mode: params.mode ?: ''])
@@ -258,7 +258,7 @@ class ValidateController {
             redirect(view: '/index')
         } else {
             log.debug "4."
-            render(view: 'noTasks')
+            render(view: 'noTasks', model: [projectId: project.id])
         }
     }
 }

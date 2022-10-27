@@ -9,8 +9,6 @@ import java.util.regex.Pattern
 
 class SanitizerService {
 
-    static transactional = false
-
     //static final PolicyFactory policyFactory = EbayPolicyExample.POLICY_DEFINITION
     static final PolicyFactory policyFactory = HtmlSanitizerPolicy.POLICY_DEFINITION
 

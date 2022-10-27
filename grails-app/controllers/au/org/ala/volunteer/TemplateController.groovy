@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 import com.google.common.base.Strings
 import com.google.common.hash.HashCode
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.commons.io.FilenameUtils
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
@@ -70,6 +70,7 @@ class TemplateController {
         return [templateInstance: templateInstance, availableViews: templateService.getAvailableTemplateViews()]
     }
 
+    @Transactional
     def save() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -124,6 +125,7 @@ class TemplateController {
         }
     }
 
+    @Transactional
     def update() {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')
@@ -186,17 +188,10 @@ class TemplateController {
         def template = Template.get(params.long('id'))
         if (template) {
             try {
-                // First got to delete all the template_fields...
-                def fields = TemplateField.findAllByTemplate(template)
-                if (fields) {
-                    fields.each { it.delete(flush: true) }
-                }
-                // Now can delete template proper
-                template.delete(flush: true)
-
+                templateService.deleteTemplate(template)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), "'${template.name}'"])}"
                 redirect(action: "list", params: params)
-            } catch (DataIntegrityViolationException e) {
+            } catch (Exception e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
                 log.error(message, e)
@@ -268,6 +263,12 @@ class TemplateController {
                 }
                 field.displayOrder--
                 field.save()
+            } else if (field.displayOrder == 1) {
+                flash.message = message(code: 'templateField.moveup.max', args: [field.label ?: '', field.fieldType]) as String
+            } else if (field.displayOrder == null) {
+                def max = getLastDisplayOrder(field.template)
+                field.displayOrder = max + 1
+                flash.message = message(code: 'templateField.add.order', args: [field.label ?: '', field.fieldType]) as String
             }
         }
 
@@ -289,7 +290,7 @@ class TemplateController {
             }
 
             def max = getLastDisplayOrder(field.template)
-            if (field.displayOrder < max ) {
+            if (field.displayOrder != null && field.displayOrder < max ) {
                 def successor = TemplateField.findByTemplateAndDisplayOrder(field.template, field.displayOrder + 1)
                 if (successor) {
                     // swap their positions
@@ -298,6 +299,11 @@ class TemplateController {
                 }
                 field.displayOrder++
                 field.save()
+            } else if (field.displayOrder != null && field.displayOrder == max) {
+                flash.message = message(code: 'templateField.movedown.max', args: [field.label ?: '', field.fieldType]) as String
+            } else if (field.displayOrder == null) {
+                field.displayOrder = max + 1
+                flash.message = message(code: 'templateField.add.order', args: [field.label ?: '', field.fieldType]) as String
             }
         }
 

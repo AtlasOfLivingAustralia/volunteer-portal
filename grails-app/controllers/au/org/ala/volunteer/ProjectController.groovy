@@ -4,6 +4,7 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.io.FileUtils
 import org.jooq.DSLContext
@@ -288,12 +289,23 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
+        def queryStringParams = [
+                sort: params.sort,
+                order: params.order,
+                q: params.q,
+                statusFilter: params.statusFilter,
+                activeFilter: params.activeFilter,
+                offset: params.offset,
+                max: params.max
+        ]
+        log.debug("Query String: ${queryStringParams}")
 
         [
             projects: projectSummaryList.projectRenderList,
             filteredProjectsCount: projectSummaryList.matchingProjectCount,
             numberOfUncompletedProjects: numberOfUncompletedProjects,
-            totalUsers: User.countByTranscribedCountGreaterThan(0)
+            totalUsers: User.countByTranscribedCountGreaterThan(0),
+            queryStringParams: queryStringParams
         ]
     }
 
@@ -339,6 +351,20 @@ class ProjectController {
                         numbers[projectSummaryList.numberOfIncompleteProjects] : "" + projectSummaryList.numberOfIncompleteProjects
 
         session.expeditionSort = params.sort
+        def queryStringParams = [
+                sort: params.sort,
+                order: params.order,
+                statusFilter: params.statusFilter,
+                activeFilter: params.activeFilter,
+                offset: params.offset,
+                max: params.max,
+                shortUrl: shortUrl // This is needed to make customLandingPage links
+            ]
+        if (params.resetSearch) {
+            queryStringParams.remove('q')
+            params.remove('resetSearch')
+        }
+        log.debug("Query String: ${queryStringParams}")
 
         def model = [
                 landingPageInstance: landingPage,
@@ -347,7 +373,8 @@ class ProjectController {
                 projects: projectSummaryList.projectRenderList,
                 filteredProjectsCount: projectSummaryList.matchingProjectCount,
                 numberOfUncompletedProjects: numberOfUncompletedProjects,
-                totalUsers: User.countByTranscribedCountGreaterThan(0)
+                totalUsers: User.countByTranscribedCountGreaterThan(0),
+                queryStringParams: queryStringParams
         ]
 
         render(view: 'customLandingPage', model: model)
@@ -447,6 +474,7 @@ class ProjectController {
         }
     }
 
+    @Transactional
     def toggleProjectInactivity(Project project) {
         if (!project) {
             render status: 404
@@ -470,7 +498,9 @@ class ProjectController {
             flash.message = "The expedition status was not able to be updated."
             render(view: '/notPermitted')
         } else {
-            if (!project.inactive) {
+            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+            if (!project.inactive && new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+//            if (isNotifyEnabled) {
                 generateActivationNotification(project)
             }
             flash.message = "The expedition status has been updated."
@@ -782,9 +812,12 @@ class ProjectController {
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
-                if (((oldInactiveFlag != newInactive) && (!newInactive))) {
-                    log.info("Project was activated Sending project activation notification")
-                    generateActivationNotification(project)
+                def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
+                if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+                    if (((oldInactiveFlag != newInactive) && (!newInactive))) {
+                        log.info("Project was activated Sending project activation notification")
+                        generateActivationNotification(project)
+                    }
                 }
                 if (project.template.isHidden) {
                     flash.message = "Warning: Expedition updated, however, the selected template has been disabled. It is advisable to select a new template."
@@ -922,7 +955,8 @@ class ProjectController {
 
                 try {
                     f.inputStream.withCloseable {
-                        project.setBackgroundImage(it, f.contentType)
+                        //project.setBackgroundImage(it, f.contentType)
+                        projectService.setBackgroundImage(project, it, f.contentType)
                     }
                 } catch (Exception ex) {
                     flash.message = "Failed to upload image: " + ex.message
@@ -950,7 +984,8 @@ class ProjectController {
         if (project) {
             project.backgroundImageAttribution = null
             project.backgroundImageOverlayColour = null
-            project.setBackgroundImage(null,null)
+            //project.setBackgroundImage(null,null)
+            projectService.setBackgroundImage(project, null, null)
         }
 
         flash.message = "Background image settings have been deleted."

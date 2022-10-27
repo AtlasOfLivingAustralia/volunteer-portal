@@ -185,7 +185,7 @@
         function initForm() {
             if ($('#randomProjectToggle').is(":checked")) {
                 $('#projectOfTheDay').prop('disabled', true);
-                $('#projectOfTheDay').removeAttribute('required');
+                $('#projectOfTheDay').removeAttr('required');
             } else {
                 $('#projectOfTheDay').attr('required', 'required');
             }
@@ -196,7 +196,7 @@
             if (this.checked) {
                 $('#projectOfTheDay').prop('disabled', true);
                 $('#projectOfTheDay').val($("#projectOfTheDay option:first").val());
-                $('#projectOfTheDay').removeAttribute('required');
+                $('#projectOfTheDay').removeAttr('required');
             } else {
                 $('#projectOfTheDay').prop('disabled', false);
                 $('#projectOfTheDay').attr('required', 'required');

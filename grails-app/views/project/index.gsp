@@ -4,9 +4,14 @@
 <%@ page import="au.org.ala.volunteer.FieldSyncService" %>
 <g:set var="tasksDone" value="${tasksTranscribed ?: 0}"/>
 <g:set var="tasksTotal" value="${taskCount ?: 0}"/>
-<g:set var="bgImage" value="${projectInstance.backgroundImage}" />
 <sitemesh:parameter name="includeBack" value="${true}"/>
-<sitemesh:parameter name="includeBackGrey" value="${!(bgImage as Boolean)}"/>
+<cl:hasProjectBackgroundImage project="${projectInstance}">
+    <sitemesh:parameter name="includeBackGrey" value="${false}"/>
+</cl:hasProjectBackgroundImage>
+<cl:hasNoProjectBackgroundImage project="${projectInstance}">
+    <sitemesh:parameter name="includeBackGrey" value="${true}"/>
+</cl:hasNoProjectBackgroundImage>
+
 <sitemesh:parameter name="backHref" value="${projectInstance.institutionId ? createLink(controller: 'institution', action: 'index', id: projectInstance.institutionId) : createLink(controller: 'project', action: 'list')}" />
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -18,24 +23,31 @@
 
     <style type="text/css">
 
-    <g:if test="${bgImage}">
+    <cl:hasProjectBackgroundImage project="${projectInstance}">
         .a-feature.expedition {
         <g:if test="${projectInstance.backgroundImageOverlayColour}">
-            background-image: linear-gradient(${projectInstance.backgroundImageOverlayColour}, ${projectInstance.backgroundImageOverlayColour}), url(${bgImage});
+            background-image: linear-gradient(${projectInstance.backgroundImageOverlayColour}, ${projectInstance.backgroundImageOverlayColour}), url(<cl:backgroundImageUrl project="${projectInstance}"/>);
         </g:if>
         <g:else>
-            background-image: url(${bgImage});
+            background-image: url(<cl:backgroundImageUrl project="${projectInstance}"/>);
         </g:else>
         }
-
-    </g:if>
+    </cl:hasProjectBackgroundImage>
     </style>
 </head>
 
 <body class="digivol expedition-landing">
 
-<g:set var="oldClass" value="${bgImage ? '' : 'grey'}" />
-<div class="a-feature expedition ${bgImage ? '' : 'old'}">
+<cl:hasProjectBackgroundImage project="${projectInstance}">
+    <g:set var="oldClass" value="" />
+    <g:set var="divClass" value="" />
+</cl:hasProjectBackgroundImage>
+<cl:hasNoProjectBackgroundImage project="${projectInstance}">
+    <g:set var="oldClass" value="grey" />
+    <g:set var="divClass" value="old" />
+</cl:hasNoProjectBackgroundImage>
+
+<div class="a-feature expedition ${divClass}">
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
@@ -73,9 +85,9 @@
                 <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
             </div>
             <div class="col-sm-4">
-                <g:if test="${!bgImage}">
-                    <img src="${projectInstance.featuredImage}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive">
-                </g:if>
+                <cl:hasNoProjectBackgroundImage project="${projectInstance}">
+                    <cl:featuredImage project="${projectInstance}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive" />
+                </cl:hasNoProjectBackgroundImage>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
                         <cl:ifInstitutionAdmin project="${projectInstance}">
@@ -94,13 +106,13 @@
             </div>
         </div>
 
-        <g:if test="${bgImage}">
+        <cl:hasProjectBackgroundImage project="${projectInstance}">
             <div class="row">
                 <div class="col-sm-12 image-origin">
                     <p><g:if test="${projectInstance.backgroundImageAttribution}"><g:message code="image.attribution.prefix" /> ${projectInstance.backgroundImageAttribution}</g:if></p>
                 </div>
             </div>
-        </g:if>
+        </cl:hasProjectBackgroundImage>
     </div>
 
     <div class="progress-summary">

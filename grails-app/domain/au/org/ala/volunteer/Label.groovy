@@ -31,7 +31,7 @@ class Label implements Serializable {
     int hashCode() {
         int result
         result = (category != null ? category.hashCode() : 0)
-        result = 31 * result + value.hashCode()
+        result = 31 * result + (value != null ? value.hashCode() : 0)
         return result
     }
 

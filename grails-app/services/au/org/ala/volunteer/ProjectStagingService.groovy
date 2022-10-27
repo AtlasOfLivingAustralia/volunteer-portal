@@ -1,8 +1,10 @@
 package au.org.ala.volunteer
 
+import grails.gorm.transactions.Transactional
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
 
+@Transactional
 class ProjectStagingService {
 
     def grailsApplication
@@ -64,7 +66,8 @@ class ProjectStagingService {
         def backgroundImageFile = new File(getProjectBackgroundImagePath(projectDescriptor))
         if (backgroundImageFile?.exists()) {
             backgroundImageFile.withInputStream {
-                project.setBackgroundImage(it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
+                //project.setBackgroundImage(it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
+                projectService.setBackgroundImage(project, it, backgroundImageFile.name.endsWith('png') ? 'image/png' : 'image/jpg')
             }
         }
 
@@ -164,5 +167,24 @@ class ProjectStagingService {
 
     private String getStagingRootPath(String stagingId) {
         return "${grailsApplication.config.images.home}/projectStaging/${stagingId}"
+    }
+
+    /**
+     * Searches for an existing ProjectStagingProfile for the given project. If none exists, one is created.
+     * @param project The project tasks are being added to
+     * @return the ProjectStagingProfile
+     */
+    def findProjectStagingProfile(Project project) {
+        def profile = ProjectStagingProfile.findByProject(project)
+        if (!profile) {
+            profile = new ProjectStagingProfile(project: project)
+            profile.save(flush: true, failOnError: true)
+        }
+
+        if (!profile.fieldDefinitions.find { it.fieldName == 'externalIdentifier'}) {
+            profile.addToFieldDefinitions(new StagingFieldDefinition(fieldDefinitionType: FieldDefinitionType.NameRegex,
+                    format: "^(.*)\$", fieldName: "externalIdentifier"))
+        }
+        profile
     }
 }

@@ -2,7 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
@@ -104,6 +104,7 @@ class UserController {
      * Deletes a user's opt-out record.
      * @param userOptOut the opt-out record to delete.
      */
+    @Transactional
     def deleteOptOut(UserOptOut userOptOut) {
         if (!userOptOut || !userService.isAdmin()) {
             render(view: '/notPermitted')
@@ -118,6 +119,7 @@ class UserController {
     /**
      * Adds a new user opt-out request.
      */
+    @Transactional
     def addUserOptOut() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')

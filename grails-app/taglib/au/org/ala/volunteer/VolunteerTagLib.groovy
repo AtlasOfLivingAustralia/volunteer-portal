@@ -30,6 +30,7 @@ class VolunteerTagLib {
     def taskService
     def adminService
     def templateService
+    def projectService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -195,6 +196,82 @@ class VolunteerTagLib {
             out << "<button class=\"${attrs.styleClass}\" style=\\\"pointer-events: auto;\\\" id=\"${attrs.id}\" " +
                     "title=\"${message(code:'template.edit.button.nopermission', default:'Not allowed')}\" disabled>${attrs.label}</button>"
         }
+    }
+
+    /**
+     * @attr project The Project.
+     */
+    def hasProjectBackgroundImage = {attrs, body ->
+        String bgImagePath = projectService.getBackgroundImage(attrs.project as Project)
+        if (bgImagePath) {
+            out << body()
+        }
+    }
+
+    def hasNoProjectBackgroundImage = { attrs, body ->
+        String bgImagePath = projectService.getBackgroundImage(attrs.project as Project)
+        if (!bgImagePath) {
+            out << body()
+        }
+    }
+
+    def backgroundImageUrl = { attrs, body ->
+        out << projectService.getBackgroundImage(attrs.project as Project)
+    }
+
+    /**
+     * Creates an image element from the background image of a project
+     * @attr project The project
+     * @attr class Any CSS class to add to the element
+     * @attr style Any custom CSS style to add to the element
+     */
+    def backgroundImage = { attrs, body ->
+        def backgroundImageUrl = projectService.getBackgroundImage(attrs.project as Project)
+        def cssClass = attrs.remove("class")
+        def style = attrs.remove("style")
+
+        out << "<img src="
+        out << backgroundImageUrl
+        if (cssClass) out << " class=\"${cssClass.encodeAsHTML()}\""
+        if (style) out << " style=\"${style.encodeAsHTML()}\""
+        out << " />"
+    }
+
+    /**
+     * Creates an image element from the featured image of a project.
+     * @attr project The Project
+     * @attr class Any CSS class to add to the element
+     * @attr style Any custom style added to the element
+     * @attr dataErrorUrl A URL to an image if no featured image can be found.
+     * @attr width The image width
+     * @attr height The image height
+     * @attr alt The alt text for the image
+     * @attr title The title for the image
+     * @attr preLoad if true, allows for pre-load and resizing (jquery plugin)
+     */
+    def featuredImage = { attrs, body ->
+        def featuredImageUrl = projectService.getFeaturedImage(attrs.project as Project)
+        def cssClass = attrs.remove("class")
+        def style = attrs.remove("style")
+        def dataErrorUrl = attrs.remove("data-error-url")
+        def width = attrs.remove("width")
+        def height = attrs.remove("height")
+        def alt = attrs.remove("alt")
+        def title = attrs.remove("title")
+        def preLoad = "true".equalsIgnoreCase(attrs.remove("preLoad") as String)
+
+        out << "<img "
+        if (preLoad) out << "src=\"\" realsrc="
+        else out << "src="
+        out << featuredImageUrl
+        if (cssClass) out << " class=\"${cssClass.encodeAsHTML()}\""
+        if (style) out << " style=\"${style.encodeAsHTML()}\""
+        if (dataErrorUrl) out << " data-error-url=\"${dataErrorUrl.encodeAsHTML()}\""
+        if (width) out << " width=\"${width.encodeAsHTML()}\""
+        if (height) out << " height=\"${height.encodeAsHTML()}\""
+        if (alt) out << " alt=\"${alt.encodeAsHTML()}\""
+        if (title) out << " title=\"${title.encodeAsHTML()}\""
+        out << " />"
     }
 
     private boolean isInstitutionAdmin(Institution institution) {
@@ -436,6 +513,7 @@ class VolunteerTagLib {
 
     def transcribers = { attrs ->
         def taskInstance = attrs.task as Task
+        taskInstance.attach()
 
         int transcribedCount = 0
         taskInstance?.transcriptions?.each { transcription ->

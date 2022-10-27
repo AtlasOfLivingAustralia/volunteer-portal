@@ -136,7 +136,7 @@
                     </table>
                     <g:if test="${institutionInstanceCount > 20}">
                     <div class="pagination">
-                        <g:paginate total="${institutionInstanceCount ?: 0}"/>
+                        <g:paginate total="${institutionInstanceCount ?: 0}" params="${params}"/>
                     </div>
                     </g:if>
                 </div>

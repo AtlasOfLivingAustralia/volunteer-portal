@@ -80,10 +80,16 @@
                                                   name="value" required="" value="${labelInstance?.value}"/></div>
 
                                 <div class="min-input-small">
-                                    <button type="submit" class="btn btn-xs btn-success"><i
-                                            class="fa fa-thumbs-up"></i></button>
-                                    <button type="reset" class="btn btn-xs btn-default"><i class="fa fa-thumbs-down"></i></button>
-                                    <button type="button" class="btn btn-xs btn-danger"><i class="fa fa-times"></i>
+                                    <button type="submit" class="btn btn-xs btn-success" title="Save">
+                                        <i class="fa fa-thumbs-up"></i>
+                                    </button>
+                                    <button type="reset" class="btn btn-xs btn-default" title="Reset">
+                                        <i class="fa fa-thumbs-down"></i>
+                                    </button>
+                                    <button type="button" title="Delete"
+                                            data-href="${createLink(controller: "label", action: "delete", id: labelInstance?.id, params: params)}"
+                                            class="btn btn-xs btn-danger delete-label">
+                                        <i class="fa fa-times"></i>
                                     </button>
                                 </div>
                             </g:form>
@@ -116,5 +122,38 @@
         </div>
     </div>
 </div>
+
+<asset:script type="text/javascript">
+    jQuery(function($) {
+
+        $.extend({
+            postGo: function(url, params) {
+                var $form = $("<form>")
+                    .attr("method", "post")
+                    .attr("action", url);
+                $.each(params, function(name, value) {
+                    $("<input type='hidden'>")
+                        .attr("name", name)
+                        .attr("value", value)
+                        .appendTo($form);
+                });
+                $form.appendTo("body");
+                $form.submit();
+            }
+        });
+
+        $('.delete-label').click(function(e) {
+            var $this = $(this);
+            var href = $this.data('href');
+            bootbox.confirm("Are you sure you wish to delete this label? This action is permanent!", function(result) {
+                if (result) {
+                    $.postGo(href);
+                }
+            });
+        });
+
+    });
+</asset:script>
+
 </body>
 </html>

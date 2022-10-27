@@ -5,7 +5,9 @@ import au.org.ala.volunteer.sanitizer.ValueConverterListener
 import com.google.common.io.Resources
 import grails.converters.JSON
 import grails.core.GrailsApplication
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.web.json.JSONArray
@@ -14,6 +16,7 @@ import org.hibernate.FlushMode
 import org.springframework.core.io.Resource
 import org.springframework.web.context.support.ServletContextResource
 
+@Slf4j
 class BootStrap {
 
     def projectTypeService
@@ -83,6 +86,7 @@ class BootStrap {
         log.info("Completed Project Size initialisation for ${projectList.size()} projects.")
     }
 
+    @Transactional
     private void fixTaskLastViews() {
         log.info("Checking task last views...")
 
@@ -124,6 +128,7 @@ class BootStrap {
         }
     }
 
+    @Transactional
     private void prepareProjectTypes() {
         log.info("Checking project types...")
         def builtIns = [
@@ -168,6 +173,7 @@ class BootStrap {
 
     }
 
+    @Transactional
     private void checkOrCreateRule(String name, String expression, String message, String description, Boolean testEmptyValues = false) {
         def rule = ValidationRule.findByName(name)
         if (!rule) {
@@ -179,6 +185,7 @@ class BootStrap {
         }
     }
 
+    @Transactional
     def ensureRoleExists(String rolename) {
         def role = Role.findByNameIlike(rolename)
         if (!role) {
@@ -191,6 +198,7 @@ class BootStrap {
     def destroy = {
     }
 
+    @Transactional
     private void prepareFrontPage() {
         if (FrontPage.list()[0] == null) {
             def frontPage = new FrontPage()
@@ -199,8 +207,6 @@ class BootStrap {
                 frontPage.projectOfTheDay = projectList[0]
                 frontPage.save(flush: true, failOnError: true)
             }
-
-
         }
 
         FrontPage.metaClass.'static'.getFeaturedProject = {->
@@ -212,6 +218,7 @@ class BootStrap {
       Must have at least 1 default custom landing page which is the wildlife spotter page
       This can be created or updated from existing wildlife spotter
      */
+    @Transactional
     private void prepareCustomLandingPage() {
         LandingPage wildLifeSpotter = LandingPage.findByShortUrl ('wildlife-spotter')
         if (!wildLifeSpotter) {
@@ -275,6 +282,7 @@ class BootStrap {
 
     }
 
+    @Transactional
     private void preparePickLists() {
         // add some picklist values if not already loaded
         log.info "creating picklists..."
@@ -301,6 +309,7 @@ class BootStrap {
 
     }
 
+    @Transactional
     private void prepareDefaultLabels() {
         log.info("Preparing default labels")
         final prop = grailsApplication.config.bvp.labels.ensureDefault

@@ -7,6 +7,7 @@ import au.org.ala.volunteer.jooq.tables.records.ProjectRecord
 import au.org.ala.volunteer.jooq.tables.records.ShadowFileDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskRecord
+import grails.events.EventPublisher
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
@@ -43,11 +44,9 @@ import static org.jooq.impl.DSL.when
 
 // Transactions will be controlled explicitly
 @Slf4j
-class TaskLoadService {
+class TaskLoadService implements EventPublisher {
 
     // explicity control transactions with jooq
-    static transactional =  false
-
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext
@@ -410,14 +409,18 @@ class TaskLoadService {
     def doTaskLoad(Long projectId = null) {
         int dequeuedTasks
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
-            // Calculate project directory disk usage after completion
-            def project = Project.get(projectId)
-            if (project) {
-                def projectSize = projectService.projectSize(project).size as long
-                log.info("Project size: ${projectSize}")
-            }
-
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
+
+            def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
+            log.info("Updating project disk usage: ${projectSizeInBytes}")
+
+            DSLContext create = jooqContext()
+            def updateProjectSize = create
+                    .update(PROJECT)
+                    .set(PROJECT.SIZE_IN_BYTES, projectSizeInBytes)
+                    .where(PROJECT.ID.eq(projectId))
+                    .execute()
+            log.info("Updated ${updateProjectSize} projects.")
         }
     }
 
@@ -514,7 +517,6 @@ class TaskLoadService {
         }
 
         return dequeuedTasks
-
     }
 
     private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->
