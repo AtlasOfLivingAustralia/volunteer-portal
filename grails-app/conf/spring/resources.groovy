@@ -42,7 +42,8 @@ beans = {
             baselineOnMigrate = application.config.flyway.baselineOnMigrate
             def outOfOrderProp = application.config.getProperty('flyway.outOfOrder', Boolean, false)
             outOfOrder = outOfOrderProp
-            locations = application.config.flyway.locations ?: 'classpath:db/migration'
+            //locations = application.config.flyway.locations ?: 'classpath:db/migration'
+            locations = ['classpath:db/migration']
             if (application.config.flyway.baselineVersion) baselineVersionAsString = application.config.flyway.baselineVersion.toString()
         }
 

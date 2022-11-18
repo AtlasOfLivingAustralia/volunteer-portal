@@ -43,11 +43,14 @@ spring:
         banner-mode: "console"
     groovy:
         template:
-          check-template-location: false
+            check-template-location: false
     http:
         multipart:
-          max-file-size: 5000MB
-          max-request-size: 5000MB
+            max-file-size: 5000MB
+            max-request-size: 5000MB
+    jmx:
+        unique-names: true
+
 server:
     session:
         timeout: 7200 # seconds, 2 hours
@@ -55,14 +58,11 @@ server:
         port-header: 'X-Forwarded-Port'
         protocol-header: 'X-Forwarded-Proto'
         remote-ip-header: 'X-Forwarded-For'
-# Spring Actuator Endpoints are Disabled by Default
-endpoints:
-    enabled: false
-    jmx:
-        enabled: true
-        unique-names: true
+
 management:
     context-path: /status
+    endpoints:
+        enabled-by-default: false
 
 ---
 grails:
@@ -83,30 +83,30 @@ grails:
             csv: text/csv
             form: application/x-www-form-urlencoded
             html:
-              - text/html
-              - application/xhtml+xml
+                - text/html
+                - application/xhtml+xml
             js: text/javascript
             json:
-              - application/json
-              - text/json
+                - application/json
+                - text/json
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
             text: text/plain
             hal:
-              - application/hal+json
-              - application/hal+xml
+                - application/hal+json
+                - application/hal+xml
             xml:
-              - text/xml
-              - application/xml
+                - text/xml
+                - application/xml
     urlmapping:
         cache:
             maxsize: 1000
     controllers:
         defaultScope: singleton
         upload:
-          maxFileSize: 5368709120
-          maxRequestSize: 5368709120
+            maxFileSize: 5368709120
+            maxRequestSize: 5368709120
     converters:
         encoding: UTF-8
     views:
@@ -125,6 +125,13 @@ grails:
     databinding:
         convertEmptyStringsToNull: false
 
+spring:
+    devtools:
+        restart:
+            exclude:
+                - grails-app/views/**
+                - grails-app/i18n/**
+                - grails-app/conf/**
 ---
 ala:
     baseURL: "http://www.ala.org.au"
@@ -182,6 +189,8 @@ security:
             - "/task/summary/*"
             - "/tutorials/*"
             - "/institution/*"
+            - "/admin/institutions/*"
+            - "/admin/label/*"
             - "/buildInfo"
             - "/events/*"
             - "/es"
@@ -277,7 +286,7 @@ grails:
             fixtaglib: true
     mail:
         default:
-            from: noreply@volunteer.ala.org.au
+            from: 'DigiVol <noreply@volunteer.ala.org.au>'
 digest:
     enabled: false
     threshold: 5
@@ -313,11 +322,12 @@ hibernate:
         region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     #SQL="trace,stdout"
     #type="trace,stdout"
+    #These next two are needed for grails 3.3.x
     jdbc:
         lob:
             non_contextual_creation: true
-        temp:
-            use_jdbc_metadata_defaults: false
+    temp:
+        use_jdbc_metadata_defaults: false
 
 dataSource:
     dbCreate: validate
@@ -325,9 +335,9 @@ dataSource:
     poolName: 'grails-hikari'
     jmxExport: true
     driverClassName: org.postgresql.Driver
+    loggingSql: false
 #    username: root
 #    password: password
-    loggingSql: false
 
 environments:
     development:
