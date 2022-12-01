@@ -22,50 +22,6 @@ grails:
     spring:
         transactionManagement:
             proxies: false
-info:
-    app:
-        name: '@info.app.name@'
-        version: '@info.app.version@'
-        grailsVersion: '@info.app.grailsVersion@'
-    build:
-        ci : '@info.build.ci@'
-        date: '@info.build.date@'
-        jdk: '@info.build.jdk@'
-        number: '@info.build.number@'
-    git:
-        branch: '@info.git.branch@'
-        commit: '@info.git.commit@'
-        slug: '@info.git.slug@'
-        tag: '@info.git.tag@'
-        timestamp: '@info.git.timestamp@'
-spring:
-    main:
-        banner-mode: "console"
-    groovy:
-        template:
-            check-template-location: false
-    http:
-        multipart:
-            max-file-size: 5000MB
-            max-request-size: 5000MB
-    jmx:
-        unique-names: true
-
-server:
-    session:
-        timeout: 7200 # seconds, 2 hours
-    tomcat:
-        port-header: 'X-Forwarded-Port'
-        protocol-header: 'X-Forwarded-Proto'
-        remote-ip-header: 'X-Forwarded-For'
-
-management:
-    context-path: /status
-    endpoints:
-        enabled-by-default: false
-
----
-grails:
     mime:
         file:
             extensions: true # enables the parsing of file extensions from URLs into the request format ???
@@ -99,56 +55,111 @@ grails:
             xml:
                 - text/xml
                 - application/xml
-    urlmapping:
-        cache:
-            maxsize: 1000
-    controllers:
-        defaultScope: singleton
-        upload:
-            maxFileSize: 5368709120
-            maxRequestSize: 5368709120
-    converters:
-        encoding: UTF-8
-    views:
-        default:
-            codec: html
-        gsp:
+        urlmapping:
+            cache:
+                maxsize: 1000
+        controllers:
+            defaultScope: singleton
+            upload:
+                maxFileSize: 5368709120
+                maxRequestSize: 5368709120
+        converters:
             encoding: UTF-8
-            htmlcodec: xml
-            codecs:
-                expression: html
-                scriptlets: html
-                taglib: none
-                staticparts: none
-            sitemesh:
-                preprocess: true
-    databinding:
-        convertEmptyStringsToNull: false
+        views:
+            default:
+                codec: html
+            gsp:
+                encoding: UTF-8
+                htmlcodec: xml
+                codecs:
+                    expression: html
+                    scriptlets: html
+                    taglib: none
+                    staticparts: none
+                sitemesh:
+                    preprocess: true
+        databinding:
+            convertEmptyStringsToNull: false
+    plugins:
+        twitterbootstrap:
+            fixtaglib: true
+    mail:
+        default:
+            from: 'DigiVol <noreply@volunteer.ala.org.au>'
+
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'
+    build:
+        ci : '@info.build.ci@'
+        date: '@info.build.date@'
+        jdk: '@info.build.jdk@'
+        number: '@info.build.number@'
+    git:
+        branch: '@info.git.branch@'
+        commit: '@info.git.commit@'
+        slug: '@info.git.slug@'
+        tag: '@info.git.tag@'
+        timestamp: '@info.git.timestamp@'
 
 spring:
+    main:
+        banner-mode: "console"
+    groovy:
+        template:
+            check-template-location: false
+    jmx:
+        unique-names: true
+    servlet:
+        multipart:
+            max-file-size: 5000MB
+            max-request-size: 5000MB
     devtools:
         restart:
             exclude:
                 - grails-app/views/**
                 - grails-app/i18n/**
                 - grails-app/conf/**
----
+    flyway:
+        enabled: true
+        baselineOnMigrate: true
+        baselineVersion: 1
+        outOfOrder: true
+
+server:
+    tomcat:
+        port-header: 'X-Forwarded-Port'
+        protocol-header: 'X-Forwarded-Proto'
+        remote-ip-header: 'X-Forwarded-For'
+    servlet:
+        session:
+            timeout: 7200
+
+management:
+    endpoints:
+        enabled-by-default: false
+    server:
+        servlet:
+            context-path: /status
+
 ala:
-    baseURL: "http://www.ala.org.au"
+    baseURL: "https://www.ala.org.au"
     skin: "digivol-main"
     image:
         service:
-            url: http://images.ala.org.au
+            url: https://images.ala.org.au
 
 bie:
-    baseURL: "http://bie.ala.org.au"
+    baseURL: "https://bie.ala.org.au"
     searchPath: "/search"
 
 biocache:
-    baseURL: "http://biocache.ala.org.au/"
+    baseURL: "https://biocache.ala.org.au/"
 
 spatial:
-    baseURL: "http://spatial.ala.org.au/"
+    baseURL: "https://spatial.ala.org.au/"
 
 security:
     cas:
@@ -222,6 +233,7 @@ elasticsearch:
 
 volunteer:
     defaultProjectId: 6306
+
 viewedTask:
     timeout: 7200000 # milliseconds
 
@@ -280,18 +292,11 @@ exportCSVThreadPoolSize: 10
 #                appServerName: http://volunteer.ala.org.au
 
 #Fix grails taglib <g:paginate/> to work with bootstrap css.
-grails:
-    plugins:
-        twitterbootstrap:
-            fixtaglib: true
-    mail:
-        default:
-            from: 'DigiVol <noreply@volunteer.ala.org.au>'
+
 digest:
     enabled: false
     threshold: 5
-#    address:
----
+
 quartz:
     autoStartup: true
     jdbcStore: false
@@ -301,17 +306,6 @@ quartz:
         scheduler:
             skipUpdateCheck: true
 
-environments:
-    test:
-        quartz:
-            autoStartup: false
----
-flyway:
-    enabled: true
-    baselineOnMigrate: true
-    baselineVersion: 1
-    outOfOrder: true
----
 hibernate:
     dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
     cache:
@@ -359,6 +353,8 @@ environments:
             url: jdbc:postgresql://localhost/volunteerstest
             username: "postgres"
             password: "password"
+        quartz:
+            autoStartup: false
     production:
         dataSource:
             dbCreate: validate
