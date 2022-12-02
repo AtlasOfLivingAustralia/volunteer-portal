@@ -54,7 +54,7 @@ class AchievementService implements EventPublisher {
         scriptPool = new GenericKeyedObjectPool<String, Script>(new GroovyScriptPooledObjectFactory(), config)
 
         eventSourceStartMessage = eventSourceService.addEventSourceStartMessage { userId ->
-            final achievements
+            def achievements
             if (userId) {
                 log.debug("Get unnotified achievments for $userId")
                 achievements = AchievementAward.withCriteria {
@@ -322,7 +322,7 @@ class AchievementService implements EventPublisher {
     }
 
     private createAwardMessage(AchievementAward award) {
-        final message
+        def message
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
                 message = "You were just awarded the ${award.achievement.name} achievement!"

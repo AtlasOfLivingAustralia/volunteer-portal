@@ -1,7 +1,8 @@
 package au.org.ala.volunteer
 
 import au.org.ala.web.SecurityPrimitives
-import org.apache.log4j.Logger
+import groovy.util.logging.Slf4j
+
 import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.Filter
@@ -13,6 +14,7 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import java.util.regex.Pattern
 
+@Slf4j
 class BVPSecurePluginFilter implements Filter {
 
     /*
@@ -29,7 +31,7 @@ class BVPSecurePluginFilter implements Filter {
     </filter-mapping>
     */
     
-    private static final Logger logger = Logger.getLogger(BVPSecurePluginFilter)
+    //private static final Logger logger = Logger.getLogger(BVPSecurePluginFilter)
 
     SecurityPrimitives securityPrimitives
 
@@ -52,18 +54,18 @@ class BVPSecurePluginFilter implements Filter {
             String requestUri = request.getRequestURI()
             if (urls.any { p -> p.matcher(requestUri).find() }) {
                 if (securityPrimitives.isAnyGranted([CASRoles.ROLE_ADMIN])) {
-                    logger.debug("Allowing access to $requestUri because admin role is granted")
+                    log.debug("Allowing access to $requestUri because admin role is granted")
                     chain.doFilter(servletRequest, servletResponse)
                 } else {
-                    logger.warn("Access denied to $requestUri because admin role is not granted")
+                    log.warn("Access denied to $requestUri because admin role is not granted")
                 }
             } else {
-                logger.debug("Allowing access to $requestUri because it's not in the filter list")
+                log.debug("Allowing access to $requestUri because it's not in the filter list")
                 chain.doFilter(servletRequest, servletResponse)
             }
 
         } else {
-            logger.debug("Allowing access because there is no request")
+            log.debug("Allowing access because there is no request")
             chain.doFilter(servletRequest, servletResponse)
         }
     }

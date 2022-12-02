@@ -467,8 +467,8 @@ class AjaxController {
     def transcriptionFeed(String timestampStart, String timestampEnd, Integer rowStart, String sort) {
         final sw = Stopwatch.createStarted()
         final udsw = Stopwatch.createUnstarted()
-        final Date startTs
-        final Date endTs
+        def Date startTs
+        def Date endTs
         final pageSize = 100
         sort = sort ?: 'dateFullyTranscribed'
         final sortOrder = params.order ?: 'desc'
@@ -535,9 +535,9 @@ class AjaxController {
 
         log.debug("Transcription feed got tasks ${sw}")
 
-        final allFields
-        final usersDetails
-        final mm
+        def allFields
+        def usersDetails
+        def mm
         if (ids) {
             allFields = Field.where {
                 transcription.id in ids && superceded == false

@@ -1041,9 +1041,16 @@ class ProjectService implements EventPublisher {
      * @return
      */
     def isTimeToUpdateRandomProject(Date randomProjectDateUpdated) {
-        def currentDate = new Date().getAt(Calendar.DAY_OF_YEAR)
+        //def currentDate = new Date().getAt(Calendar.DAY_OF_YEAR as String)
+        Calendar cal = new GregorianCalendar()
+        cal.setTime(new Date())
+        def currentDate = cal.get(Calendar.DAY_OF_YEAR)
+
         if (!randomProjectDateUpdated) return true
-        def lastDate = randomProjectDateUpdated.getAt(Calendar.DAY_OF_YEAR)
+
+        cal.setTime(randomProjectDateUpdated)
+        //def lastDate = randomProjectDateUpdated.getAt(Calendar.DAY_OF_YEAR)
+        def lastDate = cal.get(Calendar.DAY_OF_YEAR)
         // If we've gone over to the next year, return true.
         if (currentDate < lastDate) return true
         return currentDate - lastDate >= 1

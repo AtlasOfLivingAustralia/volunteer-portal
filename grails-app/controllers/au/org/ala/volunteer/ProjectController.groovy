@@ -1358,8 +1358,8 @@ class ProjectController {
         List<ManageProject> projectsWithSize = projectList.collect {
             log.debug("Project: ${it}")
             final counts = completions[it.id as long]
-            final transcribed
-            final validated
+            def transcribed
+            def validated
             if (counts) {
                 transcribed = (counts.transcribed / counts.total) * 100.0
                 validated = (counts.validated / counts.total) * 100.0
@@ -1571,8 +1571,8 @@ class ProjectController {
 
         List<ManageProject> projectsWithSize = projects.collect {
             final counts = completions[it.id]
-            final transcribed
-            final validated
+            def transcribed
+            def validated
             if (counts) {
                 transcribed = (counts.transcribed / counts.total) * 100.0
                 validated = (counts.validated / counts.total) * 100.0

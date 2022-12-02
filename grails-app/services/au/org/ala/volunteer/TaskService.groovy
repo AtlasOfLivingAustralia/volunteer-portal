@@ -808,7 +808,7 @@ ORDER BY record_idx, name;
         log.debug("Running SQL to find differences: $select")
         final recordValues = sql.rows(select, [taskId: task.id, userId: transcribedByUserId, validatorId: validatedByUserId]).collect { row ->
             final String fieldName = row["name"]
-            final dwcField
+            def dwcField
             try { dwcField = fieldName as DarwinCoreField } catch (e) { dwcField = null }
             final label = TemplateField.findByTemplateAndFieldType(template, dwcField)?.uiLabel ?: dwcField?.label ?: fieldName
             [name: row["name"], label: label, recordIdx: row['record_idx'], oldValue: row['transcriber_value'] ?: '', newValue: row['validator_value'] ?: '', lastModified: row["validator_updated"]]
@@ -1407,7 +1407,7 @@ ORDER BY record_idx, name;
         final params = [userId: user.userId, project: project?.id, query: query]
 
         // remove $withClause
-        final countQuery = """$countClause
+        def countQuery = """$countClause
             $queryClause
             """.stripIndent()
 

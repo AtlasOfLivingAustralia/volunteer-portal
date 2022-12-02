@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
+import groovy.util.logging.Slf4j
 
 import javax.servlet.Filter
 import javax.servlet.FilterConfig
@@ -12,9 +13,10 @@ import au.org.ala.cas.util.AuthenticationCookieUtils
 import java.util.regex.Pattern
 import java.util.regex.Matcher
 
+@Slf4j
 class BVPServletFilter implements Filter  {
 
-    private static final Logger logger = Logger.getLogger(BVPServletFilter.class)
+    //private static final Logger logger = Logger.getLogger(BVPServletFilter.class)
     
     private List<Pattern> _filterPatterns;
 
@@ -53,7 +55,7 @@ class BVPServletFilter implements Filter  {
                 if (doLog) {
                     def username = AuthenticationCookieUtils.getUserName(request) ?: "unknown"
                     def userAgent = request.getHeader("user-agent")
-                    logger.info "Session: ${session?.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${request.requestURI}"
+                    log.info "Session: ${session?.id} User: ${username} IP: ${request.remoteAddr} UA: ${userAgent} URI: ${request.requestURI}"
                 }
 //                request.getHeaderNames().each {
 //                    println it + " = " + request.getHeader(it)
