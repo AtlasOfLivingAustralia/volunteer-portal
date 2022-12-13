@@ -2,7 +2,7 @@ sudo: false
 dist: xenial
 language: groovy
 jdk:
-  - openjdk8
+  - openjdk11
 branches:
   only:
   - master
