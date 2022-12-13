@@ -7,7 +7,7 @@ branches:
   only:
   - master
   - develop
-  - feature/grails33upgrade
+  - feature/grails-5-upgrade
 services:
   - postgresql
 addons:
