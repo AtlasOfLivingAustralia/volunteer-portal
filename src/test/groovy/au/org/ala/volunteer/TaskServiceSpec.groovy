@@ -1,13 +1,15 @@
 package au.org.ala.volunteer
 
 import grails.test.hibernate.HibernateSpec
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.TestFor
 import org.grails.orm.hibernate.cfg.Settings
 
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
-@TestFor(TaskService)
-class TaskServiceSpec extends HibernateSpec {
+//@TestFor(TaskService)
+class TaskServiceSpec extends HibernateSpec implements ServiceUnitTest<TaskService> {
 
     /**
      * This is to build up some data in the test database for the purposes of running SQL queries.

@@ -1,15 +1,19 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.*
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(LabelController)
-@Mock(Label)
-class LabelControllerSpec extends Specification {
+//@TestFor(LabelController)
+//@Mock(Label)
+class LabelControllerSpec extends Specification implements ControllerUnitTest<LabelController>, DataTest {
 
     boolean admin = true
 
     def setup() {
+        mockDomain(Label)
         controller.userService = Stub(UserService)
         controller.userService.isAdmin(_) >> { admin }
     }

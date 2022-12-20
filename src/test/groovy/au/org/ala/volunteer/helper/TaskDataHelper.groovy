@@ -20,16 +20,26 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class TaskDataHelper {
 
-    static Project setupProject(String name = 'Test Project', boolean harvestable = false) {
-        Project p = new Project(name:name, harvestableByAla: harvestable)
-        p.template = new Template(name:"Test template", viewParams:[param1:'value1'], viewParams2: [param1:'value1'])
+    static Project setupProject(String projectName = 'Test Project', boolean harvestable = false) {
+        Project p = new Project().tap {
+            name = projectName
+            harvestableByAla = harvestable
+        }
+        p.template = new Template().tap {
+            name = "Test template"
+            viewParams = [param1:'value1']
+            viewParams2 = [param1:'value1']
+        }
         p.template.save(failOnError:true)
         p.save(failOnError:true, flush:true)
         p
     }
 
-    static Task addTask(Project project, int index) {
-        Task task = new Task(project: project, externalIdentifier: Integer.toString(index))
+    static Task addTask(Project projectInstance, int index) {
+        Task task = new Task().tap {
+            project = projectInstance
+            externalIdentifier = Integer.toString(index)
+        }
         task.transcriptions = []
         task.viewedTasks = new HashSet()
         task.fields = new HashSet()
@@ -92,30 +102,53 @@ class TaskDataHelper {
         task.save(flush: true, failOnError: true)
     }
 
-    static void view(Task task, String userId, boolean recent = true) {
+    static void view(Task taskInstance, String userIdValue, boolean recent = true) {
 
-        long lastView = System.currentTimeMillis()
+        long lastViewValue = System.currentTimeMillis()
         if (!recent) {
-            lastView  -= 1000*60*60*3 // 3 hours ago
+            lastViewValue  -= 1000*60*60*3 // 3 hours ago
         }
-        ViewedTask viewedTask = new ViewedTask(task:task, userId:userId, numberOfViews: 1, lastView: lastView, skipped: false)
-        task.viewedTasks.add(viewedTask)
+        ViewedTask viewedTask = new ViewedTask().tap {
+            task = task
+            userId = userIdValue
+            numberOfViews = 1
+            lastView = lastViewValue
+            skipped = false
+        }
+        taskInstance.viewedTasks.add(viewedTask)
         viewedTask.save(failOnError:true, flush:true)
-        task.save(failOnError:true, flush:true)
+        taskInstance.save(failOnError:true, flush:true)
     }
 
     static User setupUser() {
-        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
+//        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
+        User user = new User().tap {
+            firstName = 'Example'
+            lastName = 'Test'
+            userId = UUID.randomUUID().toString()
+            email = 'test@example.org'
+            created = new Date()
+        }
         return user.save(flush: true, failOnError: true)
     }
 
-    static ProjectForumTopic setupProjectForum(Project project, User user, int messages) {
-        final pft = new ProjectForumTopic(project: project, creator: user, title: 'Test')
+    static ProjectForumTopic setupProjectForum(Project projectInstance, User userInstance, int messages) {
+        final pft = new ProjectForumTopic().tap {
+            project =  projectInstance
+            creator = userInstance
+            title = 'Test'
+        }
         pft.messages = setupForumMessages(pft, messages)
         return pft.save(flush: true, failOnError: true)
     }
 
     static Set<ForumMessage> setupForumMessages(ForumTopic ft, int messages) {
-        (0..<messages).collect { new ForumMessage(topic: ft, user: ft.creator, date: new Date(), text: 'test', deleted: false) }.toSet()
+        (0..<messages).collect { new ForumMessage().tap {
+            topic = ft
+            user = ft.creator
+            date = new Date()
+            text = 'test'
+            deleted = false
+        } }.toSet()
     }
 }

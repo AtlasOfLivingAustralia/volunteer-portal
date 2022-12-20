@@ -1,9 +1,11 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.helper.FlybernateSpec
-import grails.test.mixin.TestFor
+//import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
+import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
@@ -17,35 +19,45 @@ import static au.org.ala.volunteer.helper.TaskDataHelper.setupUser
 import static au.org.ala.volunteer.helper.TaskDataHelper.transcribe
 import static au.org.ala.volunteer.helper.TaskDataHelper.validate
 
-@TestFor(ProjectService)
+//@TestFor(ProjectService)
 @Slf4j
-class ProjectServiceSpec extends FlybernateSpec {
+class ProjectServiceSpec extends FlybernateSpec implements ServiceUnitTest<ProjectService> {
 
-    @Configuration
-    @Slf4j
-    static class Config {
+//    @Configuration
+//    @Slf4j
+//    static class Config {
+//
+//        ProjectServiceSpec projectServiceSpec
+//
+//        Config(ProjectServiceSpec projectServiceSpec) {
+//            this.projectServiceSpec = projectServiceSpec
+//        }
+//
+//        @Bean
+//        Closure<DSLContext> jooqContextFactory() {
+//            { ->
+//                // need to reach deep down into the transaction status to get the connection object in the transaction
+//                def conn = projectServiceSpec.transactionStatus.transaction.connectionHolder.connectionHandle.connection
+//                DSL.using(conn, SQLDialect.POSTGRES_9_5)
+//            }
+//        }
+//    }
+//
+//    def doWithSpring = {
+//        testConfig(Config, this)
+//    }
 
-        ProjectServiceSpec projectServiceSpec
-
-        Config(ProjectServiceSpec projectServiceSpec) {
-            this.projectServiceSpec = projectServiceSpec
+    Closure<DSLContext> jooqContextFactoryBean =
+        { ->
+            // need to reach deep down into the transaction status to get the connection object in the transaction
+            def conn = transactionStatus.transaction.connectionHolder.connectionHandle.connection
+            DSL.using(conn, SQLDialect.POSTGRES_9_5)
         }
-
-        @Bean
-        Closure<DSLContext> jooqContextFactory() {
-            { ->
-                // need to reach deep down into the transaction status to get the connection object in the transaction
-                def conn = projectServiceSpec.transactionStatus.transaction.connectionHolder.connectionHandle.connection
-                DSL.using(conn, SQLDialect.POSTGRES_9_5)
-            }
-        }
-    }
-
-    def doWithSpring = {
-        testConfig(Config, this)
-    }
 
     def setup() {
+        defineBeans {
+            jooqContextFactory(InstanceFactoryBean, jooqContextFactoryBean, Closure/*<DSLContext>*/)
+        }
         service.grailsLinkGenerator = Stub(LinkGenerator)
         service.i18nService = Stub(I18nService)
     }

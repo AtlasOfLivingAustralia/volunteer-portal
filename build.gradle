@@ -107,7 +107,6 @@ dependencies {
     compile "org.grails:grails-datastore-gorm-async:${gormVersion}"
 
     assets "com.bertramlabs.plugins:sass-asset-pipeline:$assetPipelineVersion"
-    testCompile "org.grails:grails-test-mixins:3.3.0" // For legacy @TestMixin and @TestFor
 
     // Additional Plugins
     compile "org.hibernate:hibernate-ehcache:$hibernateVersion"

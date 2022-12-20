@@ -1,22 +1,24 @@
 package au.org.ala.volunteer
 
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import org.elasticsearch.action.search.SearchType
 import spock.lang.Specification
-import grails.test.mixin.*
-import grails.test.mixin.web.ControllerUnitTestMixin
+//import grails.test.mixin.*
+//import grails.test.mixin.web.ControllerUnitTestMixin
 import spock.lang.Shared
 
-@TestFor(FullTextIndexService)
-@TestMixin(ControllerUnitTestMixin)
-@Mock([Field, Transcription])
-class FullTextIndexServiceSpec extends Specification {
+//@TestFor(FullTextIndexService)
+//@TestMixin(ControllerUnitTestMixin)
+//@Mock([Field, Transcription])
+class FullTextIndexServiceSpec extends Specification implements ServiceUnitTest<FullTextIndexService>, DataTest {
 
     @Shared
     Task task1
 
     void setupSpec() {
-      //  mockDomain(Field)
-      //  mockDomain(Transcription)
+        mockDomains(Field, Transcription)
+//        mockDomain(Transcription)
     }
 
     def setup() {

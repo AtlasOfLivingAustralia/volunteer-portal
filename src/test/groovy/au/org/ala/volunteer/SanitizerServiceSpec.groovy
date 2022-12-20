@@ -1,13 +1,15 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(SanitizerService)
-class SanitizerServiceSpec extends Specification {
+//@TestFor(SanitizerService)
+class SanitizerServiceSpec extends Specification implements ServiceUnitTest<SanitizerService> {
 
     def setup() {
     }

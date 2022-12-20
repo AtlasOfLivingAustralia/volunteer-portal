@@ -1,14 +1,16 @@
 package au.org.ala.volunteer
 
+import grails.testing.web.interceptor.InterceptorUnitTest
 
-import grails.test.mixin.TestFor
+
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
-@TestFor(DigivolActivityInterceptor)
-class DigivolActivityInterceptorSpec extends Specification {
+//@TestFor(DigivolActivityInterceptor)
+class DigivolActivityInterceptorSpec extends Specification implements InterceptorUnitTest<DigivolActivityInterceptor> {
 
     def setup() {
     }

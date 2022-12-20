@@ -1,14 +1,16 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.domain.DomainClassUnitTestMixin
+import grails.testing.gorm.DomainUnitTest
+
+//import grails.test.mixin.TestFor
+//import grails.test.mixin.TestMixin
+//import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Shared
 import spock.lang.Specification
 
-@TestFor(User)
-@TestMixin(DomainClassUnitTestMixin)
-class UserSpec extends Specification {
+//@TestFor(User)
+//@TestMixin(DomainClassUnitTestMixin)
+class UserSpec extends Specification implements DomainUnitTest<User> {
 
     @Shared
     def date
@@ -17,7 +19,7 @@ class UserSpec extends Specification {
 
     def setupSpec() {
         grailsApplication.config.images.home = "/tmp/"
-        mockDomain(User)
+//        mockDomain(User)
         date = new Date()
         u1 = new User(userId: "1234", firstName: "Dude", lastName: "User", email: "dude.user@ala.org.au", created: date)
         u2 = new User(userId: "1235", firstName: "Sweet", lastName: "User", email: "sweet.user@ala.org.au", created: date)

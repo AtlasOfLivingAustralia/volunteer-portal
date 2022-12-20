@@ -8,6 +8,7 @@ import org.grails.orm.hibernate.HibernateDatastore
 import org.grails.orm.hibernate.cfg.Settings
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.junit.ClassRule
 import org.springframework.boot.env.PropertySourceLoader
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.MutablePropertySources
@@ -30,15 +31,17 @@ import spock.lang.Specification
 @CompileStatic
 abstract class FlybernateSpec extends Specification {
 
+//    @ClassRule @Shared SingleInstancePostgresRule postgresRule = EmbeddedPostgresRules.singleInstance().customize { builder ->
+//        builder.port = getConfig().getProperty('dataSource.embeddedPort',  Integer.class, 6543)
+//    }
+
     @Shared @AutoCleanup HibernateDatastore hibernateDatastore
     @Shared PlatformTransactionManager transactionManager
     @Shared Flyway flyway = null
+//    @Shared Flyway flyway = new Flyway()
 
-    /**
-     * Gets the config from the classpath.
-     * @return a Flyway config.
-     */
-    static Config getConfig() {
+    static Config getConfig() { // CHANGED extracted from setupSpec so postgresRule can access
+
         List<PropertySourceLoader> propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, FlybernateSpec.class.getClassLoader())
         ResourceLoader resourceLoader = new DefaultResourceLoader()
         MutablePropertySources propertySources = new MutablePropertySources()
@@ -60,16 +63,18 @@ abstract class FlybernateSpec extends Specification {
 
     void setupSpec() {
         Config config = getConfig()
+        // CHANGED added flyway migrate
         def flywayConfig = Flyway.configure()
                 .dataSource(config.getProperty('environments.test.dataSource.url'), config.getProperty('dataSource.username'), config.getProperty('dataSource.password'))
                 .placeholders([
                         'baseUrl': config.getProperty('grails.serverURL', 'https://devt.ala.org.au/digivol')
                 ])
                 .locations('db/migration')
-
+                .cleanDisabled(config.getProperty('flyway.cleanDisabled', Boolean, false))
         flyway = new Flyway(flywayConfig)
         flyway.clean()
         flyway.migrate()
+        // END CHANGED
 
         List<Class> domainClasses = getDomainClasses()
         String packageName = getPackageToScan(config)
@@ -93,17 +98,19 @@ abstract class FlybernateSpec extends Specification {
     }
 
     void cleanup() {
-        if(isRollback()) {
+        if (isRollback()) {
             transactionManager.rollback(transactionStatus)
-        }
-        else {
+        } else {
             transactionManager.commit(transactionStatus)
         }
-        flyway.clean()
+        flyway.clean() // CHANGED added flyway.clean() to drop all db content
     }
 
+    /**
+     * @return The configuration
+     */
     static Map getConfiguration() { // changed to static
-        Collections.singletonMap(Settings.SETTING_DB_CREATE,  (Object) "validate")
+        Collections.singletonMap(Settings.SETTING_DB_CREATE,  (Object) "validate") // CHANGED from 'create-drop' to 'validate'
     }
 
     /**
@@ -126,6 +133,7 @@ abstract class FlybernateSpec extends Specification {
     boolean isRollback() {
         return true
     }
+
     /**
      * @return The domain classes
      */
@@ -141,6 +149,7 @@ abstract class FlybernateSpec extends Specification {
         config.getProperty('grails.codegen.defaultPackage', getClass().package.name)
     }
 
+    // Changed: Made static for getConfig()
     private static List<PropertySource> load(ResourceLoader resourceLoader, PropertySourceLoader loader, String filename) {
         if (canLoadFileExtension(loader, filename)) {
             Resource appYml = resourceLoader.getResource(filename)
@@ -150,6 +159,7 @@ abstract class FlybernateSpec extends Specification {
         }
     }
 
+    // Changed: Made static for getConfig()
     private static boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
         return Arrays
                 .stream(loader.fileExtensions)
@@ -157,3 +167,4 @@ abstract class FlybernateSpec extends Specification {
                 .anyMatch { String extension -> name.toLowerCase().endsWith(extension) }
     }
 }
+

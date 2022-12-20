@@ -1,12 +1,15 @@
 package au.org.ala.volunteer
 
 import grails.gsp.PageRenderer
-import grails.test.mixin.*
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(InstitutionAdminController)
-@Mock([Institution, Project])
-class InstitutionAdminControllerSpec extends Specification {
+//@TestFor(InstitutionAdminController)
+//@Mock([Institution, Project])
+class InstitutionAdminControllerSpec extends Specification implements ControllerUnitTest<InstitutionAdminController>, DataTest {
 
     boolean admin = true
 
@@ -28,6 +31,7 @@ class InstitutionAdminControllerSpec extends Specification {
     }
 
     def setup() {
+        mockDomains(Institution, Project)
         def userServiceStub = Stub(UserService) {
             isInstitutionAdmin() >> admin
             isInstitutionAdmin(_) >> admin

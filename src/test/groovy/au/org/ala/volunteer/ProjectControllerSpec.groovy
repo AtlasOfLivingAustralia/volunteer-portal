@@ -1,16 +1,20 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.Mock
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(ProjectController)
-@Mock(Project)
-class ProjectControllerSpec extends Specification {
+//@TestFor(ProjectController)
+//@Mock(Project)
+class ProjectControllerSpec extends Specification implements ControllerUnitTest<ProjectController>, DataTest {
 
     boolean admin = false
 
     void setup() {
+        mockDomain(Project)
         def userServiceStub = Stub(UserService) {
             isAdmin() >> admin
         }

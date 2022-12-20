@@ -1,21 +1,25 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.Mock
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
-@TestFor(InstitutionMessageController)
-@Mock([InstitutionMessage, Institution, MessageRecipient])
-class InstitutionMessageControllerSpec extends Specification {
+//@TestFor(InstitutionMessageController)
+//@Mock([InstitutionMessage, Institution, MessageRecipient])
+class InstitutionMessageControllerSpec extends Specification implements ControllerUnitTest<InstitutionMessageController>, DataTest {
 
     boolean admin = false
     long institutionId = 123456789L
     long userId = 38462921L
 
     def setup() {
+        mockDomains(InstitutionMessage, Institution, MessageRecipient)
         config.grails.serverURL = "/"
 
         def userServiceStub = Stub(UserService) {

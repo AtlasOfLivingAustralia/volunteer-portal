@@ -1,14 +1,16 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.TestFor
+import grails.testing.web.taglib.TagLibUnitTest
+
+//import grails.test.mixin.TestFor
 import org.grails.taglib.GrailsTagException
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
  */
-@TestFor(TwitterBootstrapTagLib)
-class TwitterBootstrapTagLibSpec extends Specification {
+//@TestFor(TwitterBootstrapTagLib)
+class TwitterBootstrapTagLibSpec extends Specification implements TagLibUnitTest<TwitterBootstrapTagLib> {
 
     def setup() {
         grailsApplication.config.grails.plugins.twitterbootstrap.fixtaglib = true

@@ -1,12 +1,14 @@
 package au.org.ala.volunteer
 
 import grails.test.hibernate.HibernateSpec
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.TestFor
 
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
-@TestFor(AuditService)
-class AuditServiceSpec extends HibernateSpec {
+//@TestFor(AuditService)
+class AuditServiceSpec extends HibernateSpec implements ServiceUnitTest<AuditService> {
 
     String userId = 'u1'
     Project project

@@ -1,11 +1,13 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
-@TestFor(AdminController)
-class AdminControllerSpec extends Specification {
+//@TestFor(AdminController)
+class AdminControllerSpec extends Specification implements ControllerUnitTest<AdminController> {
 
     boolean admin = true
 

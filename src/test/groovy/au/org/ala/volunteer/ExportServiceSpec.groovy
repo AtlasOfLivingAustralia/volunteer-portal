@@ -1,7 +1,9 @@
 package au.org.ala.volunteer
 
 import grails.plugins.csv.CSVMapReader
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -9,8 +11,8 @@ import spock.lang.Specification
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
-@TestFor(ExportService)
-class ExportServiceSpec extends Specification {
+//@TestFor(ExportService)
+class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportService> {
 
     FieldService fieldService
     TaskService taskService

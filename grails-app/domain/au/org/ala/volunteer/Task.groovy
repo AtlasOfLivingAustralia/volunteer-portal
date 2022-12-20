@@ -122,7 +122,10 @@ class Task implements Serializable, AsyncEntity<Task> {
     }
 
     Transcription addTranscription() {
-        Transcription transcription = new Transcription(task:this, project:project)
+        Transcription transcription = new Transcription().tap {
+            task = this
+            project = this.@project
+        }
         transcriptions.add(transcription)
 
         transcription
