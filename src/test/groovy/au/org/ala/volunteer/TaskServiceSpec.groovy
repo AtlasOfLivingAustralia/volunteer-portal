@@ -2,6 +2,8 @@ package au.org.ala.volunteer
 
 import grails.test.hibernate.HibernateSpec
 import grails.testing.services.ServiceUnitTest
+import groovy.util.logging.Slf4j
+import org.flywaydb.core.internal.logging.slf4j.Slf4jLog
 
 //import grails.test.mixin.TestFor
 import org.grails.orm.hibernate.cfg.Settings
@@ -9,6 +11,7 @@ import org.grails.orm.hibernate.cfg.Settings
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
 //@TestFor(TaskService)
+@Slf4j
 class TaskServiceSpec extends HibernateSpec implements ServiceUnitTest<TaskService> {
 
     /**

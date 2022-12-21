@@ -52,7 +52,7 @@ class TaskDataHelper {
     }
 
     static void transcribe(Task task, String userId, Map <Integer, Map<String, String>> fields = null) {
-
+        log.debug("transcribing task: ${task}")
         view(task, userId)
 
         Transcription transcription = task.findUserTranscription(userId)
@@ -109,7 +109,7 @@ class TaskDataHelper {
             lastViewValue  -= 1000*60*60*3 // 3 hours ago
         }
         ViewedTask viewedTask = new ViewedTask().tap {
-            task = task
+            task = taskInstance
             userId = userIdValue
             numberOfViews = 1
             lastView = lastViewValue
