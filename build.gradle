@@ -36,6 +36,7 @@ apply plugin:"org.grails.grails-web"
 apply plugin:"com.bertramlabs.asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"com.energizedwork.webdriver-binaries"
+apply plugin:"maven-publish"
 
 repositories {
     maven { url "https://nexus.ala.org.au/content/groups/public/" }
@@ -336,5 +337,49 @@ processResources {
                 'info.git.tag' : envProp('TRAVIS_TAG'),
                 'info.git.timestamp' : gitTimestamp()
         ])
+    }
+}
+
+// This has been copied and updated from
+// https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_publish.gradle
+// (Above include does not support grails 4+)
+publishing {
+    repositories {
+        maven {
+            name 'Nexus'
+            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases' }"
+            credentials {
+                username = System.getenv('TRAVIS_DEPLOY_USERNAME')
+                password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
+            }
+        }
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            pom.withXml {
+                def pomNode = asNode()
+                pomNode.dependencyManagement.replaceNode {}
+
+                // simply remove dependencies without a version
+                // version-less dependencies are handled with dependencyManagement
+                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    it.replaceNode {}
+                }
+            }
+            from components.web
+            if (bootJar && bootJar.enabled && bootJar.classifier) {
+                def repackagedFile = file("$libsDir/$project.name-$project.version-${bootJar.classifier}.jar")
+                if (repackagedFile.exists()) {
+                    artifact(repackagedFile) {
+                        classifier bootJar.classifier
+                    }
+                } else {
+                    logger.quiet("Spring Boot repackage with classifier specified but file is not present!")
+                }
+            }
+        }
     }
 }
