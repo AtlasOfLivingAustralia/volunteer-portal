@@ -130,8 +130,11 @@ dependencies {
     compile 'org.grails.plugins:cache-ehcache:3.0.0'
     compile 'org.ehcache:ehcache:3.4.0' // Prevent cache-ehcache dependent version being overridden
     // These are needed for ehcache after jdk 11 removed JAXB completely.
-    compile 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.0'
-    runtime 'com.sun.xml.bind:jaxb-impl:3.0.0'
+//    compile 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.0'
+//    runtime 'com.sun.xml.bind:jaxb-impl:3.0.0'
+    // JAX-B dependencies for JDK 9+
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 
 
     // ALA Plugins
