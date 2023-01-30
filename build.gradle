@@ -133,6 +133,7 @@ dependencies {
 //    compile 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.0'
 //    runtime 'com.sun.xml.bind:jaxb-impl:3.0.0'
     // JAX-B dependencies for JDK 9+
+
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
     implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 
@@ -346,9 +347,6 @@ processResources {
     }
 }
 
-// This has been copied and updated from
-// https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_publish.gradle
-// (Above include does not support grails 4+)
 publishing {
     repositories {
         maven {
@@ -362,30 +360,7 @@ publishing {
     }
     publications {
         mavenJar(MavenPublication) {
-            pom.withXml {
-                def pomNode = asNode()
-                pomNode.dependencyManagement.replaceNode {}
-
-                // simply remove dependencies without a version
-                // version-less dependencies are handled with dependencyManagement
-                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
-                pomNode.dependencies.dependency.findAll {
-                    it.version.text().isEmpty()
-                }.each {
-                    it.replaceNode {}
-                }
-            }
-            from components.web
-            if (bootJar && bootJar.enabled && bootJar.classifier) {
-                def repackagedFile = file("$libsDir/$project.name-$project.version-${bootJar.classifier}.jar")
-                if (repackagedFile.exists()) {
-                    artifact(repackagedFile) {
-                        classifier bootJar.classifier
-                    }
-                } else {
-                    logger.quiet("Spring Boot repackage with classifier specified but file is not present!")
-                }
-            }
+            artifact bootJar
         }
     }
 }
