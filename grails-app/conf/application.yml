@@ -8,12 +8,6 @@ grails:
             - file:/data/volunteer-portal/config/volunteer-portal-config.properties
             - file:/data/volunteer-portal/config/volunteer-portal-config.yml
             - file:/data/volunteer-portal/config/volunteer-portal-config.groovy
-            - file:/data/digivol/config/digivol-config.properties
-            - file:/data/digivol/config/digivol-config.yml
-            - file:/data/digivol/config/digivol-config.groovy
-            - file:/etc/digivol/application.properties
-            - file:/etc/digivol/application.yml
-            - file:/etc/digivol/application.groovy
     scaffolding:
         templates:
             domainSuffix: Instance # This causes all respond methods to add the default object as <type>Instance<container>, eg bookInstance or bookInstanceList but does not affect scaffolding in Grails 3... TODO remove Instance from all GSPs and remove this property
@@ -58,11 +52,6 @@ grails:
         urlmapping:
             cache:
                 maxsize: 1000
-        controllers:
-            defaultScope: singleton
-            upload:
-                maxFileSize: 5368709120
-                maxRequestSize: 5368709120
         converters:
             encoding: UTF-8
         views:
@@ -80,6 +69,11 @@ grails:
                     preprocess: true
         databinding:
             convertEmptyStringsToNull: false
+    controllers:
+        defaultScope: singleton
+        upload:
+            maxFileSize: 5368709120
+            maxRequestSize: 5368709120
     plugins:
         twitterbootstrap:
             fixtaglib: true
