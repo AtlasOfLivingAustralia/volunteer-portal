@@ -6,6 +6,21 @@
     <variable name="loggingDir" value="${LOGGING_DIR:-/tmp/}" />
     <variable name="appName" value="digivol" />
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
+                <expression>return logger.equals("org.grails.plugins.rx.web.RxResultSubscriber") &amp;&amp; message.contains("Async Dispatch Error: Broken pipe");</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p --- [%15.15t] %-40.40logger{39} : %m%n%wex</pattern>
+        </encoder>
+    </appender>
+
     <appender name="TOMCAT_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
@@ -155,15 +170,14 @@
     <logger name="grails.plugins.mail" level="INFO" />
     <logger name="grails.plugins.quartz" level="INFO" />
     <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.SQL" level="INFO" />
     <logger name="org.quartz" level="INFO" />
     <logger name="org.springframework" level="INFO" />
     <logger name="org.flywaydb" level="INFO" />
-    <logger name="grails.app.services.au.org.ala.volunteer.DomainUpdateService" level="INFO" />
+    <logger name="au.org.ala.volunteer.DomainUpdateService" level="INFO" />
 
-
-    <!--    <logger name="org.hibernate.type" level="TRACE" />-->
-
-    <root level="warn">
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
         <appender-ref ref="TOMCAT_LOG" />
     </root>
 </configuration>

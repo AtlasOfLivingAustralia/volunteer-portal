@@ -64,12 +64,12 @@ configurations {
 }
 
 dependencies {
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation "org.springframework.boot:spring-boot-starter-logging"
-    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    developmentOnly("org.springframework.boot:spring-boot-devtools:$springBootVersion")
+    implementation "org.springframework.boot:spring-boot-starter-logging:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
     implementation "org.grails:grails-core"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
     implementation "org.grails:grails-web-boot"
     implementation "org.grails:grails-logging"
     implementation "org.grails:grails-plugin-rest"
@@ -136,7 +136,7 @@ dependencies {
     }
     implementation 'org.grails.plugins:quartz:2.0.13'
     implementation 'org.grails.plugins:grails-google-visualization:2.2'
-    implementation 'dk.glasius:external-config:2.0.1'
+    implementation 'dk.glasius:external-config:3.1.0'
     implementation 'org.grails.plugins:cache-ehcache:3.0.0'
     implementation 'org.ehcache:ehcache:3.4.0' // Prevent cache-ehcache dependent version being overridden
     // These are needed for ehcache after jdk 11 removed JAXB completely.
@@ -276,15 +276,16 @@ bootRun {
             '-noverify',
             '-XX:TieredStopAtLevel=1',
             '-Xmx1024m')
+    sourceResources sourceSets.main
     String springProfilesActive = 'spring.profiles.active'
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 
-springBoot {
-//    layout = WAR
-    mainClass = 'au.org.ala.volunteer.Application'
-    buildInfo()
-}
+//springBoot {
+////    layout = WAR
+//    //mainClass = 'au.org.ala.volunteer.Application'
+//    buildInfo()
+//}
 
 bootJar { // Grails 4 replaces bootRepackage //
     enabled = true
