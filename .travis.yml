@@ -11,11 +11,11 @@ branches:
 services:
   - postgresql
 addons:
-  postgresql: "11"
+  postgresql: "15"
   apt:
     packages:
-    - postgresql-11
-    - postgresql-client-11
+    - postgresql-15
+    - postgresql-client-15
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -26,9 +26,9 @@ cache:
   - $HOME/.gradle/wrapper/
 before_install:
   - sudo apt-get update
-  - sudo cp /etc/postgresql/{10,11}/main/pg_hba.conf
+  - sudo cp /etc/postgresql/{10,11,15}/main/pg_hba.conf
   - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/11/main/postgresql.conf
-  - sudo service postgresql@11-main restart
+  - sudo service postgresql@15-main restart
   - psql -c 'create database volunteerstest;' -U postgres
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
