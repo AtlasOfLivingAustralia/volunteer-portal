@@ -14,8 +14,8 @@ addons:
   postgresql: "15"
   apt:
     packages:
-    - postgresql-15
-    - postgresql-client-15
+    - postgresql
+    - postgresql-client
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
