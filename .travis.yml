@@ -26,7 +26,7 @@ cache:
   - $HOME/.gradle/wrapper/
 before_install:
   - sudo apt-get update
-  - sudo cp $HOME/pg_hba.conf /etc/postgresql/15/main/pg_hba.conf 
+  - sudo cp travis/pg_hba.conf /etc/postgresql/15/main/pg_hba.conf 
   - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/15/main/postgresql.conf
   - sudo service postgresql@15-main restart
   - psql -c 'create database volunteerstest;' -U postgres
