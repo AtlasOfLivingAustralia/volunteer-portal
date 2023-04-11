@@ -1,5 +1,5 @@
 sudo: false
-dist: xenial
+dist: focal
 language: groovy
 jdk:
   - openjdk11
@@ -14,8 +14,8 @@ addons:
   postgresql: "15"
   apt:
     packages:
-    - postgresql
-    - postgresql-client
+    - postgresql-15
+    - postgresql-client-15
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
