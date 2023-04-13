@@ -51,7 +51,7 @@ class FullTextIndexService {
     def initialize() {
         log.info("ElasticSearch service starting...")
         Settings.Builder settings = Settings.builder()
-        settings.put("path.home", grailsApplication.config.elasticsearch.location as String)
+        settings.put("path.home", grailsApplication.config.getProperty('elasticsearch.location', String) as String)
         node = nodeBuilder().local(true).settings(settings).node()
         client = node.client()
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()

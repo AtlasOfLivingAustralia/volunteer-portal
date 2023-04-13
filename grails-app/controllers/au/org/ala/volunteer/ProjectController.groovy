@@ -65,7 +65,7 @@ class ProjectController {
         } else {
             // project info
             List userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
-            def expedition = grailsApplication.config.expedition as List
+            def expedition = grailsApplication.config.getProperty("expedition", List.class)
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
             expedition.each {
@@ -389,7 +389,7 @@ class ProjectController {
             params.max = 1
             def task = Task.findByProject(project, params)
             if (task?.multimedia?.filePathToThumbnail) {
-                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail?.get(0))
+                redirect(url: grailsApplication.config.getProperty("server.url", String.class) + task?.multimedia?.filePathToThumbnail?.get(0))
             }
         }
     }
@@ -498,8 +498,8 @@ class ProjectController {
             flash.message = "The expedition status was not able to be updated."
             render(view: '/notPermitted')
         } else {
-            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
-            if (!project.inactive && new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+            def isNotifyEnabled = grailsApplication.config.getProperty("notifications.project.enabled", String.class)
+            if (!project.inactive && Boolean.parseBoolean(isNotifyEnabled ?: 'false')) {
 //            if (isNotifyEnabled) {
                 generateActivationNotification(project)
             }
@@ -812,8 +812,8 @@ class ProjectController {
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
-                def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
-                if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+                def isNotifyEnabled = grailsApplication.config.getProperty("notifications.project.enabled", String.class)
+                if (Boolean.parseBoolean(isNotifyEnabled ?: 'false')) {
                     if (((oldInactiveFlag != newInactive) && (!newInactive))) {
                         log.info("Project was activated Sending project activation notification")
                         generateActivationNotification(project)
@@ -909,7 +909,7 @@ class ProjectController {
                 }
 
                 try {
-                    def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+                    def filePath = "${grailsApplication.config.getProperty("images.home", String.class)}/project/${project.id}/expedition-image.jpg"
                     def file = new File(filePath)
                     file.getParentFile().mkdirs()
                     f.transferTo(file)

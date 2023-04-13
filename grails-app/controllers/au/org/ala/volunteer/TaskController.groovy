@@ -932,8 +932,8 @@ class TaskController {
         def mm = Multimedia.get(params.int("id"))
         if (mm) {
             def path = mm?.filePath
-            String urlPrefix = grailsApplication.config.images.urlPrefix
-            String imagesHome = grailsApplication.config.images.home
+            String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
+            String imagesHome = grailsApplication.config.getProperty("images.home", String.class)
 
             // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
             path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))

@@ -17,7 +17,7 @@ class GeoIpService {
 
     @PostConstruct
     def init() {
-        final baseUrl = grailsApplication.config.freegeoip.baseUrl ?: 'https://freegeoip.net'
+        final baseUrl = grailsApplication.config.getProperty('freegeoip.baseUrl', String) ?: 'https://freegeoip.net'
         final gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
         final retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create(gson)).build()
         geoipClient = retrofit.create(FreeGeoipClient)

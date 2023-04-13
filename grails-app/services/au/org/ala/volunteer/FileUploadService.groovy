@@ -13,7 +13,7 @@ class FileUploadService {
     List<Map> uploadImages(String directory, Map<String, List<MultipartFile>> fileMap) {
 
         if (!directory) throw new IllegalArgumentException('directory can not be empty')
-        def imagesHome = grailsApplication.config.images.home
+        String imagesHome = grailsApplication.config.getProperty('images.home', String)
         if (!imagesHome) throw new IllegalStateException('images.home not set')
         def imagesDir = new File(imagesHome, directory)
         if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")
@@ -32,7 +32,7 @@ class FileUploadService {
 
     File uploadImage(String directory, MultipartFile mpf) {
         if (!directory) throw new IllegalArgumentException('directory can not be empty')
-        def imagesHome = grailsApplication.config.images.home
+        String imagesHome = grailsApplication.config.getProperty('images.home', String)
         if (!imagesHome) throw new IllegalStateException('images.home not set')
         def imagesDir = new File(imagesHome, directory)
         if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")
@@ -42,7 +42,7 @@ class FileUploadService {
 
     File uploadImage(String directory, MultipartFile mpf, Closure<String> renameFile) {
         if (!directory) throw new IllegalArgumentException('directory can not be empty')
-        def imagesHome = grailsApplication.config.images.home as String
+        String imagesHome = grailsApplication.config.getProperty('images.home', String)
         if (!imagesHome) throw new IllegalStateException('images.home not set')
         def imagesDir = new File(imagesHome, directory)
         if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")

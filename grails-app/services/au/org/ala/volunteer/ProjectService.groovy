@@ -253,7 +253,8 @@ class ProjectService implements EventPublisher {
         log.debug("Sending project notification")
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
         def projectLabel = messageSource.getMessage("project.name.label", null, "Project", LocaleContextHolder.locale)
-        emailService.sendMail(grailsApplication.config.notifications.project.address, "${appName} ${projectLabel} ${type}: ${projectInstance.name}", message)
+        emailService.sendMail(grailsApplication.config.getProperty('notifications.project.address', String) as String,
+                "${appName} ${projectLabel} ${type}: ${projectInstance.name}", message)
     }
 
     @Immutable
@@ -335,7 +336,7 @@ class ProjectService implements EventPublisher {
 
         // if we get here we can delete the project directory on the disk
         log.info("Project ${projectInstance.id}: Removing folder from disk...")
-        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
+        def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectInstance.id )
         if (dir.exists()) {
             log.info("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -657,7 +658,7 @@ class ProjectService implements EventPublisher {
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
-            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+            def filePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${projectInstance.id}/expedition-image.jpg"
             def file = new File(filePath)
             if (!file.exists()) {
                 return
@@ -714,7 +715,7 @@ class ProjectService implements EventPublisher {
         long sizeInBytes = 0L
 
         if (project) {
-            final projectPath = new File(grailsApplication.config.images.home as String, project.id.toString())
+            final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
             try {
                 sizeInBytes = projectPath.directorySize()
                 log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
@@ -728,7 +729,7 @@ class ProjectService implements EventPublisher {
     }
 
     def projectSize(Project project) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File((grailsApplication.config.getProperty('images.home', String) as String), project.id.toString())
         try {
             long sizeInBytes = projectPath.directorySize()
             project.merge() // In case something has opened a project instance (sometimes happens with task load)
@@ -742,7 +743,7 @@ class ProjectService implements EventPublisher {
     }
 
     def imageStoreStats() {
-        final f = new File(grailsApplication.config.images.home)
+        final f = new File(grailsApplication.config.getProperty('images.home', String) as String)
         [total: f.totalSpace, free: f.freeSpace, usable: f.usableSpace]
     }
 
@@ -786,7 +787,7 @@ class ProjectService implements EventPublisher {
     }
 
     def writeArchive(Project project, OutputStream outputStream) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
         zos.encoding = 'UTF-8'
         zos.fallbackToUTF8 = true
@@ -806,7 +807,7 @@ class ProjectService implements EventPublisher {
      * @throws IOException if no images or directory found for the project.
      */
     def archiveProject(Project project) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
         def result = projectPath.deleteDir()
         if (!result) {
             log.warn("Couldn't delete images for $project")
@@ -1094,7 +1095,7 @@ class ProjectService implements EventPublisher {
         if (inputStream && contentType) {
             // Save image
             String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
-            def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.${fileExtension}"
+            def filePath = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.${fileExtension}"
             def file = new File(filePath)
             file.getParentFile().mkdirs()
             file.withOutputStream {
@@ -1102,8 +1103,8 @@ class ProjectService implements EventPublisher {
             }
         } else {
             // Remove image if exists
-            String localPathJpg = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.jpg"
-            String localPathPng = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.png"
+            String localPathJpg = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.jpg"
+            String localPathPng = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.png"
             File fileJpg = new File(localPathJpg)
             File filePng = new File(localPathPng)
             if (fileJpg.exists()) {
@@ -1121,16 +1122,17 @@ class ProjectService implements EventPublisher {
     String getBackgroundImage(Project project) {
         if (!project) return null
 
-        String localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image"
+        String localPath = "${grailsApplication.config.getProperty('images.home', String) as String}/project/${project.id}/expedition-background-image"
         String localPathJpg = "${localPath}.jpg"
         String localPathPng = "${localPath}.png"
         File fileJpg = new File(localPathJpg)
         File filePng = new File(localPathPng)
 
+        String returnPath = "${grailsApplication.config.getProperty('server.url', String)}${grailsApplication.config.getProperty('images.urlPrefix', String) as String}project/${project.id}/expedition-background-image."
         if (fileJpg.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.jpg"
+            return returnPath + "jpg"
         } else if (filePng.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.png"
+            return returnPath + "png"
         } else {
             return null
         }

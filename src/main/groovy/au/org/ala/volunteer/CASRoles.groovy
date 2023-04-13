@@ -34,11 +34,11 @@ public class CASRoles {
     }
 
     public String getRoleAdmin() {
-        return grailsApplication.config.security.cas.adminRole ?: DEFAULT_ROLE_ADMIN
+        return grailsApplication.config.getProperty('security.cas.adminRole', String) ?: DEFAULT_ROLE_ADMIN
     }
 
     public String getRoleValidator() {
-        return grailsApplication.config.security.cas.validatorRole ?: DEFAULT_ROLE_VALIDATOR
+        return grailsApplication.config.getProperty('security.cas.validatorRole', String) ?: DEFAULT_ROLE_VALIDATOR
     }
 
 }

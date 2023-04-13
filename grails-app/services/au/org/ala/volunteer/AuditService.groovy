@@ -19,7 +19,7 @@ class AuditService {
     }
 
     boolean isTaskLockedForTranscription(Task task, String userId) {
-        long timeout = grailsApplication.config.viewedTask.timeout as long
+        long timeout = grailsApplication.config.getProperty("viewedTask.timeout", Long.class).longValue()
         return task.isLockedForTranscription(userId, timeout)
     }
 
@@ -32,7 +32,7 @@ class AuditService {
         if (!task.dateFullyValidated) {
             if (lastView) {
                 def millisecondsSinceLastView = System.currentTimeMillis() - lastView.lastView
-                if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.viewedTask.timeout as long)) {
+                if (lastView.userId != currentUser && millisecondsSinceLastView < (grailsApplication.config.getProperty('viewedTask.timeout', Long).longValue())) {
                     // Task was viewed inside the lock timeout - potentially locked...
                     // However, if this view was before the task was last updated, then assume view was from the last
                     // transcription (not yet validated) (and update was from setting is_fully_transcribed).

@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan
 import javax.sql.DataSource
 
 @ComponentScan(basePackageClasses = EnvironmentDumper)
+@CompileStatic
 @Slf4j
 class Application extends GrailsAutoConfiguration {
     static void main(String[] args) {
@@ -21,7 +23,7 @@ class Application extends GrailsAutoConfiguration {
 
     @Bean
     SQLDialect jooqDialect() {
-        SQLDialect.POSTGRES_10
+        SQLDialect.POSTGRES
     }
 
     @Bean

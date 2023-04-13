@@ -429,7 +429,7 @@ class TaskService {
         log.debug("Transcriptions per task: [${transcriptionsPerTask}], task jump: [${jump}]")
 
         // This is the length of time for which a Task remains locked after a user views it
-        long timeout = grailsApplication.config.viewedTask.timeout as long
+        long timeout = grailsApplication.config.getProperty('viewedTask.timeout', Long).longValue()
 
         //def sw = new Stopwatch()
 
@@ -483,7 +483,7 @@ class TaskService {
         }
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.getProperty('viewedTask.timeout', Long).longValue())
         def tasks
 
         tasks = Task.createCriteria().list([max:1]) {
@@ -851,13 +851,13 @@ ORDER BY record_idx, name;
         def conn = url.openConnection()
         def fileMap = new FileMap()
 
-        String urlPrefix = grailsApplication.config.images.urlPrefix
+        String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
         if (!urlPrefix.endsWith('/')) {
             urlPrefix += '/'
         }
 
         try {
-            def dir = new File("${grailsApplication.config.images.home}/${projectId}/${taskId}/${multimediaId}")
+            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${projectId}/${taskId}/${multimediaId}")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
@@ -914,7 +914,7 @@ ORDER BY record_idx, name;
     def rollbackMultimediaTransaction(String imageUrl, long projectId, long taskId, long multimediaId) {
         // Just delete the whole MM directory.
         if (projectId && taskId && multimediaId) {
-            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (dir.exists() && !dir.deleteDir()) throw new IOException("Couldn't delete $dir")
         }
     }
@@ -1052,8 +1052,8 @@ ORDER BY record_idx, name;
                 imageUrl = grailsLinkGenerator.link(controller: 'task', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
             }
 
-            String urlPrefix = grailsApplication.config.images.urlPrefix
-            String imagesHome = grailsApplication.config.images.home
+            String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+            String imagesHome = grailsApplication.config.getProperty('images.home', String)
             path = imagesHome + '/' + path.substring(urlPrefix?.length())
             //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 

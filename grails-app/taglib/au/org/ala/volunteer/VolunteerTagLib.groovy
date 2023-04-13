@@ -74,7 +74,7 @@ class VolunteerTagLib {
     * Build navigation links to the custom landing page
     */
     def showLandingPage = {attrs, body ->
-        def numberOfCustomLinksAtTopPage = grailsApplication.config.numberOfCustomLinksAtTopPage ?: 1
+        def numberOfCustomLinksAtTopPage = grailsApplication.config.getProperty('numberOfCustomLinksAtTopPage', Integer).intValue() ?: 1
 
         List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
         def mb = new MarkupBuilder(out)
@@ -280,11 +280,12 @@ class VolunteerTagLib {
     }
 
     private boolean isSiteAdmin() {
-        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
+        return grailsApplication.config.getProperty('security.cas.bypass', String).asBoolean() || userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {
-        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin() || userService.isInstitutionAdmin()
+        return grailsApplication.config.getProperty('security.cas.bypass', String).asBoolean() ||
+                userService.isSiteAdmin() || userService.isInstitutionAdmin()
     }
 
     /**
@@ -780,9 +781,9 @@ class VolunteerTagLib {
         def name = attrs.remove('name')
         def type = attrs.remove('type')
         if (name) {
-            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}/$name"
+            out << "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/${type}/$name"
         } else {
-            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}"
+            out << "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/${type}"
         }
     }
 
@@ -1095,7 +1096,7 @@ class VolunteerTagLib {
     def gson = new GsonBuilder().create()
 
     def analyticsTrackers = { attrs, body ->
-        def trackers = grailsApplication.config.digivol.trackers ?: []
+        def trackers = grailsApplication.config.getProperty('digivol.trackers', List) ?: []
         switch (trackers) {
             case String:
                 trackers = ((String)trackers).split(',')*.trim()
@@ -1126,7 +1127,7 @@ class VolunteerTagLib {
     def insitutionLogos = { attrs, body ->
         def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
         logos.each {
-            out << "<img src=\"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/$it\">"
+            out << "<img src=\"${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/$it\">"
         }
     }
 
@@ -1189,7 +1190,8 @@ function notify() {
      * @emptyTag
      */
     def createLoginLink = { attrs ->
-        def link = new URIBuilder(grailsApplication.config.security.cas.loginUrl).addParameter("service", g.createLink(uri: '/', absolute: true)).build().toString()
+        def link = new URIBuilder(grailsApplication.config.getProperty('security.cas.loginUrl', String))
+                .addParameter("service", g.createLink(uri: '/', absolute: true) as String).build().toString()
         return link
     }
 

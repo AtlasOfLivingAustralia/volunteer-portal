@@ -200,7 +200,7 @@ class ExportService {
 
         def columnIndexRegex = Pattern.compile("^(\\w+)_(\\d+)\$")
 
-        int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
+        int threadPoolSize = grailsApplication.config.getProperty('exportCSVThreadPoolSize', Integer).intValue() ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
             final AtomicInteger numberOfTasks = new AtomicInteger(0)
             taskList.eachParallel { Task task ->
@@ -302,7 +302,7 @@ class ExportService {
         // write header line (field names)
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
-        int threadPoolSize = grailsApplication.config.exportCSVThreadPoolSize ?: THREAD_POOL
+        int threadPoolSize = grailsApplication.config.getProperty('exportCSVThreadPoolSize', Integer).intValue() ?: THREAD_POOL
         GParsPool.withPool threadPoolSize, {
             final AtomicInteger numberOfTasks = new AtomicInteger(0)
             taskList.eachParallel { task ->

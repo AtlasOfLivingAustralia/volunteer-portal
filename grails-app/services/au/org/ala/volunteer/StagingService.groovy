@@ -33,7 +33,7 @@ class StagingService {
     }
 
     String getStagingDirectory(long projectId) {
-        return "${grailsApplication.config.images.home}/${projectId}/staging"
+        return "${grailsApplication.config.getProperty('images.home', String)}/${projectId}/staging"
     }
 
     String createStagedPath(Project project, String filename) {

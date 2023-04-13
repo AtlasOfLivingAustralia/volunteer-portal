@@ -192,11 +192,14 @@ class AchievementService implements EventPublisher {
     }
 
     String getBadgeImageUrlPrefix() {
-        "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}achievements/"
+        String serverUrl = grailsApplication.config.getProperty('server.url', String)
+        String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+        //"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}achievements/"
+        "${serverUrl}/${urlPrefix}achievements/"
     }
 
     String getBadgeImageFilePrefix() {
-        "${grailsApplication.config.images.home}/achievements/"
+        "${grailsApplication.config.getProperty('images.home', String)}/achievements/"
     }
 
     String getBadgeImagePath(AchievementDescription achievementDescription) {

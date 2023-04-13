@@ -312,7 +312,7 @@ class BootStrap {
     @Transactional
     private void prepareDefaultLabels() {
         log.info("Preparing default labels")
-        final prop = grailsApplication.config.bvp.labels.ensureDefault
+        final prop = grailsApplication.config.getProperty("bvp.labels.ensureDefault", String.class)
         final shouldInstall = prop.asBoolean()
         if (shouldInstall) {
             log.info("Installing default labels")
