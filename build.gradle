@@ -36,6 +36,9 @@ version "6.1.5-SNAPSHOT"
 group "au.org.ala"
 description "Digivol application"
 
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
@@ -149,7 +152,7 @@ dependencies {
 
 
     // ALA Plugins
-    implementation 'org.grails.plugins:ala-auth:3.2.3'
+    implementation 'org.grails.plugins:ala-auth:5.2.0-SNAPSHOT'
     implementation 'au.org.ala:ala-cas-client:3.0.0'
     implementation 'au.org.ala:userdetails-service-client:1.5.0' // override this to for external properties changes
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
