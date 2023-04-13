@@ -74,7 +74,7 @@ class VolunteerTagLib {
     * Build navigation links to the custom landing page
     */
     def showLandingPage = {attrs, body ->
-        def numberOfCustomLinksAtTopPage = grailsApplication.config.getProperty('numberOfCustomLinksAtTopPage', Integer).intValue() ?: 1
+        def numberOfCustomLinksAtTopPage = grailsApplication.config.getProperty('numberOfCustomLinksAtTopPage', Integer)?.intValue() ?: 1
 
         List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
         def mb = new MarkupBuilder(out)
