@@ -1187,11 +1187,10 @@ function notify() {
     }
 
     /**
-     * @emptyTag
+     * Creates the link for logging into ALA Auth
      */
     def createLoginLink = { attrs ->
-        def link = new URIBuilder(grailsApplication.config.getProperty('security.cas.loginUrl', String))
-                .addParameter("service", g.createLink(uri: '/', absolute: true) as String).build().toString()
+        def link = g.createLink(controller: 'login', action: 'index')
         return link
     }
 
