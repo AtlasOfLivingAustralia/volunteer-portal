@@ -16,7 +16,7 @@ import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.SortOrder
-import org.jooq.impl.DSL
+//import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -37,7 +37,11 @@ import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.*
+//import static org.jooq.impl.DSL.*
+import static org.jooq.impl.DSL.not
+import static org.jooq.impl.DSL.condition
+import static org.jooq.impl.DSL.coalesce
+import static org.jooq.impl.DSL.select
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
@@ -163,17 +167,16 @@ class ProjectService implements EventPublisher {
     def harvestProjects() {
         def context = jooqContextFactory()
 
-        def forumMessageCountQuery = DSL.
-                select(count().filterWhere(condition(not(FORUM_MESSAGE.DELETED)) | FORUM_MESSAGE.DELETED.isNull()))
+        def forumMessageCountQuery = select(jCount().filterWhere(condition(not(FORUM_MESSAGE.DELETED)) | FORUM_MESSAGE.DELETED.isNull()))
                 .from(FORUM_TOPIC).join(FORUM_MESSAGE).on(FORUM_TOPIC.ID.eq(FORUM_MESSAGE.TOPIC_ID))
                 .where(FORUM_TOPIC.CLASS.eq(ProjectForumTopic.class.name) & FORUM_TOPIC.PROJECT_ID.eq(PROJECT.ID))
 
 
         def records = context
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.DESCRIPTION,
-                        count(TASK.ID),
-                        count().filterWhere(TASK.IS_FULLY_TRANSCRIBED),
-                        count().filterWhere(TASK.IS_VALID),
+                        jCount(TASK.ID),
+                        jCount().filterWhere(TASK.IS_FULLY_TRANSCRIBED),
+                        jCount().filterWhere(TASK.IS_VALID),
                         forumMessageCountQuery.asField("forumMessageCount")
                 )
                 .from(PROJECT)
