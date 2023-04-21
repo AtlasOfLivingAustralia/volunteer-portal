@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
     <g:set var="entityName" value="${message(code: 'user.label', default: 'Volunteer')}"/>
     <title><cl:pageTitle title="${g.message(code:"institutionMessage.optout.title", default:"Opt out of Institution Communications")}" /></title>
     <asset:stylesheet src="label-autocomplete"/>

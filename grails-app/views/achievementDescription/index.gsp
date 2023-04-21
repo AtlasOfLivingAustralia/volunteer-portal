@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'achievementDescription.label', default: 'Badge')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>

@@ -1150,14 +1150,14 @@ class ProjectService implements EventPublisher {
         if (!project) return null
         // Check to see if there is a feature image for this expedition by looking in its project directory.
         // If one exists, use it, otherwise use a default image...
-        def localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+        def localPath = "${grailsApplication.config.getProperty('images.home', String)}/project/${project.id}/expedition-image.jpg"
         def file = new File(localPath)
         if (!file.exists()) {
             return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
         } else {
-            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
             def infix = urlPrefix.endsWith('/') ? '' : '/'
-            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
+            return "${grailsApplication.config.getProperty('server.url', String)}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
         }
     }
 }

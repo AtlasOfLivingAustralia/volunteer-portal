@@ -24,7 +24,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="profile-links">
-                        <li><a href="${cl.urlAppend(base: grailsApplication.config.userDetails.url, path: 'my-profile')}" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
+                        <li><a href="${cl.urlAppend(base: grailsApplication.config.getProperty('userDetails.url', String), path: 'my-profile')}" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
                         <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="hidden unread-count label label-danger label-as-badge"></span></a></li>
                         <li><a href="${g.createLink(controller: 'logout', action: 'logout')}" class="">Logout</a></li>
                     </ul>

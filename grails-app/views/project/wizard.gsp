@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><cl:pageTitle title="Create a new Expedition"/></title>
 
     <asset:stylesheet src="digivol-new-project-wizard.js" />

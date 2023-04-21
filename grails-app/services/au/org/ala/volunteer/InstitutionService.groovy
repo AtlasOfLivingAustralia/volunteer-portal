@@ -24,7 +24,7 @@ class InstitutionService {
         // Send email to grailsApplication.config.notifications.default.address
         log.debug("Sending institution notification")
         def to = recipient
-        if (!recipient) to = grailsApplication.config.notifications.default.address as String
+        if (!recipient) to = grailsApplication.config.getProperty('notifications.default.address', String) as String
         DetailedEmailMessage email = new DetailedEmailMessage(emailAddress: to, subject: title, message: message)
         emailService.sendMail(email)
     }
@@ -124,7 +124,7 @@ class InstitutionService {
 
     String getImageUrl(Institution institution) {
         if (hasImage(institution)) {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/image.jpg"
+            return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}institution/${institution.id}/image.jpg"
         } else {
             return grailsLinkGenerator.resource([file: '/images/banners/default-institution-banner.jpg'])
         }
@@ -132,28 +132,28 @@ class InstitutionService {
 
     String getBannerImageUrl(Institution institution) {
         if (hasBannerImage(institution)) {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/banner-image.jpg"
+            return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}institution/${institution.id}/banner-image.jpg"
         }
     }
 
     String getLogoImageUrl(Institution institution) {
         if (institution && hasLogoImage(institution)) {
-            return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}institution/${institution.id}/logo-image.jpg"
+            return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}institution/${institution.id}/logo-image.jpg"
         } else {
             return grailsLinkGenerator.resource([file: '/images/banners/default-institution-logo.png'])
         }
     }
 
     private String getImagePath(long institutionId) {
-        return "${grailsApplication.config.images.home}/institution/${institutionId}/image.jpg"
+        return "${grailsApplication.config.getProperty('images.home', String)}/institution/${institutionId}/image.jpg"
     }
 
     private String getBannerImagePath(long institutionId) {
-        return "${grailsApplication.config.images.home}/institution/${institutionId}/banner-image.jpg"
+        return "${grailsApplication.config.getProperty('images.home', String)}/institution/${institutionId}/banner-image.jpg"
     }
 
     private String getLogoImagePath(long institutionId) {
-        return "${grailsApplication.config.images.home}/institution/${institutionId}/logo-image.jpg"
+        return "${grailsApplication.config.getProperty('images.home', String)}/institution/${institutionId}/logo-image.jpg"
     }
 
 

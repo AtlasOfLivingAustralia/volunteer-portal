@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
     <title>Expedition administration</title>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>

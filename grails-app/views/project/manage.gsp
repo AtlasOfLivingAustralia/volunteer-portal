@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
     <g:set var="entityName" value="${message(code: 'project.name.label', default: 'Expedition')}"/>
     <title><cl:pageTitle title="${g.message(code:"project.manage.label", default:"Manage Expeditions")}" /></title>
 </head>

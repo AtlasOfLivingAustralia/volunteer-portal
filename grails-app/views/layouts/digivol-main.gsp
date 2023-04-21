@@ -222,7 +222,8 @@
                     <p>Get help in using DIGIVOL and reporting issues</p>
 
                     <p class="address">
-                        <a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a><br/>
+                        <a href="mailto:${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}">
+                            ${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}</a><br/>
                         Australian Museum<br/>
                         Sydney NSW 2010
                     </p>

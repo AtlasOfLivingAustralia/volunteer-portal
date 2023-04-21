@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Institution Message')}"/>
     <title><cl:pageTitle title="${g.message(code: "default.new.label", args: [entityName], default:"Create Institution Message")}" /></title>
     <asset:stylesheet src="bootstrap-select.css" asset-defer="" />

@@ -45,7 +45,7 @@ class StagingService {
     }
 
     String createUploadChunksPath(long projectId, String filename) {
-        return "${grailsApplication.config.images.home}/${projectId}/chunks/$filename/"
+        return "${grailsApplication.config.getProperty('images.home', String)}/${projectId}/chunks/$filename/"
     }
 
     String createDataFilePath(Project project) {

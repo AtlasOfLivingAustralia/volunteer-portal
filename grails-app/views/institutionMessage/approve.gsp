@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Message')}"/>
     <title><cl:pageTitle title="${g.message(code:"institutionMessage.approve.list.label", default:"Approve Institution Messages")}" /></title>
     <style type="text/css">

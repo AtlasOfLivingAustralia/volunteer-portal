@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><cl:pageTitle title="Forum Topic: ${topic.title}"/></title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <asset:stylesheet src="forum.css"/>
     <asset:stylesheet src="image-viewer"/>
 

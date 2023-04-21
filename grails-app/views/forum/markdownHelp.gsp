@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia - Forum formatting help</title>
     <asset:stylesheet src="forum.css"/>
 

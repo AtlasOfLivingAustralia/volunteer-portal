@@ -2,7 +2,7 @@
 <head>
     <title><cl:pageTitle title="An error has occured" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <style type="text/css">
     .message {
         border: 1px solid black;
@@ -42,7 +42,7 @@
         <h4 style="padding-top:20px;">Details:</h4>
         <div class="message" style="margin-bottom: 100px;">
             <strong>Error Status Code:</strong> ${request.'javax.servlet.error.status_code'} ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>
-            <strong>URL:</strong> ${grailsApplication.config.server.url}${request.'javax.servlet.error.request_uri'}<br/>
+            <strong>URL:</strong> ${grailsApplication.config.getProperty('server.url', String)}${request.'javax.servlet.error.request_uri'}<br/>
 
             <g:if test="${exception}">
                 <strong>Exception Message:</strong> <g:if test="${exception.message}">${exception.message?.encodeAsHTML()}</g:if> <g:else>None, see cause below.</g:else><br/>

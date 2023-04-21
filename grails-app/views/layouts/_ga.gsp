@@ -37,8 +37,8 @@
                             ga('send', 'exception', {
                                 'exDescription': exceptionDescription,
                                 'exFatal': false, // Some Error types might be considered as fatal.
-                                'appName': '${grailsApplication.config.info.app.name}',
-                                'appVersion': '${grailsApplication.config.info.app.version}'
+                                'appName': '${grailsApplication.config.getProperty('info.app.name', String)}',
+                                'appVersion': '${grailsApplication.config.getProperty('info.app.version', String)}'
                             });
 
                         } else {
@@ -46,8 +46,8 @@
                             ga(is+'.send', 'exception', {
                                 'exDescription': exceptionDescription,
                                 'exFatal': false, // Some Error types might be considered as fatal.
-                                'appName': '${grailsApplication.config.info.app.name}',
-                                'appVersion': '${grailsApplication.config.info.app.version}'
+                                'appName': '${grailsApplication.config.getProperty('info.app.name', String)}',
+                                'appVersion': '${grailsApplication.config.getProperty('info.app.version', String)}'
                             });
 
                         }

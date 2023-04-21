@@ -2,7 +2,7 @@
 <head>
     <title><cl:pageTitle title="An error has occured" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <style type="text/css">
     .message {
         border: 1px solid black;
