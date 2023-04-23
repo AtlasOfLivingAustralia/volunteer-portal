@@ -52,8 +52,6 @@
     </cache>
 
     <cache alias="userDetailsByIdCache">
-        <key-type>java.io.Serializable</key-type>
-        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">30</ttl>
         </expiry>
