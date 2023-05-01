@@ -19,8 +19,6 @@
     </cache-template>
 
     <cache alias="UserHasValidator">
-        <key-type>java.io.Serializable</key-type>
-        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">10</ttl>
         </expiry>
@@ -30,8 +28,6 @@
     </cache>
 
     <cache alias="UserHasCasRole">
-        <key-type>java.io.Serializable</key-type>
-        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">60</ttl>
         </expiry>
@@ -41,8 +37,6 @@
     </cache>
 
     <cache alias="userDetailsCache">
-        <key-type>java.io.Serializable</key-type>
-        <value-type>java.io.Serializable</value-type>
         <expiry>
             <ttl unit="minutes">30</ttl>
         </expiry>
