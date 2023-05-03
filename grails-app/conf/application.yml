@@ -135,8 +135,7 @@ management:
     endpoints:
         enabled-by-default: false
     server:
-        servlet:
-            context-path: /status
+        base-path: /status
 
 ala:
     baseURL: "https://www.ala.org.au"
