@@ -3,8 +3,7 @@
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
 
-    <variable name="loggingBase" value="${catalina.base:-./logs}" />
-    <property name="loggingDir" value="${loggingBase}/logs"/>
+    <variable name="loggingDir" value="${catalina.base:-./logs}" />
 <!--    <variable name="loggingDir" value="${LOGGING_DIR:-/tmp/}" />-->
     <variable name="appName" value="digivol" />
 
