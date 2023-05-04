@@ -4,7 +4,7 @@ package au.org.ala.volunteer
 class ProcessUserActivityJob {
 
     def userService
-    def concurrent = false
+    static concurrent = false
 
     static triggers = {
         simple repeatInterval: 5000l // execute job once in 5 seconds

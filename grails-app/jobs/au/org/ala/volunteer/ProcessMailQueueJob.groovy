@@ -3,7 +3,7 @@ package au.org.ala.volunteer
 class ProcessMailQueueJob {
 
     def emailService
-    def concurrent = false
+    static concurrent = false
 
     static triggers = {
         simple repeatInterval: 5 * 60 * 1000; // 2 minutes

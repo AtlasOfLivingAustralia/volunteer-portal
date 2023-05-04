@@ -6,7 +6,7 @@ import groovy.util.logging.Slf4j
 class UpdateUsersJob {
 
     def userService
-    def concurrent = false
+    static concurrent = false
 
     def description = "Update all users database details from the user details service"
 
