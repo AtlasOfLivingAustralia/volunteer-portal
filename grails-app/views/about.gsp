@@ -80,7 +80,9 @@
                     development of a new task template.
                 </p>
                 <p>
-                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us (<a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a>)
+                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us
+                    (<a href="mailto:${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}">
+                    ${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}</a>)
                 </p>
                 <h2 class="body-heading"><a name="useful-references">Useful references</a></h2>
                 <div class="embed-responsive embed-responsive-16by9">
