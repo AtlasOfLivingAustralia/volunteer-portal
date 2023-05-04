@@ -9,7 +9,7 @@
                                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
                                     <cl:featuredImage project="${projectSummary.project}" class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}" />
                                 </a>
-                                <div class="text-center">
+                                <div class="text-center" style="padding-left: 50px; padding-bottom: 20px;">
                                     <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
                                     <div class="btn-group ">
                                         <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
