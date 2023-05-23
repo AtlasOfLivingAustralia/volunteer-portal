@@ -4,6 +4,8 @@ import au.com.bytecode.opencsv.CSVWriter
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.SerializationUtils
+import org.jooq.tools.StringUtils
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -137,6 +139,10 @@ class ExportService {
             return [(EMPTY_TRANSCRIPTIONID): uploadedValues]
         }
     }
+
+
+
+
 
     def export_default = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
@@ -514,7 +520,7 @@ class ExportService {
      * @param fieldList
      * @return
      */
-    private Map fieldListToMultiMap(List fieldList) {
+    /*private*/ Map fieldListToMultiMap(List fieldList) {
         Map taskMap = [:]
 
         fieldList.each {
