@@ -798,8 +798,15 @@ class AjaxController {
 //                        log.info("Field ID: ${fieldName}")
 //                        log.info("Field: ${field}")
                         // if field ID is in the json map, add it. If multiple values, put them as a list
-                        String fieldValue = field.collect{ k, v -> v }.join('|')
-                        searchAndSaveValue(jsonMapValues, fieldName, fieldValue)
+                        //String fieldValue = field.collect{ k, v -> v }.join('|')
+                        if (field.size() > 1) {
+                            field.each { idx, field_line ->
+                                searchAndSaveValue(jsonMapValues, fieldName, field_line as String)
+                            }
+                        } else {
+                            def fieldValue = "${field.collect{ k, v -> v }}"
+                            searchAndSaveValue(jsonMapValues, fieldName, fieldValue)
+                        }
                     }
                 }
             }
