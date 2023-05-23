@@ -1,10 +1,8 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
-import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.base.Suppliers
-import com.google.common.cache.CacheBuilder
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -12,12 +10,9 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
-import org.apache.commons.lang.SerializationUtils
-import org.jooq.tools.StringUtils
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 import javax.sql.DataSource
@@ -720,7 +715,7 @@ class AjaxController {
                                "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
             //Closure export_func = export_map_json
-            result.data = export_map_json(project, taskList, fieldNames, fieldList)
+            result.data = exportService.exportJson(taskList, fieldNames, fieldList)
 
             result.success = true
             render(result as JSON)
@@ -729,136 +724,4 @@ class AjaxController {
         }
     }
 
-    //def export_map_json = { Project project, List<Task> taskList, List<String> fieldNames, List<Field> fieldList ->
-    private List export_map_json(Project project, List<Task> taskList, List<String> fieldNames, List<Field> fieldList) {
-        def taskMap = exportService.fieldListToMultiMap(fieldList)
-        def jsonMap = [
-                "dwc:Occurrence": [
-                        "occurrenceId": "",
-                        "associatedMedia": [
-                                "image": "",
-                                "thumb": ""
-                        ],
-                        "catalogNumber": "",
-                        "recordedBy": "",
-                        "occurrenceRemarks": ""
-                ],
-                "dwc:Identification": [
-                        "identificationRemarks": ""
-                ],
-                "dwc:Taxon": [
-                        "scientificName": "",
-                        "genus": "",
-                        "specificEpithet": "",
-                        "scientificNameAuthorship": "",
-                        "taxonRank": "",
-                        "infraspecificEpithet": "",
-                        "clazz": ""
-                ],
-                "dwc:Event": [
-                        "eventDate": "",
-                        "verbatimEventDate": "",
-                        "samplingProtocol": "",
-                        "fieldNumber": ""
-                ],
-                "dwc:Location": [
-                        "country": "",
-                        "stateProvince": "",
-                        "locality": "",
-                        "verbatimLocality": "",
-                        "decimalLatitude": "",
-                        "decimalLongitude": "",
-                        "verbatimLatitude": "",
-                        "verbatimLongitude": "",
-                        "minimumElevationInMetres": "",
-                        "maximumElevationInMeters": "",
-                        "verbatimElevation": "",
-                        "town": "",
-                        "habitat": ""
-                ]
-        ]
-
-        List jsonTaskList = []
-
-        // change this to iterate taskList, search taskMap for task ID (containsKey) and
-        // then grab taskmetadata from the task domain object
-
-        //log.info("Task Map: ${taskMap}")
-
-        taskList.each { Task task ->
-            def jsonMapValues = SerializationUtils.clone(jsonMap) as LinkedHashMap
-            //log.info("Task ID: ${task.id}")
-
-            def taskFields = (taskMap.containsKey(task.id) ? taskMap[task.id] : null)
-            if (taskFields) {
-                taskFields.each { transcriptionId, taskTranscription ->
-//                    log.info("Transcription ID: ${transcriptionId}")
-
-                    taskTranscription.each { String fieldName, field ->
-//                        log.info("Field ID: ${fieldName}")
-//                        log.info("Field: ${field}")
-                        // if field ID is in the json map, add it. If multiple values, put them as a list
-                        //String fieldValue = field.collect{ k, v -> v }.join('|')
-                        if (field.size() > 1) {
-                            field.each { idx, field_line ->
-                                searchAndSaveValue(jsonMapValues, fieldName, field_line as String)
-                            }
-                        } else {
-                            def fieldValue = "${field.collect{ k, v -> v }}"
-                            searchAndSaveValue(jsonMapValues, fieldName, fieldValue)
-                        }
-                    }
-                }
-            }
-
-            // Check Event Date
-            def df = new SimpleDateFormat("yyyy-MM-dd")
-            try {
-                log.info("Event Date: ${jsonMapValues["dwc:Event"].eventDate}")
-                def dateParse = df.parse(jsonMapValues["dwc:Event"].eventDate as String)
-                log.info("Parsed Date: ${dateParse}")
-                // Parseable...
-            } catch (ParseException pe) {
-                // Didn't parse, rename field to verbatimEventDate
-                jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
-                jsonMapValues["dwc:Event"].eventDate = ""
-                log.info("Date wasn't parsable: ${jsonMapValues["dwc:Event"].verbatimEventDate}")
-            }
-
-            // Add Occurrence ID and associated media
-            def multimedia = task.multimedia.first()
-            jsonMapValues["dwc:Occurrence"].occurrenceId = "${task.id}"
-            jsonMapValues["dwc:Occurrence"].associatedMedia.image = multimediaService.getImageUrl(multimedia)
-            jsonMapValues["dwc:Occurrence"].associatedMedia.thumb = multimediaService.getImageThumbnailUrl(multimedia)
-            jsonTaskList.add(jsonMapValues)
-        }
-
-        jsonTaskList
-    }
-
-    /**
-     * Recursive function that searches a Map for a given key. If found, saves the value to that element.
-     * @param m the Map to search
-     * @param key the key being sought
-     * @param value the value to save
-     */
-    //def searchAndSaveValue(Map m, String key, String value) {
-    private Object searchAndSaveValue(Map m, String key, String value) {
-        if (m.containsKey(key)) {
-            // Existing String value, replace with List
-            if (m[key] instanceof String && !StringUtils.isEmpty(m[key] as String)) {
-                def tempValue = m[key]
-                m[key] = [tempValue]
-            } else if (m[key] instanceof List) {
-                // Existing List, add value to the list
-                (m[key] as List).add(value)
-            } else {
-                // Blank, dump the value
-                m[key] = value
-            }
-        }
-        m.findResult { k, v ->
-            v instanceof Map ? searchAndSaveValue(v, key, value) : null
-        }
-    }
 }
