@@ -7,8 +7,6 @@ import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.SerializationUtils
 import org.jooq.tools.StringUtils
 
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -560,9 +558,15 @@ class ExportService {
         return taskMap
     }
 
-    //def export_map_json = { Project project, List<Task> taskList, List<String> fieldNames, List<Field> fieldList ->
-    List exportJson(List<Task> taskList, List<String> fieldNames, List<Field> fieldList) {
+    /**
+     * Compiles a map object intended for json output of a list of tasks and the transcription info.
+     * @param taskList The list of tasks
+     * @param fieldList The field data for the tasks.
+     * @return a Map of the task and field data to be output into json.
+     */
+    List exportJson(List<Task> taskList, List<Field> fieldList) {
         def taskMap = fieldListToMultiMap(fieldList)
+
         def jsonMap = [
                 "dwc:Occurrence": [
                         "occurrenceId": "",
@@ -610,71 +614,60 @@ class ExportService {
         ]
 
         List jsonTaskList = []
-        //log.info("Task Map: ${taskMap}")
 
         taskList.each { Task task ->
             def jsonMapValues = SerializationUtils.clone(jsonMap) as LinkedHashMap
-            //log.info("Task ID: ${task.id}")
 
             def taskFields = (taskMap.containsKey(task.id) ? taskMap[task.id] : null)
             if (taskFields) {
                 taskFields.each { transcriptionId, taskTranscription ->
-//                    log.info("Transcription ID: ${transcriptionId}")
 
                     taskTranscription.each { String fieldName, field ->
-                        log.info("Field ID: ${fieldName}")
-                        log.info("Field: ${field}")
                         // if field ID is in the json map, add it. If multiple values, put them as a list
 
                         def count = field.size()
                         for (int i = 0; i < count; i++) {
-                            log.info("Field line: ${field[i]}")
-                            log.info ("${field[i]?.getClass()}")
-                            searchAndSaveValue(jsonMapValues, fieldName, field[i] as String)
+                            if (!StringUtils.isEmpty(field[i])) {
+                                searchAndSaveValue(jsonMapValues, fieldName, field[i] as String)
+                            }
                         }
-
-
-//                        if (field.size() > 1) {
-//                            def sortedKeys = field.sort()*.key
-//                            sortedKeys.each { key ->
-//                                log.info("Field line: ${field[key]}")
-//                                log.info ("${field[key]?.getClass()}")
-//                                searchAndSaveValue(jsonMapValues, fieldName, field[key] as String)
-//
-//                            }
-////                            field.each { idx, field_line ->
-////                                log.info("Field line: ${field_line}")
-////                                log.info ("${field_line?.getClass()}")
-////                                searchAndSaveValue(jsonMapValues, fieldName, field_line as String)
-////                            }
-//                        } else {
-//                            def fieldValue = field?.first()
-//                            searchAndSaveValue(jsonMapValues, fieldName, fieldValue)
-//                        }
                     }
                 }
             }
 
-            // Check Event Date
-            def df = new SimpleDateFormat("yyyy-MM-dd")
-            try {
-                log.info("Event Date: ${jsonMapValues["dwc:Event"].eventDate}")
-                def dateParse = df.parse(jsonMapValues["dwc:Event"].eventDate as String)
-                log.info("Parsed Date: ${dateParse}")
-                // Parseable...
-            } catch (ParseException ignored) {
-                // Didn't parse, rename field to verbatimEventDate
-                log.info("Parse: ${ignored.getMessage()}")
-                jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
+            // Check Event Date's validity
+            jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
+            // Check if the date parses for an ISO 8601 format. If not, wipe the eventDate field (as it's invalid).
+            if (jsonMapValues["dwc:Event"].eventDate ==~ /^\d{4}(?:-\d{1,2}(?:-\d{1,2}))(?:\/\d{4}(?:-\d{1,2}(?:-\d{1,2})))$/) {
+                log.info("Regex parse true: ${jsonMapValues["dwc:Event"].eventDate}")
+            } else {
+                log.info("Regex parse false ${jsonMapValues["dwc:Event"].eventDate}")
                 jsonMapValues["dwc:Event"].eventDate = ""
-                log.info("Date wasn't parsable: ${jsonMapValues["dwc:Event"].verbatimEventDate}")
             }
+
+            // Change clazz to class
+            jsonMapValues["dwc:Taxon"]["class"] = jsonMapValues["dwc:Taxon"].clazz
+            (jsonMapValues["dwc:Taxon"] as Map).remove("clazz")
 
             // Add Occurrence ID and associated media
             def multimedia = task.multimedia.first()
             jsonMapValues["dwc:Occurrence"].occurrenceId = "${task.id}"
             jsonMapValues["dwc:Occurrence"].associatedMedia.image = multimediaService.getImageUrl(multimedia)
             jsonMapValues["dwc:Occurrence"].associatedMedia.thumb = multimediaService.getImageThumbnailUrl(multimedia)
+
+            // Remove empty fields
+            jsonMapValues.each { jKey, component ->
+                def iterator = (component as Map)?.entrySet().iterator()
+                while (iterator.hasNext()) {
+                    def value = iterator.next().value
+                    if ((value instanceof String && StringUtils.isEmpty(value)) ||
+                            ((value instanceof List || value instanceof Map) && value?.size() == 0)) {
+                        iterator.remove()
+                    }
+                }
+            }
+
+            log.info("json record: ${jsonMapValues}")
             jsonTaskList.add(jsonMapValues)
         }
 
@@ -687,25 +680,24 @@ class ExportService {
      * @param key the key being sought
      * @param value the value to save
      */
-    //def searchAndSaveValue(Map m, String key, String value) {
     private Object searchAndSaveValue(Map m, String key, String value) {
+        // If Map m already contains the key, add the value.
         if (m.containsKey(key)) {
+            log.info("m[${key}] before: ${m[key]}, incoming value: ${value}")
             // Existing String value, replace with List
             if (m[key] instanceof String && !StringUtils.isEmpty(m[key] as String)) {
-                log.info("${key}: additional value, converting to list")
-                def tempValue = m[key]
-                m[key] = [tempValue]
+                String tempValue = m[key]
+                if (!tempValue.equalsIgnoreCase(value)) m[key] = [tempValue, value]
             } else if (m[key] instanceof List) {
                 // Existing List, add value to the list
-                log.info("${key}: Adding value to list.")
-                (m[key] as List).add(value)
+                if (!m[key].find{ String it -> it.equalsIgnoreCase(value)}) (m[key] as List).add(value)
             } else {
                 // Blank, dump the value
-                log.info("Key: ${key}: New value, storing as String")
                 m[key] = value
             }
-            log.info("Stored value: ${m[key]}")
+            // log.info("m[${key}] after: ${m[key]}")
         }
+
         m.findResult { k, v ->
             v instanceof Map ? searchAndSaveValue(v, key, value) : null
         }

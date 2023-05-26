@@ -715,7 +715,7 @@ class AjaxController {
                                "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
             //Closure export_func = export_map_json
-            result.data = exportService.exportJson(taskList, fieldNames, fieldList)
+            result.data = exportService.exportJson(taskList, fieldList)
 
             result.success = true
             render(result as JSON)
