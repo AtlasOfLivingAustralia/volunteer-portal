@@ -714,13 +714,14 @@ class AjaxController {
             def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID",
                                "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
-            //Closure export_func = export_map_json
             result.data = exportService.exportJson(taskList, fieldList)
+            result.projectId = project.id
+            result.institutionId = project.institution.id
 
             result.success = true
             render(result as JSON)
         } else {
-            render([success: false, message: "Unable to retrieve project with ID '${params.id}'"] as JSON)
+            render([status: 404, message: "Expedition not found."] as JSON)
         }
     }
 

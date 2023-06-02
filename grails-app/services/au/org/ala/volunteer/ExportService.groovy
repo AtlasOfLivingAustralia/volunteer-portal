@@ -639,9 +639,9 @@ class ExportService {
             jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
             // Check if the date parses for an ISO 8601 format. If not, wipe the eventDate field (as it's invalid).
             if (jsonMapValues["dwc:Event"].eventDate ==~ /^\d{4}(?:-\d{1,2}(?:-\d{1,2}))(?:\/\d{4}(?:-\d{1,2}(?:-\d{1,2})))$/) {
-                log.info("Regex parse true: ${jsonMapValues["dwc:Event"].eventDate}")
+                log.debug("Regex parse true: ${jsonMapValues["dwc:Event"].eventDate}")
             } else {
-                log.info("Regex parse false ${jsonMapValues["dwc:Event"].eventDate}")
+                log.debug("Regex parse false ${jsonMapValues["dwc:Event"].eventDate}")
                 jsonMapValues["dwc:Event"].eventDate = ""
             }
 
@@ -667,7 +667,7 @@ class ExportService {
                 }
             }
 
-            log.info("json record: ${jsonMapValues}")
+            log.debug("json record: ${jsonMapValues}")
             jsonTaskList.add(jsonMapValues)
         }
 
@@ -683,7 +683,7 @@ class ExportService {
     private Object searchAndSaveValue(Map m, String key, String value) {
         // If Map m already contains the key, add the value.
         if (m.containsKey(key)) {
-            log.info("m[${key}] before: ${m[key]}, incoming value: ${value}")
+            log.debug("m[${key}] before: ${m[key]}, incoming value: ${value}")
             // Existing String value, replace with List
             if (m[key] instanceof String && !StringUtils.isEmpty(m[key] as String)) {
                 String tempValue = m[key]
@@ -695,7 +695,7 @@ class ExportService {
                 // Blank, dump the value
                 m[key] = value
             }
-            // log.info("m[${key}] after: ${m[key]}")
+            log.debug("m[${key}] after: ${m[key]}")
         }
 
         m.findResult { k, v ->
