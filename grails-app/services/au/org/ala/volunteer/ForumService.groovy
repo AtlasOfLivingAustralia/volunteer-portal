@@ -300,13 +300,9 @@ class ForumService {
         def result = false
         def projectInstance = null
         if (message.topic.instanceOf(ProjectForumTopic)) {
-            log.info("Loading topic class: ${message?.topic?.class?.getName()}")
-            def projectTopic = message.topic as ProjectForumTopic
-            projectInstance = projectTopic.project
+            projectInstance = message.topic.project
         } else if (message.topic.instanceOf(TaskForumTopic)) {
-            log.info("topic class: ${message?.topic?.class?.getName()}")
-            def taskTopic = message.topic //as TaskForumTopic
-            projectInstance = taskTopic.task.project
+            projectInstance = message.topic.task.project
         }
 
         if (userService.isForumModerator(projectInstance)) {
