@@ -721,7 +721,8 @@ class AjaxController {
             result.success = true
             render(result as JSON)
         } else {
-            render([status: 404, message: "Expedition not found."] as JSON)
+            response.status = SC_NOT_FOUND
+            render([message: "Expedition not found."] as JSON)
         }
     }
 
