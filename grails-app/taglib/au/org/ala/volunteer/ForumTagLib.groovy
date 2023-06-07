@@ -1,7 +1,8 @@
 package au.org.ala.volunteer
 
-import com.naleid.grails.MarkdownService
-import grails.gorm.transactions.Transactional
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
 
@@ -10,10 +11,9 @@ class ForumTagLib {
     static namespace = 'vpf'
 
     UserService userService
-    MarkdownService markdownService
-    TaskService taskService
     MultimediaService multimediaService
     ProjectService projectService
+    MarkdownService markdownService
     @Lazy ForumService forumService = grailsApplication.mainContext.getBean('forumService')
 
     /**
@@ -31,6 +31,7 @@ class ForumTagLib {
     def topicMessagesTable = { attrs, body ->
 
         def topic = attrs.topic as ForumTopic
+//        Parser parser = Parser.builder().build();
 
         if (topic) {
 
@@ -105,8 +106,10 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            def message = markdownService.sanitize(reply.text ?: "")
-                            td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
+
+                            // Process the markdown into HTML and sanitize.
+                            td() { mkp.yieldUnescaped(markdownService.renderMarkdown(reply.text ?: "")) }
+
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
@@ -306,13 +309,13 @@ class ForumTagLib {
 
         Project projectInstance = null
         Task taskInstance = null
-        def topic = attrs.topic as ForumTopic
+        def topic = attrs.topic //as ForumTopic
 
         if (topic) {
             if (topic.instanceOf(ProjectForumTopic)) {
-                projectInstance = (topic as ProjectForumTopic).project
+                projectInstance = topic.project
             } else if (topic.instanceOf(TaskForumTopic)) {
-                taskInstance = (topic as TaskForumTopic).task
+                taskInstance = topic.task
             }
         } else {
             projectInstance = attrs.projectInstance as Project
@@ -404,6 +407,7 @@ class ForumTagLib {
      */
     def messagesTable = { attrs, body ->
         def messages = attrs.messages
+//        Parser parser = Parser.builder().build();
 
         if (messages) {
             def mb = new MarkupBuilder(out)
@@ -475,8 +479,9 @@ class ForumTagLib {
                                     }
                                 }
                             }
-                            def messageText = markdownService.sanitize(message.text ?: "")
-                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(messageText)) }
+
+                            // Process the markdown into HTML and sanitize.
+                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.renderMarkdown(message.text ?: "")) }
                         }
                     }
                 }
