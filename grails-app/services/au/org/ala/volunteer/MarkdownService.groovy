@@ -35,7 +35,7 @@ class MarkdownService {
         Node document = parser.parse(markdown ?: "")
         HtmlRenderer renderer = HtmlRenderer.builder().build()
         def md = sanitizerService.sanitize(renderer.render(document))
-        log.info("Returning markdown: ${md}")
+        //log.info("Returning markdown: ${md}")
         md
     }
 }
