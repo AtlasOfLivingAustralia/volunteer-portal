@@ -103,6 +103,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core"
     testImplementation "org.grails:grails-web-testing-support"
     testImplementation "org.grails.plugins:geb"
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
     testImplementation "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
     testImplementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
     testImplementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
@@ -152,9 +153,9 @@ dependencies {
 
 
     // ALA Plugins
-    implementation 'org.grails.plugins:ala-auth:6.0.1-SNAPSHOT'
+    implementation 'org.grails.plugins:ala-auth:6.0.3'
     implementation 'au.org.ala:ala-cas-client:3.0.0'
-    implementation 'au.org.ala:userdetails-service-client:6.0.1-SNAPSHOT' // override this to for external properties changes
+    implementation 'au.org.ala:userdetails-service-client:6.0.3' // override this to for external properties changes
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
 
     // Dependencies
@@ -323,6 +324,7 @@ webdriverBinaries {
 }
 
 tasks.withType(Test) {
+    useJUnitPlatform()
     systemProperty "geb.env", System.getProperty('geb.env')
     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
     if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
