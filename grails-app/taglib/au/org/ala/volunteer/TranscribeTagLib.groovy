@@ -711,7 +711,8 @@ class TranscribeTagLib {
 
     private renderFieldHelp(MarkupBuilder mb, TemplateField field, String targetPosition = null, String tooltipPosition = null) {
         if (field && field.helpText) {
-            def helpText = markdownService.markdown(field.helpText)
+            //def helpText = markdownService.markdown(field.helpText)
+            def helpText = markdownService.renderMarkdown(field.helpText)
             mb.a(href:'#', class:'btn btn-default btn-xs fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
                 i(class:'fa fa-question help-container') {
                     mkp.yieldUnescaped('')

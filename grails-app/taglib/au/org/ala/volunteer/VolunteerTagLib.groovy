@@ -299,7 +299,7 @@ class VolunteerTagLib {
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
-            helpText = markdownService.markdown(helpText)
+            helpText = markdownService.renderMarkdown(helpText)
             def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
@@ -339,7 +339,7 @@ class VolunteerTagLib {
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
-            helpText = markdownService.markdown(helpText)
+            helpText = markdownService.renderMarkdown(helpText)
             def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.qtipMy = attrs.tooltipPosition

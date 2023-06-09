@@ -2,14 +2,15 @@ package au.org.ala.volunteer
 
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.StringUtils
 
 class ForumController {
 
     def forumService
     def userService
-    def markdownService
     def projectService
     def fieldService
+    def markdownService
 
     def index() {
     }
@@ -322,32 +323,62 @@ class ForumController {
                 replyTo = forumService.getFirstMessageForTopic(topic)
             }
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
+            render view:'postMessage',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched],
+                    params: [messageText: markdownService.sanitizeMarkdown(params.messageText)]
         }
     }
 
     def previewMessageEdit() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
-        render view:'editMessage', model: [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText]
+        render view:'editMessage', model: [forumMessage: message,
+                                           isWatched: isWatched,
+                                           userInstance: userService.currentUser,
+                                           messageText: markdownService.sanitizeMarkdown(params.messageText)]
     }
 
     def updateTopicMessage() {
 
         def message = ForumMessage.get(params.int("messageId"))
         def currentUser = userService.currentUser
-        if (message && currentUser) {
+        def text = params.messageText as String
+
+        def errors = []
+        if ((message && !StringUtils.isEmpty(text)) && currentUser) {
             if (!forumService.isMessageEditable(message, currentUser)) {
                 throw new RuntimeException("You do not have sufficient privileges to edit this message!")
             }
-            message.text = params.messageText
+
+            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
+            text = markdownService.sanitizeMarkdown(text)
+
+            if (message.text.length() > maxSize) {
+                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+            }
+
             if (params.watchTopic == 'on') {
                 forumService.watchTopic(currentUser, message.topic)
             } else {
                 forumService.unwatchTopic(currentUser, message.topic)
             }
+        } else {
+            errors << "Message text must not be empty"
         }
-        redirect(action:'viewForumTopic', id: message?.topic?.id)
+
+        if (!errors) {
+            //message.save(flush: true, failOnError: true)
+            message.text = text
+            redirect(action: 'viewForumTopic', id: message?.topic?.id)
+            return
+        }
+
+        flash.message = formatMessages(errors)
+        render view:'editMessage', model: [forumMessage: message,
+                                           userInstance: userService.currentUser,
+                                           isWatched: (params.watchTopic == 'on'),
+                                           messageText: params.messageText]
+        //redirect(action:'viewForumTopic', id: message?.topic?.id)
     }
 
     def deleteTopicMessage() {
@@ -389,7 +420,7 @@ class ForumController {
 
             def text = params.messageText as String
             def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-            msgParams.text = markdownService.sanitize(text)
+            msgParams.text = markdownService.sanitizeMarkdown(text)
 
             if (text.length() > maxSize) {
                 errors << "The message text is too long. It needs to be less than ${maxSize} characters"

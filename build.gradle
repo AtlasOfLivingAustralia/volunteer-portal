@@ -132,7 +132,8 @@ dependencies {
     implementation 'org.grails.plugins:postgresql-extensions:6.1.0'
     implementation 'org.grails.plugins:mail:3.0.0' //old: 2.0.1
     implementation 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
-    implementation 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
+    //implementation 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
+    implementation 'com.vladsch.flexmark:flexmark-all:0.64.8' // Markdown forum posts
     implementation 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
     //implementation 'org.grails.plugins:quartz:2.0.12'
     implementation("org.quartz-scheduler:quartz:2.3.2") {
