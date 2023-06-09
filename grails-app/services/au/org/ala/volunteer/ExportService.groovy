@@ -608,7 +608,7 @@ class ExportService {
                         "minimumElevationInMeters": "",
                         "maximumElevationInMeters": "",
                         "verbatimElevation": "",
-                        "town": "",
+                        "municipality": "",
                         "habitat": ""
                 ]
         ]
