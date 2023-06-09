@@ -4,8 +4,9 @@ import au.com.bytecode.opencsv.CSVWriter
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.SerializationUtils
+import org.jooq.tools.StringUtils
 
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -137,6 +138,10 @@ class ExportService {
             return [(EMPTY_TRANSCRIPTIONID): uploadedValues]
         }
     }
+
+
+
+
 
     def export_default = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
@@ -551,5 +556,150 @@ class ExportService {
         }
 
         return taskMap
+    }
+
+    /**
+     * Compiles a map object intended for json output of a list of tasks and the transcription info.
+     * @param taskList The list of tasks
+     * @param fieldList The field data for the tasks.
+     * @return a Map of the task and field data to be output into json.
+     */
+    List exportJson(List<Task> taskList, List<Field> fieldList) {
+        def taskMap = fieldListToMultiMap(fieldList)
+
+        def jsonMap = [
+                "dwc:Occurrence": [
+                        "occurrenceId": "",
+                        "associatedMedia": [
+                                "image": "",
+                                "thumb": ""
+                        ],
+                        "catalogNumber": "",
+                        "recordedBy": "",
+                        "occurrenceRemarks": ""
+                ],
+                "dwc:Identification": [
+                        "identificationRemarks": ""
+                ],
+                "dwc:Taxon": [
+                        "scientificName": "",
+                        "genus": "",
+                        "specificEpithet": "",
+                        "scientificNameAuthorship": "",
+                        "taxonRank": "",
+                        "infraspecificEpithet": "",
+                        "clazz": ""
+                ],
+                "dwc:Event": [
+                        "eventDate": "",
+                        "verbatimEventDate": "",
+                        "samplingProtocol": "",
+                        "fieldNumber": ""
+                ],
+                "dwc:Location": [
+                        "country": "",
+                        "stateProvince": "",
+                        "locality": "",
+                        "verbatimLocality": "",
+                        "decimalLatitude": "",
+                        "decimalLongitude": "",
+                        "verbatimLatitude": "",
+                        "verbatimLongitude": "",
+                        "minimumElevationInMeters": "",
+                        "maximumElevationInMeters": "",
+                        "verbatimElevation": "",
+                        "municipality": "",
+                        "habitat": ""
+                ]
+        ]
+
+        List jsonTaskList = []
+
+        taskList.each { Task task ->
+            def jsonMapValues = SerializationUtils.clone(jsonMap) as LinkedHashMap
+
+            def taskFields = (taskMap.containsKey(task.id) ? taskMap[task.id] : null)
+            if (taskFields) {
+                taskFields.each { transcriptionId, taskTranscription ->
+
+                    taskTranscription.each { String fieldName, field ->
+                        // if field ID is in the json map, add it. If multiple values, put them as a list
+
+                        def count = field.size()
+                        for (int i = 0; i < count; i++) {
+                            if (!StringUtils.isEmpty(field[i])) {
+                                searchAndSaveValue(jsonMapValues, fieldName, field[i] as String)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check Event Date's validity
+            jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
+            // Check if the date parses for an ISO 8601 format. If not, wipe the eventDate field (as it's invalid).
+            if (jsonMapValues["dwc:Event"].eventDate ==~ /^\d{4}(?:-\d{1,2}(?:-\d{1,2}))(?:\/\d{4}(?:-\d{1,2}(?:-\d{1,2})))$/) {
+                log.debug("Regex parse true: ${jsonMapValues["dwc:Event"].eventDate}")
+            } else {
+                log.debug("Regex parse false ${jsonMapValues["dwc:Event"].eventDate}")
+                jsonMapValues["dwc:Event"].eventDate = ""
+            }
+
+            // Change clazz to class
+            jsonMapValues["dwc:Taxon"]["class"] = jsonMapValues["dwc:Taxon"].clazz
+            (jsonMapValues["dwc:Taxon"] as Map).remove("clazz")
+
+            // Add Occurrence ID and associated media
+            def multimedia = task.multimedia.first()
+            jsonMapValues["dwc:Occurrence"].occurrenceId = "${task.id}"
+            jsonMapValues["dwc:Occurrence"].associatedMedia.image = multimediaService.getImageUrl(multimedia)
+            jsonMapValues["dwc:Occurrence"].associatedMedia.thumb = multimediaService.getImageThumbnailUrl(multimedia)
+
+            // Remove empty fields
+            jsonMapValues.each { jKey, component ->
+                def iterator = (component as Map)?.entrySet().iterator()
+                while (iterator.hasNext()) {
+                    def value = iterator.next().value
+                    if ((value instanceof String && StringUtils.isEmpty(value)) ||
+                            ((value instanceof List || value instanceof Map) && value?.size() == 0)) {
+                        iterator.remove()
+                    }
+                }
+            }
+
+            log.debug("json record: ${jsonMapValues}")
+            jsonTaskList.add(jsonMapValues)
+        }
+
+        jsonTaskList
+    }
+
+    /**
+     * Recursive function that searches a Map for a given key. If found, saves the value to that element.
+     * @param m the Map to search
+     * @param key the key being sought
+     * @param value the value to save
+     */
+    private Object searchAndSaveValue(Map m, String key, String value) {
+        // If Map m already contains the key, add the value.
+        if (m.containsKey(key)) {
+            log.debug("m[${key}] before: ${m[key]}, incoming value: ${value}")
+            // Existing String value, replace with List
+            if (m[key] instanceof String && !StringUtils.isEmpty(m[key] as String)) {
+                String tempValue = m[key]
+                if (!tempValue.equalsIgnoreCase(value)) m[key] = [tempValue, value]
+            } else if (m[key] instanceof List) {
+                // Existing List, add value to the list
+                if (!m[key].find{ String it -> it.equalsIgnoreCase(value)}) (m[key] as List).add(value)
+            } else {
+                // Blank, dump the value
+                m[key] = value
+            }
+            log.debug("m[${key}] after: ${m[key]}")
+        }
+
+        m.findResult { k, v ->
+            v instanceof Map ? searchAndSaveValue(v, key, value) : null
+        }
     }
 }

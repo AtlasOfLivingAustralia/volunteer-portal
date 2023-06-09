@@ -1,10 +1,8 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
-import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.base.Suppliers
-import com.google.common.cache.CacheBuilder
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -50,6 +48,8 @@ class AjaxController {
     def achievementService
     def sessionFactory
     def projectService
+    def exportService
+    def fieldService
 
     static responseFormats = ['json', 'xml']
     static final String UNAUTH_MSG = "Must be logged in as an administrator to use this service!"
@@ -703,4 +703,27 @@ class AjaxController {
             request.inputStream
         }
     }
+
+    def expeditionDwcJson() {
+        def project = Project.get(params.long('id'))
+        def result = [:]
+
+        if (project) {
+            def taskList = taskService.getAllTasksAndTranscriptionsIfExists(project, [max: 9999])
+            def fieldList = fieldService.getAllFieldsWithTasks(taskList)
+            def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID",
+                               "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
+            fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
+            result.data = exportService.exportJson(taskList, fieldList)
+            result.projectId = project.id
+            result.institutionId = project.institution.id
+
+            result.success = true
+            render(result as JSON)
+        } else {
+            response.status = SC_NOT_FOUND
+            render([message: "Expedition not found."] as JSON)
+        }
+    }
+
 }

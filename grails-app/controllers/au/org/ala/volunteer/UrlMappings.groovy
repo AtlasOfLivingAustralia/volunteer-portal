@@ -16,10 +16,12 @@ class UrlMappings {
         "/message/$action?/$id?"(controller: 'institutionMessage')
         "/admin/label/$action?" (controller: 'label')
         "/admin/leaderboard/$action?" (controller: 'leaderBoardAdmin')
+        "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
+
         name achievementDescription: "/admin/achievements/$action?/$id?" (controller: 'achievementDescription')
         name landingPageAdmin: "/admin/landingPage/$action?/$id?" (controller: 'landingPageAdmin')
 
-        "/ws/$action?/$id?(.$format)?"(controller: 'ajax')
+
 
         "500"(controller: 'error', action: 'index')
         "404"(view:'/notFound')
