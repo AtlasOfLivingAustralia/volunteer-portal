@@ -337,7 +337,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         results[0]['externalIdentifier'] == 'external id'
         results[0]['exportComment'] == "Fully transcribed by Test user. Exported on ${today} from DigiVol (https://volunteer.ala.org.au)"
         results[0]['validationStatus'] == ''
-        results[0]['dateTranscribed'] == '01-Jul-2019 10:30:00'
+        results[0]['dateTranscribed'] == '01-Jul.-2019 10:30:00'
         results[0]['dateValidated'] == ''
     }
 

@@ -51,7 +51,7 @@ class ProjectServiceSpec extends FlybernateSpec implements ServiceUnitTest<Proje
         { ->
             // need to reach deep down into the transaction status to get the connection object in the transaction
             def conn = transactionStatus.transaction.connectionHolder.connectionHandle.connection
-            DSL.using(conn, SQLDialect.POSTGRES_9_5)
+            DSL.using(conn, SQLDialect.POSTGRES)
         }
 
     def setup() {
