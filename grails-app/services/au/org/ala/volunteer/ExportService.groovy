@@ -609,7 +609,8 @@ class ExportService {
                         "maximumElevationInMeters": "",
                         "verbatimElevation": "",
                         "municipality": "",
-                        "habitat": ""
+                        "habitat": "",
+                        "coordinateUncertaintyInMeters": ""
                 ]
         ]
 
