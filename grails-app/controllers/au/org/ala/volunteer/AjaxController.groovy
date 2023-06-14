@@ -10,6 +10,7 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
+import io.micronaut.http.annotation.Header
 import org.apache.commons.lang.StringUtils
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -734,9 +735,10 @@ class AjaxController {
      * @param userId the ID for the user (ALA-assigned String value).
      * @return true if the user has been granted validator, false if not.
      */
-    def hasValidatorRole() {
+    def hasValidatorRole(@Header('X-DigiVol-Client') String digiVolClient) {
         def project = Project.get(params.long('projectId'))
         def userId = params.userid as String
+        log.info("DigiVol Client: ${digiVolClient}")
         if (!StringUtils.isEmpty(userId) && project) {
             // Get user object from string userId
             def userList = User.findAllByUserId(userId)
