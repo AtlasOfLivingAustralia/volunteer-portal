@@ -181,7 +181,7 @@ class UserController {
                     countDistinct('id')
                 }
             } as List
-            log.info("totalcount: ${totalCount}")
+            // log.info("totalcount: ${totalCount}")
             totalCount = countResult.first()
         } else {
             userList = User.list(params)
