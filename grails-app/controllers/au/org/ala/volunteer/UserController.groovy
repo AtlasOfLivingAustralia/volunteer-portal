@@ -159,6 +159,7 @@ class UserController {
         }
 
         def userList
+        def totalCount = 0
 
         if (params.q) {
             // TODO Migrate away from database email addresses
@@ -169,12 +170,26 @@ class UserController {
                     ilike("email", '%' + params.q + '%')
                 }
             }
+
+            def cc = User.createCriteria()
+            def countResult = cc.list() {
+                or {
+                    ilike("displayName", '%' + params.q + '%')
+                    ilike("email", '%' + params.q + '%')
+                }
+                projections {
+                    countDistinct('id')
+                }
+            } as List
+            log.info("totalcount: ${totalCount}")
+            totalCount = countResult.first()
         } else {
             userList = User.list(params)
+            totalCount = User.count()
         }
 
         def currentUser = userService.currentUserId
-        [userInstanceList: userList, userInstanceTotal: userList.totalCount, currentUser: currentUser]
+        [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser]
     }
 
     /**
