@@ -154,7 +154,7 @@
     <logger name="au.org.ala.volunteer.TaskLoadService" level="DEBUG" additivity="false">
         <appender-ref ref="DEBUG_LOG"/>
     </logger>
-    <logger name="au.org.ala.volunteer.TaskIngestJob" level="DEBUG" additivity="false">
+    <logger name="au.org.ala.volunteer.TaskIngestJob" level="INFO" additivity="false">
         <appender-ref ref="DEBUG_LOG"/>
     </logger>
     <logger name="au.org.ala.volunteer.ValidationService" level="DEBUG" additivity="false">
