@@ -8,16 +8,18 @@ import au.org.ala.volunteer.jooq.tables.records.ShadowFileDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskRecord
 import grails.events.EventPublisher
+import groovy.json.JsonSlurper
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang.StringUtils
 import org.jooq.Configuration
 import org.jooq.DSLContext
+import org.jooq.JSONB
 import org.jooq.TransactionalCallable
 import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
+import org.jooq.tools.json.JSONArray
 import org.springframework.beans.factory.annotation.Value
 
 import java.nio.charset.StandardCharsets
@@ -151,11 +153,12 @@ class TaskLoadService implements EventPublisher {
                     projectId = project.id
                     projectName = project.name
                     imageUrl = imgData.url
-                    fields = []
+                    fields = JSONB.jsonb("[]")
                     replaceDuplicates = true
                     externalIdentifier = imgData.valueMap["externalIdentifier"] ?: imgData.valueMap["externalIdentifier_0"]
                     it
                 }
+                def fieldList = []
                 imgData.valueMap.each { kvp ->
                     def fieldName = kvp.key
                     def recordIndex = 0
@@ -167,8 +170,15 @@ class TaskLoadService implements EventPublisher {
                     }
 
                     if (fieldName != 'externalIdentifier') {
-                        taskDesc.fields.add([name: fieldName, recordIdx: recordIndex, transcribedByUserId: 'system', value: kvp.value])
+                        def fieldMap = [name: fieldName, recordIdx: recordIndex, transcribedByUserId: 'system', value: kvp.value]
+                        fieldList.add(fieldMap)
                     }
+                }
+
+                // Convert fieldList to JSON
+                if (fieldList.size() > 0) {
+                    JSONArray fieldArray = new JSONArray(fieldList)
+                    taskDesc.fields = JSONB.jsonb(fieldArray.toString())
                 }
 
                 taskDesc.store()
@@ -911,8 +921,11 @@ class TaskLoadService implements EventPublisher {
 
     private List<FieldRecord> createInitialFieldRecordsFromDescriptor(TaskDescriptorRecord job, TaskRecord record) {
         def fields = job.fields
-        if (fields instanceof List) {
-            fields.collectMany { fd ->
+        def json = fields.data()
+        def slurper = new JsonSlurper()
+        def fieldData = slurper.parseText(json)
+        if (fieldData instanceof List) {
+            fieldData.collectMany { fd ->
                 if (fd instanceof Map) {
                     fd['value'] = replaceSpecialCharacters(fd['value'] ?: "")
                     [new FieldRecord().with {
