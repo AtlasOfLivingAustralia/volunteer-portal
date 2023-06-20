@@ -10,8 +10,8 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
-import io.micronaut.http.annotation.Header
 import org.apache.commons.lang.StringUtils
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
@@ -46,9 +46,7 @@ class AjaxController {
     def institutionService
     def domainUpdateService
     def authService
-    def settingsService
     def achievementService
-    def sessionFactory
     def projectService
     def exportService
     def fieldService
@@ -735,10 +733,22 @@ class AjaxController {
      * @param userId the ID for the user (ALA-assigned String value).
      * @return true if the user has been granted validator, false if not.
      */
-    def hasValidatorRole(@Header('X-DigiVol-Client') String digiVolClient) {
+    def hasValidatorRole(@RequestHeader("DigiVol-Client") String xDigiVolClient) {
         def project = Project.get(params.long('projectId'))
         def userId = params.userid as String
-        log.info("DigiVol Client: ${digiVolClient}")
+
+//        request.headerNames.each { it ->
+//            log.info("Header ${it}: ${request.getHeader(it)}")
+//        }
+
+        def headerValue = request.getHeader("DigiVol-Client")
+        if (StringUtils.isEmpty(headerValue) || !headerValue.equalsIgnoreCase("abc123")) {
+            response.status = SC_FORBIDDEN
+            render([message: "Unauthorised access."] as JSON)
+            return
+        }
+
+        log.info("DigiVol Client: ${xDigiVolClient}") // <-- this returns null
         if (!StringUtils.isEmpty(userId) && project) {
             // Get user object from string userId
             def userList = User.findAllByUserId(userId)
@@ -746,10 +756,11 @@ class AjaxController {
             if (userList && userList.size() > 0) user = userList.first()
             if (user) {
                 render(["result": userService.userHasValidatorRole(user as User, project.id, project.institution.id)] as JSON)
+                return
             }
-        } else {
-            response.status = SC_NOT_FOUND
-            render([message: "User or Project not found."] as JSON)
         }
+
+        response.status = SC_NOT_FOUND
+        render([message: "User or Project not found."] as JSON)
     }
 }
