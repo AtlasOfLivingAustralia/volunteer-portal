@@ -154,9 +154,10 @@ dependencies {
 
 
     // ALA Plugins
-    implementation 'org.grails.plugins:ala-auth:6.0.3'
+    implementation "org.grails.plugins:ala-auth:$alaAuthVersion"
     implementation 'au.org.ala:ala-cas-client:3.0.0'
-    implementation 'au.org.ala:userdetails-service-client:6.0.3' // override this to for external properties changes
+    implementation "au.org.ala:userdetails-service-client:$alaAuthVersion" // override this to for external properties changes
+    implementation "org.grails.plugins:ala-ws-security-plugin:$alaAuthVersion"
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
 
     // Dependencies

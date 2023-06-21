@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.ala.org.ws.security.RequireApiKey
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.base.Stopwatch
 import com.google.common.base.Suppliers
@@ -11,7 +12,6 @@ import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
@@ -733,22 +733,11 @@ class AjaxController {
      * @param userId the ID for the user (ALA-assigned String value).
      * @return true if the user has been granted validator, false if not.
      */
-    def hasValidatorRole(@RequestHeader("DigiVol-Client") String xDigiVolClient) {
+    @RequireApiKey(scopes='digivol/internal')
+    def hasValidatorRole() {
         def project = Project.get(params.long('projectId'))
         def userId = params.userid as String
 
-//        request.headerNames.each { it ->
-//            log.info("Header ${it}: ${request.getHeader(it)}")
-//        }
-
-        def headerValue = request.getHeader("DigiVol-Client")
-        if (StringUtils.isEmpty(headerValue) || !headerValue.equalsIgnoreCase("abc123")) {
-            response.status = SC_FORBIDDEN
-            render([message: "Unauthorised access."] as JSON)
-            return
-        }
-
-        log.info("DigiVol Client: ${xDigiVolClient}") // <-- this returns null
         if (!StringUtils.isEmpty(userId) && project) {
             // Get user object from string userId
             def userList = User.findAllByUserId(userId)
