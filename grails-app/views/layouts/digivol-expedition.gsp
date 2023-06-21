@@ -35,6 +35,7 @@
 <g:render template="/layouts/notifications" />
 
 <g:render template="/layouts/ga" />
+<g:render template="/layouts/fathom" />
 
 <asset:javascript src="digivol.js" />
 <!-- JS resources-->
