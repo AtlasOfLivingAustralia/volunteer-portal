@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.ala.org.ws.security.RequireApiKey
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
 import com.google.common.base.Stopwatch
 import com.google.common.base.Suppliers
@@ -10,6 +11,7 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang.StringUtils
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
@@ -44,9 +46,7 @@ class AjaxController {
     def institutionService
     def domainUpdateService
     def authService
-    def settingsService
     def achievementService
-    def sessionFactory
     def projectService
     def exportService
     def fieldService
@@ -726,4 +726,30 @@ class AjaxController {
         }
     }
 
+    /**
+     * API endpoint that answers whether a given user has a validator role for a given project ID. Returns true if validator
+     * role has been granted or false if not. Supports institution level roles as well.
+     * @param projectId the ID for the project
+     * @param userId the ID for the user (ALA-assigned String value).
+     * @return true if the user has been granted validator, false if not.
+     */
+    @RequireApiKey(scopes='digivol/internal')
+    def hasValidatorRole() {
+        def project = Project.get(params.long('projectId'))
+        def userId = params.userid as String
+
+        if (!StringUtils.isEmpty(userId) && project) {
+            // Get user object from string userId
+            def userList = User.findAllByUserId(userId)
+            def user
+            if (userList && userList.size() > 0) user = userList.first()
+            if (user) {
+                render(["result": userService.userHasValidatorRole(user as User, project.id, project.institution.id)] as JSON)
+                return
+            }
+        }
+
+        response.status = SC_NOT_FOUND
+        render([message: "User or Project not found."] as JSON)
+    }
 }
