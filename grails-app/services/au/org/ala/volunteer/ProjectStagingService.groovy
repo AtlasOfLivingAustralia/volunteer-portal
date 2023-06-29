@@ -31,7 +31,8 @@ class ProjectStagingService {
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.tutorialLinks = projectDescriptor.tutorialLinks
         project.extractImageExifData = projectDescriptor.extractImageExifData
-        if (project.template.supportMultipleTranscriptions) {
+
+        if (project.template.supportMultipleTranscriptions && project.projectType.supportsMultipleTranscriptions()) {
             project.thresholdMatchingTranscriptions = projectDescriptor.thresholdMatchingTranscriptions?: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
             project.transcriptionsPerTask = projectDescriptor.transcriptionsPerTask?: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
         } else {

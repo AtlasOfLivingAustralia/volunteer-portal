@@ -550,17 +550,26 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         def project = Project.findById(params.long('projectId'))
+//        def isSupportedProjectType = (project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_AUDIO) ||
+//                project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_CAMERATRAP))
+//        if (!projectService.isAdminForProject(project)) {
+//            render (["status": 403, "error": "Forbidden"] as JSON)
+//        } else {
+//            def template = Template.findById(params.long("templateId"))
+//            if (template && isSupportedProjectType) {
+//                render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
+//            } else {
+//                render(["supportMultipleTranscriptions": "false"] as JSON)
+//            }
+//        }
         if (!projectService.isAdminForProject(project)) {
-            render (["status": 403, "error": "Forbidden"] as JSON)
-        } else {
-            def template = Template.findById(params.long("templateId"))
-            if (template) {
-                render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
-            } else {
-                render(["supportMultipleTranscriptions": "false"] as JSON)
-            }
+            render(["supportMultipleTranscriptions": "false"] as JSON)
+            return
         }
+        render(["supportMultipleTranscriptions": "${projectService.doesTemplateSupportMultiTranscriptions(project.id)}"] as JSON)
     }
+
+
 
     def editTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
@@ -804,7 +813,8 @@ class ProjectController {
 
                 bindData(project, params)
 
-                if (!project.template.supportMultipleTranscriptions) {
+                //if (!project.template.supportMultipleTranscriptions) {
+                if (!projectService.doesTemplateSupportMultiTranscriptions(project.id)) {
                     project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
                     project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
                 }

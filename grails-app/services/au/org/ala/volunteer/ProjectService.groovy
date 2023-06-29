@@ -1160,4 +1160,23 @@ class ProjectService implements EventPublisher {
             return "${grailsApplication.config.getProperty('server.url', String)}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
         }
     }
+
+    /**
+     * Checks if the provided Project has enabled support for multiple transcriptions. Also checks if project is of a
+     * supported type (cameratrap/audio).
+     * @param projectId the project to check
+     * @return true if the project supports multiple transcripts, false if not.
+     */
+    def doesTemplateSupportMultiTranscriptions(long projectId) {
+        def project = Project.findById(projectId)
+//        def isSupportedProjectType = (project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_AUDIO) ||
+//                project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_CAMERATRAP))
+        def isSupportedProjectType = project.projectType.supportsMultipleTranscriptions()
+        def template = Template.findById(projectId)
+        if (template && isSupportedProjectType) {
+            return template.supportMultipleTranscriptions
+        } else {
+            return false
+        }
+    }
 }

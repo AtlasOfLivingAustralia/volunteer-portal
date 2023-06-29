@@ -27,4 +27,8 @@ class ProjectType implements Serializable {
         return name ?: ''
     }
 
+    boolean supportsMultipleTranscriptions() {
+        return (this.name.equalsIgnoreCase(PROJECT_TYPE_CAMERATRAP) || this.name.equalsIgnoreCase(PROJECT_TYPE_AUDIO))
+    }
+
 }

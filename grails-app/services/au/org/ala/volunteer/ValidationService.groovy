@@ -14,6 +14,7 @@ class ValidationService {
 
     FieldSyncService fieldSyncService
     TaskService taskService
+    ProjectService projectService
 
     /**
      * This method is called when a Transcription or Task is changed, we check to see if any of the
@@ -98,6 +99,9 @@ class ValidationService {
 
     private boolean shouldAutoValidate(Task task) {
         if (task.fullyValidatedBy) {  // Check this first as it doesn't require a query.
+            return false
+        }
+        if (!projectService.doesTemplateSupportMultiTranscriptions(task.project.id)) {
             return false
         }
         int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions ?: 0
