@@ -1169,8 +1169,6 @@ class ProjectService implements EventPublisher {
      */
     def doesTemplateSupportMultiTranscriptions(long projectId) {
         def project = Project.findById(projectId)
-//        def isSupportedProjectType = (project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_AUDIO) ||
-//                project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_CAMERATRAP))
         def isSupportedProjectType = project.projectType.supportsMultipleTranscriptions()
         def template = Template.findById(projectId)
         if (template && isSupportedProjectType) {
