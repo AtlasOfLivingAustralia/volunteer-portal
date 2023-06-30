@@ -73,9 +73,12 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
-                            <label class="col-md-3 control-label" for="supportMultipleTranscriptions">
+                            <label class="col-md-4 control-label" for="supportMultipleTranscriptions">
                                 <g:message code="template.multipletanscriptions.label"
-                                           default="Support multiple transcriptions per task?"/>
+                                           default="Support multiple transcriptions per task?"/>&nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                                                                                   title="<g:message code="template.multipletanscriptions.helptext"
+                                                                                                                     default="Ignored for Specimen and Fieldnote Expedition types."/>"><span
+                                        class="help-container"><i class="fa fa-question"></i> </span></a>
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
@@ -87,7 +90,7 @@
 
                         <cl:ifSiteAdmin>
                             <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
-                                <label class="col-md-3 control-label" for="isGlobal">
+                                <label class="col-md-4 control-label" for="isGlobal">
                                     <g:message code="template.isglobal.label"
                                                default="Is a Global Template (available to everyone)?"/>
                                 </label>
@@ -100,7 +103,7 @@
                             </div>
 
                             <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
-                                <label class="col-md-3 control-label" for="isHidden">
+                                <label class="col-md-4 control-label" for="isHidden">
                                     <g:message code="template.ishidden.label"
                                                default="Hide Template (hide from all editors)?"/>
                                 </label>
@@ -114,7 +117,7 @@
                         </cl:ifSiteAdmin>
 
                         <div id="row-view-params-json" class="form-group">
-                            <label class="col-md-3 control-label"><g:message code="template.project.label"
+                            <label class="col-md-4 control-label"><g:message code="template.project.label"
                                                                                   default="Projects that use this template:"/></label>
 
                             <div class="col-md-6">
@@ -152,6 +155,7 @@
     </div>
 </div>
 <asset:javascript src="underscore" asset-defer=""/>
+<asset:javascript src="qtip" asset-defer=""/>
 <asset:script type="text/javascript">
 
     $(document).ready(function() {
@@ -249,6 +253,21 @@
               $('#row-view-params-form').css('display', 'none');
             });
         }).change();
+
+        // Context sensitive help popups
+        $("a.fieldHelp").each(function() {
+        var self = this;
+            $(self).qtip({
+                content: $(self).attr('title'),
+                position: {
+                    at: "top left",
+                    my: "bottom right"
+                },
+                style: {
+                    classes: 'qtip-bootstrap'
+                }
+            }).bind('click', function(e) { e.preventDefault(); return false; });
+        });
 
     });
 

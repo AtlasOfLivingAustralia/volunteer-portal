@@ -550,18 +550,7 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         def project = Project.findById(params.long('projectId'))
-//        def isSupportedProjectType = (project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_AUDIO) ||
-//                project.projectType.name.equalsIgnoreCase(ProjectType.PROJECT_TYPE_CAMERATRAP))
-//        if (!projectService.isAdminForProject(project)) {
-//            render (["status": 403, "error": "Forbidden"] as JSON)
-//        } else {
-//            def template = Template.findById(params.long("templateId"))
-//            if (template && isSupportedProjectType) {
-//                render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
-//            } else {
-//                render(["supportMultipleTranscriptions": "false"] as JSON)
-//            }
-//        }
+
         if (!projectService.isAdminForProject(project)) {
             render(["supportMultipleTranscriptions": "false"] as JSON)
             return
