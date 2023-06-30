@@ -5,6 +5,7 @@ import au.org.ala.volunteer.ForumMessage
 import au.org.ala.volunteer.ForumTopic
 import au.org.ala.volunteer.Project
 import au.org.ala.volunteer.ProjectForumTopic
+import au.org.ala.volunteer.ProjectType
 import au.org.ala.volunteer.Task
 import au.org.ala.volunteer.Template
 import au.org.ala.volunteer.Transcription
@@ -21,12 +22,18 @@ import groovy.util.logging.Slf4j
 class TaskDataHelper {
 
     static Project setupProject(String projectName = 'Test Project', boolean harvestable = false) {
+        ProjectType pt = new ProjectType().tap {
+            name = PROJECT_TYPE_CAMERATRAP
+            label = "Test Cameratrap"
+        }
         Project p = new Project().tap {
             name = projectName
             harvestableByAla = harvestable
+            projectType = pt
         }
         p.template = new Template().tap {
             name = "Test template"
+            supportMultipleTranscriptions = true
             viewParams = [param1:'value1']
             viewParams2 = [param1:'value1']
         }

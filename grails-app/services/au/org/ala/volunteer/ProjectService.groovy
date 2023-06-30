@@ -1170,10 +1170,13 @@ class ProjectService implements EventPublisher {
     def doesTemplateSupportMultiTranscriptions(long projectId) {
         def project = Project.findById(projectId)
         def isSupportedProjectType = project.projectType.supportsMultipleTranscriptions()
+        log.debug("doesTemplateSupportMultiTranscriptions: project type supports multiple transcriptions: ${isSupportedProjectType}")
         def template = Template.findById(projectId)
         if (template && isSupportedProjectType) {
+            log.debug("doesTemplateSupportMultiTranscriptions: template.supportMultipleTrascriptions: ${template.supportMultipleTranscriptions}")
             return template.supportMultipleTranscriptions
         } else {
+            log.debug("doesTemplateSupportMultiTranscriptions: no template, returning false")
             return false
         }
     }
