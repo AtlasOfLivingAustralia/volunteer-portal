@@ -37,6 +37,7 @@ class TaskDataHelper {
             viewParams = [param1:'value1']
             viewParams2 = [param1:'value1']
         }
+        pt.save(failOnError:true)
         p.template.save(failOnError:true)
         p.save(failOnError:true, flush:true)
         p

@@ -2,6 +2,7 @@ package au.org.ala.volunteer.helper
 
 import grails.config.Config
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.flywaydb.core.Flyway
 import org.grails.config.PropertySourcesConfig
 import org.grails.orm.hibernate.HibernateDatastore
@@ -29,6 +30,7 @@ import spock.lang.Specification
  * This is the HibernateSpec with Flyway migrate / clean integrated instead of using Hibernate create-drop
  */
 @CompileStatic
+@Slf4j
 abstract class FlybernateSpec extends Specification {
 
     @Shared @AutoCleanup HibernateDatastore hibernateDatastore
@@ -93,12 +95,21 @@ abstract class FlybernateSpec extends Specification {
     }
 
     void cleanup() {
+        log.debug("FlybernateSpec: Cleanup()")
         if (isRollback()) {
+            log.debug("FlybernateSpec: Rolling back...")
             transactionManager.rollback(transactionStatus)
         } else {
+            log.debug("FlybernateSpec: Committing...")
             transactionManager.commit(transactionStatus)
         }
-        flyway.clean()
+    }
+
+    void cleanupSpec() {
+        log.debug("FlybernateSpec: CleanupSpec()")
+        def result = flyway.clean()
+        log.debug("FlybernateSpec: Schemas Cleaned ${result.schemasCleaned}")
+        log.debug("FlybernateSpec: Schemas Dropped ${result.schemasDropped}")
     }
 
     /**
