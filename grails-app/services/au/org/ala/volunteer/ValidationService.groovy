@@ -14,6 +14,7 @@ class ValidationService {
 
     FieldSyncService fieldSyncService
     TaskService taskService
+    ProjectService projectService
 
     /**
      * This method is called when a Transcription or Task is changed, we check to see if any of the
@@ -50,6 +51,8 @@ class ValidationService {
                 }
 
                 task.save()
+            } else {
+                log.debug("Task was not autovalidated")
             }
         }
 
@@ -98,10 +101,16 @@ class ValidationService {
 
     private boolean shouldAutoValidate(Task task) {
         if (task.fullyValidatedBy) {  // Check this first as it doesn't require a query.
+            log.debug("shouldAutoValidate: Task already validated")
+            return false
+        }
+        if (!projectService.doesTemplateSupportMultiTranscriptions(task.project.id)) {
+            log.debug("shouldAutoValidate: template/project does not support multiple transcriptions")
             return false
         }
         int numberOfMatchingTranscriptionsConsideredValid = task.project.thresholdMatchingTranscriptions ?: 0
         if (numberOfMatchingTranscriptionsConsideredValid < 2) { // Avoid querying transcriptions if this task can't be auto-validated
+            log.debug("shouldAutoValidate: Not enough transcriptions for auto validation")
             return false
         }
         int numberOfCompleteTranscriptions = task.transcriptions.findAll{it.fullyTranscribedBy != null}.size()

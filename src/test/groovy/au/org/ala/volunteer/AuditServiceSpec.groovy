@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import au.org.ala.volunteer.helper.FlybernateSpec
 import grails.test.hibernate.HibernateSpec
 import grails.testing.services.ServiceUnitTest
 
@@ -8,7 +9,7 @@ import grails.testing.services.ServiceUnitTest
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
 
 //@TestFor(AuditService)
-class AuditServiceSpec extends HibernateSpec implements ServiceUnitTest<AuditService> {
+class AuditServiceSpec extends FlybernateSpec implements ServiceUnitTest<AuditService> {
 
     String userId = 'u1'
     Project project

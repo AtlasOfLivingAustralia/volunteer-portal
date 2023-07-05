@@ -15,6 +15,7 @@ class ValidationServiceSpec extends Specification implements ServiceUnitTest<Val
     Task task
     Set taskSet
     FieldSyncService fieldSyncService
+    ProjectService projectService
 
     Map fields() {
         [0: ["name": "test", "name2": "value2", "name3": "value3"]]
@@ -41,6 +42,10 @@ class ValidationServiceSpec extends Specification implements ServiceUnitTest<Val
 
         fieldSyncService = Mock(FieldSyncService)
         service.fieldSyncService = fieldSyncService
+        projectService = Stub(ProjectService) {
+            doesTemplateSupportMultiTranscriptions(_) >> true
+        }
+        service.projectService = projectService
     }
 
     def "A task with no fields or Transcriptions should not be auto-validated"() {
