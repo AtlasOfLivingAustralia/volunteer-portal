@@ -139,10 +139,6 @@ class ExportService {
         }
     }
 
-
-
-
-
     def export_default = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
         def taskMap = fieldListToMultiMap(fieldList)
@@ -190,7 +186,8 @@ class ExportService {
         log.debug("Generated users map in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        def filename = "Project-" + project.id + "-DwC"
+        def filename = "Project-" + (cleanFilename(project.featuredLabel) ?: project.id) + "-DwC"
+
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
         response.setContentType("text/plain");
         OutputStream fout = response.getOutputStream();
@@ -292,7 +289,8 @@ class ExportService {
         sw.reset().start()
 
         // Prepare the response for a zip file - use the project name as a basis of the filename
-        def filename = "Project-" + project.featuredLabel.replaceAll(" ","") + "-DwC"
+        def filename = "Project-" + (cleanFilename(project.featuredLabel) ?: project.id) + "-DwC"
+
         response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
         response.setContentType("application/zip");
 
@@ -373,6 +371,18 @@ class ExportService {
 
         zipStream.close();
 
+    }
+
+    /**
+     * Returns the filename provided with unsupported filename characters stripped out.<br/>
+     * Characters stripped: (space), \, /, :, *, ?, ", ', <, >, |, ], [, ., ;, {, }, &, %, #, @, !
+     * @param filename the filename to parse
+     * @return the cleaned filename.
+     */
+    def cleanFilename(String filename) {
+        if (StringUtils.isEmpty(filename)) return
+        String cleanFilename = filename.replaceAll(Pattern.compile("[ \\\\/:*?\"\'<>|\\]\\[.;\${}&%#@!]"), "")
+        return cleanFilename
     }
 
     def exportMultimedia(List<Task> taskList, CSVWriter writer) {

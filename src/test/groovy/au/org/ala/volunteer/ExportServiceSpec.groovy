@@ -341,5 +341,25 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         results[0]['dateValidated'] == ''
     }
 
+    def "Export filename is checked for unsupported characters and has them removed"() {
+        setup:
+        project.transcriptionsPerTask = 1
+        project.featuredLabel = 'Test\\/:*?"\'<>|][.;{}&%#@!'
+        String macpieImage = 'macpieImage.jpg'
+        Task birdTask = createTask(macpieImage)
 
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields
+
+        when:
+        service.export_default(project, taskList, fieldNames, [], response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
+        1 * taskService.getUserMapFromTaskList(taskList) >> [:]
+
+        and:
+        response.getHeader("Content-Disposition") == "attachment;filename=Project-Test-DwC.csv"
+    }
 }
