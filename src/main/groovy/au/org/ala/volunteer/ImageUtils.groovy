@@ -172,7 +172,7 @@ public class ImageUtils {
         Metadata metadata = ImageMetadataReader.readMetadata(file)
         ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class)
 
-        directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
+        (directory ? directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL) : null)
     }
 
 }
