@@ -313,7 +313,7 @@ class BootStrap {
     private void prepareDefaultLabels() {
         log.info("Preparing default labels")
         final prop = grailsApplication.config.getProperty("bvp.labels.ensureDefault", String.class)
-        final shouldInstall = prop.asBoolean()
+        final shouldInstall = Boolean.parseBoolean(prop)
         if (shouldInstall) {
             log.info("Installing default labels")
             final defaults = (JSONObject)JSON.parse(Resources.getResource('default-labels.json').newReader())

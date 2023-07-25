@@ -20,7 +20,7 @@ class DigivolActivityInterceptor {
 
     boolean before() {
         log.debug('DigivolActivityInterceptor before')
-        final enabled = grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String).asBoolean()
+        final enabled = Boolean.parseBoolean(grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String))
         if (!enabled) {
             return true
         }

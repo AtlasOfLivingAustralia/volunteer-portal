@@ -599,7 +599,7 @@ class UserService {
     @NotTransactional
     def flushActivityRecords() {
 
-        if (!grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String).asBoolean()) {
+        if (!Boolean.parseBoolean(grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String))) {
             return
         }
 
@@ -629,7 +629,7 @@ class UserService {
      */
     def purgeUserActivity(int seconds) {
 
-        if (!grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String).asBoolean()) {
+        if (!Boolean.parseBoolean(grailsApplication.config.getProperty('bvp.user.activity.monitor.enabled', String))) {
             return
         }
 
