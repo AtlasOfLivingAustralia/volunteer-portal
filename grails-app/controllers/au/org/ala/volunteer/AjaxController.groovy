@@ -177,7 +177,7 @@ class AjaxController {
 
         def sw3 = Stopwatch.createStarted()
         def asyncUserDetails = User.async.task {
-            def users = User.list(fetch:[userRoles:"eager", "userRoles.role": "eager"])
+            def users = User.list()
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
@@ -199,7 +199,7 @@ class AjaxController {
         def lastActivities = asyncResults[1]
         def projectCounts = asyncResults[2]
 
-        def users = asyncResults[3].users
+        def users = asyncResults[3].users as List<User>
         def serviceResults = asyncResults[3].results
 
         def report = []
@@ -219,7 +219,8 @@ class AjaxController {
             def serviceResult = serviceResults?.users?.get(id)
             def location = (serviceResult?.city && serviceResult?.state) ? "${serviceResult?.city}, ${serviceResult?.state}" : (serviceResult?.city ?: (serviceResult?.state ?: ''))
 
-            def userRoles = user.userRoles
+            //def userRoles = user.userRoles
+            def userRoles = UserRole.findAllByUser(user)
             def roleObjs = userRoles*.role
             def roles = (roleObjs*.name + serviceResult?.roles).toSet()
             def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
