@@ -37,7 +37,7 @@ class TwitterBootstrapTagLib {
      */
     def paginate = { attrs ->
 
-        def configTabLib = Boolean.parseBoolean(grailsApplication.config.getProperty('grails.plugins.twitterbootstrap.fixtaglib', String))
+        def configTabLib = grailsApplication.config.getProperty('grails.plugins.twitterbootstrap.fixtaglib', Boolean, false)
         if (!configTabLib) {
             log.debug("Bootstrap paginate taglib disabled, falling back to default grails pagination.")
             def renderTagLib = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib')

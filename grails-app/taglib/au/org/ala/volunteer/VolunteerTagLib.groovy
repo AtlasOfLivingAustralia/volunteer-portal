@@ -280,14 +280,11 @@ class VolunteerTagLib {
     }
 
     private boolean isSiteAdmin() {
-        //return grailsApplication.config.getProperty('security.cas.bypass', String).asBoolean() || userService.isSiteAdmin()
         return userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {
-        //log.debug("Is Admin?")
-        //def bypass = grailsApplication.config.getProperty('security.cas.bypass', String)
-        return /*Boolean.parseBoolean(bypass) ||*/ userService.isSiteAdmin() || userService.isInstitutionAdmin()
+        return userService.isSiteAdmin() || userService.isInstitutionAdmin()
     }
 
     /**
