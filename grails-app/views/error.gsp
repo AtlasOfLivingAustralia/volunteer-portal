@@ -42,7 +42,7 @@
         <h4 style="padding-top:20px;">Details:</h4>
         <div class="message" style="margin-bottom: 100px;">
             <strong>Error Status Code:</strong> ${request.'javax.servlet.error.status_code'} ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>
-            <strong>URL:</strong> ${grailsApplication.config.getProperty('server.url', String)}${content.requestUri}<br/>
+            <strong>URL:</strong> ${grailsApplication.config.getProperty('server.url', String)}${content?.requestUri}<br/>
             <br/>
 
             <g:if test="${exception}">
