@@ -307,9 +307,10 @@ class ForumService {
 
     def getFeaturedTopics(Map params = null) {
 
-        int max = params?.max as Integer ?: 10
+        int max = params?.max as Integer ?: 15
         int offset = params?.offset as Integer ?: 0
         String sort = params?.sort ?: 'lastReplyDate'
+        if (sort == 'creator') sort = 'creator.displayName'
         String leOrder = params?.order ?: 'desc'
 
         if (sort == 'replies') {
