@@ -280,12 +280,11 @@ class VolunteerTagLib {
     }
 
     private boolean isSiteAdmin() {
-        return grailsApplication.config.getProperty('security.cas.bypass', String).asBoolean() || userService.isSiteAdmin()
+        return userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {
-        return grailsApplication.config.getProperty('security.cas.bypass', String).asBoolean() ||
-                userService.isSiteAdmin() || userService.isInstitutionAdmin()
+        return userService.isSiteAdmin() || userService.isInstitutionAdmin()
     }
 
     /**
@@ -939,9 +938,9 @@ class VolunteerTagLib {
      * @attr email true to output the email address, defaults to false
      */
     def userDetails = { attrs, body ->
-        def id = attrs.remove('id')
-        def displayName = attrs.remove('displayName')?.asBoolean() ?: false
-        def email = attrs.remove('email')?.asBoolean() ?: false
+        def id = attrs.remove('id') as String
+        def displayName = Boolean.parseBoolean(attrs.remove('displayName') as String)
+        def email = Boolean.parseBoolean(attrs.remove('email') as String)
 
 
         if (displayName && email) {
@@ -967,9 +966,9 @@ class VolunteerTagLib {
      * @attr muted set to true to wrap not found value in <span class='muted'>
      */
     def userDisplayString = { attrs, body ->
-        def id = attrs.remove('id')
+        def id = attrs.remove('id') as String
         def notFound = attrs.remove('notFound')
-        def muted = attrs.remove('muted')?.asBoolean()
+        def muted = Boolean.parseBoolean(attrs.remove('muted') as String)
 
         def user
         if (id) user = userService.detailsForUserId(id)
