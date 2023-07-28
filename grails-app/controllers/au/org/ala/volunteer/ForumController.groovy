@@ -338,6 +338,7 @@ class ForumController {
                                            messageText: markdownService.sanitizeMarkdown(params.messageText)]
     }
 
+    @Transactional
     def updateTopicMessage() {
 
         def message = ForumMessage.get(params.int("messageId"))
@@ -369,6 +370,8 @@ class ForumController {
         if (!errors) {
             //message.save(flush: true, failOnError: true)
             message.text = text
+            message.save(flush: true, failOnError: true)
+            flash.message = "Message was successfully updated."
             redirect(action: 'viewForumTopic', id: message?.topic?.id)
             return
         }
@@ -391,6 +394,9 @@ class ForumController {
             }
             forumService.deleteMessage(message)
         }
+
+        flash.message = "Message was successfully deleted."
+
         if (topicId) {
             redirect(action: 'viewForumTopic', id: topicId)
         } else {
@@ -536,27 +542,42 @@ class ForumController {
         def idList = watchList?.topics?.collect { it.id }
 
         def sort = params.sort
+        if (!sort) {
+            sort = 'id'
+        }
+
+        def order = params.order
+        if (!order) {
+            'desc'
+        }
 
         if (sort && !ForumTopic.declaredFields.find { it.name == sort }) {
             sort = 'title'
+            order = 'asc'
         }
 
-        def c = ForumTopic.createCriteria()
         def topics = []
         if (idList) {
-            topics = c.list(sort: sort, order: params.order) {
-                inList('id', idList)
+            def query = """
+                SELECT DISTINCT topic
+                FROM ForumTopic topic
+                WHERE id in (:idList)
+            """
+
+            if (sort != 'id') {
+                query = query.toString() + " order by " + sort + " " + order
             }
+            topics = ForumTopic.executeQuery(query, [idList: idList])
         }
 
-        if (params.sort == 'id') {
+        if (sort == 'id') {
             // we are actually supposed to sort by number of replies. Number of replies is actually a calculated field (the number
             // of messages - 1, so can't sort in the criteria, so do it manually...
             topics.sort { topic ->
                  topic.messages?.size()
             }
 
-            if (params.order == 'desc') {
+            if (order == 'desc') {
                 topics = topics.reverse()
             }
         }

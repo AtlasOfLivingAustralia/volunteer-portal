@@ -5,6 +5,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
+import org.hibernate.Hibernate
 
 class ForumTagLib {
 
@@ -313,9 +314,11 @@ class ForumTagLib {
 
         if (topic) {
             if (topic.instanceOf(ProjectForumTopic)) {
-                projectInstance = topic.project
+                def unproxyObject = Hibernate.unproxy(topic)
+                projectInstance = unproxyObject.project
             } else if (topic.instanceOf(TaskForumTopic)) {
-                taskInstance = topic.task
+                def unproxyObject = Hibernate.unproxy(topic)
+                taskInstance = unproxyObject.task
             }
         } else {
             projectInstance = attrs.projectInstance as Project
@@ -392,10 +395,10 @@ class ForumTagLib {
      * @attrs project
      */
     def taskTopicsTable = { attrs, body ->
-        def topics = attrs.topics as PagedResultList
+        def topics = attrs.topics
 
         if (topics) {
-            out << topicTable([topics: topics, totalCount: topics?.totalCount, paginateAction: 'projectForum'], body)
+            out << topicTable([topics: topics.topics, totalCount: topics?.totalCount, paginateAction: 'projectForum'], body)
         }
     }
 
