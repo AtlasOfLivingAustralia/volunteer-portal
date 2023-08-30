@@ -34,6 +34,7 @@ class TaskService {
     def fieldSyncService
     def i18nService
     def userService
+    def projectService
     Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
@@ -1530,5 +1531,29 @@ ORDER BY record_idx, name;
     def getProjectTranscriptionCounts() {
         def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
         projectCounts
+    }
+
+    /**
+     * Returns true if all of the required number of Transcriptions have been completed for this Task.
+     * The default is one Transcription per Task, but this can be overridden in the project template.
+     * @param task the task that is being checked
+     * @return true if all transcriptions are completed, false if not.
+     */
+    boolean allTranscriptionsComplete(Task task) {
+        if (!task) return false
+        if (task.isFullyTranscribed) {
+            return true
+        }
+
+        // Check if project/template supports multiple transcriptions. If not and somehow got past above, return true
+        // If true, check transcription thresholds.
+        def supportsMultiTx = projectService.doesTemplateSupportMultiTranscriptions(task.project)
+        if (supportsMultiTx) {
+            int requiredTranscriptionCount = task.project.requiredNumberOfTranscriptions
+            int transcriptionCount = (int) (task.transcriptions?.count { it.fullyTranscribedBy } ?: 0)
+            return transcriptionCount >= requiredTranscriptionCount
+        } else {
+            return true
+        }
     }
 }

@@ -104,7 +104,7 @@ class ValidationService {
             log.debug("shouldAutoValidate: Task already validated")
             return false
         }
-        if (!projectService.doesTemplateSupportMultiTranscriptions(task.project.id)) {
+        if (!projectService.doesTemplateSupportMultiTranscriptions(task.project)) {
             log.debug("shouldAutoValidate: template/project does not support multiple transcriptions")
             return false
         }

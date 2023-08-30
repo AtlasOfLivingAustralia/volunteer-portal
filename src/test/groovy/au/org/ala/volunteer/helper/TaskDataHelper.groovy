@@ -85,6 +85,7 @@ class TaskDataHelper {
         transcription.save(failOnError:true, flush:true)
 
         // The Field sync service would normally do this.
+        // TODO Update this to the Task Service method.
         if (task.allTranscriptionsComplete()) {
             task.isFullyTranscribed = true
         }

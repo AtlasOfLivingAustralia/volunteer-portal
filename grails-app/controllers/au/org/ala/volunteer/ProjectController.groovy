@@ -552,10 +552,11 @@ class ProjectController {
         def project = Project.findById(params.long('projectId'))
 
         if (!projectService.isAdminForProject(project)) {
+            log.debug("User not authorised to get checkTemplateSupportMultiTranscriptions")
             render(["supportMultipleTranscriptions": "false"] as JSON)
             return
         }
-        render(["supportMultipleTranscriptions": "${projectService.doesTemplateSupportMultiTranscriptions(project.id)}"] as JSON)
+        render(["supportMultipleTranscriptions": "${projectService.doesTemplateSupportMultiTranscriptions(project)}"] as JSON)
     }
 
 
@@ -803,7 +804,7 @@ class ProjectController {
                 bindData(project, params)
 
                 //if (!project.template.supportMultipleTranscriptions) {
-                if (!projectService.doesTemplateSupportMultiTranscriptions(project.id)) {
+                if (!projectService.doesTemplateSupportMultiTranscriptions(project)) {
                     project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
                     project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
                 }

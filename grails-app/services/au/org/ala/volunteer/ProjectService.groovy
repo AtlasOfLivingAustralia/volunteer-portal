@@ -1164,14 +1164,17 @@ class ProjectService implements EventPublisher {
     /**
      * Checks if the provided Project has enabled support for multiple transcriptions. Also checks if project is of a
      * supported type (cameratrap/audio).
-     * @param projectId the project to check
+     * @param project the project to check
      * @return true if the project supports multiple transcripts, false if not.
      */
-    def doesTemplateSupportMultiTranscriptions(long projectId) {
-        def project = Project.findById(projectId)
+    def doesTemplateSupportMultiTranscriptions(Project project) {
+        //def project = Project.findById(project)
+        if (!project) return false
         def isSupportedProjectType = project.projectType.supportsMultipleTranscriptions()
         log.debug("doesTemplateSupportMultiTranscriptions: project type supports multiple transcriptions: ${isSupportedProjectType}")
-        def template = Template.findById(projectId)
+        //log.debug("Project: ${projectId}")
+        def template = project.template //Template.findById(project.templateId)
+        //log.debug("Template: ${template}")
         if (template && isSupportedProjectType) {
             log.debug("doesTemplateSupportMultiTranscriptions: template.supportMultipleTrascriptions: ${template.supportMultipleTranscriptions}")
             return template.supportMultipleTranscriptions
