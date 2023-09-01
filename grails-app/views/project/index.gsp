@@ -82,7 +82,7 @@
                     </g:else>
 
                 </div>
-                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Project Forum »</a>
+                <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectInstance.id])}" class="forum-link">Visit Expedition Forum »</a>
             </div>
             <div class="col-sm-4">
                 <cl:hasNoProjectBackgroundImage project="${projectInstance}">
