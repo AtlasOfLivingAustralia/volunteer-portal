@@ -403,13 +403,15 @@ class ForumTagLib {
     }
 
     /**
+     * Prints a series of topics that are from the Forum Search
      * @attr messages
+     * @attr totalCount
      * @attr hideUsername
      * @attr paginateAction
      * @attr paginateController
      */
     def messagesTable = { attrs, body ->
-        def messages = attrs.messages
+        def messages = attrs.messages as List<ForumMessage>
 //        Parser parser = Parser.builder().build();
 
         if (messages) {
@@ -423,13 +425,15 @@ class ForumTagLib {
                         def userProps = userService.detailsForUserId(message.user?.userId)
                         Project projectInstance = null
                         Task taskInstance = null
-                        if (message.topic.instanceOf(ProjectForumTopic)) {
-                            def projectTopic = message.topic as ProjectForumTopic
-                            projectInstance = projectTopic.project
-                        } else if (message.topic.instanceOf(TaskForumTopic)) {
-                            def taskTopic = message.topic as TaskForumTopic
-                            taskInstance = taskTopic.task
-                            projectInstance = taskTopic.task.project
+                        def topic = message.topic
+
+                        if (topic.instanceOf(ProjectForumTopic)) {
+                            def unproxyObject = Hibernate.unproxy(topic)
+                            projectInstance = unproxyObject.project
+                        } else if (topic.instanceOf(TaskForumTopic)) {
+                            def unproxyObject = Hibernate.unproxy(topic)
+                            taskInstance = unproxyObject.task
+                            projectInstance = taskInstance.project
                         }
 
                         def authorIsModerator = userService.isUserForumModerator(message.user, projectInstance)
@@ -490,7 +494,7 @@ class ForumTagLib {
                 }
             }
             mb.div(class: 'pagination') {
-                mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: messages.totalCount, params: params))
+                mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: attrs.totalCount, params: params))
             }
 
         } else {

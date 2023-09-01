@@ -37,7 +37,7 @@
                         <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
                     </p>
                     <section id="searchResults">
-                        <vpf:messagesTable messages="${results}"/>
+                        <vpf:messagesTable messages="${results.results}" totalCount="${results.totalCount}"/>
                         %{--<vpf:searchResultsTable searchResults="${results}"/>--}%
                     </section>
                 </div>

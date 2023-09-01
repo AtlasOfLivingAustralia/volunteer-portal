@@ -261,24 +261,30 @@ class ForumService {
         }
     }
 
-    PagedResultList searchForums(String query, boolean searchTitlesOnly, Map params = null) {
+    def searchForums(String query, boolean searchTitlesOnly, Map params = null) {
 
-        def q = "%" + query + "%"
-        def c = ForumMessage.createCriteria()
-        def results = c.list(max:params?.max, offset: params?.offset) {
-            or {
-                ilike("text", q)
-                and {
-                    topic {
-                        ilike("title", q)
-                    }
-                    isNull("replyTo")
-                }
-            }
-            order("topic", "date")
-        }
+        def q = "%" + query.toLowerCase() + "%"
 
-        return results as PagedResultList
+        def searchQuery = """
+            SELECT message
+            FROM ForumMessage message
+            WHERE lower(text) LIKE :q
+            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
+            ORDER BY date asc
+        """
+
+        def results = ForumMessage.executeQuery(searchQuery, [q: q], [max: params?.max, offset: params?.offset])
+
+        def searchCountQuery = """
+            SELECT count(DISTINCT message.id) as messageCount
+            FROM ForumMessage message
+            WHERE lower(text) LIKE :q
+            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
+        """
+
+        def totalCount = ForumMessage.executeQuery(searchCountQuery, [q: q])?.first()
+
+        return [results: results, totalCount: totalCount]
     }
 
     PagedResultList getMessagesForUser(User user, Map params = null) {
