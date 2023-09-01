@@ -124,9 +124,10 @@ spring:
 
 server:
     tomcat:
-        port-header: 'X-Forwarded-Port'
-        protocol-header: 'X-Forwarded-Proto'
-        remote-ip-header: 'X-Forwarded-For'
+        remoteip:
+            protocol-header: 'X-Forwarded-Proto'
+            port-header: 'X-Forwarded-Port'
+            remote-ip-header: 'X-Forwarded-For'
     servlet:
         session:
             timeout: 7200
