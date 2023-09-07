@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
 
 </head>
 

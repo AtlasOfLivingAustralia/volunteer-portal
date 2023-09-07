@@ -34,6 +34,7 @@ class TaskService {
     def fieldSyncService
     def i18nService
     def userService
+    def projectService
     Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
@@ -429,7 +430,7 @@ class TaskService {
         log.debug("Transcriptions per task: [${transcriptionsPerTask}], task jump: [${jump}]")
 
         // This is the length of time for which a Task remains locked after a user views it
-        long timeout = grailsApplication.config.viewedTask.timeout as long
+        long timeout = grailsApplication.config.getProperty('viewedTask.timeout', Long).longValue()
 
         //def sw = new Stopwatch()
 
@@ -483,7 +484,7 @@ class TaskService {
         }
 
         // We have to look for tasks whose last view was before the lock period AND hasn't already been viewed by this user
-        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.viewedTask.timeout as long)
+        def timeoutWindow = System.currentTimeMillis() - (grailsApplication.config.getProperty('viewedTask.timeout', Long).longValue())
         def tasks
 
         tasks = Task.createCriteria().list([max:1]) {
@@ -808,7 +809,7 @@ ORDER BY record_idx, name;
         log.debug("Running SQL to find differences: $select")
         final recordValues = sql.rows(select, [taskId: task.id, userId: transcribedByUserId, validatorId: validatedByUserId]).collect { row ->
             final String fieldName = row["name"]
-            final dwcField
+            def dwcField
             try { dwcField = fieldName as DarwinCoreField } catch (e) { dwcField = null }
             final label = TemplateField.findByTemplateAndFieldType(template, dwcField)?.uiLabel ?: dwcField?.label ?: fieldName
             [name: row["name"], label: label, recordIdx: row['record_idx'], oldValue: row['transcriber_value'] ?: '', newValue: row['validator_value'] ?: '', lastModified: row["validator_updated"]]
@@ -851,13 +852,13 @@ ORDER BY record_idx, name;
         def conn = url.openConnection()
         def fileMap = new FileMap()
 
-        String urlPrefix = grailsApplication.config.images.urlPrefix
+        String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
         if (!urlPrefix.endsWith('/')) {
             urlPrefix += '/'
         }
 
         try {
-            def dir = new File("${grailsApplication.config.images.home}/${projectId}/${taskId}/${multimediaId}")
+            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${projectId}/${taskId}/${multimediaId}")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
@@ -914,7 +915,7 @@ ORDER BY record_idx, name;
     def rollbackMultimediaTransaction(String imageUrl, long projectId, long taskId, long multimediaId) {
         // Just delete the whole MM directory.
         if (projectId && taskId && multimediaId) {
-            def dir = new File(grailsApplication.config.images.home + '/' + projectId + '/' + taskId + "/" + multimediaId)
+            def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectId + '/' + taskId + "/" + multimediaId)
             if (dir.exists() && !dir.deleteDir()) throw new IOException("Couldn't delete $dir")
         }
     }
@@ -1052,8 +1053,8 @@ ORDER BY record_idx, name;
                 imageUrl = grailsLinkGenerator.link(controller: 'task', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
             }
 
-            String urlPrefix = grailsApplication.config.images.urlPrefix
-            String imagesHome = grailsApplication.config.images.home
+            String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+            String imagesHome = grailsApplication.config.getProperty('images.home', String)
             path = imagesHome + '/' + path.substring(urlPrefix?.length())
             //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
 
@@ -1407,7 +1408,7 @@ ORDER BY record_idx, name;
         final params = [userId: user.userId, project: project?.id, query: query]
 
         // remove $withClause
-        final countQuery = """$countClause
+        def countQuery = """$countClause
             $queryClause
             """.stripIndent()
 
@@ -1530,5 +1531,29 @@ ORDER BY record_idx, name;
     def getProjectTranscriptionCounts() {
         def projectCounts = Transcription.executeQuery("select t.fullyTranscribedBy, count(distinct t.project) from Transcription t where t.fullyTranscribedBy is not null group by t.fullyTranscribedBy").collectEntries { [(it[0]): it[1]] }
         projectCounts
+    }
+
+    /**
+     * Returns true if all of the required number of Transcriptions have been completed for this Task.
+     * The default is one Transcription per Task, but this can be overridden in the project template.
+     * @param task the task that is being checked
+     * @return true if all transcriptions are completed, false if not.
+     */
+    boolean allTranscriptionsComplete(Task task) {
+        if (!task) return false
+        if (task.isFullyTranscribed) {
+            return true
+        }
+
+        // Check if project/template supports multiple transcriptions. If not and somehow got past above, return true
+        // If true, check transcription thresholds.
+        def supportsMultiTx = projectService.doesTemplateSupportMultiTranscriptions(task.project)
+        if (supportsMultiTx) {
+            int requiredTranscriptionCount = task.project.requiredNumberOfTranscriptions
+            int transcriptionCount = (int) (task.transcriptions?.count { it.fullyTranscribedBy } ?: 0)
+            return transcriptionCount >= requiredTranscriptionCount
+        } else {
+            return true
+        }
     }
 }

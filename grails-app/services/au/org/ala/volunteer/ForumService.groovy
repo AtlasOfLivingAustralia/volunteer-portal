@@ -4,6 +4,8 @@ import grails.orm.PagedResultList
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
 import groovy.util.logging.Slf4j
+import org.hibernate.Hibernate
+import org.hibernate.criterion.CriteriaSpecification
 
 @Transactional
 @Slf4j
@@ -23,7 +25,7 @@ class ForumService {
 
         if (sort == "replies") {
             def hql = """
-                SELECT topic
+                SELECT distinct topic
                 FROM ProjectForumTopic topic
                 WHERE project_id = :projectId
                 ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
@@ -34,8 +36,33 @@ class ForumService {
         }
 
         // All other sort types (other than replies)
-        def c = ProjectForumTopic.createCriteria()
-        def results = c.list(max:max, offset: offset) {
+        def select = """
+            SELECT DISTINCT topic
+            FROM ProjectForumTopic topic
+            WHERE project_id = :projectId
+        """
+
+        def includeDeletedClause = ""
+        if (includeDeleted) {
+            includeDeletedClause = " AND deleted = true "
+        } else {
+            includeDeletedClause = """
+                AND (deleted IS NULL OR deleted = false) 
+            """
+        }
+
+        def sortClause = """
+            ORDER BY sticky DESC, priority DESC, ${sort} ${leOrder}
+        """
+
+        select += (includeDeletedClause + sortClause)
+
+        def results = ForumTopic.executeQuery(select, [projectId: project.id], [max: max, offset: offset])
+
+        def totalCount = ForumTopic.createCriteria().get {
+            projections {
+                countDistinct 'id'
+            }
             and {
                 eq("project", project)
                 if (includeDeleted) {
@@ -47,19 +74,16 @@ class ForumService {
                     }
                 }
             }
-            and {
-                order("sticky", "desc")
-                order("priority", "desc")
-                order(sort, leOrder)
-            }
-        }
-        return [topics: results, totalCount: results.totalCount ]
+        } as Integer
+
+        return [topics: results, totalCount: totalCount ]
     }
 
     def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-        def max = params?.max ?: 10
+        def max = params?.max ?: 15
         def offset = params?.offset ?: 0
         def sort = params?.sort ?: "lastReplyDate"
+        if (sort == "creator") sort = "creator.displayName"
         def leOrder = params?.order ?: "desc"
 
         def deleteClause = ""
@@ -88,19 +112,36 @@ class ForumService {
             sortClause = sortClause + sort + " " + leOrder
         }
 
-        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset])
+        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset]) as List<ForumTopic>
         def totalCount = ForumTopic.executeQuery(countQuery)?.first()
-        log.debug("TotalCount: ${totalCount}")
 
         return [topics: topics, totalCount: totalCount]
     }
 
-    PagedResultList getTaskTopicsForProject(Project projectInstance, Map params = null) {
-        TaskForumTopic.createCriteria().list(max: params?.max ?: 10, offset: params?.offset ?: 0) {
+    def getTaskTopicsForProject(Project projectInstance, Map params = null) {
+        def topics = [:]
+
+        def topicIdList = TaskForumTopic.createCriteria().list(max: params?.max ?: 10, offset: params?.offset ?: 0) {
+            projections {
+                distinct 'id'
+            }
             task {
                 eq("project", projectInstance)
             }
         }
+
+        def totalCount = TaskForumTopic.createCriteria().get {
+            projections {
+                countDistinct 'id'
+            }
+            task {
+                eq("project", projectInstance)
+            }
+        } as Integer
+
+        topics.topics = TaskForumTopic.getAll(topicIdList)
+        topics.totalCount = totalCount
+        topics
     }
 
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
@@ -220,24 +261,30 @@ class ForumService {
         }
     }
 
-    PagedResultList searchForums(String query, boolean searchTitlesOnly, Map params = null) {
+    def searchForums(String query, boolean searchTitlesOnly, Map params = null) {
 
-        def q = "%" + query + "%"
-        def c = ForumMessage.createCriteria()
-        def results = c.list(max:params?.max, offset: params?.offset) {
-            or {
-                ilike("text", q)
-                and {
-                    topic {
-                        ilike("title", q)
-                    }
-                    isNull("replyTo")
-                }
-            }
-            order("topic", "date")
-        }
+        def q = "%" + query.toLowerCase() + "%"
 
-        return results as PagedResultList
+        def searchQuery = """
+            SELECT message
+            FROM ForumMessage message
+            WHERE lower(text) LIKE :q
+            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
+            ORDER BY date asc
+        """
+
+        def results = ForumMessage.executeQuery(searchQuery, [q: q], [max: params?.max, offset: params?.offset])
+
+        def searchCountQuery = """
+            SELECT count(DISTINCT message.id) as messageCount
+            FROM ForumMessage message
+            WHERE lower(text) LIKE :q
+            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
+        """
+
+        def totalCount = ForumMessage.executeQuery(searchCountQuery, [q: q])?.first()
+
+        return [results: results, totalCount: totalCount]
     }
 
     PagedResultList getMessagesForUser(User user, Map params = null) {
@@ -266,9 +313,10 @@ class ForumService {
 
     def getFeaturedTopics(Map params = null) {
 
-        int max = params?.max as Integer ?: 10
+        int max = params?.max as Integer ?: 15
         int offset = params?.offset as Integer ?: 0
         String sort = params?.sort ?: 'lastReplyDate'
+        if (sort == 'creator') sort = 'creator.displayName'
         String leOrder = params?.order ?: 'desc'
 
         if (sort == 'replies') {
@@ -300,11 +348,11 @@ class ForumService {
         def result = false
         def projectInstance = null
         if (message.topic.instanceOf(ProjectForumTopic)) {
-            def projectTopic = message.topic as ProjectForumTopic
-            projectInstance = projectTopic.project
+            def unproxyObject = Hibernate.unproxy(message.topic)
+            projectInstance = Project.get(((ProjectForumTopic) unproxyObject).project.id)
         } else if (message.topic.instanceOf(TaskForumTopic)) {
-            def taskTopic = message.topic as TaskForumTopic
-            projectInstance = taskTopic.task.project
+            def unproxyObject = Hibernate.unproxy(message.topic)
+            projectInstance = Project.get(((TaskForumTopic) unproxyObject).task.project.id)
         }
 
         if (userService.isForumModerator(projectInstance)) {

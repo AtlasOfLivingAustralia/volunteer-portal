@@ -2,7 +2,7 @@
 <head>
     <title><cl:pageTitle title="Opting Out of Institution Communications" /></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
 </head>
 
 <body>

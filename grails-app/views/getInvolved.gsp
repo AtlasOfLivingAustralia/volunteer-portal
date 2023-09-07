@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <style>
 
     #transcribeButton {
@@ -35,7 +35,8 @@
 
 <p>
     Anyone can register, by providing their email address and a few details <a
-        href="${cl.urlAppend(base: grailsApplication.config.userDetails.url, path: '/registration/createAccount')}">here</a>. This will give you access to <g:message
+        href="${cl.urlAppend(base: grailsApplication.config.getProperty('userDetails.url', String), path: '/registration/createAccount')}">here</a>.
+    This will give you access to <g:message
         code="default.application.name"/> and associated forums, and you’ll receive occasional updates from the Atlas of Living Australia by email.
 </p>
 
@@ -67,7 +68,7 @@
 
 <p>
     If you encounter any problems, you can visit the discussion forums or contact us by <a
-        href="mailto:${grailsApplication.config.grails.contact.emailAddress}">email</a>.
+        href="mailto:${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}">email</a>.
 </p>
 
 <p>

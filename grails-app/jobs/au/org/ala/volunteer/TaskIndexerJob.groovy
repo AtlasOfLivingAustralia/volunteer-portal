@@ -7,7 +7,7 @@ class TaskIndexerJob {
 
     def domainUpdateService
     //def fullTextIndexService
-    def concurrent = false
+    static concurrent = false
 
     static triggers = {
         simple repeatInterval: 1000l // execute job once in 5 seconds

@@ -30,7 +30,7 @@
         <div class="row">
             <div class="col-sm-8">
                 <h1>About DigiVol.</h1>
-                <h2 class="body-heading"><a name="what-is-digivol">What is DigiVol.</a></h2>
+                <h2 id="what-is-digivol" class="body-heading">What is DigiVol.</h2>
                 <p>
                     DigiVol is a crowdsourcing platform that was developed by the Australian Museum in collaboration with the Atlas of Living Australia.
                 </p>
@@ -49,7 +49,7 @@
                     DigiVol uses several approaches of data collection in its website. Online volunteers are presented with tutorials to help them get started in joining a
                     project (virtual expedition).
                 </p>
-                <h2 class="body-heading"><a name="why-capture-this-data">Why capture this data</a></h2>
+                <h2 id="why-capture-this-data" class="body-heading">Why capture this data</h2>
                 <p>
                     Capturing data into a digital form is important as it helps researchers to have access to data that can be used for a whole variety of studies.
                 </p>
@@ -80,9 +80,11 @@
                     development of a new task template.
                 </p>
                 <p>
-                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us (<a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a>)
+                    If you are interested in posting an expedition on DigiVol and you have material that would be suitable please contact us
+                    (<a href="mailto:${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}">
+                    ${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}</a>)
                 </p>
-                <h2 class="body-heading"><a name="useful-references">Useful references</a></h2>
+                <h2 id="useful-references" class="body-heading">Useful references</h2>
                 <div class="embed-responsive embed-responsive-16by9">
                     <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/x9404is3RJ8"></iframe>
                 </div>
@@ -98,7 +100,7 @@
                     <a href="http://australianmuseum.net.au/digivol">Australian Museum DigiVol resources</a>
                 </p>
                 <h1>How can I help?</h1>
-                <h2 class="body-heading"><a name="registering">Become an online volunteer</a></h2>
+                <h2 id="registering" class="body-heading">Become an online volunteer</h2>
                 <p>
                     Anyone can become a DigiVol volunteer, all you need is a computer, internet access and an email address.
                 </p>
@@ -107,7 +109,7 @@
                     <cl:loginLink>here</cl:loginLink>. By registering you will be given access to DigiVol and associated forums. You
                     will also receive occasional updates and newsletters.
                 </p>
-                <h2 class="body-heading"><a name="transcribing">How to get started.</a></h2>
+                <h2 id="transcribing" class="body-heading">How to get started.</h2>
                 <p>
                     Once you have registered, you can join any expedition in the list on the front page of the website. After choosing an expedition, click on the 'Get
                     Started' button.
@@ -125,13 +127,13 @@
                     If you have any questions about a task you can visit the discussion forums or contact us by email. To see your progress and your contribution you can visit
                     your 'Notebook' through the 'My Profile' tab.
                 </p>
-                <h2 class="body-heading"><a name="what-happens-next">What happens next.</a></h2>
+                <h2 id="what-happens-next" class="body-heading">What happens next.</h2>
                 <p>
                     When an expedition is finished, the tasks will be validated by an experienced volunteer. The data will then be returned to the institution, checked and
                     processed. Data can then be uploaded to the relevant data sharing portal such as Atlas of Living Australia (https://www.ala.org.au/), where it can be used
                     by the general public and the research community.
                 </p>
-                <h2 class="body-heading"><a name="examples">Examples</a></h2>
+                <h2 id="examples" class="body-heading">Examples</h2>
                 <p>
                     <asset:image src="digivol-example.png" class="img-responsive"/>
                 </p>

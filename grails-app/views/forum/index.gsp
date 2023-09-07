@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><cl:pageTitle title="Forum"/></title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     %{--<link rel="stylesheet" href="${resource(dir: 'css', file: 'forum.css')}"/>--}%
 
     <style type="text/css">

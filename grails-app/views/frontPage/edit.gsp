@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
 </head>
 
@@ -128,7 +128,8 @@
                             </label>
                             <div class="col-md-6">
                                 <g:if test="${frontPage.heroImage}">
-                                    <img class="img-responsive" src="${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/hero/${frontPage.heroImage}"/>
+                                    <img class="img-responsive"
+                                         src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/hero/${frontPage.heroImage}"/>
 
                                 </g:if>
                                 <input id="heroImage" name="heroImage" type="file" />
@@ -170,7 +171,9 @@
 <script id="logo-item" type="x-tmpl-mustache">
 <div class="col-md-3 col-sm-4 col-xs-6">
     <div class="thumbnail">
-      <img style="max-height: 80px;" src="${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/{{src}}" alt="${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/{{src}}">
+      <img style="max-height: 80px;"
+        src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}"
+        alt="${grailsApplication.config.getProperty('server.url')}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}">
       <div class="caption">
         <p><button class="btn btn-danger delete-logo" data-idx="{{idx}}"><i class="fa fa-trash"></i></button></p>
       </div>

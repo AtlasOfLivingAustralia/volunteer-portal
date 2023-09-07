@@ -1,28 +1,37 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import groovy.util.logging.Slf4j
 import spock.lang.Specification
 
-import static au.org.ala.volunteer.helper.TaskDataHelper.*
+import static au.org.ala.volunteer.helper.TaskDataHelper.addTask
+import static au.org.ala.volunteer.helper.TaskDataHelper.setupProject
+import static au.org.ala.volunteer.helper.TaskDataHelper.transcribe
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(ValidationService)
-@Mock([Task, Project, Template, Field, ViewedTask, Transcription])
-class ValidationServiceSpec extends Specification {
+@Slf4j
+class ValidationServiceSpec extends Specification implements ServiceUnitTest<ValidationService>, DataTest {
 
     Task task
     Set taskSet
     FieldSyncService fieldSyncService
+    ProjectService projectService
+
+    Map fields() {
+        [0: ["name": "test", "name2": "value2", "name3": "value3"]]
+    }
+
+    Map recFields()  {
+        [0: ["vernacularName": "koala", "individualCount": "1"],
+         1: ["vernacularName": "lizard", "individualCount": "1"],
+         2: ["vernacularName": "kangaroo", "individualCount": "1"]]
+    }
 
     def setup() {
+        mockDomains Task, Project, Template, Field, ViewedTask, Transcription
 
         Project project = setupProject()
         task = addTask(project, 1)
-       // task.project.template.viewParams.transcriptionsPerTask = "3"
         task.project.transcriptionsPerTask = 3
         task.project.thresholdMatchingTranscriptions = 3
         task.isValid = false
@@ -33,22 +42,13 @@ class ValidationServiceSpec extends Specification {
 
         fieldSyncService = Mock(FieldSyncService)
         service.fieldSyncService = fieldSyncService
+        projectService = Stub(ProjectService) {
+            doesTemplateSupportMultiTranscriptions(_) >> true
+        }
+        service.projectService = projectService
     }
 
-    Map fields() {
-        [0: ["name":"test", "name2":"value2", "name3":"value3"]]
-    }
-
-    Map recFields()  {
-        [0: ["vernacularName":"koala", "individualCount": "1"],
-         1: ["vernacularName":"lizard", "individualCount": "1"],
-         2: ["vernacularName":"kangaroo", "individualCount": "1"]]
-    }
-
-    def cleanup() {
-    }
-
-    void "A task with no fields or Transcriptions should not be auto-validated"() {
+    def "A task with no fields or Transcriptions should not be auto-validated"() {
         when:
         service.autoValidate(taskSet)
 
@@ -57,8 +57,7 @@ class ValidationServiceSpec extends Specification {
         !task.isValid
     }
 
-    void "Tasks not fully transcribed should not be auto-validated"() {
-
+    def "Tasks not fully transcribed should not be auto-validated"() {
         setup:
         transcribe(task, "1234", fields())
 
@@ -70,7 +69,7 @@ class ValidationServiceSpec extends Specification {
         !task.isValid
     }
 
-    void "Fully transcribed Tasks with all transcriptions (single record) the same should be auto-validated"() {
+    def "Fully transcribed Tasks with all transcriptions (single record) the same should be auto-validated"() {
         setup:
         for (int i=0; i<3; i++) {
             transcribe(task, Integer.toString(i), fields())
@@ -97,7 +96,7 @@ class ValidationServiceSpec extends Specification {
         1 * fieldSyncService.syncFields(task, _, UserService.SYSTEM_USER, false, true, true)
     }
 
-    void "Fully transcribed Tasks with transcriptions that have identical field records should be auto-validated"() {
+    def "Fully transcribed Tasks with transcriptions that have identical field records should be auto-validated"() {
         setup:
         for (int i=0; i<3; i++) {
             transcribe(task, Integer.toString(i), recFields())
@@ -120,7 +119,7 @@ class ValidationServiceSpec extends Specification {
         1 * fieldSyncService.syncFields(task, _, UserService.SYSTEM_USER, false, true, true)
     }
 
-    void "Fully transcribed Tasks with the transcriptions with same number of the records but 1 of the record differ should not be auto-validated"() {
+    def "Fully transcribed Tasks with the transcriptions with same number of the records but 1 of the record differ should not be auto-validated"() {
         setup: "2 Tasks are transcribed with the same fields, the 3rd has transcription has one of the record different"
         for (int i=0; i<2; i++) {
             transcribe(task, Integer.toString(i), recFields())
@@ -134,12 +133,12 @@ class ValidationServiceSpec extends Specification {
 
         then:
         Task task = Task.get(task.id)
-        !task.isValid == true
+        !task.isValid
         task.fullyValidatedBy == null
         task.numberOfMatchingTranscriptions == 2
     }
 
-    void "Fully transcribed Tasks with one of the task with transcription that has 1 less record but should not be auto-validated"() {
+    def "Fully transcribed Tasks with one of the task with transcription that has 1 less record but should not be auto-validated"() {
         setup: "2 Tasks are transcribed with the same fields, the 3rd transcription has one less record"
         for (int i=0; i<2; i++) {
             transcribe(task, Integer.toString(i), recFields())
@@ -153,12 +152,12 @@ class ValidationServiceSpec extends Specification {
 
         then:
         Task task = Task.get(task.id)
-        !task.isValid == true
+        !task.isValid
         task.fullyValidatedBy == null
         task.numberOfMatchingTranscriptions == 2
     }
 
-    void "Fully transcribed Tasks with the number of matching transcriptions less than the threshold should not be auto-validated"() {
+    def "Fully transcribed Tasks with the number of matching transcriptions less than the threshold should not be auto-validated"() {
         setup: "2 Tasks are transcribed with the same fields, the 3rd has one value different"
         for (int i=0; i<2; i++) {
             transcribe(task, Integer.toString(i), fields())
@@ -172,13 +171,12 @@ class ValidationServiceSpec extends Specification {
 
         then:
         Task task = Task.get(task.id)
-        !task.isValid == true
+        !task.isValid
         task.fullyValidatedBy == null
         task.numberOfMatchingTranscriptions == 2
-
     }
 
-    void "Fully transcribed Tasks with no matching transcriptions should not be auto-validated"() {
+    def "Fully transcribed Tasks with no matching transcriptions should not be auto-validated"() {
         setup: "No tasks are transcribed with the same fields"
         for (int i=0; i<3; i++) {
             Map fields = fields()
@@ -191,21 +189,20 @@ class ValidationServiceSpec extends Specification {
 
         then:
         Task task = Task.get(task.id)
-        !task.isValid == true
+        !task.isValid
         task.fullyValidatedBy == null
         task.numberOfMatchingTranscriptions == 0
-
     }
 
-    void "The transcriberNotes and validatorNotes fields should be excluded from transcription comparisons"() {
+    def "The transcriberNotes and validatorNotes fields should be excluded from transcription comparisons"() {
         setup: "3 Tasks are transcribed with the same fields except for the transcriberNotes and validatorNotes"
-
         Map fields = fields()
         for (int i=0; i<3; i++) {
             fields[0].put("transcriberNotes", "Transcriber $i")
             fields[0].put("validatorNotes", "Validator $i")
             transcribe(task, Integer.toString(i), fields)
         }
+
         def mockTaskService = Stub(TaskService) {
             validate(_, _, _) >> { Task task, String username, boolean _isValid ->
                 task.fullyValidatedBy = "system"
@@ -223,7 +220,7 @@ class ValidationServiceSpec extends Specification {
         task.fullyValidatedBy == "system"
     }
 
-    void "A Task should be auto-validated if the matching transcription threshold is met, even if the required number of transcriptions has not yet been reached"() {
+    def "A Task should be auto-validated if the matching transcription threshold is met, even if the required number of transcriptions has not yet been reached"() {
         setup: "Require two matching transcriptions and transcribe the task twice"
         task.project.thresholdMatchingTranscriptions = 2
         for (int i=0; i<2; i++) {
@@ -249,7 +246,7 @@ class ValidationServiceSpec extends Specification {
         task.fullyValidatedBy == "system"
     }
 
-    void "A Task should be auto-validatable after the number of matching transcription threshold is met"() {
+    def "A Task should be auto-validatable after the number of matching transcription threshold is met"() {
         setup: "Require two matching transcriptions and transcribe the task twice, but differently"
         task.project.thresholdMatchingTranscriptions = 2
         for (int i=0; i<2; i++) {
@@ -271,5 +268,4 @@ class ValidationServiceSpec extends Specification {
         !task.numberOfMatchingTranscriptions
         !task.fullyValidatedBy
     }
-
 }

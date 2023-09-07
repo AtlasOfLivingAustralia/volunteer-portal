@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <title><cl:pageTitle title="Admin Stats" /></title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <asset:stylesheet src="admin-stats" />
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 

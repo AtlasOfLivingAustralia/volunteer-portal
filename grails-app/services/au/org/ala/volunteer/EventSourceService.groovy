@@ -65,7 +65,7 @@ class EventSourceService {
             while (i.hasNext()) {
                 def c = i.next()
                 log.debug("Calling startup closure for $userId")
-                final messages
+                def messages
                 try {
                     messages = c.call(userId)
                 } catch (e) {

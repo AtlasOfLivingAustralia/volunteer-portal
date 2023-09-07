@@ -1,28 +1,32 @@
 package au.org.ala.volunteer
 
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import org.elasticsearch.action.search.SearchType
+import org.elasticsearch.common.ParseFieldMatcher
+import org.grails.plugins.converters.ConvertersGrailsPlugin
+import org.grails.web.converters.configuration.ConvertersConfigurationHolder
 import spock.lang.Specification
-import grails.test.mixin.*
-import grails.test.mixin.web.ControllerUnitTestMixin
 import spock.lang.Shared
 
-@TestFor(FullTextIndexService)
-@TestMixin(ControllerUnitTestMixin)
-@Mock([Field, Transcription])
-class FullTextIndexServiceSpec extends Specification {
+class FullTextIndexServiceSpec extends Specification implements ServiceUnitTest<FullTextIndexService>, DataTest {
 
     @Shared
     Task task1
 
     void setupSpec() {
-      //  mockDomain(Field)
-      //  mockDomain(Transcription)
+        defineBeans(new ConvertersGrailsPlugin())
+        mockDomains(Field, Transcription)
     }
 
     def setup() {
     }
 
     def cleanup() {
+    }
+
+    void cleanupSpec() {
+        ConvertersConfigurationHolder.clear()
     }
 
     def setupTask() {
@@ -43,7 +47,6 @@ class FullTextIndexServiceSpec extends Specification {
         Transcription transcription = new Transcription(task: task, fullyTranscribedBy: user, dateFullyValidated: dateTranscribe)
         task.transcriptions.add(transcription)
     }
-
 
     void "test task is indexed and search is working"() {
 
@@ -73,7 +76,7 @@ class FullTextIndexServiceSpec extends Specification {
 
 
         when:
-        def result = service.rawSearch(query, SearchType.fromString("query_then_fetch"), "", service.elasticSearchToJsonString)
+        def result = service.rawSearch(query, SearchType.fromString("query_then_fetch", ParseFieldMatcher.EMPTY), "", service.elasticSearchToJsonString)
 
         then:
         assert result != null
@@ -91,8 +94,5 @@ class FullTextIndexServiceSpec extends Specification {
 
         then:
         assert deleteResponse != null
-
     }
-
-
 }

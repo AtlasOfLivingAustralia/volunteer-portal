@@ -1,14 +1,18 @@
 package au.org.ala.volunteer
 
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
 
-import grails.test.mixin.*
+
+//import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(AchievementDescriptionController)
-@Mock(AchievementDescription)
-class AchievementDescriptionControllerSpec extends Specification {
+//@TestFor(AchievementDescriptionController)
+//@Mock(AchievementDescription)
+class AchievementDescriptionControllerSpec extends Specification implements ControllerUnitTest<AchievementDescriptionController>, DataTest {
 
     def setup() {
+        mockDomain(AchievementDescription)
         controller.achievementService = Stub(AchievementService)
         controller.userService = Stub(AchievementService)
     }

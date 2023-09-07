@@ -3,17 +3,21 @@ package au.org.ala.volunteer
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.web.AuthService
 import au.org.ala.web.UserDetails
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.Mock
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(UserService)
-@Mock(User)
-class UserServiceSpec extends Specification {
+//@TestFor(UserService)
+//@Mock(User)
+class UserServiceSpec extends Specification implements ServiceUnitTest<UserService>, DataTest {
 
     //def mockAuthService
 
     def setup() {
+        mockDomain(User)
         User potato = new User(userId: '1234', email: 'email@example.com', firstName: 'Mr Potato', lastName: 'Head', displayName: 'Mr Potato Head', created: new Date())
         User smitty = new User(userId: '1235', email: 'smitty@smitty.com', firstName: 'Smitty', lastName: 'Smitty', displayName: 'Smitty Smitty', created: new Date())
 

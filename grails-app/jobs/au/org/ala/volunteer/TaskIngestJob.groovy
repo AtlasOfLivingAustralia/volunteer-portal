@@ -5,7 +5,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class TaskIngestJob {
 
-    def concurrent = false
+    static concurrent = false
 
     def description = "Background job to load tasks into the database"
 

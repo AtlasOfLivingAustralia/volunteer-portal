@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><cl:pageTitle title="Contact Details" /></title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
 </head>
 
 <body class="contact">
@@ -15,7 +15,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>Help in using <g:message code="default.application.name"/> and reporting issues</h3>
-                    <b>E</b> <a href="mailto:${grailsApplication.config.grails.contact.emailAddress}">${grailsApplication.config.grails.contact.emailAddress}</a><br/>
+                    <b>E</b> <a href="mailto:${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}">
+                    ${grailsApplication.config.getProperty('grails.contact.emailAddress', String)}</a><br/>
                     Australian Museum<br/>
                     Sydney NSW 2010
                     <p/>

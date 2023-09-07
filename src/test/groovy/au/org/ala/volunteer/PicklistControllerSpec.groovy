@@ -1,16 +1,20 @@
 package au.org.ala.volunteer
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.Mock
+//import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(PicklistController)
-@Mock(Picklist)
-class PicklistControllerSpec extends Specification {
+//@TestFor(PicklistController)
+//@Mock(Picklist)
+class PicklistControllerSpec extends Specification implements ControllerUnitTest<PicklistController>, DataTest {
 
     boolean admin = false
 
     void setup() {
+        mockDomain(Picklist)
         def userServiceStub = Stub(UserService) {
             isAdmin() >> admin
         }

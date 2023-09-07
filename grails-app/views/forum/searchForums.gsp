@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <asset:stylesheet src="forum.css"/>
 
     <style type="text/css">
@@ -37,7 +37,7 @@
                         <strong>${results.totalCount} matching message${results.totalCount == 1 ? '' : 's'} found.</strong>
                     </p>
                     <section id="searchResults">
-                        <vpf:messagesTable messages="${results}"/>
+                        <vpf:messagesTable messages="${results.results}" totalCount="${results.totalCount}"/>
                         %{--<vpf:searchResultsTable searchResults="${results}"/>--}%
                     </section>
                 </div>

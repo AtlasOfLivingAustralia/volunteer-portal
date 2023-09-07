@@ -7,7 +7,7 @@ class AdminService {
 
     @Transactional(readOnly = true)
     def getCustomLandingPageSettings () {
-       List<Label> landingPages = LandingPage.findAllByEnabled(true)
+       List<LandingPage> landingPages = LandingPage.findAllByEnabled(true)
        landingPages
     }
 }

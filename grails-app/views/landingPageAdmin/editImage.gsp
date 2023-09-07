@@ -19,7 +19,8 @@
         <div>
             <g:if test="${landingPageInstance.landingPageImage}">
                 <div class="thumbnail display-inline-block">
-                    <img class="img-responsive" src="${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/landingPage/${landingPageInstance.landingPageImage}"/>
+                    <img class="img-responsive"
+                         src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/landingPage/${landingPageInstance.landingPageImage}"/>
                 </div>
                 <div>
                     ${landingPageInstance.landingPageImage}

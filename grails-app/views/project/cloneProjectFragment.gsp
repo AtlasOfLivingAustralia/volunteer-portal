@@ -6,13 +6,12 @@
         <ul>
             <li>Description</li>
             <li>Template</li>
-            <li>Expedition Type</li>
+            <li>Expedition type</li>
             <li>Tags</li>
-            <li>Expedition Image</li>
-            <li>Expedition Background Image</li>
             <li>Picklist Institution</li>
-            <li>Tutorial Info</li>
+            <li>Tutorial info</li>
             <li>Map settings</li>
+            <li>Task/transcription settings</li>
         </ul>
     </div>
 

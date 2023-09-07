@@ -151,7 +151,7 @@ class InstitutionAdminController {
                      contactName: institution.contactName,
                      contactEmail: institution.contactEmail,
                      contactPhone: institution.contactPhone,
-                     returnEmail: grailsApplication.config.grails.contact.emailAddress]
+                     returnEmail: grailsApplication.config.getProperty('grails.contact.emailAddress', String)]
         def title = institutionService.NOTIFICATION_APPLICATION + ": ${institution.name}"
         def message = groovyPageRenderer.render(view: '/institutionAdmin/institutionApplicantNotification',
                 model: model)

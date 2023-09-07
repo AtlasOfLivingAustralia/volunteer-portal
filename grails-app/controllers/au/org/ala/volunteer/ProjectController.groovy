@@ -65,7 +65,7 @@ class ProjectController {
         } else {
             // project info
             List userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
-            def expedition = grailsApplication.config.expedition as List
+            def expedition = grailsApplication.config.getProperty("expedition", List.class)
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
             expedition.each {
@@ -389,7 +389,7 @@ class ProjectController {
             params.max = 1
             def task = Task.findByProject(project, params)
             if (task?.multimedia?.filePathToThumbnail) {
-                redirect(url: grailsApplication.config.server.url + task?.multimedia?.filePathToThumbnail?.get(0))
+                redirect(url: grailsApplication.config.getProperty("server.url", String.class) + task?.multimedia?.filePathToThumbnail?.get(0))
             }
         }
     }
@@ -498,8 +498,8 @@ class ProjectController {
             flash.message = "The expedition status was not able to be updated."
             render(view: '/notPermitted')
         } else {
-            def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
-            if (!project.inactive && new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+            def isNotifyEnabled = grailsApplication.config.getProperty("notifications.project.enabled", String.class)
+            if (!project.inactive && Boolean.parseBoolean(isNotifyEnabled ?: 'false')) {
 //            if (isNotifyEnabled) {
                 generateActivationNotification(project)
             }
@@ -550,17 +550,16 @@ class ProjectController {
 
     def checkTemplateSupportMultiTranscriptions() {
         def project = Project.findById(params.long('projectId'))
+
         if (!projectService.isAdminForProject(project)) {
-            render (["status": 403, "error": "Forbidden"] as JSON)
-        } else {
-            def template = Template.findById(params.long("templateId"))
-            if (template) {
-                render(["supportMultipleTranscriptions": "${template.supportMultipleTranscriptions}"] as JSON)
-            } else {
-                render(["supportMultipleTranscriptions": "false"] as JSON)
-            }
+            log.debug("User not authorised to get checkTemplateSupportMultiTranscriptions")
+            render(["supportMultipleTranscriptions": "false"] as JSON)
+            return
         }
+        render(["supportMultipleTranscriptions": "${projectService.doesTemplateSupportMultiTranscriptions(project)}"] as JSON)
     }
+
+
 
     def editTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
@@ -804,7 +803,8 @@ class ProjectController {
 
                 bindData(project, params)
 
-                if (!project.template.supportMultipleTranscriptions) {
+                //if (!project.template.supportMultipleTranscriptions) {
+                if (!projectService.doesTemplateSupportMultiTranscriptions(project)) {
                     project.transcriptionsPerTask = Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
                     project.thresholdMatchingTranscriptions = Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
                 }
@@ -812,8 +812,8 @@ class ProjectController {
 
             if (!project.hasErrors() && projectService.saveProject(project)) {
                 log.debug("inactive flag; old: ${oldInactiveFlag}, new: ${newInactive}")
-                def isNotifyEnabled = grailsApplication.config.notifications.project.enabled
-                if (new Boolean(isNotifyEnabled as String ?: 'false').booleanValue()) {
+                def isNotifyEnabled = grailsApplication.config.getProperty("notifications.project.enabled", String.class)
+                if (Boolean.parseBoolean(isNotifyEnabled ?: 'false')) {
                     if (((oldInactiveFlag != newInactive) && (!newInactive))) {
                         log.info("Project was activated Sending project activation notification")
                         generateActivationNotification(project)
@@ -909,7 +909,7 @@ class ProjectController {
                 }
 
                 try {
-                    def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+                    def filePath = "${grailsApplication.config.getProperty("images.home", String.class)}/project/${project.id}/expedition-image.jpg"
                     def file = new File(filePath)
                     file.getParentFile().mkdirs()
                     f.transferTo(file)
@@ -1358,8 +1358,8 @@ class ProjectController {
         List<ManageProject> projectsWithSize = projectList.collect {
             log.debug("Project: ${it}")
             final counts = completions[it.id as long]
-            final transcribed
-            final validated
+            def transcribed
+            def validated
             if (counts) {
                 transcribed = (counts.transcribed / counts.total) * 100.0
                 validated = (counts.validated / counts.total) * 100.0
@@ -1571,8 +1571,8 @@ class ProjectController {
 
         List<ManageProject> projectsWithSize = projects.collect {
             final counts = completions[it.id]
-            final transcribed
-            final validated
+            def transcribed
+            def validated
             if (counts) {
                 transcribed = (counts.transcribed / counts.total) * 100.0
                 validated = (counts.validated / counts.total) * 100.0

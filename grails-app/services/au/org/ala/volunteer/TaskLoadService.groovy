@@ -7,17 +7,20 @@ import au.org.ala.volunteer.jooq.tables.records.ProjectRecord
 import au.org.ala.volunteer.jooq.tables.records.ShadowFileDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskDescriptorRecord
 import au.org.ala.volunteer.jooq.tables.records.TaskRecord
+import com.google.common.base.Stopwatch
 import grails.events.EventPublisher
+import groovy.json.JsonSlurper
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang.StringUtils
 import org.jooq.Configuration
 import org.jooq.DSLContext
+import org.jooq.JSONB
 import org.jooq.TransactionalCallable
 import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
+import org.jooq.tools.json.JSONArray
 import org.springframework.beans.factory.annotation.Value
 
 import java.nio.charset.StandardCharsets
@@ -151,11 +154,12 @@ class TaskLoadService implements EventPublisher {
                     projectId = project.id
                     projectName = project.name
                     imageUrl = imgData.url
-                    fields = []
+                    fields = JSONB.jsonb("[]")
                     replaceDuplicates = true
                     externalIdentifier = imgData.valueMap["externalIdentifier"] ?: imgData.valueMap["externalIdentifier_0"]
                     it
                 }
+                def fieldList = []
                 imgData.valueMap.each { kvp ->
                     def fieldName = kvp.key
                     def recordIndex = 0
@@ -167,8 +171,15 @@ class TaskLoadService implements EventPublisher {
                     }
 
                     if (fieldName != 'externalIdentifier') {
-                        taskDesc.fields.add([name: fieldName, recordIdx: recordIndex, transcribedByUserId: 'system', value: kvp.value])
+                        def fieldMap = [name: fieldName, recordIdx: recordIndex, transcribedByUserId: 'system', value: kvp.value]
+                        fieldList.add(fieldMap)
                     }
+                }
+
+                // Convert fieldList to JSON
+                if (fieldList.size() > 0) {
+                    JSONArray fieldArray = new JSONArray(fieldList)
+                    taskDesc.fields = JSONB.jsonb(fieldArray.toString())
                 }
 
                 taskDesc.store()
@@ -432,8 +443,9 @@ class TaskLoadService implements EventPublisher {
         def rollback = false
         int dequeuedTasks = 0
         try {
+            def sw = Stopwatch.createStarted()
             dequeuedTasks = ctx.transactionResult(taskLoadTransaction.curry(jobsStatuses, projectId) as TransactionalCallable<Integer>)
-            log.debug("Task load completed successfully")
+            log.debug("Task load completed successfully in {}", sw.stop())
         } catch (RuntimeException e) {
             log.error("Task load aborted with rollback", e)
             rollback = true
@@ -520,6 +532,7 @@ class TaskLoadService implements EventPublisher {
     }
 
     private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->
+        def sw = Stopwatch.createStarted()
         def create = DSL.using(cfg)
         def jobFilter = TASK_DESCRIPTOR.RETRIES_REMAINING.gt(0)
         if (projectId) jobFilter = jobFilter & TASK_DESCRIPTOR.PROJECT_ID.eq(projectId)
@@ -538,7 +551,9 @@ class TaskLoadService implements EventPublisher {
                 )
                 .returning()
                 .fetch()
+        log.debug("taskLoadTransaction: Got jobs in {}", sw.stop())
 
+        sw.reset().start()
         // Just to be sure the list is in this order
         jobs.sortAsc(TASK_DESCRIPTOR.ID)
         final dequeuedTasks = jobs.size()
@@ -552,7 +567,9 @@ class TaskLoadService implements EventPublisher {
             def deletes = create.deleteFrom(TASK).where(row(TASK.PROJECT_ID, TASK.EXTERNAL_IDENTIFIER).in(duplicateFinder)).execute()
             log.info("Deleting {} duplicates for task load", deletes)
         }
+        log.debug("taskLoadTransaction: Removed duplicates in {}", sw.stop())
 
+        sw.reset().start()
         jobsStatuses.addAll(jobs.collect { job -> new LoadStatus(taskDescriptorRecord: job) })
 
         def statusByJobBusinessKey = jobsStatuses.<List<Object>, LoadStatus, LoadStatus> collectEntries { LoadStatus status ->
@@ -569,36 +586,64 @@ class TaskLoadService implements EventPublisher {
             }
             log.info("Skipping {} duplicates", skips)
         }
+        log.debug("taskLoadTransaction: Marked duplicates to skip in {}", sw.stop())
 
         if (jobs.isEmpty()) {
             log.debug("No more jobs")
             return dequeuedTasks
         }
 
+        sw.reset().start()
         // Load projects for project settings
         def projectIds = (jobsStatuses*.projectId as Set).findAll { it != null }
         def projects = create.selectFrom(PROJECT).where(PROJECT.ID.in(projectIds)).fetch().<Long, ProjectRecord, ProjectRecord> collectEntries { [(it.id): it ]}
+        log.debug("taskLoadTransaction: Loaded projects in {}", sw.stop())
 
+        sw.reset().start()
         // Generate initial task objects
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateTasks.curry(create))
+        log.debug("taskLoadTransaction: Load Step Generate Tasks in {}", sw.stop())
 
         Map<Long, Long> taskDescriptorIdToTaskIdMap = continueAndSkipStatuses(jobsStatuses) { statuses ->
                 statuses.<Long, Long, LoadStatus> collectEntries { [(it.taskDescriptorRecord.id): it.taskRecord.id] }
         }
 
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepImportImage.curry(create))
-        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
-        continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateFields.curry(create))
+        log.debug("taskLoadTransaction: Load Step Import Image in {}", sw.stop())
 
+        sw.reset().start()
+        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
+        log.debug("taskLoadTransaction: Load Step Update Multimedia in {}", sw.stop())
+
+        sw.reset().start()
+        continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateFields.curry(create))
+        log.debug("taskLoadTransaction: Load Step Generate Fields in {}", sw.stop())
+
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
+        log.debug("taskLoadTransaction: Load Step Generate Extra Media in {}", sw.stop())
+
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraMedia.curry(create))
+        log.debug("taskLoadTransaction: Load Step Insert Extra Media in {}", sw.stop())
+
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepShadowFiles.curry(create))
+        log.debug("taskLoadTransaction: Load Step Shadow Files in {}", sw.stop())
+
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepExtractExifData.curry(create, projects))
+        log.debug("taskLoadTransaction: Load Step Extract Exif Data in {}", sw.stop())
+
+        sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraFields.curry(create))
+        log.debug("taskLoadTransaction: Load Step Insert Extra Fields in {}", sw.stop())
         // DONE
 
         // Any failed tasks we roll back any created database records here
         // Media byte objects rollback to be performed outside db transaction context
+        sw.reset().start()
         failedStatuses(jobsStatuses) { statuses ->
             statuses.each { status ->
                 // Manually roll back single failed job
@@ -634,9 +679,11 @@ class TaskLoadService implements EventPublisher {
                 }
             }
         }
+        log.debug("taskLoadTransaction: Failed Task loads manual roll back in {}", sw.stop())
 
         // All successful jobs, delete the task descriptor from the queue
         // and notify project owner.
+        sw.reset().start()
         continueStatuses(jobsStatuses) { statuses ->
             def taskDescriptorIds = statuses*.taskDescriptorRecord*.id
 
@@ -656,7 +703,7 @@ class TaskLoadService implements EventPublisher {
                 }
             }
         }
-
+        log.debug("taskLoadTransaction: Finalise load queue entries in {}", sw.stop())
         return dequeuedTasks
     }
 
@@ -911,8 +958,11 @@ class TaskLoadService implements EventPublisher {
 
     private List<FieldRecord> createInitialFieldRecordsFromDescriptor(TaskDescriptorRecord job, TaskRecord record) {
         def fields = job.fields
-        if (fields instanceof List) {
-            fields.collectMany { fd ->
+        def json = fields.data()
+        def slurper = new JsonSlurper()
+        def fieldData = slurper.parseText(json)
+        if (fieldData instanceof List) {
+            fieldData.collectMany { fd ->
                 if (fd instanceof Map) {
                     fd['value'] = replaceSpecialCharacters(fd['value'] ?: "")
                     [new FieldRecord().with {

@@ -1,21 +1,21 @@
 sudo: false
-dist: xenial
+dist: focal
 language: groovy
 jdk:
-  - openjdk8
+  - openjdk11
 branches:
   only:
   - master
   - develop
-  - feature/grails33upgrade
+  - feature/grails-5-upgrade
 services:
   - postgresql
 addons:
-  postgresql: "11"
+  postgresql: "15"
   apt:
     packages:
-    - postgresql-11
-    - postgresql-client-11
+    - postgresql-15
+    - postgresql-client-15
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -26,14 +26,16 @@ cache:
   - $HOME/.gradle/wrapper/
 before_install:
   - sudo apt-get update
-  - sudo cp /etc/postgresql/{10,11}/main/pg_hba.conf
-  - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/11/main/postgresql.conf
-  - sudo service postgresql@11-main restart
+  - sudo cp travis/pg_hba.conf /etc/postgresql/15/main/pg_hba.conf 
+  - sudo -u postgres sed -i -e 's/^port.*/port = 5432/' /etc/postgresql/15/main/postgresql.conf
+  - sudo service postgresql@15-main restart
   - psql -c 'create database volunteerstest;' -U postgres
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
+  - export GRAILS_ENV=test
 after_success:
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
+# - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && GRAILS_ENV=production travis_retry ./gradlew publish'
 #- '[ "${TRAVIS_BRANCH}" = "develop" ] && travis_retry curl -X POST --header "X-DEPLOY-KEY:
 #  ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
 env:

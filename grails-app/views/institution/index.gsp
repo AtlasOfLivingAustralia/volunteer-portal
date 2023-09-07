@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><cl:pageTitle title="${institutionInstance.name ?: 'unknown'}" /></title>
     <content tag="primaryColour">${institutionInstance.themeColour}</content>
     <content tag="pageType">institution</content>

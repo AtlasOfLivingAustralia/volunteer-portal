@@ -31,7 +31,8 @@ class ProjectStagingService {
         project.backgroundImageAttribution = projectDescriptor.backgroundImageCopyright
         project.tutorialLinks = projectDescriptor.tutorialLinks
         project.extractImageExifData = projectDescriptor.extractImageExifData
-        if (project.template.supportMultipleTranscriptions) {
+
+        if (project.template.supportMultipleTranscriptions && project.projectType.supportsMultipleTranscriptions()) {
             project.thresholdMatchingTranscriptions = projectDescriptor.thresholdMatchingTranscriptions?: Project.DEFAULT_THRESHOLD_MATCHING_TRANSCRIPTIONS
             project.transcriptionsPerTask = projectDescriptor.transcriptionsPerTask?: Project.DEFAULT_TRANSCRIPTIONS_PER_TASK
         } else {
@@ -56,7 +57,7 @@ class ProjectStagingService {
         // 1. Expedition Image
         def imageFile = new File(getProjectImagePath(projectDescriptor))
         if (imageFile && imageFile.exists()) {
-            def destPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+            def destPath = "${grailsApplication.config.getProperty('images.home', String)}/project/${project.id}/expedition-image.jpg"
             def destFile = new File(destPath)
             destFile.getParentFile().mkdirs()
             FileUtils.copyFile(imageFile, destFile)
@@ -115,11 +116,15 @@ class ProjectStagingService {
     }
 
     def getProjectImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-image.jpg"
+        return grailsApplication.config.getProperty('server.url', String) +
+                '/' + grailsApplication.config.getProperty('images.urlPrefix', String) +
+                "projectStaging/${project.stagingId}/expedition-image.jpg"
     }
 
     def getProjectBackgroundImageUrl(NewProjectDescriptor project) {
-        return grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "projectStaging/${project.stagingId}/expedition-background-image.jpg"
+        return grailsApplication.config.getProperty('server.url', String) +
+                '/' + grailsApplication.config.getProperty('images.urlPrefix', String) +
+                "projectStaging/${project.stagingId}/expedition-background-image.jpg"
     }
 
     private String getProjectImagePath(NewProjectDescriptor project) {
@@ -166,7 +171,7 @@ class ProjectStagingService {
     }
 
     private String getStagingRootPath(String stagingId) {
-        return "${grailsApplication.config.images.home}/projectStaging/${stagingId}"
+        return "${grailsApplication.config.getProperty('images.home', String)}/projectStaging/${stagingId}"
     }
 
     /**

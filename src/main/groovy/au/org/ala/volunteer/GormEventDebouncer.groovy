@@ -1,12 +1,14 @@
 package au.org.ala.volunteer
 
-import org.apache.log4j.Logger
+//import org.apache.log4j.Logger
+import groovy.util.logging.Slf4j
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
+@Slf4j
 class GormEventDebouncer {
 
-    private static final Logger log = Logger.getLogger(GormEventDebouncer.class)
+    //private static final Logger log = Logger.getLogger(GormEventDebouncer.class)
 
     static def debounceProject(long id) {
         DomainUpdateService.scheduleProjectUpdate(id)

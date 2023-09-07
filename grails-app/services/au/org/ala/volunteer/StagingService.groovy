@@ -33,7 +33,7 @@ class StagingService {
     }
 
     String getStagingDirectory(long projectId) {
-        return "${grailsApplication.config.images.home}/${projectId}/staging"
+        return "${grailsApplication.config.getProperty('images.home', String)}/${projectId}/staging"
     }
 
     String createStagedPath(Project project, String filename) {
@@ -45,7 +45,7 @@ class StagingService {
     }
 
     String createUploadChunksPath(long projectId, String filename) {
-        return "${grailsApplication.config.images.home}/${projectId}/chunks/$filename/"
+        return "${grailsApplication.config.getProperty('images.home', String)}/${projectId}/chunks/$filename/"
     }
 
     String createDataFilePath(Project project) {
@@ -106,7 +106,9 @@ class StagingService {
         def images = []
         files.each {
             if (!it.isDirectory()) {
-                def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
+                def url = grailsApplication.config.getProperty('server.url', String) + '/' +
+                        grailsApplication.config.getProperty('images.urlPrefix', String) +
+                        "${project.id}/staging/" + URLEncoder.encode(it.name, "UTF-8").replaceAll("\\+", "%20")
                 Map image = [file: it, name: it.name, url: url]
 
                 // If Audio project, check if it's an AAC file and rename to mp3.
@@ -118,7 +120,9 @@ class StagingService {
                     log.debug("Path: ${newFile.path}")
                     image.file = newFile
                     image.name = newFile.name
-                    image.url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "${project.id}/staging/" + URLEncoder.encode(newFile.name, "UTF-8").replaceAll("\\+", "%20")
+                    image.url = grailsApplication.config.getProperty('server.url', String) + '/' +
+                            grailsApplication.config.getProperty('images.urlPrefix', String) + "${project.id}/staging/" +
+                            URLEncoder.encode(newFile.name, "UTF-8").replaceAll("\\+", "%20")
                 }
                 log.debug("File details: ${image}")
 
@@ -465,7 +469,8 @@ class StagingService {
     }
 
     public String dataFileUrl(Project project) {
-        def url = grailsApplication.config.server.url + '/' + grailsApplication.config.images.urlPrefix + "/${project.id}/staging/datafile/datafile.csv"
+        def url = grailsApplication.config.getProperty('server.url', String) + '/' +
+                grailsApplication.config.getProperty('images.urlPrefix', String) + "/${project.id}/staging/datafile/datafile.csv"
         return url
     }
 

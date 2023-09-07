@@ -7,7 +7,8 @@ import grails.gorm.transactions.Transactional
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.NotImplementedException
-import org.elasticsearch.index.query.FilterBuilders
+import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortBuilders
 import org.grails.orm.hibernate.HibernateSession
@@ -19,11 +20,9 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.Requests
-import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.common.xcontent.ToXContent
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
-import org.elasticsearch.index.query.FilterBuilder
 import org.elasticsearch.node.Node
 import org.elasticsearch.search.sort.SortOrder
 import org.hibernate.Criteria
@@ -51,11 +50,11 @@ class FullTextIndexService {
     @PostConstruct
     def initialize() {
         log.info("ElasticSearch service starting...")
-        ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
-        settings.put("path.home", grailsApplication.config.elasticsearch.location);
-        node = nodeBuilder().local(true).settings(settings).node();
-        client = node.client();
-        client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
+        Settings.Builder settings = Settings.builder()
+        settings.put("path.home", grailsApplication.config.getProperty('elasticsearch.location', String) as String)
+        node = nodeBuilder().local(true).settings(settings).node()
+        client = node.client()
+        client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()
         log.info("ElasticSearch service initialisation complete.")
     }
 
@@ -193,18 +192,30 @@ class FullTextIndexService {
      * @param sortFieldName the field to sort by.
      */
     QueryResults<Task> findProjectTasksByFieldValue(Project project, String fieldName, String fieldValue, String sortFieldName = null) {
+        def query = QueryBuilders.boolQuery()
+        QueryBuilder projectFilter = QueryBuilders.termQuery("projectid", project.id)
+        QueryBuilder fieldFilter = QueryBuilders.nestedQuery("fields", QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery("fields.name", fieldName))
+                .filter(QueryBuilders.termQuery("fields.value", fieldValue)))
+
+        query.filter(projectFilter).filter(fieldFilter)
+
+
+
+/*
+        query.filter(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("projectid", project.id)))
+
         def query = QueryBuilders.constantScoreQuery(FilterBuilders.andFilter(
                 FilterBuilders.termFilter("projectid", project.id),
                 FilterBuilders.nestedFilter("fields", FilterBuilders.andFilter(
                         FilterBuilders.termFilter("fields.name", fieldName),
                         FilterBuilders.termFilter("fields.value", fieldValue)
-
                 ))
         ))
-
+*/
         def searchRequest = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(query)
         if (sortFieldName) {
-            def sort = SortBuilders.fieldSort("fields.value").setNestedFilter(FilterBuilders.termFilter("fields.name", sortFieldName))
+            def sort = SortBuilders.fieldSort("fields.value").setNestedFilter(QueryBuilders.termQuery("fields.name", sortFieldName))
             searchRequest.addSort(sort)
         }
         executeSearch(searchRequest, null, null, null, null)
@@ -426,9 +437,9 @@ class FullTextIndexService {
         client.admin().indices().prepareFlush().execute().actionGet();
     }
 
-    private QueryResults<Task> executeFilterSearch(FilterBuilder filterBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
+    private QueryResults<Task> executeFilterSearch(QueryBuilder queryBuilder, Integer offset, Integer max, String sortBy, SortOrder sortOrder) {
         def searchRequestBuilder = client.prepareSearch(INDEX_NAME).setSearchType(SearchType.QUERY_THEN_FETCH)
-        searchRequestBuilder.setPostFilter(filterBuilder)
+        searchRequestBuilder.setPostFilter(queryBuilder)
         return executeSearch(searchRequestBuilder, offset, max, sortBy, sortOrder)
     }
 

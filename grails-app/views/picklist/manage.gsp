@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'picklist.label', default: 'Picklist')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
 </head>
@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
                                 <g:actionSubmit id="upload-picklist-button"
-                                                disabled="${(picklistData?.getBytes('UTF-8')?.length ?: 0) > (grailsApplication.config.bvp.maxPostSize ?: 2097152)}"
+                                                disabled="${(picklistData?.getBytes('UTF-8')?.length ?: 0) > (grailsApplication.config.getProperty('bvp.maxPostSize', Long) ?: 2097152)}"
                                                 class="btn btn-primary" name="upload.picklist"
                                                 value="${message(code: 'upload.picklist.label', default: 'Upload')}"
                                                 action="uploadCsvData"/>
@@ -179,7 +179,7 @@
                     modal.find('#upInstitutionCode').val(form.find('#institutionCode').val());
                 });
 
-                var maxSize = ${grailsApplication.config.bvp.maxPostSize ?: 2097152};
+                var maxSize = ${grailsApplication.config.getProperty('bvp.maxPostSize', Long) ?: 2097152};
                 var imageLink = "${createLink(controller: 'picklist', action: 'images')}";
                 $('#picklist').change(function(e) {
                     var $this = $(this);

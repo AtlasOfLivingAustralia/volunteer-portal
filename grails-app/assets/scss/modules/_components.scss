@@ -374,7 +374,7 @@
 	}
 }
 
-h2.heading, .pre-header {
+@mixin h2-heading {
 	text-transform: uppercase;
 	font-size: 14px;
 	letter-spacing: 2px;
@@ -383,6 +383,11 @@ h2.heading, .pre-header {
 	color: $black;
 	font-weight: 400;
 }
+
+h2.heading, .pre-header {
+	@include h2-heading;
+}
+
 h2.body-heading {
 	text-transform: uppercase;
 	font-size: 15px;
@@ -887,7 +892,8 @@ table thead th {
 /* Modal Style */
 .modal {
 	h5 {
-		@extend h2.heading;
+		/*@extend h2.heading;*/
+		@include h2-heading;
 		margin-bottom: 20px;
 	}
 	select, input {

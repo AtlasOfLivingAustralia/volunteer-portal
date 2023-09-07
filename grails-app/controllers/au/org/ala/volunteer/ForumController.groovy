@@ -2,14 +2,15 @@ package au.org.ala.volunteer
 
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.StringUtils
 
 class ForumController {
 
     def forumService
     def userService
-    def markdownService
     def projectService
     def fieldService
+    def markdownService
 
     def index() {
     }
@@ -322,32 +323,65 @@ class ForumController {
                 replyTo = forumService.getFirstMessageForTopic(topic)
             }
             def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched], params: [messageText: params.messageText]
+            render view:'postMessage',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched],
+                    params: [messageText: markdownService.sanitizeMarkdown(params.messageText)]
         }
     }
 
     def previewMessageEdit() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
-        render view:'editMessage', model: [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText]
+        render view:'editMessage', model: [forumMessage: message,
+                                           isWatched: isWatched,
+                                           userInstance: userService.currentUser,
+                                           messageText: markdownService.sanitizeMarkdown(params.messageText)]
     }
 
+    @Transactional
     def updateTopicMessage() {
 
         def message = ForumMessage.get(params.int("messageId"))
         def currentUser = userService.currentUser
-        if (message && currentUser) {
+        def text = params.messageText as String
+
+        def errors = []
+        if ((message && !StringUtils.isEmpty(text)) && currentUser) {
             if (!forumService.isMessageEditable(message, currentUser)) {
                 throw new RuntimeException("You do not have sufficient privileges to edit this message!")
             }
-            message.text = params.messageText
+
+            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
+            text = markdownService.sanitizeMarkdown(text)
+
+            if (message.text.length() > maxSize) {
+                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+            }
+
             if (params.watchTopic == 'on') {
                 forumService.watchTopic(currentUser, message.topic)
             } else {
                 forumService.unwatchTopic(currentUser, message.topic)
             }
+        } else {
+            errors << "Message text must not be empty"
         }
-        redirect(action:'viewForumTopic', id: message?.topic?.id)
+
+        if (!errors) {
+            //message.save(flush: true, failOnError: true)
+            message.text = text
+            message.save(flush: true, failOnError: true)
+            flash.message = "Message was successfully updated."
+            redirect(action: 'viewForumTopic', id: message?.topic?.id)
+            return
+        }
+
+        flash.message = formatMessages(errors)
+        render view:'editMessage', model: [forumMessage: message,
+                                           userInstance: userService.currentUser,
+                                           isWatched: (params.watchTopic == 'on'),
+                                           messageText: params.messageText]
+        //redirect(action:'viewForumTopic', id: message?.topic?.id)
     }
 
     def deleteTopicMessage() {
@@ -360,6 +394,9 @@ class ForumController {
             }
             forumService.deleteMessage(message)
         }
+
+        flash.message = "Message was successfully deleted."
+
         if (topicId) {
             redirect(action: 'viewForumTopic', id: topicId)
         } else {
@@ -389,7 +426,7 @@ class ForumController {
 
             def text = params.messageText as String
             def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-            msgParams.text = markdownService.sanitize(text)
+            msgParams.text = markdownService.sanitizeMarkdown(text)
 
             if (text.length() > maxSize) {
                 errors << "The message text is too long. It needs to be less than ${maxSize} characters"
@@ -505,27 +542,42 @@ class ForumController {
         def idList = watchList?.topics?.collect { it.id }
 
         def sort = params.sort
+        if (!sort) {
+            sort = 'id'
+        }
+
+        def order = params.order
+        if (!order) {
+            'desc'
+        }
 
         if (sort && !ForumTopic.declaredFields.find { it.name == sort }) {
             sort = 'title'
+            order = 'asc'
         }
 
-        def c = ForumTopic.createCriteria()
         def topics = []
         if (idList) {
-            topics = c.list(sort: sort, order: params.order) {
-                inList('id', idList)
+            def query = """
+                SELECT DISTINCT topic
+                FROM ForumTopic topic
+                WHERE id in (:idList)
+            """
+
+            if (sort != 'id') {
+                query = query.toString() + " order by " + sort + " " + order
             }
+            topics = ForumTopic.executeQuery(query, [idList: idList])
         }
 
-        if (params.sort == 'id') {
+        if (sort == 'id') {
             // we are actually supposed to sort by number of replies. Number of replies is actually a calculated field (the number
             // of messages - 1, so can't sort in the criteria, so do it manually...
             topics.sort { topic ->
                  topic.messages?.size()
             }
 
-            if (params.order == 'desc') {
+            if (order == 'desc') {
                 topics = topics.reverse()
             }
         }

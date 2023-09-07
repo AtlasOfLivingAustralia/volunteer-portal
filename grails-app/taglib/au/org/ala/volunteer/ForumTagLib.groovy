@@ -1,19 +1,20 @@
 package au.org.ala.volunteer
 
-import com.naleid.grails.MarkdownService
-import grails.gorm.transactions.Transactional
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import grails.orm.PagedResultList
 import groovy.xml.MarkupBuilder
+import org.hibernate.Hibernate
 
 class ForumTagLib {
 
     static namespace = 'vpf'
 
     UserService userService
-    MarkdownService markdownService
-    TaskService taskService
     MultimediaService multimediaService
     ProjectService projectService
+    MarkdownService markdownService
     @Lazy ForumService forumService = grailsApplication.mainContext.getBean('forumService')
 
     /**
@@ -31,6 +32,7 @@ class ForumTagLib {
     def topicMessagesTable = { attrs, body ->
 
         def topic = attrs.topic as ForumTopic
+//        Parser parser = Parser.builder().build();
 
         if (topic) {
 
@@ -105,8 +107,10 @@ class ForumTagLib {
                                     mkp.yield(formatDate(date: reply.date, format: 'dd MMM, yyyy HH:mm:ss'))
                                 }
                             }
-                            def message = markdownService.sanitize(reply.text ?: "")
-                            td() { mkp.yieldUnescaped(markdownService.markdown(message)) }
+
+                            // Process the markdown into HTML and sanitize.
+                            td() { mkp.yieldUnescaped(markdownService.renderMarkdown(reply.text ?: "")) }
+
                             td(style:'text-align: right') {
                                 if (canEdit) {
 
@@ -306,13 +310,15 @@ class ForumTagLib {
 
         Project projectInstance = null
         Task taskInstance = null
-        def topic = attrs.topic as ForumTopic
+        def topic = attrs.topic //as ForumTopic
 
         if (topic) {
             if (topic.instanceOf(ProjectForumTopic)) {
-                projectInstance = (topic as ProjectForumTopic).project
+                def unproxyObject = Hibernate.unproxy(topic)
+                projectInstance = unproxyObject.project
             } else if (topic.instanceOf(TaskForumTopic)) {
-                taskInstance = (topic as TaskForumTopic).task
+                def unproxyObject = Hibernate.unproxy(topic)
+                taskInstance = unproxyObject.task
             }
         } else {
             projectInstance = attrs.projectInstance as Project
@@ -389,21 +395,24 @@ class ForumTagLib {
      * @attrs project
      */
     def taskTopicsTable = { attrs, body ->
-        def topics = attrs.topics as PagedResultList
+        def topics = attrs.topics
 
         if (topics) {
-            out << topicTable([topics: topics, totalCount: topics?.totalCount, paginateAction: 'projectForum'], body)
+            out << topicTable([topics: topics.topics, totalCount: topics?.totalCount, paginateAction: 'projectForum'], body)
         }
     }
 
     /**
+     * Prints a series of topics that are from the Forum Search
      * @attr messages
+     * @attr totalCount
      * @attr hideUsername
      * @attr paginateAction
      * @attr paginateController
      */
     def messagesTable = { attrs, body ->
-        def messages = attrs.messages
+        def messages = attrs.messages as List<ForumMessage>
+//        Parser parser = Parser.builder().build();
 
         if (messages) {
             def mb = new MarkupBuilder(out)
@@ -416,13 +425,15 @@ class ForumTagLib {
                         def userProps = userService.detailsForUserId(message.user?.userId)
                         Project projectInstance = null
                         Task taskInstance = null
-                        if (message.topic.instanceOf(ProjectForumTopic)) {
-                            def projectTopic = message.topic as ProjectForumTopic
-                            projectInstance = projectTopic.project
-                        } else if (message.topic.instanceOf(TaskForumTopic)) {
-                            def taskTopic = message.topic as TaskForumTopic
-                            taskInstance = taskTopic.task
-                            projectInstance = taskTopic.task.project
+                        def topic = message.topic
+
+                        if (topic.instanceOf(ProjectForumTopic)) {
+                            def unproxyObject = Hibernate.unproxy(topic)
+                            projectInstance = unproxyObject.project
+                        } else if (topic.instanceOf(TaskForumTopic)) {
+                            def unproxyObject = Hibernate.unproxy(topic)
+                            taskInstance = unproxyObject.task
+                            projectInstance = taskInstance.project
                         }
 
                         def authorIsModerator = userService.isUserForumModerator(message.user, projectInstance)
@@ -475,14 +486,15 @@ class ForumTagLib {
                                     }
                                 }
                             }
-                            def messageText = markdownService.sanitize(message.text ?: "")
-                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.markdown(messageText)) }
+
+                            // Process the markdown into HTML and sanitize.
+                            td(style:'vertical-align: middle') { mkp.yieldUnescaped(markdownService.renderMarkdown(message.text ?: "")) }
                         }
                     }
                 }
             }
             mb.div(class: 'pagination') {
-                mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: messages.totalCount, params: params))
+                mkp.yieldUnescaped(paginate(controller: attrs.paginateController, action: attrs.paginateAction, total: attrs.totalCount, params: params))
             }
 
         } else {

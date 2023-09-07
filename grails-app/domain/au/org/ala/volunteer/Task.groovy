@@ -68,11 +68,14 @@ class Task implements Serializable, AsyncEntity<Task> {
     /**
      * Returns true if all of the required number of Transcriptions have been completed for this Task.
      * The default is one Transcription per Task, but this can be overridden in the project template.
+     * This method does NOT check if the project/template supports multiple transcriptions.
+     * Use the TaskService method for that.
      */
     boolean allTranscriptionsComplete() {
         if (isFullyTranscribed) {
             return true
         }
+
         int requiredTranscriptionCount = project.requiredNumberOfTranscriptions
         int transcriptionCount = (int) (transcriptions?.count { it.fullyTranscribedBy } ?: 0)
         return transcriptionCount >= requiredTranscriptionCount
@@ -122,7 +125,10 @@ class Task implements Serializable, AsyncEntity<Task> {
     }
 
     Transcription addTranscription() {
-        Transcription transcription = new Transcription(task:this, project:project)
+        Transcription transcription = new Transcription().tap {
+            task = this
+            project = this.@project
+        }
         transcriptions.add(transcription)
 
         transcription

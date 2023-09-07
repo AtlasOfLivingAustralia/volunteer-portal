@@ -54,7 +54,7 @@ class AchievementService implements EventPublisher {
         scriptPool = new GenericKeyedObjectPool<String, Script>(new GroovyScriptPooledObjectFactory(), config)
 
         eventSourceStartMessage = eventSourceService.addEventSourceStartMessage { userId ->
-            final achievements
+            def achievements
             if (userId) {
                 log.debug("Get unnotified achievments for $userId")
                 achievements = AchievementAward.withCriteria {
@@ -192,11 +192,14 @@ class AchievementService implements EventPublisher {
     }
 
     String getBadgeImageUrlPrefix() {
-        "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}achievements/"
+        String serverUrl = grailsApplication.config.getProperty('server.url', String)
+        String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+        //"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}achievements/"
+        "${serverUrl}/${urlPrefix}achievements/"
     }
 
     String getBadgeImageFilePrefix() {
-        "${grailsApplication.config.images.home}/achievements/"
+        "${grailsApplication.config.getProperty('images.home', String)}/achievements/"
     }
 
     String getBadgeImagePath(AchievementDescription achievementDescription) {
@@ -322,7 +325,7 @@ class AchievementService implements EventPublisher {
     }
 
     private createAwardMessage(AchievementAward award) {
-        final message
+        def message
         use (TimeCategory) {
             if ((new Date() - award.awarded) < 1.minute ) {
                 message = "You were just awarded the ${award.achievement.name} achievement!"

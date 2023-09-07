@@ -3,7 +3,7 @@
 <html>
 <head>
     <title><cl:pageTitle title="Tutorials" /></title>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
 </head>
 
 <body class="tutorial">

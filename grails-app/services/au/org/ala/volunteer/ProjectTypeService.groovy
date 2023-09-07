@@ -35,11 +35,11 @@ class ProjectTypeService {
     }
 
     def getLocalFileNameForIcon(ProjectType projectType) {
-        return "${grailsApplication.config.images.home}/projectType/${projectType.name}.png"
+        return "${grailsApplication.config.getProperty('images.home', String)}/projectType/${projectType.name}.png"
     }
 
     def getIconURL(ProjectType projectType) {
-        return "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}projectType/${projectType.name}.png"
+        return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}projectType/${projectType.name}.png"
     }
 
 }

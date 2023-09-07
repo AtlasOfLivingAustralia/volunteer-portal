@@ -1,42 +1,189 @@
 import org.apache.tools.ant.filters.ReplaceTokens
-
-import static org.springframework.boot.gradle.SpringBootPluginExtension.LayoutType.*
+import nu.studer.gradle.jooq.JooqEdition
 
 buildscript {
     repositories {
-        mavenLocal()
         maven { url "https://nexus.ala.org.au/content/groups/public/" }
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.6"
+        classpath "org.grails.plugins:hibernate5:7.3.0" // This is different to gorm version
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
-        classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
         classpath "org.postgresql:postgresql:$postgresVersion" // for flyway
     }
 }
 
 plugins {
-    id "org.flywaydb.flyway" version "4.2.0"
-    id 'nu.studer.jooq' version '3.0.3'
-    id 'pl.codelabs.flywayJooq' version '1.3.1'
-    //    id "com.moowork.node" version "1.1.1"
+    id "org.flywaydb.flyway" version "9.6.0"
+    id 'nu.studer.jooq' version '7.2'
     // Gradle Fix for Windows long paths (i.e. Java installed in Program Files/Java/...etc
     id "com.virgo47.ClasspathJar" version "1.0.0"
+    id 'java'
+    id "com.dorongold.task-tree" version "2.1.1"
 }
 
-version "6.1.4"
+version "6.1.5"
 group "au.org.ala"
 description "Digivol application"
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
 apply plugin:"org.grails.grails-web"
+apply plugin:"com.github.erdi.webdriver-binaries"
+apply plugin:"com.bertramlabs.asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
-apply plugin:"asset-pipeline"
-apply from: 'https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_grails_publish.gradle'
+apply plugin:"maven-publish"
 
+repositories {
+    maven { url "https://nexus.ala.org.au/content/groups/public/" }
+    maven { url "https://repo.grails.org/grails/core" }
+    maven {
+        url 'https://repo.maven.apache.org/maven2'
+        name 'Maven Central'
+    }
+}
+
+configurations {
+    developmentOnly
+    flywayMigration
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+    developmentOnly("org.springframework.boot:spring-boot-devtools:$springBootVersion")
+    implementation "org.springframework.boot:spring-boot-starter-logging:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
+    implementation "org.grails:grails-core"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
+    implementation "org.grails:grails-web-boot"
+    implementation "org.grails:grails-logging"
+    implementation "org.grails:grails-plugin-rest"
+    implementation "org.grails:grails-plugin-databinding"
+    implementation "org.grails:grails-plugin-i18n"
+    implementation "org.grails:grails-plugin-services"
+    implementation "org.grails:grails-plugin-url-mappings"
+    implementation "org.grails:grails-plugin-interceptors"
+    implementation "org.grails.plugins:cache"
+    implementation "org.grails.plugins:async"
+    implementation "org.grails.plugins:scaffolding"
+    implementation "org.grails.plugins:events"
+    implementation "org.grails.plugins:hibernate5"
+    implementation "org.hibernate:hibernate-core:$hibernateVersion"
+    implementation "org.grails.plugins:gsp"
+    compileOnly "io.micronaut:micronaut-inject-groovy"
+    console "org.grails:grails-console"
+    profile "org.grails.profiles:web"
+    runtimeOnly "org.glassfish.web:javax.el:2.2.6"
+    runtimeOnly "javax.xml.bind:jaxb-api:2.3.1"
+    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:$assetPipelineVersion"
+    runtimeOnly "org.springframework.boot:spring-boot-properties-migrator"
+    runtimeOnly 'org.codehaus.groovy:groovy-dateutil'
+
+    testImplementation "io.micronaut:micronaut-inject-groovy"
+    testImplementation "org.grails:grails-gorm-testing-support"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "org.grails:grails-web-testing-support"
+    testImplementation "org.grails.plugins:geb"
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+    testImplementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+    testImplementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+    testRuntimeOnly "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testRuntimeOnly "org.seleniumhq.selenium:selenium-safari-driver:$seleniumSafariDriverVersion"
+
+    // Extra official Grails plugins
+    implementation "org.grails.plugins:converters"
+    implementation "org.grails:grails-async-gpars"
+    implementation "org.grails:grails-events-rxjava2"
+    implementation "org.grails.plugins:rxjava2:2.0.0"
+    implementation "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
+    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
+    implementation "org.grails:grails-datastore-gorm-async:${gormVersion}"
+
+    assets "com.bertramlabs.plugins:sass-dart-asset-pipeline:$assetPipelineVersion"
+
+    // Additional Plugins
+    implementation "org.hibernate:hibernate-ehcache:$hibernateVersion"
+    implementation "org.hibernate:hibernate-java8:$hibernateVersion"
+
+    implementation 'org.grails.plugins:cache-headers:2.0.2'
+    implementation 'org.grails.plugins:csv:1.0.ALA.3'
+    implementation 'org.grails.plugins:postgresql-extensions:6.1.0'
+    implementation 'org.grails.plugins:mail:3.0.0' //old: 2.0.1
+    implementation 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
+    implementation 'com.vladsch.flexmark:flexmark-all:0.64.8' // Markdown forum posts
+    implementation 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
+    implementation("org.quartz-scheduler:quartz:2.3.2") {
+        exclude group: 'slf4j-api', module: 'c3p0'
+    }
+    implementation 'org.grails.plugins:quartz:2.0.13'
+    implementation 'org.grails.plugins:grails-google-visualization:2.2'
+    implementation 'dk.glasius:external-config:3.1.0'
+    implementation 'org.grails.plugins:cache-ehcache:3.0.0'
+    implementation 'org.ehcache:ehcache:3.4.0' // Prevent cache-ehcache dependent version being overridden
+    // These are needed for ehcache after jdk 11 removed JAXB completely.
+//    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.0'
+//    runtimeOnly 'com.sun.xml.bind:jaxb-impl:3.0.0'
+    // JAX-B dependencies for JDK 9+
+
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
+
+    // ALA Plugins
+    implementation "org.grails.plugins:ala-auth:$alaAuthVersion"
+    implementation 'au.org.ala:ala-cas-client:3.0.0'
+    implementation "au.org.ala:userdetails-service-client:$alaAuthVersion" // override this to for external properties changes
+    implementation "org.grails.plugins:ala-ws-security-plugin:$alaAuthVersion"
+    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
+
+    // Dependencies
+    runtimeOnly "org.postgresql:postgresql:$postgresVersion"
+    runtimeOnly "com.zaxxer:HikariCP:4.0.3"
+
+    runtimeOnly "org.slf4j:jul-to-slf4j:1.7.36"
+    runtimeOnly "org.slf4j:log4j-over-slf4j:1.7.36"
+
+    implementation "com.drewnoakes:metadata-extractor:2.18.0"
+    implementation 'org.imgscalr:imgscalr-lib:4.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.google.guava:guava:19.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.3' // old: 2.8.0
+    implementation 'org.apache.commons:commons-compress:1.11'
+    implementation 'org.apache.commons:commons-pool2:2.11.1' // old: 2.4.2
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0' //''2.5'
+    implementation 'org.elasticsearch:elasticsearch:2.4.6'
+    // optional for elastic search, version should match elastic search optional dep
+    implementation group: 'org.apache.lucene', name: 'lucene-expressions', version: '4.9.1' //6.0.0 for ES 5.0, 8.11.1 for ES 7.17
+    implementation 'net.sf.opencsv:opencsv:2.3'
+    implementation 'org.freemarker:freemarker:2.3.31'
+    implementation group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+    // DB migrations, etc
+    // implementation 'org.jooq:jooq'
+    flywayMigration "org.postgresql:postgresql:$postgresVersion"
+    jooqGenerator "org.postgresql:postgresql:$postgresVersion"
+    implementation 'org.flywaydb:flyway-core:9.6.0'
+    implementation "org.jooq:jooq:$jooqVersion"
+
+    // For logback filter
+    implementation 'org.codehaus.janino:janino'
+}
+
+// Flyware/Jooq setup
 def ci = System.env.CI == 'true'
 def localProps = file("$project.rootDir/local.properties")
 if (localProps.exists()) {
@@ -49,199 +196,127 @@ if (localProps.exists()) {
     logger.error("No local.properties file found for flyway/jooq")
     project.ext.local = new Properties()
 }
+
 flyway {
+    configurations = ['flywayMigration']
     url = project.ext.local.flywayUrl
     user = project.ext.local.flywayUsername
     password = project.ext.local.flywayPassword
+    table = project.ext.local.flywayTable
     baselineOnMigrate = project.ext.local.flywayBaselineOnMigrate?.toBoolean() ?: false
     outOfOrder = project.ext.local.flywayOutOfOrder?.toBoolean() ?: false
 }
+
 jooq {
-//        version = "${ext['jooq.version']}"
-//        edition = 'OSS'
-    volunteer(sourceSets.main) {
-        jdbc {
-            driver = 'org.postgresql.Driver'
-            url = project.ext.local.flywayUrl
-            user = project.ext.local.flywayUsername
-            password = project.ext.local.flywayPassword
-        }
-        generator {
-            name = 'org.jooq.codegen.JavaGenerator'
-            strategy {
-                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
-            }
-            database {
-                name = 'org.jooq.meta.postgres.PostgresDatabase'
-                inputSchema = 'public'
-                forcedTypes {
-                    forcedType {
-                        userType = 'java.lang.Object'
-                        binding = 'au.org.ala.volunteer.jooq.PostgresJSONMoshiBinding'
-                        expression = '.*' // jooq 3.12 -> includeExpression
-                        types = 'JSONB?' // jooq 3.12 -> includeTypes
+    version = jooqVersion
+    edition = JooqEdition.OSS
+
+    configurations {
+        main {
+            generateSchemaSourceOnCompilation = true
+
+            generationTool {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = project.ext.local.flywayUrl
+                    user = project.ext.local.flywayUsername
+                    password = project.ext.local.flywayPassword
+                    properties {
+                        property {
+                            key = 'PAGE_SIZE'
+                            value = 2048
+                        }
                     }
                 }
-            }
-            generate {
-                relations = true
-                deprecated = false
-                records = true
-                immutablePojos = true
-                fluentSetters = true
-                // ...
-            }
-            target {
-                packageName = 'au.org.ala.volunteer.jooq'
-                // directory = ...
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+                    }
+                    generate {
+                        relations = true
+                        deprecated = false
+                        records = true
+                        immutablePojos = true
+                        fluentSetters = true
+                    }
+                    target {
+                        packageName = 'au.org.ala.volunteer.jooq'
+                        directory = 'build/generated-src/jooq/main'
+                    }
+                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
+                }
             }
         }
     }
 }
-generateVolunteerJooqSchemaSource.dependsOn flywayMigrate
-
-// override spring boot dependency management versions here
-ext {
-//    set "tomcat.version", "8.5.20" // use this to force a tomcat version
-    set "jooq.version", '3.11.9'
-}
-
-repositories {
-    mavenLocal()
-    maven { url "https://nexus.ala.org.au/content/groups/public/" }
-    maven { url "https://repo.grails.org/grails/core" }
-    jcenter()
-}
-
-// not in 3.2.7 by default?
-//dependencyManagement {
-//    imports {
-//        mavenBom "org.grails:grails-bom:$grailsVersion"
-//    }
-//    applyMavenExclusions false
-//}
-
-dependencies {
-    // Grails 3.3.15
-    compile "org.springframework.boot:spring-boot-starter-logging"
-    compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile "org.grails:grails-core"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
-    compile "org.springframework.boot:spring-boot-starter-tomcat"
-    compile "org.grails:grails-web-boot"
-    compile "org.grails:grails-logging"
-    compile "org.grails:grails-plugin-rest"
-    compile "org.grails:grails-plugin-databinding"
-    compile "org.grails:grails-plugin-i18n"
-    compile "org.grails:grails-plugin-services"
-    compile "org.grails:grails-plugin-url-mappings"
-    compile "org.grails:grails-plugin-interceptors"
-    compile "org.grails.plugins:cache:4.0.3"
-    compile "org.grails.plugins:async"
-    compile "org.grails.plugins:scaffolding"
-    compile "org.grails.plugins:events"
-    compile "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
-    compile "org.hibernate:hibernate-core:$hibernateVersion"
-    compile "org.grails.plugins:gsp"
-    console "org.grails:grails-console"
-    profile "org.grails.profiles:web"
-    runtime "org.glassfish.web:el-impl:2.1.2-b03"
-
-    testCompile "org.grails:grails-gorm-testing-support"
-    testCompile "org.grails.plugins:geb:1.1.2"
-    testCompile "org.grails:grails-web-testing-support"
-    testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
-    testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
-    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:2.47.1"
-
-    // Extra official Grails plugins
-    compile "org.grails.plugins:converters"
-    compile "com.bertramlabs.plugins:asset-pipeline-grails:$assetPipelineVersion"
-    assets "com.bertramlabs.plugins:sass-asset-pipeline:$assetPipelineVersion"
-    //testCompile "org.grails:grails-plugin-testing" // Moved in upgrade to Grails 3.3.11
-    testCompile "org.grails:grails-test-mixins:3.3.0" // For legacy @TestMixin and @TestFor
-
-    compile "org.grails:grails-async-gpars"
-    compile "org.grails:grails-events-rxjava2"
-    compile "org.grails.plugins:grails-java8"
-    compile "org.grails.plugins:rxjava2:2.0.0"
-    compile "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
-    compile "io.reactivex.rxjava2:rxjava:2.1.3"
-    compile "org.grails:grails-datastore-gorm-async:${gormVersion}"
-
-    // Extra Hibernate
-    compile "org.hibernate:hibernate-ehcache:$hibernateVersion"
-    compile "org.hibernate:hibernate-java8:$hibernateVersion"
-
-    // Additional Plugins
-    compile 'org.grails.plugins:cache-headers:2.0.2'
-    compile 'org.grails.plugins:csv:1.0.ALA.3'
-    compile 'org.grails.plugins:postgresql-extensions:6.1.0'
-    compile 'org.grails.plugins:mail:2.0.1'
-    compile 'org.grails.plugins:grails-executor:0.4' // used in TaskLoadService.backgroundProcessQueue
-    compile 'org.grails.plugins:grails-markdown:3.0.0' // may need modifications?
-    compile 'org.grails.plugins:grails-pretty-time:4.0.0' // may need modifications?
-    compile 'org.grails.plugins:quartz:2.0.12'
-    compile 'org.grails.plugins:grails-google-visualization:2.2'
-    compile 'org.grails.plugins:external-config:1.1.2'
-    // TODO ALA Plugins: image service (is it used anywhere?)
-    compile 'org.grails.plugins:ala-auth:3.2.3'
-    compile 'au.org.ala:userdetails-service-client:1.5.0' // override this to for external properties changes
-    compile 'org.grails.plugins:cache-ehcache:3.0.0'
-    compile 'org.ehcache:ehcache:3.4.0' // Prevent cache-ehcache dependent version being overridden
-    //compile 'org.grails.plugins:cache-ehcache:2.0.0.ALA'
-    // TODO Collection Event Controller?
-
-    // Dependencies
-    runtime "org.postgresql:postgresql:$postgresVersion"
-    runtime "com.zaxxer:HikariCP:4.0.3"
-    compile "com.drewnoakes:metadata-extractor:2.11.0"
-    compile 'org.imgscalr:imgscalr-lib:4.2'
-    compile 'com.squareup.retrofit2:retrofit:2.4.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.4.0'
-    compile 'com.google.guava:guava:19.0'
-    compile 'com.github.ben-manes.caffeine:caffeine:2.8.0'
-    compile 'org.apache.commons:commons-compress:1.11'
-    compile 'org.apache.commons:commons-pool2:2.4.2'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile 'org.elasticsearch:elasticsearch:1.3.5'
-    // optional for elastic search, version should match elastic search optional dep
-    compile group: 'org.apache.lucene', name: 'lucene-expressions', version: '4.9.1'
-    compile 'net.sf.opencsv:opencsv:2.3'
-    compile 'org.freemarker:freemarker:2.3.23'
-    compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
-    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
-
-    // DB migrations, etc
-    compile 'org.jooq:jooq'
-    jooqRuntime "org.postgresql:postgresql:$postgresVersion"
-    compile "org.flywaydb:flyway-core:4.2.0"
-
-    // For logback filter
-    compile 'org.codehaus.janino:janino:3.1.7'
-}
 
 bootRun {
-    jvmArgs('-Dspring.output.ansi.enabled=always', '-Xmx6000m')
-//    addResources = true // enable for reloading src/main/resources when using gradle bootRun, disables processResources
+    ignoreExitValue true
+    jvmArgs(
+            '-Dspring.output.ansi.enabled=always',
+            '-noverify',
+            '-XX:TieredStopAtLevel=1',
+            '-Xmx1024m')
+    sourceResources sourceSets.main
+    String springProfilesActive = 'spring.profiles.active'
+    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 
-springBoot {
-    layout = WAR
-    mainClass = 'au.org.ala.volunteer.Application'
-}
-
-bootRepackage {
+bootJar { // Grails 4 replaces bootRepackage //
     enabled = true
-    executable = true
+    launchScript {
+        properties 'initInfoDescription': project.description,
+                initInfoShortDescription: project.name,
+                initInfoProvides: jar.baseName
+    } // executable = true
     classifier = 'exec'
 
-    embeddedLaunchScriptProperties = [
-                    initInfoDescription: project.description,
-                    initInfoShortDescription: project.name,
-                    initInfoProvides: jar.baseName,
-//                    mode: 'service'
-            ]
+}
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+    }
+}
+
+webdriverBinaries {
+    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+        chromedriver {
+            version = '2.45.0'
+            fallbackTo32Bit = true
+        }
+        geckodriver '0.30.0'
+    }
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperty "geb.env", System.getProperty('geb.env')
+    systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
+    systemProperty "java.locale.providers", "COMPAT,CLDR"
+    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+        systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
+    } else {
+        systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
+        systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
+    }
+}
+
+tasks.named('generateJooq').configure {
+    // ensure database schema has been prepared by Flyway before generating the jOOQ sources
+    dependsOn tasks.named('flywayMigrate')
+
+    // declare Flyway migration scripts as inputs on the jOOQ task
+    inputs.files(fileTree('src/main/resources/db.migration'))
+            .withPropertyName('migrations')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    // make jOOQ task participate in incremental builds (and build caching)
+    allInputsDeclared = true
 }
 
 assets {
@@ -250,9 +325,6 @@ assets {
     enableSourceMaps = true
     includes = ['tinymce/**/*', 'compile/**/*.ttf', 'compile/**/*.otf', 'compile/**/*.eot', 'compile/**/*.svg', 'compile/**/*.woff', 'compile/**/*.woff2', 'compile/**/*.png', 'compile/**/*.jpg', 'compile/**/*.gif']
     excludes = ['compile/*', 'compile/**/*']
-//    excludes = ['codemirror/**/*.html', "**/*.min.js", "**/*.min.css", "angular/*/i18n/**", "**/*.map"]
-//    includes = ["fonts/*", "node_modules/*", "lib/*"]
-//    excludes = ["**/*.min.js", "**/*"]
 }
 
 def gitSha() {
@@ -298,7 +370,20 @@ processResources {
     }
 }
 
-publish {
-    dependsOn assemble
+publishing {
+    repositories {
+        maven {
+            name 'Nexus'
+            url "https://nexus.ala.org.au/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases' }"
+            credentials {
+                username = System.getenv('TRAVIS_DEPLOY_USERNAME')
+                password = System.getenv('TRAVIS_DEPLOY_PASSWORD')
+            }
+        }
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            artifact bootJar
+        }
+    }
 }
-

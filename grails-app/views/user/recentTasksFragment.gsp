@@ -18,7 +18,7 @@
                 <div class="thumbnail taskThumbnail" style="text-align: center">
                     <a href="${createLink(controller: 'task', action: 'show', id: task.id)}">
                         <g:set var="multimedia" value="${task.multimedia?.first()}"/>
-                        <g:set var="imageUrl" value="${grailsApplication.config.server.url}${multimedia?.filePath}"/>
+                        <g:set var="imageUrl" value="${grailsApplication.config.getProperty('server.url', String)}${multimedia?.filePath}"/>
                         <img src="${imageUrl}"/>
                         <br/>
                         ${task.externalIdentifier}

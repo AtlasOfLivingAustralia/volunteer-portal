@@ -8,12 +8,6 @@ grails:
             - file:/data/volunteer-portal/config/volunteer-portal-config.properties
             - file:/data/volunteer-portal/config/volunteer-portal-config.yml
             - file:/data/volunteer-portal/config/volunteer-portal-config.groovy
-            - file:/data/digivol/config/digivol-config.properties
-            - file:/data/digivol/config/digivol-config.yml
-            - file:/data/digivol/config/digivol-config.groovy
-            - file:/etc/digivol/application.properties
-            - file:/etc/digivol/application.yml
-            - file:/etc/digivol/application.groovy
     scaffolding:
         templates:
             domainSuffix: Instance # This causes all respond methods to add the default object as <type>Instance<container>, eg bookInstance or bookInstanceList but does not affect scaffolding in Grails 3... TODO remove Instance from all GSPs and remove this property
@@ -22,50 +16,6 @@ grails:
     spring:
         transactionManagement:
             proxies: false
-info:
-    app:
-        name: '@info.app.name@'
-        version: '@info.app.version@'
-        grailsVersion: '@info.app.grailsVersion@'
-    build:
-        ci : '@info.build.ci@'
-        date: '@info.build.date@'
-        jdk: '@info.build.jdk@'
-        number: '@info.build.number@'
-    git:
-        branch: '@info.git.branch@'
-        commit: '@info.git.commit@'
-        slug: '@info.git.slug@'
-        tag: '@info.git.tag@'
-        timestamp: '@info.git.timestamp@'
-spring:
-    main:
-        banner-mode: "console"
-    groovy:
-        template:
-          check-template-location: false
-    http:
-        multipart:
-          max-file-size: 5000MB
-          max-request-size: 5000MB
-server:
-    session:
-        timeout: 7200 # seconds, 2 hours
-    tomcat:
-        port-header: 'X-Forwarded-Port'
-        protocol-header: 'X-Forwarded-Proto'
-        remote-ip-header: 'X-Forwarded-For'
-# Spring Actuator Endpoints are Disabled by Default
-endpoints:
-    enabled: false
-    jmx:
-        enabled: true
-        unique-names: true
-management:
-    context-path: /status
-
----
-grails:
     mime:
         file:
             extensions: true # enables the parsing of file extensions from URLs into the request format ???
@@ -83,65 +33,127 @@ grails:
             csv: text/csv
             form: application/x-www-form-urlencoded
             html:
-              - text/html
-              - application/xhtml+xml
+                - text/html
+                - application/xhtml+xml
             js: text/javascript
             json:
-              - application/json
-              - text/json
+                - application/json
+                - text/json
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
             text: text/plain
             hal:
-              - application/hal+json
-              - application/hal+xml
+                - application/hal+json
+                - application/hal+xml
             xml:
-              - text/xml
-              - application/xml
-    urlmapping:
-        cache:
-            maxsize: 1000
+                - text/xml
+                - application/xml
+        urlmapping:
+            cache:
+                maxsize: 1000
+        converters:
+            encoding: UTF-8
+        views:
+            default:
+                codec: html
+            gsp:
+                encoding: UTF-8
+                htmlcodec: xml
+                codecs:
+                    expression: html
+                    scriptlets: html
+                    taglib: none
+                    staticparts: none
+                sitemesh:
+                    preprocess: true
+        databinding:
+            convertEmptyStringsToNull: false
     controllers:
         defaultScope: singleton
         upload:
-          maxFileSize: 5368709120
-          maxRequestSize: 5368709120
-    converters:
-        encoding: UTF-8
-    views:
+            maxFileSize: 5368709120
+            maxRequestSize: 5368709120
+    plugins:
+        twitterbootstrap:
+            fixtaglib: true
+    mail:
         default:
-            codec: html
-        gsp:
-            encoding: UTF-8
-            htmlcodec: xml
-            codecs:
-                expression: html
-                scriptlets: html
-                taglib: none
-                staticparts: none
-            sitemesh:
-                preprocess: true
-    databinding:
-        convertEmptyStringsToNull: false
+            from: 'DigiVol <noreply@volunteer.ala.org.au>'
 
----
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'
+    build:
+        ci : '@info.build.ci@'
+        date: '@info.build.date@'
+        jdk: '@info.build.jdk@'
+        number: '@info.build.number@'
+    git:
+        branch: '@info.git.branch@'
+        commit: '@info.git.commit@'
+        slug: '@info.git.slug@'
+        tag: '@info.git.tag@'
+        timestamp: '@info.git.timestamp@'
+
+spring:
+    main:
+        banner-mode: "console"
+    groovy:
+        template:
+            check-template-location: false
+    jmx:
+        unique-names: true
+    servlet:
+        multipart:
+            max-file-size: 5000MB
+            max-request-size: 5000MB
+    devtools:
+        restart:
+            exclude:
+                - grails-app/views/**
+                - grails-app/i18n/**
+                - grails-app/conf/**
+    flyway:
+        enabled: true
+        baselineOnMigrate: true
+        baselineVersion: 1
+        outOfOrder: true
+
+server:
+    tomcat:
+        remoteip:
+            protocol-header: 'X-Forwarded-Proto'
+            port-header: 'X-Forwarded-Port'
+            remote-ip-header: 'X-Forwarded-For'
+    servlet:
+        session:
+            timeout: 7200
+
+management:
+    endpoints:
+        enabled-by-default: false
+    server:
+        base-path: /status
+
 ala:
-    baseURL: "http://www.ala.org.au"
+    baseURL: "https://www.ala.org.au"
     skin: "digivol-main"
     image:
         service:
-            url: http://images.ala.org.au
+            url: https://images.ala.org.au
 
 bie:
-    baseURL: "http://bie.ala.org.au"
+    baseURL: "https://bie.ala.org.au"
     searchPath: "/search"
 
 biocache:
-    baseURL: "http://biocache.ala.org.au/"
+    baseURL: "https://biocache.ala.org.au/"
 
 spatial:
-    baseURL: "http://spatial.ala.org.au/"
+    baseURL: "https://spatial.ala.org.au/"
 
 security:
     cas:
@@ -182,6 +194,8 @@ security:
             - "/task/summary/*"
             - "/tutorials/*"
             - "/institution/*"
+            - "/admin/institutions/*"
+            - "/admin/label/*"
             - "/buildInfo"
             - "/events/*"
             - "/es"
@@ -213,6 +227,7 @@ elasticsearch:
 
 volunteer:
     defaultProjectId: 6306
+
 viewedTask:
     timeout: 7200000 # milliseconds
 
@@ -271,18 +286,11 @@ exportCSVThreadPoolSize: 10
 #                appServerName: http://volunteer.ala.org.au
 
 #Fix grails taglib <g:paginate/> to work with bootstrap css.
-grails:
-    plugins:
-        twitterbootstrap:
-            fixtaglib: true
-    mail:
-        default:
-            from: noreply@volunteer.ala.org.au
+
 digest:
     enabled: false
     threshold: 5
-#    address:
----
+
 quartz:
     autoStartup: true
     jdbcStore: false
@@ -292,17 +300,6 @@ quartz:
         scheduler:
             skipUpdateCheck: true
 
-environments:
-    test:
-        quartz:
-            autoStartup: false
----
-flyway:
-    enabled: true
-    baselineOnMigrate: true
-    baselineVersion: 1
-    outOfOrder: true
----
 hibernate:
     dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
     cache:
@@ -313,11 +310,12 @@ hibernate:
         region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     #SQL="trace,stdout"
     #type="trace,stdout"
+    #These next two are needed for grails 3.3.x
     jdbc:
         lob:
             non_contextual_creation: true
-        temp:
-            use_jdbc_metadata_defaults: false
+    temp:
+        use_jdbc_metadata_defaults: false
 
 dataSource:
     dbCreate: validate
@@ -325,9 +323,9 @@ dataSource:
     poolName: 'grails-hikari'
     jmxExport: true
     driverClassName: org.postgresql.Driver
+    loggingSql: false
 #    username: root
 #    password: password
-    loggingSql: false
 
 environments:
     development:
@@ -349,6 +347,11 @@ environments:
             url: jdbc:postgresql://localhost/volunteerstest
             username: "postgres"
             password: "password"
+        quartz:
+            autoStartup: false
+        grails:
+            config:
+                locations: []
     production:
         dataSource:
             dbCreate: validate

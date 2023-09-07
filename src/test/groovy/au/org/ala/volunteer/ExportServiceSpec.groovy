@@ -1,7 +1,10 @@
 package au.org.ala.volunteer
 
 import grails.plugins.csv.CSVMapReader
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
+
+//import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -9,8 +12,8 @@ import spock.lang.Specification
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
-@TestFor(ExportService)
-class ExportServiceSpec extends Specification {
+//@TestFor(ExportService)
+class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportService>, DataTest {
 
     FieldService fieldService
     TaskService taskService
@@ -36,8 +39,8 @@ class ExportServiceSpec extends Specification {
         service.grailsLinkGenerator = grailsLinkGenerator
         dateTimeFormat = new SimpleDateFormat()
         dateFormat = new SimpleDateFormat('dd-MMM-yyyy')
-        dateTimeFormat = new SimpleDateFormat('dd-MMM-yyyy HH:mm:ss')
-        defaultTranscriptionDate = dateTimeFormat.parse("01-Mar-2019 10:30:00")
+        dateTimeFormat = new SimpleDateFormat('dd/MM/yyyy HH:mm:ss')
+        defaultTranscriptionDate = dateTimeFormat.parse("01/03/2019 10:30:00"/*'01-Mar-2019 10:30:00'*/)
         setupData()
     }
 
@@ -309,7 +312,7 @@ class ExportServiceSpec extends Specification {
     def "Task fields can be exported in CSV form for a single transcription project"() {
         setup:
         String today = dateFormat.format(new Date())
-        Date transcriptionDate = dateTimeFormat.parse('01-Jul-2019 10:30:00')
+        Date transcriptionDate = dateTimeFormat.parse('01/07/2019 10:30:00')
         Task task = createTask()
         task.externalIdentifier = 'external id'
         String userId = '1234'
@@ -338,5 +341,25 @@ class ExportServiceSpec extends Specification {
         results[0]['dateValidated'] == ''
     }
 
+    def "Export filename is checked for unsupported characters and has them removed"() {
+        setup:
+        project.transcriptionsPerTask = 1
+        project.featuredLabel = 'Test\\/:*?"\'<>|][.;{}&%#@!'
+        String macpieImage = 'macpieImage.jpg'
+        Task birdTask = createTask(macpieImage)
 
+        List<Task> taskList = project.tasks as List
+        List<String> fieldNames = taskOrTranscriptionFields
+
+        when:
+        service.export_default(project, taskList, fieldNames, [], response)
+        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+
+        then:
+        1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
+        1 * taskService.getUserMapFromTaskList(taskList) >> [:]
+
+        and:
+        response.getHeader("Content-Disposition") == "attachment;filename=Project-Test-DwC.csv"
+    }
 }

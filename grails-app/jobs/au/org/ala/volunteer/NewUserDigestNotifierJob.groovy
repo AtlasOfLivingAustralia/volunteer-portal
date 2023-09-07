@@ -12,7 +12,7 @@ import javax.sql.DataSource
 class NewUserDigestNotifierJob {
     def mailService
     DataSource dataSource
-    def concurrent = false
+    static concurrent = false
 
     def description = "Notify admin users about new users who have completed their first five transcriptions"
 

@@ -18,6 +18,10 @@ class UserRole {
         dateCreated nullable: true
     }
 
+    static mapping = {
+        role fetch: 'join'
+    }
+
     /**
      * Returns the institution associated with this user role. If the role is at the institution level, it returns that
      * institution. If it is at the project level, it returns the institution for the project.

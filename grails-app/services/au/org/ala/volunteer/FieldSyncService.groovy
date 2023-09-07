@@ -295,7 +295,8 @@ class FieldSyncService {
                 transcription.transcribedUUID = UUID.randomUUID()
             }
 
-            if (task.allTranscriptionsComplete()) {
+            //if (task.allTranscriptionsComplete()) {
+            if (taskService.allTranscriptionsComplete(task)) {
                 task.isFullyTranscribed = true
             }
         }

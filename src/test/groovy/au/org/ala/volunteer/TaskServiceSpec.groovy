@@ -1,25 +1,28 @@
 package au.org.ala.volunteer
 
-import grails.test.hibernate.HibernateSpec
-import grails.test.mixin.TestFor
-import org.grails.orm.hibernate.cfg.Settings
+import au.org.ala.volunteer.helper.FlybernateSpec
+import grails.testing.services.ServiceUnitTest
+import groovy.util.logging.Slf4j
+//import grails.test.mixin.TestFor
 
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
-
-@TestFor(TaskService)
-class TaskServiceSpec extends HibernateSpec {
+//@TestFor(TaskService)
+@Slf4j
+class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskService> {
 
     /**
      * This is to build up some data in the test database for the purposes of running SQL queries.
      * It needs to be deleted at some point.
      */
-    Map getConfiguration() {
-        Collections.singletonMap(Settings.SETTING_DB_CREATE, "update")
-    }
+//    Map getConfiguration() {
+//        Collections.singletonMap(Settings.SETTING_DB_CREATE, "update")
+//    }
+
     boolean isRollback() { return false }
 
     String userId = '1234'
     Project p
+
     def setup() {
        p = setupProject()
     }

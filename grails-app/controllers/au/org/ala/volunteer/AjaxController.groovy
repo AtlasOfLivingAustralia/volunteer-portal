@@ -1,10 +1,9 @@
 package au.org.ala.volunteer
 
+import au.ala.org.ws.security.RequireApiKey
 import au.org.ala.volunteer.collectory.CollectoryProviderDto
-import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import com.google.common.base.Suppliers
-import com.google.common.cache.CacheBuilder
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Sets
 import com.google.gson.Gson
@@ -12,6 +11,7 @@ import grails.converters.JSON
 import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang.StringUtils
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.sql.Timestamp
@@ -46,10 +46,10 @@ class AjaxController {
     def institutionService
     def domainUpdateService
     def authService
-    def settingsService
     def achievementService
-    def sessionFactory
     def projectService
+    def exportService
+    def fieldService
 
     static responseFormats = ['json', 'xml']
     static final String UNAUTH_MSG = "Must be logged in as an administrator to use this service!"
@@ -177,7 +177,7 @@ class AjaxController {
 
         def sw3 = Stopwatch.createStarted()
         def asyncUserDetails = User.async.task {
-            def users = User.list(fetch:[userRoles:"eager", "userRoles.role": "eager"])
+            def users = User.list()
             def serviceResults = [:]
             try {
                 serviceResults = authService.getUserDetailsById(users*.userId, true)
@@ -199,7 +199,7 @@ class AjaxController {
         def lastActivities = asyncResults[1]
         def projectCounts = asyncResults[2]
 
-        def users = asyncResults[3].users
+        def users = asyncResults[3].users as List<User>
         def serviceResults = asyncResults[3].results
 
         def report = []
@@ -219,7 +219,8 @@ class AjaxController {
             def serviceResult = serviceResults?.users?.get(id)
             def location = (serviceResult?.city && serviceResult?.state) ? "${serviceResult?.city}, ${serviceResult?.state}" : (serviceResult?.city ?: (serviceResult?.state ?: ''))
 
-            def userRoles = user.userRoles
+            //def userRoles = user.userRoles
+            def userRoles = UserRole.findAllByUser(user)
             def roleObjs = userRoles*.role
             def roles = (roleObjs*.name + serviceResult?.roles).toSet()
             def isAdmin = !roles.intersect([realAdminRole, adminRole]).isEmpty()
@@ -467,8 +468,8 @@ class AjaxController {
     def transcriptionFeed(String timestampStart, String timestampEnd, Integer rowStart, String sort) {
         final sw = Stopwatch.createStarted()
         final udsw = Stopwatch.createUnstarted()
-        final Date startTs
-        final Date endTs
+        def Date startTs
+        def Date endTs
         final pageSize = 100
         sort = sort ?: 'dateFullyTranscribed'
         final sortOrder = params.order ?: 'desc'
@@ -535,9 +536,9 @@ class AjaxController {
 
         log.debug("Transcription feed got tasks ${sw}")
 
-        final allFields
-        final usersDetails
-        final mm
+        def allFields
+        def usersDetails
+        def mm
         if (ids) {
             allFields = Field.where {
                 transcription.id in ids && superceded == false
@@ -702,5 +703,54 @@ class AjaxController {
         } else {
             request.inputStream
         }
+    }
+
+    def expeditionDwcJson() {
+        def project = Project.get(params.long('id'))
+        def result = [:]
+
+        if (project) {
+            def taskList = taskService.getAllTasksAndTranscriptionsIfExists(project, [max: 9999])
+            def fieldList = fieldService.getAllFieldsWithTasks(taskList)
+            def fieldNames =  ["taskID", "taskURL", "validationStatus", "transcriberID", "validatorID",
+                               "externalIdentifier", "exportComment", "dateTranscribed", "dateValidated"]
+            fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
+            result.data = exportService.exportJson(taskList, fieldList)
+            result.projectId = project.id
+            result.institutionId = project.institution.id
+
+            result.success = true
+            render(result as JSON)
+        } else {
+            response.status = SC_NOT_FOUND
+            render([message: "Expedition not found."] as JSON)
+        }
+    }
+
+    /**
+     * API endpoint that answers whether a given user has a validator role for a given project ID. Returns true if validator
+     * role has been granted or false if not. Supports institution level roles as well.
+     * @param projectId the ID for the project
+     * @param userId the ID for the user (ALA-assigned String value).
+     * @return true if the user has been granted validator, false if not.
+     */
+    @RequireApiKey(scopes='digivol/internal')
+    def hasValidatorRole() {
+        def project = Project.get(params.long('projectId'))
+        def userId = params.userid as String
+
+        if (!StringUtils.isEmpty(userId) && project) {
+            // Get user object from string userId
+            def userList = User.findAllByUserId(userId)
+            def user
+            if (userList && userList.size() > 0) user = userList.first()
+            if (user) {
+                render(["result": userService.userHasValidatorRole(user as User, project.id, project.institution.id)] as JSON)
+                return
+            }
+        }
+
+        response.status = SC_NOT_FOUND
+        render([message: "User or Project not found."] as JSON)
     }
 }

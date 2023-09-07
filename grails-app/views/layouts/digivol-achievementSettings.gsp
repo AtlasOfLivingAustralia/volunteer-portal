@@ -1,4 +1,4 @@
-<g:applyLayout name="${grailsApplication.config.ala.skin}">
+<g:applyLayout name="${grailsApplication.config.getProperty('ala.skin', String)}">
 <head>
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Achievement Description')}"/>

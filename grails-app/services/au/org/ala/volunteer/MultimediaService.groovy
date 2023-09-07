@@ -11,7 +11,7 @@ class MultimediaService {
     def grailsLinkGenerator
 
     def deleteAllMultimediaForTask(Task task) {
-        def dir = new File(grailsApplication.config.images.home, "${task.projectId}${File.separatorChar}${task.id}")
+        def dir = new File(grailsApplication.config.getProperty('images.home', String) as String, "${task.projectId}${File.separatorChar}${task.id}")
         if (dir.exists()) {
             log.info("DeleteMultimedia: Preparing to remove multimedia directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -21,7 +21,8 @@ class MultimediaService {
     }
 
     def deleteMultimedia(Multimedia media) {
-        def dir = new File(grailsApplication.config.images.home + '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
+        def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) +
+                '/' + media.task?.projectId + '/' + media.task?.id + "/" + media.id)
         if (dir.exists()) {
             log.info("DeleteMultimedia: Preparing to remove multimedia directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -30,11 +31,12 @@ class MultimediaService {
         }
     }
 
-    public String filePathFor(Multimedia media) {
-        grailsApplication.config.images.home + File.separator + media.task?.projectId + File.separator + media.task?.id + File.separator + media.id
+    String filePathFor(Multimedia media) {
+        grailsApplication.config.getProperty('images.home', String) + File.separator + media.task?.projectId +
+                File.separator + media.task?.id + File.separator + media.id
     }
 
-    public String getImageUrl(Multimedia media) {
+    String getImageUrl(Multimedia media) {
         media.filePath ? getImageUrl(media.filePath) : ''
     }
 
@@ -48,7 +50,7 @@ class MultimediaService {
     }
 
     public String getImageUrl(String filePath) {
-        return filePath ? "${grailsApplication.config.server.url}${filePath}" : ''
+        return filePath ? "${grailsApplication.config.getProperty('server.url', String)}${filePath}" : ''
     }
 
     public String getImageThumbnailUrl(Multimedia media, boolean absolute = false) {
@@ -61,7 +63,7 @@ class MultimediaService {
         File file = new File(filePath, filename)
         // log.debug("getImageThumbnailUrl media: $media, filePath: $filePath, filename: $filename, file: $file, exists: ${file.exists()}")
         if (file.exists()) {
-            return media.filePathToThumbnail ? "${grailsApplication.config.server.url}${media.filePathToThumbnail}" : ''
+            return media.filePathToThumbnail ? "${grailsApplication.config.getProperty('server.url', String)}${media.filePathToThumbnail}" : ''
         } else {
             // Log the warning from the Taglib, if the image isn't available.
             // log.warn("Thumbnail requested for $media but $file doesn't exist")

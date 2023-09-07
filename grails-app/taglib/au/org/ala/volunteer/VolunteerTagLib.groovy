@@ -74,7 +74,7 @@ class VolunteerTagLib {
     * Build navigation links to the custom landing page
     */
     def showLandingPage = {attrs, body ->
-        def numberOfCustomLinksAtTopPage = grailsApplication.config.numberOfCustomLinksAtTopPage ?: 1
+        def numberOfCustomLinksAtTopPage = grailsApplication.config.getProperty('numberOfCustomLinksAtTopPage', Integer)?.intValue() ?: 1
 
         List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
         def mb = new MarkupBuilder(out)
@@ -280,11 +280,11 @@ class VolunteerTagLib {
     }
 
     private boolean isSiteAdmin() {
-        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin()
+        return userService.isSiteAdmin()
     }
 
     private boolean isAdmin() {
-        return grailsApplication.config.security.cas.bypass || userService.isSiteAdmin() || userService.isInstitutionAdmin()
+        return userService.isSiteAdmin() || userService.isInstitutionAdmin()
     }
 
     /**
@@ -298,7 +298,7 @@ class VolunteerTagLib {
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
-            helpText = markdownService.markdown(helpText)
+            helpText = markdownService.renderMarkdown(helpText)
             def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
@@ -338,7 +338,7 @@ class VolunteerTagLib {
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
-            helpText = markdownService.markdown(helpText)
+            helpText = markdownService.renderMarkdown(helpText)
             def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.qtipMy = attrs.tooltipPosition
@@ -780,9 +780,9 @@ class VolunteerTagLib {
         def name = attrs.remove('name')
         def type = attrs.remove('type')
         if (name) {
-            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}/$name"
+            out << "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/${type}/$name"
         } else {
-            out << "${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/${type}"
+            out << "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/${type}"
         }
     }
 
@@ -938,9 +938,9 @@ class VolunteerTagLib {
      * @attr email true to output the email address, defaults to false
      */
     def userDetails = { attrs, body ->
-        def id = attrs.remove('id')
-        def displayName = attrs.remove('displayName')?.asBoolean() ?: false
-        def email = attrs.remove('email')?.asBoolean() ?: false
+        def id = attrs.remove('id') as String
+        def displayName = Boolean.parseBoolean(attrs.remove('displayName') as String)
+        def email = Boolean.parseBoolean(attrs.remove('email') as String)
 
 
         if (displayName && email) {
@@ -966,9 +966,9 @@ class VolunteerTagLib {
      * @attr muted set to true to wrap not found value in <span class='muted'>
      */
     def userDisplayString = { attrs, body ->
-        def id = attrs.remove('id')
+        def id = attrs.remove('id') as String
         def notFound = attrs.remove('notFound')
-        def muted = attrs.remove('muted')?.asBoolean()
+        def muted = Boolean.parseBoolean(attrs.remove('muted') as String)
 
         def user
         if (id) user = userService.detailsForUserId(id)
@@ -1095,7 +1095,7 @@ class VolunteerTagLib {
     def gson = new GsonBuilder().create()
 
     def analyticsTrackers = { attrs, body ->
-        def trackers = grailsApplication.config.digivol.trackers ?: []
+        def trackers = grailsApplication.config.getProperty('digivol.trackers', List) ?: []
         switch (trackers) {
             case String:
                 trackers = ((String)trackers).split(',')*.trim()
@@ -1126,7 +1126,7 @@ class VolunteerTagLib {
     def insitutionLogos = { attrs, body ->
         def logos = settingsService.getSetting(SettingDefinition.FrontPageLogos)
         logos.each {
-            out << "<img src=\"${grailsApplication.config.server.url}/${grailsApplication.config.images.urlPrefix}/logos/$it\">"
+            out << "<img src=\"${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/$it\">"
         }
     }
 
@@ -1186,10 +1186,10 @@ function notify() {
     }
 
     /**
-     * @emptyTag
+     * Creates the link for logging into ALA Auth
      */
     def createLoginLink = { attrs ->
-        def link = new URIBuilder(grailsApplication.config.security.cas.loginUrl).addParameter("service", g.createLink(uri: '/', absolute: true)).build().toString()
+        def link = g.createLink(controller: 'login', action: 'index')
         return link
     }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="layout" content="${grailsApplication.config.ala.skin}">
+    <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName"
            value="${message(code: 'achievementDescription.label', default: 'Badge Description')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
@@ -23,12 +23,14 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <g:hasErrors bean="${achievementDescriptionInstance}">
-                <ul class="errors" role="alert">
-                    <g:eachError bean="${achievementDescriptionInstance}" var="error">
-                        <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
-                                error="${error}"/></li>
-                    </g:eachError>
-                </ul>
+                <div class="errors">
+                    <ul class="errors" role="alert">
+                        <g:eachError bean="${achievementDescriptionInstance}" var="error">
+                            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message
+                                    error="${error}"/></li>
+                        </g:eachError>
+                    </ul>
+                </div>
             </g:hasErrors>
             <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
                 <g:render template="form"/>
@@ -42,6 +44,7 @@
         </div>
     </div>
 </div>
+<asset:javascript src="codemirror/codemirror-groovy-js-sublime" asset-defer=""/>
 <asset:javascript src="bootstrap-file-input.js" asset-defer=""/>
 <asset:script type="text/javascript">
     $(function() {

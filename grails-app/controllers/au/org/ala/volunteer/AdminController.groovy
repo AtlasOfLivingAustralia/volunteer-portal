@@ -6,6 +6,7 @@ import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.elasticsearch.action.search.SearchType
 import grails.plugins.csv.CSVWriter
+import org.elasticsearch.common.ParseFieldMatcher
 import org.hibernate.FlushMode
 import org.jooq.Transaction
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -843,7 +844,7 @@ class AdminController {
     
     def testQuery(String query, String searchType, String aggregation) {
         if (userService.isAdmin()) {
-            def searchTypeVal = searchType ? SearchType.fromString(searchType) : SearchType.DEFAULT
+            def searchTypeVal = searchType ? SearchType.fromString(searchType, ParseFieldMatcher.EMPTY) : SearchType.DEFAULT
             log.debug("SearchType: $searchType, $searchTypeVal")
             def result = fullTextIndexService.rawSearch(query, searchTypeVal, aggregation, fullTextIndexService.elasticSearchToJsonString)
             response.setContentType("application/json")

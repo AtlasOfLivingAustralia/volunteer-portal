@@ -16,7 +16,7 @@ class ImageServiceService {
     def imagesWebService
 
     private String getServiceUrl() {
-        def url = grailsApplication.config.ala.image.service.url ?: "http://devt.ala.org.au:8080/ala-images"
+        def url = grailsApplication.config.getProperty('ala.image.service.url', String) ?: "http://devt.ala.org.au:8080/ala-images"
         if (!url.endsWith("/")) {
             url += "/"
         }

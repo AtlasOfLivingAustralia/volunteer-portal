@@ -1,5 +1,5 @@
 
-<g:applyLayout name="${grailsApplication.config.ala.skin}">
+<g:applyLayout name="${grailsApplication.config.getProperty('ala.skin', String)}">
 <head>
     <title><cl:pageTitle title="Edit Institution ${institutionInstance?.name}"/></title>
     <asset:stylesheet src="bootstrap-switch"/>

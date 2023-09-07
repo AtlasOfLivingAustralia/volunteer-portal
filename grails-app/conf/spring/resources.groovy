@@ -34,16 +34,18 @@ beans = {
         asyncSupported = true
     }
 
-    if (application.config.flyway.enabled) {
+    if (application.config.getProperty('flyway.enabled', Boolean)) {
 
         flyway(Flyway) { bean ->
             bean.initMethod = 'migrate'
             dataSource = ref('dataSource')
-            baselineOnMigrate = application.config.flyway.baselineOnMigrate
+            baselineOnMigrate = application.config.getProperty('flyway.baselineOnMigrate', Boolean, false)
             def outOfOrderProp = application.config.getProperty('flyway.outOfOrder', Boolean, false)
             outOfOrder = outOfOrderProp
-            locations = application.config.flyway.locations ?: 'classpath:db/migration'
-            if (application.config.flyway.baselineVersion) baselineVersionAsString = application.config.flyway.baselineVersion.toString()
+            //locations = application.config.flyway.locations ?: 'classpath:db/migration'
+            locations = ['classpath:db/migration']
+            if (application.config.getProperty('flyway.baselineVersion', Integer))
+                baselineVersionAsString = application.config.getProperty('flyway.baselineVersion', Integer).toString()
         }
 
         BeanDefinition sessionFactoryBeanDef = getBeanDefinition('sessionFactory')

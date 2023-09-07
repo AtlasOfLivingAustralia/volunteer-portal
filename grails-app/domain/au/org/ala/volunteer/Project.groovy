@@ -69,6 +69,7 @@ class Project implements Serializable {
     static mapping = {
         cache true
         tasks cache: true
+        projectType lazy: false
         autoTimestamp true
         description sqlType: 'text'
         tasks cascade: 'all,delete-orphan'
@@ -154,9 +155,6 @@ class Project implements Serializable {
                 'featuredOwner',
                 'institution',
                 'leaderIconIndex',
-                'featuredImageCopyright',
-                'backgroundImageAttribution',
-                'backgroundImageOverlayColour',
                 'collectionEventLookupCollectionCode',
                 'localityLookupCollectionCode',
                 'picklistInstitutionCode',

@@ -1,10 +1,13 @@
 package au.org.ala.volunteer
 
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
+import au.org.ala.volunteer.helper.FlybernateSpec
 import au.org.ala.web.AuthService
 import au.org.ala.web.UserDetails
 import grails.test.hibernate.HibernateSpec
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
+
+//import grails.test.mixin.TestFor
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 
@@ -12,8 +15,8 @@ import static au.org.ala.volunteer.helper.TaskDataHelper.setupProject
 import static au.org.ala.volunteer.helper.TaskDataHelper.setupTasks
 import static au.org.ala.volunteer.helper.TaskDataHelper.transcribe
 
-@TestFor(AjaxController)
-class AjaxControllerSpec extends HibernateSpec {
+//@TestFor(AjaxController)
+class AjaxControllerSpec extends FlybernateSpec implements ControllerUnitTest<AjaxController> {
 
     String userId = 'u1'
     Project project

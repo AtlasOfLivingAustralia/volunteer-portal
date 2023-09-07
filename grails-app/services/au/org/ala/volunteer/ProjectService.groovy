@@ -16,7 +16,7 @@ import org.hibernate.Session
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.SortOrder
-import org.jooq.impl.DSL
+//import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -37,7 +37,11 @@ import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
-import static org.jooq.impl.DSL.*
+//import static org.jooq.impl.DSL.*
+import static org.jooq.impl.DSL.not
+import static org.jooq.impl.DSL.condition
+import static org.jooq.impl.DSL.coalesce
+import static org.jooq.impl.DSL.select
 import static org.jooq.impl.DSL.count as jCount
 import static org.jooq.impl.DSL.countDistinct as jCountDistinct
 import static org.jooq.impl.DSL.lower as jLower
@@ -163,17 +167,16 @@ class ProjectService implements EventPublisher {
     def harvestProjects() {
         def context = jooqContextFactory()
 
-        def forumMessageCountQuery = DSL.
-                select(count().filterWhere(condition(not(FORUM_MESSAGE.DELETED)) | FORUM_MESSAGE.DELETED.isNull()))
+        def forumMessageCountQuery = select(jCount().filterWhere(condition(not(FORUM_MESSAGE.DELETED)) | FORUM_MESSAGE.DELETED.isNull()))
                 .from(FORUM_TOPIC).join(FORUM_MESSAGE).on(FORUM_TOPIC.ID.eq(FORUM_MESSAGE.TOPIC_ID))
                 .where(FORUM_TOPIC.CLASS.eq(ProjectForumTopic.class.name) & FORUM_TOPIC.PROJECT_ID.eq(PROJECT.ID))
 
 
         def records = context
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.DESCRIPTION,
-                        count(TASK.ID),
-                        count().filterWhere(TASK.IS_FULLY_TRANSCRIBED),
-                        count().filterWhere(TASK.IS_VALID),
+                        jCount(TASK.ID),
+                        jCount().filterWhere(TASK.IS_FULLY_TRANSCRIBED),
+                        jCount().filterWhere(TASK.IS_VALID),
                         forumMessageCountQuery.asField("forumMessageCount")
                 )
                 .from(PROJECT)
@@ -253,7 +256,8 @@ class ProjectService implements EventPublisher {
         log.debug("Sending project notification")
         def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
         def projectLabel = messageSource.getMessage("project.name.label", null, "Project", LocaleContextHolder.locale)
-        emailService.sendMail(grailsApplication.config.notifications.project.address, "${appName} ${projectLabel} ${type}: ${projectInstance.name}", message)
+        emailService.sendMail(grailsApplication.config.getProperty('notifications.project.address', String) as String,
+                "${appName} ${projectLabel} ${type}: ${projectInstance.name}", message)
     }
 
     @Immutable
@@ -335,7 +339,7 @@ class ProjectService implements EventPublisher {
 
         // if we get here we can delete the project directory on the disk
         log.info("Project ${projectInstance.id}: Removing folder from disk...")
-        def dir = new File(grailsApplication.config.images.home + '/' + projectInstance.id )
+        def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectInstance.id )
         if (dir.exists()) {
             log.info("DeleteProject: Preparing to remove project directory ${dir.absolutePath}")
             FileUtils.deleteDirectory(dir)
@@ -657,7 +661,7 @@ class ProjectService implements EventPublisher {
 
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
-            def filePath = "${grailsApplication.config.images.home}/project/${projectInstance.id}/expedition-image.jpg"
+            def filePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${projectInstance.id}/expedition-image.jpg"
             def file = new File(filePath)
             if (!file.exists()) {
                 return
@@ -714,7 +718,7 @@ class ProjectService implements EventPublisher {
         long sizeInBytes = 0L
 
         if (project) {
-            final projectPath = new File(grailsApplication.config.images.home as String, project.id.toString())
+            final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
             try {
                 sizeInBytes = projectPath.directorySize()
                 log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
@@ -728,7 +732,7 @@ class ProjectService implements EventPublisher {
     }
 
     def projectSize(Project project) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File((grailsApplication.config.getProperty('images.home', String) as String), project.id.toString())
         try {
             long sizeInBytes = projectPath.directorySize()
             project.merge() // In case something has opened a project instance (sometimes happens with task load)
@@ -742,7 +746,7 @@ class ProjectService implements EventPublisher {
     }
 
     def imageStoreStats() {
-        final f = new File(grailsApplication.config.images.home)
+        final f = new File(grailsApplication.config.getProperty('images.home', String) as String)
         [total: f.totalSpace, free: f.freeSpace, usable: f.usableSpace]
     }
 
@@ -786,7 +790,7 @@ class ProjectService implements EventPublisher {
     }
 
     def writeArchive(Project project, OutputStream outputStream) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
         zos.encoding = 'UTF-8'
         zos.fallbackToUTF8 = true
@@ -806,7 +810,7 @@ class ProjectService implements EventPublisher {
      * @throws IOException if no images or directory found for the project.
      */
     def archiveProject(Project project) {
-        final projectPath = new File(grailsApplication.config.images.home, project.id.toString())
+        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
         def result = projectPath.deleteDir()
         if (!result) {
             log.warn("Couldn't delete images for $project")
@@ -1041,9 +1045,16 @@ class ProjectService implements EventPublisher {
      * @return
      */
     def isTimeToUpdateRandomProject(Date randomProjectDateUpdated) {
-        def currentDate = new Date().getAt(Calendar.DAY_OF_YEAR)
+        //def currentDate = new Date().getAt(Calendar.DAY_OF_YEAR as String)
+        Calendar cal = new GregorianCalendar()
+        cal.setTime(new Date())
+        def currentDate = cal.get(Calendar.DAY_OF_YEAR)
+
         if (!randomProjectDateUpdated) return true
-        def lastDate = randomProjectDateUpdated.getAt(Calendar.DAY_OF_YEAR)
+
+        cal.setTime(randomProjectDateUpdated)
+        //def lastDate = randomProjectDateUpdated.getAt(Calendar.DAY_OF_YEAR)
+        def lastDate = cal.get(Calendar.DAY_OF_YEAR)
         // If we've gone over to the next year, return true.
         if (currentDate < lastDate) return true
         return currentDate - lastDate >= 1
@@ -1087,7 +1098,7 @@ class ProjectService implements EventPublisher {
         if (inputStream && contentType) {
             // Save image
             String fileExtension = contentType == 'image/png' ? 'png' : 'jpg'
-            def filePath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.${fileExtension}"
+            def filePath = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.${fileExtension}"
             def file = new File(filePath)
             file.getParentFile().mkdirs()
             file.withOutputStream {
@@ -1095,8 +1106,8 @@ class ProjectService implements EventPublisher {
             }
         } else {
             // Remove image if exists
-            String localPathJpg = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.jpg"
-            String localPathPng = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image.png"
+            String localPathJpg = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.jpg"
+            String localPathPng = "${(grailsApplication.config.getProperty('images.home', String) as String)}/project/${project.id}/expedition-background-image.png"
             File fileJpg = new File(localPathJpg)
             File filePng = new File(localPathPng)
             if (fileJpg.exists()) {
@@ -1114,16 +1125,17 @@ class ProjectService implements EventPublisher {
     String getBackgroundImage(Project project) {
         if (!project) return null
 
-        String localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-background-image"
+        String localPath = "${grailsApplication.config.getProperty('images.home', String) as String}/project/${project.id}/expedition-background-image"
         String localPathJpg = "${localPath}.jpg"
         String localPathPng = "${localPath}.png"
         File fileJpg = new File(localPathJpg)
         File filePng = new File(localPathPng)
 
+        String returnPath = "${grailsApplication.config.getProperty('server.url', String)}${grailsApplication.config.getProperty('images.urlPrefix', String) as String}project/${project.id}/expedition-background-image."
         if (fileJpg.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.jpg"
+            return returnPath + "jpg"
         } else if (filePng.exists()) {
-            return "${grailsApplication.config.server.url}${grailsApplication.config.images.urlPrefix}project/${project.id}/expedition-background-image.png"
+            return returnPath + "png"
         } else {
             return null
         }
@@ -1138,14 +1150,37 @@ class ProjectService implements EventPublisher {
         if (!project) return null
         // Check to see if there is a feature image for this expedition by looking in its project directory.
         // If one exists, use it, otherwise use a default image...
-        def localPath = "${grailsApplication.config.images.home}/project/${project.id}/expedition-image.jpg"
+        def localPath = "${grailsApplication.config.getProperty('images.home', String)}/project/${project.id}/expedition-image.jpg"
         def file = new File(localPath)
         if (!file.exists()) {
             return grailsLinkGenerator.resource(file: '/banners/default-expedition-large.jpg')
         } else {
-            def urlPrefix = grailsApplication.config.images.urlPrefix
+            def urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
             def infix = urlPrefix.endsWith('/') ? '' : '/'
-            return "${grailsApplication.config.server.url}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
+            return "${grailsApplication.config.getProperty('server.url', String)}/${urlPrefix}${infix}project/${project.id}/expedition-image.jpg"
+        }
+    }
+
+    /**
+     * Checks if the provided Project has enabled support for multiple transcriptions. Also checks if project is of a
+     * supported type (cameratrap/audio).
+     * @param project the project to check
+     * @return true if the project supports multiple transcripts, false if not.
+     */
+    def doesTemplateSupportMultiTranscriptions(Project project) {
+        //def project = Project.findById(project)
+        if (!project) return false
+        def isSupportedProjectType = project.projectType.supportsMultipleTranscriptions()
+        log.debug("doesTemplateSupportMultiTranscriptions: project type supports multiple transcriptions: ${isSupportedProjectType}")
+        //log.debug("Project: ${projectId}")
+        def template = project.template //Template.findById(project.templateId)
+        //log.debug("Template: ${template}")
+        if (template && isSupportedProjectType) {
+            log.debug("doesTemplateSupportMultiTranscriptions: template.supportMultipleTrascriptions: ${template.supportMultipleTranscriptions}")
+            return template.supportMultipleTranscriptions
+        } else {
+            log.debug("doesTemplateSupportMultiTranscriptions: no template, returning false")
+            return false
         }
     }
 }
