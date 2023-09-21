@@ -7,7 +7,7 @@ branches:
   only:
   - master
   - develop
-  - feature/grails-5-upgrade
+  - hotfix/logging
 services:
   - postgresql
 addons:
