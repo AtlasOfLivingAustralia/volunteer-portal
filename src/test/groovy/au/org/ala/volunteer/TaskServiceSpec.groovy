@@ -3,12 +3,12 @@ package au.org.ala.volunteer
 import au.org.ala.volunteer.helper.FlybernateSpec
 import grails.testing.services.ServiceUnitTest
 import groovy.util.logging.Slf4j
-//import grails.test.mixin.TestFor
-
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
-//@TestFor(TaskService)
+
 @Slf4j
 class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskService> {
+
+    def dataSource
 
     /**
      * This is to build up some data in the test database for the purposes of running SQL queries.
@@ -24,7 +24,8 @@ class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskServ
     Project p
 
     def setup() {
-       p = setupProject()
+        p = setupProject()
+        service.dataSource = hibernateDatastore.dataSource
     }
 
     def teardown() {
@@ -209,16 +210,19 @@ class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskServ
 
         when:
         Task task = service.getNextTask(userId, p)
+        log.debug("Task: ${task}")
 
         then: "the first task will be 2 as the algorithm returns jump results and picks the last one"
         int expectedTaskExternalId = 2
+        log.debug("testing expected task")
         task.externalIdentifier == Integer.toString(expectedTaskExternalId)
 
         while (task != null && expectedTaskExternalId < numberOfTasks-jump) {
             expectedTaskExternalId = expectedTaskExternalId + jump
+            log.debug("Incrementing expected task: ${expectedTaskExternalId}")
 
             task = service.getNextTask(userId, p, task.id)
-
+            log.debug("Task: ${task}")
             assert task.externalIdentifier == Integer.toString(expectedTaskExternalId)
         }
 

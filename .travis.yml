@@ -7,7 +7,7 @@ branches:
   only:
   - master
   - develop
-  - hotfix/logging
+  - feature/dg-101
 services:
   - postgresql
 addons:
