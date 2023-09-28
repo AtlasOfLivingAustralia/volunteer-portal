@@ -51,7 +51,12 @@ class FullTextIndexService {
     def initialize() {
         log.info("ElasticSearch service starting...")
         Settings.Builder settings = Settings.builder()
-        settings.put("path.home", grailsApplication.config.getProperty('elasticsearch.location', String) as String)
+        def settingsMap = getSettings()
+        settingsMap.each { element, value ->
+            log.debug("Elastic Search init setting: [${element}], Value: [${value}]")
+            settings.put(element, value as String)
+        }
+
         node = nodeBuilder().local(true).settings(settings).node()
         client = node.client()
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet()
@@ -77,6 +82,21 @@ class FullTextIndexService {
             // failed to delete index - maybe because it didn't exist?
         }
         addMappings()
+    }
+
+    @NotTransactional
+    def getSettings() {
+        def settings = [:]
+        settings["path.home"] = grailsApplication.config.getProperty('elasticsearch.location', String)
+        def watermarkLow = grailsApplication.config.getProperty('elasticsearch.cluster.routing.allocation.disk.watermark.low', String) as String
+        if (watermarkLow) {
+            settings["cluster.routing.allocation.disk.watermark.low"] = watermarkLow
+        }
+        def watermarkHigh = grailsApplication.config.getProperty('elasticsearch.cluster.routing.allocation.disk.watermark.high', String) as String
+        if (watermarkHigh) {
+            settings["cluster.routing.allocation.disk.watermark.high"] = watermarkHigh
+        }
+        return settings
     }
 
     def indexTask(Task task) {

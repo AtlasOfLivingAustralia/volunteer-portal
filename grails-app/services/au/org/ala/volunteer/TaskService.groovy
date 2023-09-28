@@ -289,18 +289,20 @@ class TaskService {
     private Task processResults(List results, long timeoutWindow, String userId = null, int jump = 1, long lastId = -1) {
         Task transcribableTask = null
         int matches = 0
+
         log.debug("Processing results for user_id: [${userId}], jump: [${jump}], lastId: [${lastId}]")
         results?.find { result ->
-            Task task = Task.get(result[0] as long)
-            log.debug("Checking task ${result[0]}")
-            log.debug("Task: ${task}")
+            //Task task = Task.get(result[0] as long)
+            Task task = Task.get(result.id as long)
+            //log.debug("Checking task ${result}")
+            //log.debug("Task: ${task}")
 
             // If locked or skipped, move onto next task.
             if (!task.isLockedForTranscription(userId, timeoutWindow) && !task.wasSkippedByUser(userId)) {
                 // We can allocate this Task as all recent views have resulted in a completed transcription
                 // (i.e. views that didn't end up completing the transcription have timed out).
-                log.debug("Not locked and available;")
-                log.debug("task.wasSkippedByUser(userId): ${task.wasSkippedByUser(userId)}")
+                //log.debug("Not locked and available;")
+                //log.debug("task.wasSkippedByUser(userId): ${task.wasSkippedByUser(userId)}")
                 transcribableTask = task
                 matches++
                 if (matches >= jump) {
@@ -325,35 +327,47 @@ class TaskService {
     */
     private Task findUnviewedTask(String userId, Project project, Long transcriptionsPerTask = 1, Long lastId = -1, int jump = 1) {
         Task task = null
-        Map queryParams = [userId: userId, project:project, transcriptionsPerTask:transcriptionsPerTask, max:jump]
+
+        Map queryParams = [userId: userId, projectId: project.id, transcriptionsPerTask: transcriptionsPerTask]
+        def jumpClause = ""
+        def orderBy = "count(distinct vt.user_id) ASC, task.id asc"
         if (jump > 1 && lastId >= 0) {
             queryParams.lastId = lastId
+            jumpClause += "AND task.id > :lastId"
+            orderBy = "task.id asc"
         }
 
-        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
-        String orderBy = "count(distinct views.userId) desc, task.id"
-        if (jump > 1 && lastId > 0) {
-            whereClause += "and task.id > :lastId "
-            orderBy = "task.id"
+        String query = """
+            WITH vt_list AS 
+                (SELECT id, task_id FROM viewed_task where user_id = :userId and task_id in (SELECT id FROM task WHERE project_id = :projectId))
+            SELECT task.id, count(distinct vt.user_id)
+            FROM task
+            LEFT OUTER JOIN viewed_task vt on task.id = vt.task_id
+            WHERE task.project_id = :projectId
+              AND task.is_fully_transcribed = false
+              AND task.id not in (SELECT vt_list.task_id FROM vt_list)
+            $jumpClause
+            GROUP BY task.id
+            HAVING count(distinct vt.user_id) < :transcriptionsPerTask
+            ORDER BY $orderBy 
+            LIMIT $jump
+        """.stripIndent()
+
+        // log.debug("Query: ${query}")
+
+        def sw = Stopwatch.createStarted()
+        def sql = new Sql(dataSource)
+        def result = sql.rows(query, queryParams)
+
+        if (result) {
+            def row = result.last()
+            log.debug("Result: ${result}")
+            log.debug("Row: ${row}")
+
+            task = Task.get(row?.id as long)
         }
-
-        String query = """select task.id, count(distinct views.userId) from Task as task
-            left join task.viewedTasks as views 
-            where $whereClause
-            group by task.id 
-            having count(distinct views.userId) < :transcriptionsPerTask 
-            order by $orderBy
-            """.stripIndent()
-
-        //log.debug("Unviewed task Query: ${query}")
-
-        List results = Task.executeQuery(query,queryParams)
-        log.debug("Searching for unviewed tasks resulted in [${results.size()}] tasks.")
-
-        if (results) {
-            def taskResult = results.last()
-            task = Task.get(taskResult[0] as long)
-        }
+        sql.close()
+        log.debug("findUnviewedTask: Got task in ${sw.stop()}")
 
         task
     }
@@ -369,48 +383,66 @@ class TaskService {
      * be in progress.
      */
     private Task findUnfinishedTaskNotViewedByUser(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1, int jump = 1) {
+        Map params = [userId: userId, projectId: project.id, transcriptionsPerTask: (long) transcriptionsPerTask, lastId: (long) -1]
 
-        Map params = [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask]
-        String whereClause = "task.project = :project and task.isFullyTranscribed = false and task.id not in (select v1.task from ViewedTask v1 where v1.userId = :userId) "
         if (jump > 1 && lastId >= 0) {
-            whereClause += "and task.id > :lastId "
             params.lastId = lastId
         }
 
-        List results = Task.executeQuery(
-                "select task.id, count(transcriptions) from Task as task "+
-                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
-                        "where " + whereClause +
-                        "group by task.id " +
-                        "having count(transcriptions) < :transcriptionsPerTask "+
-                        "order by count(transcriptions) desc, task.id",
-                    params
-                )
-        //log.debug("Unfinished task not viewed results: ${results}")
+        String query = """
+            WITH vt_list AS 
+                (select id, task_id FROM viewed_task WHERE user_id = :userId and task_id in (select id from task where project_id = :projectId))
+            SELECT task.id, count(transcription.id) 
+            FROM task
+            LEFT JOIN transcription ON (task.id = transcription.task_id AND transcription.fully_transcribed_by IS NOT NULL)
+            WHERE task.project_id = :projectId
+              AND task.is_fully_transcribed = false
+              AND task.id not in (select vt_list.task_id from vt_list)
+              AND task.id > :taskId
+            GROUP BY task.id
+            HAVING count(transcription.id) < :transcriptionsPerTask
+            ORDER BY count(transcription.id) DESC, task.id            
+        """.stripIndent()
+
+        def sw = Stopwatch.createStarted()
+        def sql = new Sql(dataSource)
+        def results = sql.rows(query, params)
+        sql.close()
+        log.debug("findUnfinishedTaskNotViewedByUser: Got task list in ${sw.stop()}")
         log.debug("Searching for unfinished tasks for user_id [${userId}] returned ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
-        processResults(results, timeoutWindow,  userId, jump)
+        processResults(results, timeoutWindow, userId, jump)
     }
 
-    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1) {
+    private Task findViewedButNotTranscribedTask(String userId, Project project, int transcriptionsPerTask, long timeoutWindow, long lastId = -1, int jump = 1) {
         // Finally, the only Tasks left are ones that the user has viewed but not transcribed
-        List results = Task.executeQuery(
-                "select task.id, count(transcriptions) from Task as task "+
-                        "left join task.transcriptions as transcriptions with transcriptions.fullyTranscribedBy is not null " +
-                        "where task.project = :project " +
-                        "and task.isFullyTranscribed = false and task.id not in (select t1.task from Transcription t1 where t1.fullyTranscribedBy = :userId)  " +
-                        "group by task.id " +
-                        "having count(transcriptions) < :transcriptionsPerTask "+
-                        "order by count(transcriptions) desc, task.id",
-                [userId: userId, project:project, transcriptionsPerTask:(long)transcriptionsPerTask])
-        //log.debug("Viewed but not transcribed results: ${results}")
+        String query = """
+            WITH t_list AS 
+                (select id, task_id from transcription where fully_transcribed_by = :userId and task_id in (select id from task where project_id = :projectId))
+            SELECT task.id, count(transcription.id)
+            FROM task
+            LEFT JOIN transcription ON task.id = transcription.task_id AND transcription.fully_transcribed_by IS NOT NULL
+            WHERE task.project_id = :projectId
+              AND task.is_fully_transcribed = false
+              AND task.id NOT IN (SELECT t_list.task_id from t_list)
+              AND task.id > :taskId
+            group by task.id
+            having count(transcription.id) < :transcriptionsPerTask
+            order by count(transcription.id) desc, task.id
+        """.stripIndent()
+        def params = [userId: userId, projectId: project.id, taskId: lastId, transcriptionsPerTask: (long) transcriptionsPerTask]
+
+        def sw = Stopwatch.createStarted()
+        def sql = new Sql(dataSource)
+        def results = sql.rows(query, params)
+        log.debug("findViewedButNotTranscribedTask: Got task list in ${sw.stop()}")
         log.debug("Searching for viewed but not transcribed tasks for user_id [${userId}] resulted in ${results.size()} tasks.")
 
         // The query above could likely be improved to make this unnecessary, but the result set shouldn't be
         // too large.
-        processResults(results, timeoutWindow, userId, 1, lastId)
+        processResults(results, timeoutWindow, userId, jump, lastId)
     }
 
     /**
@@ -420,6 +452,7 @@ class TaskService {
      * @return
      */
     Task getNextTask(String userId, Project project, Long lastId = -1) {
+        log.debug("----------------")
         log.debug("Get next task for user_id: [${userId}], project: [${project.id}], lastId: [${lastId}]")
         if (!project || !userId) {
             return null
@@ -453,7 +486,7 @@ class TaskService {
             return task
         }
 
-        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout, lastId)
+        task = findViewedButNotTranscribedTask(userId, project, transcriptionsPerTask, timeout, lastId, jump)
         if (task) {
             //log.debug("getNextTask(project ${project.id}, lastId $lastId) found a viewed but not transcribed task to jump to: ${task.id}")
             log.debug("Viewed non-transcribed task assigned to user: [${task.id}]")
