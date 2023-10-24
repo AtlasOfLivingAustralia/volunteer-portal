@@ -574,6 +574,10 @@ class UserService {
 //            return
 //        }
 
+        // Record user in vp_user table if not already:
+        registerCurrentUser()
+
+        // Now record the user's action
         def action = new StringBuilder(request.requestURI)
         def valuePairs = []
         INTERESTING_REQUEST_PARAMETERS.each { paramName ->
