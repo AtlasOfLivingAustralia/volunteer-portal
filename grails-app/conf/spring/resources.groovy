@@ -27,9 +27,12 @@ beans = {
 
     digivolServletContextConfig(DigivolServletContextConfig)
 
-    bvpServletFilter(FilterRegistrationBean) {
+    bvpServletFilterBean(BVPServletFilter) {
+        authService = ref("authService")
+    }
+    bvpServletFilterRegistrationBean(FilterRegistrationBean) {
         name = 'BVPServletFilter'
-        filter = bean(BVPServletFilter)
+        filter = ref("bvpServletFilterBean")
         urlPatterns = [ '/*' ]
         asyncSupported = true
     }
