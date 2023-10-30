@@ -1,13 +1,11 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
-import groovy.sql.Sql
 import com.google.common.base.Strings
 import grails.plugin.cache.Cacheable
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -15,8 +13,6 @@ import groovy.sql.Sql
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.web.context.request.RequestContextHolder
-
 import javax.servlet.http.HttpServletRequest
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -45,8 +41,8 @@ class UserService {
     def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
-        def firstName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_FIRST_NAME)
-        def lastName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_LAST_NAME)
+        def firstName = authService.firstName
+        def lastName = authService.lastName
         log.debug("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
@@ -578,6 +574,10 @@ class UserService {
 //            return
 //        }
 
+        // Record user in vp_user table if not already:
+        registerCurrentUser()
+
+        // Now record the user's action
         def action = new StringBuilder(request.requestURI)
         def valuePairs = []
         INTERESTING_REQUEST_PARAMETERS.each { paramName ->

@@ -1,12 +1,10 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.commons.io.FileUtils
 import org.jooq.DSLContext
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
@@ -56,7 +54,7 @@ class ProjectController {
 
         String currentUserId = null
 
-        def username = AuthenticationCookieUtils.getUserName(request)
+        def username = authService.userName
         if (username) currentUserId = authService.getUserForEmailAddress(username)?.userId
 
         if (!projectInstance) {

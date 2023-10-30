@@ -1,6 +1,5 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationCookieUtils
 import com.google.common.base.Stopwatch
 import com.google.gson.GsonBuilder
 import grails.converters.JSON
@@ -8,19 +7,14 @@ import grails.util.Environment
 import grails.util.Metadata
 import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
-import org.apache.commons.io.FileUtils
-import org.apache.http.client.utils.URIBuilder
-import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.RequestContextHolder
-
 import java.text.SimpleDateFormat
 
 class VolunteerTagLib {
 
     static namespace = 'cl'
 
+    def authService
     def userService
     def settingsService
     def multimediaService
@@ -58,14 +52,13 @@ class VolunteerTagLib {
     }
 
     def isLoggedIn = { attrs, body ->
-
-        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+        if (authService.userId != null) {
             out << body()
         }
     }
 
     def isNotLoggedIn = { attrs, body ->
-        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+        if (authService.userId == null) {
             out << body()
         }
     }
@@ -411,7 +404,7 @@ class VolunteerTagLib {
 
         def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
         if (dashboardEnabled) {
-            def isLoggedIn = AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)
+            def isLoggedIn = authService.userId != null
             if (isLoggedIn || userService.currentUser) {
                 items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
             }
