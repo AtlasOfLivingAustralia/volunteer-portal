@@ -197,7 +197,6 @@
     </div>
 </section>
 <asset:javascript src="markerclusterer.js" asset-defer=""/>
-%{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.dotdotdot/4.1.0/dotdotdot.js"></script>--}%
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cuttr/1.4.3/cuttr.min.js"></script>
 <asset:javascript src="bootbox" asset-defer=""/>
 <g:if test="${projectInstance.showMap}">
@@ -309,37 +308,6 @@ $(document).ready(function () {
     /*
      * Truncate the project description text
      */
-    // var descriptionDiv = "#projectDescription";
-    // $(descriptionDiv).removeClass("hidden"); // prevent content jumping
-    // $(descriptionDiv).dotdotdot({
-    //     after: "a.readmore",
-    //     height: 200,
-    //     callback: function( isTruncated, orgContent ) {
-    //         console.log("isTruncated", isTruncated);
-    //         if (!isTruncated) {
-    //             $("a.readmore").addClass("hidden");
-    //         }
-    //     },
-    // });
-    // // read more link to show full description
-    // $("a.readmore").click(function(e) {
-    //     e.preventDefault();
-    //     var content = $(descriptionDiv).triggerHandler("originalContent");
-    //     $(descriptionDiv).trigger("destroy");
-    //     $(descriptionDiv).html( content );
-    //     $(descriptionDiv + " a.readmore").addClass('hidden');
-    // });
-
-    // var wrapper = document.querySelector( "#projectDescription" );
-    // var options = {
-    //     // Options go here
-    //     height: 200,
-    //     tolerance: 50,
-    //     truncate: "word"
-    // };
-    // new Dotdotdot( wrapper, options );
-
-    //$('#projectDescription').Cuttr();
     new Cuttr('#projectDescription', {
         //options here
         truncate: 'words',
