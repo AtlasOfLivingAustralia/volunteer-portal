@@ -400,13 +400,19 @@ function adminStats(config) {
             self.getTranscriptionTimeByProjectType();
         };
 
+        self.toISODate = function(dateObj) {
+            return dateObj.getFullYear() + '-' +
+                ('0'+ (dateObj.getMonth()+1)).slice(-2) + '-' +
+                ('0'+ dateObj.getDate()).slice(-2) + 'T00:00:00';
+        }
+
         self.exportToCSV = function (data, reportType) {
             //    var dt = new google.visualization.DataTable(data);
             //    var csv =  dt.toCSV();
             //    if (downloadCSV(csv, reportType) == "failed") {
             //request browser to trigger server api to download
-            var startParam = self.startDate != null ? self.startDate.toISOString() : '';
-            var endParam = self.endDate != null ? self.endDate.toISOString() : '';
+            var startParam = self.startDate != null ? self.toISODate(self.startDate) : '';
+            var endParam = self.endDate != null ? self.toISODate(self.endDate) : '';
             var institutionParam = self.institutionId;
             var url = config.exportCSVReport + "?reportType=" + reportType + "&startDate=" + encodeURIComponent(startParam) +
                 "&endDate=" + encodeURIComponent(endParam) + "&institutionId=" + encodeURIComponent(institutionParam);
