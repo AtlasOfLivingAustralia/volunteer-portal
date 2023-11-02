@@ -39,7 +39,7 @@
                         <thead>
                         <tr>
                             <th>Key</th>
-                            <th>Default Value</th>
+%{--                            <th>Default Value</th>--}%
                             <th>Value</th>
                             <th>Description</th>
                             <th></th>
@@ -48,11 +48,18 @@
                         <tbody>
                         <g:each in="${settings}" var="setting">
                             <tr settingKey="${setting.key}">
-                                <td>${setting.key}</td>
-                                <td>${setting.defaultValue}</td>
+                                <td>
+                                    ${setting.key}
+                                    <a href="#" class="btn btn-default btn-xs fieldHelp"
+                                       title="<g:message code="settings.description.${key}"
+                                                         default="${setting.description}"/>">
+                                        <span class="help-container"><i class="fa fa-question"></i></span>
+                                    </a>
+                                </td>
+%{--                                <td>${setting.defaultValue}</td>--}%
                                 <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
-                                <td>${setting.description}</td>
-                                <td><button class="btn btn-default btnEditSetting">Change</button></td>
+%{--                                <td>${setting.description}</td>--}%
+                                <td><button class="btn btn-default btnEditSetting">Edit</button></td>
                             </tr>
                         </g:each>
                         </tbody>
