@@ -1,6 +1,6 @@
 <script type="application/javascript">
     var BVP_JS_URLS = {
-                contextPath: "${createLink(uri: '/')}",
+                contextPath: "${grailsApplication.config.getProperty('server.servlet.contextPath', String)}/",
                 selectProjectFragment: "${createLink(controller: 'project', action: 'findProjectFragment')}",
                 slickgridCalendarImagePath: "${asset.assetPath(src: 'slickgrid/images/calendar.gif')}",
                 picklistAutocompleteUrl: "${createLink(action: 'autocomplete', controller: 'picklistItem')}",

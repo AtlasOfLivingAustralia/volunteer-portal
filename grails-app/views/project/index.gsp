@@ -61,9 +61,9 @@
                 <h1>${projectInstance.name}</h1>
                 <h2><g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
                     <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if></h2>
-                <div id="projectDescription" class="hidden">
+                <div id="projectDescription"> <!--class="hidden" -->
                     <p>${raw(projectInstance.description)}</p><!-- end description -->
-                    <a href="#" title="read more" class="readmore">Read more »</a>
+%{--                    <a href="#" title="read more" class="readmore">Read more »</a>--}%
                 </div>
                 <div class="cta-primary">
                     <g:if test="${percentComplete < 100}">
@@ -197,7 +197,7 @@
     </div>
 </section>
 <asset:javascript src="markerclusterer.js" asset-defer=""/>
-<asset:javascript src="dotdotdot" asset-defer=""/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cuttr/1.4.3/cuttr.min.js"></script>
 <asset:javascript src="bootbox" asset-defer=""/>
 <g:if test="${projectInstance.showMap}">
     <asset:script type="text/javascript">
@@ -308,25 +308,15 @@ $(document).ready(function () {
     /*
      * Truncate the project description text
      */
-    var descriptionDiv = "#projectDescription";
-    $(descriptionDiv).removeClass("hidden"); // prevent content jumping
-    $(descriptionDiv).dotdotdot({
-        after: "a.readmore",
-        height: 200,
-        callback: function( isTruncated, orgContent ) {
-            console.log("isTruncated", isTruncated);
-            if (!isTruncated) {
-                $("a.readmore").addClass("hidden");
-            }
-        },
-    });
-    // read more link to show full description
-    $("a.readmore").click(function(e) {
-        e.preventDefault();
-        var content = $(descriptionDiv).triggerHandler("originalContent");
-        $(descriptionDiv).trigger("destroy");
-        $(descriptionDiv).html( content );
-        $(descriptionDiv + " a.readmore").addClass('hidden');
+    new Cuttr('#projectDescription', {
+        //options here
+        truncate: 'words',
+        length: 100,
+        readMore: true,
+        readMoreText: 'Read more',
+        readLessText: 'Read less',
+        readMoreBtnPosition: 'after',
+        readMoreBtnAdditionalClasses: 'btn btn-hollow grey btn-sm'
     });
 
     // Show tutorial modal if content is present
