@@ -33,6 +33,7 @@ beans = {
 
         flywayConfiguration(ClassicConfiguration) { bean ->
             dataSource = ref('dataSource')
+            defaultSchema = application.config.getProperty('spring.flyway.default-schema')
             table = application.config.getProperty('spring.flyway.table')
             baselineOnMigrate = application.config.getProperty('spring.flyway.baselineOnMigrate', Boolean, true)
             def outOfOrderProp = application.config.getProperty('spring.flyway.outOfOrder', Boolean, false)
