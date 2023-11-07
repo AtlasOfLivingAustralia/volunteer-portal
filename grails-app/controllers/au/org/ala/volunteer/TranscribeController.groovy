@@ -309,9 +309,15 @@ class TranscribeController {
             def skipNextAction = params.getBoolean('skipNextAction', false)
             WebUtils.cleanRecordValues(params.recordValues as Map)
 
-            fieldSyncService.syncFields(taskInstance, params.recordValues as Map, currentUser, markTranscribed,
-                    false, null, fieldSyncService.truncateFieldsForProject(taskInstance.project),
-                    request.remoteAddr, transcription)
+            fieldSyncService.syncFields(taskInstance,
+                    params.recordValues as Map,
+                    currentUser,
+                    markTranscribed as boolean,
+                    false,
+                    null,
+                    fieldSyncService.truncateFieldsForProject(taskInstance.project),
+                    request.remoteAddr,
+                    transcription)
 
             if (!taskInstance.hasErrors()) {
                 updatePicklists(taskInstance)
@@ -321,6 +327,7 @@ class TranscribeController {
                         render([success: true] as JSON)
                     } else {
                         log.debug("Save successful, skip to next task.")
+                        welcomeUser(currentUserObj)
                         redirect(action: 'showNextFromProject', id: taskInstance.project.id,
                                 params: [prevId: taskInstance.id, prevUserId: currentUser, complete: params.id, mode: params.mode ?: ''])
                     }
@@ -330,6 +337,7 @@ class TranscribeController {
                         render([success: true] as JSON)
                     } else {
                         log.debug("Save successful. Redirecting to show next action view")
+                        welcomeUser(currentUserObj)
                         redirect(action: 'showNextAction', id: params.id, params: [mode: params.mode ?: ''])
                     }
                 }
@@ -349,6 +357,15 @@ class TranscribeController {
             } else {
                 redirect(view: '../index')
             }
+        }
+    }
+
+    private void welcomeUser(User user) {
+        // Welcome email? Send if this was their first transcription and haven't been welcomed yet
+        User updatedUser = User.get(user.id)
+        if (!updatedUser.hasBeenWelcomed()) {
+            log.debug("User being sent welcome email after transcribing first task.")
+            userService.sendWelcomeEmail(updatedUser, UserService.WELCOME_EMAIL_TRANSCRIPTION)
         }
     }
 

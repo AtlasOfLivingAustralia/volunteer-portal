@@ -12,6 +12,9 @@ public class SettingDefinition<T> {
     public static def IneligibleLeaderBoardUsers = new SettingDefinition<List<String>>("leaderboard.ineligibleUsers", new ArrayList<String>(), "The list of users not eligible for the leaderboard")
     public static def LabelCategories = new SettingDefinition<List<String>>("project.label.categories", ['country', 'subject'], "The list of users not eligible for the leaderboard")
     public static def FrontPageLogos = new SettingDefinition<List<String>>('frontpage.logos', [], "The list of insitution logos.")
+    public static def EnableWelcomeEmail = new SettingDefinition("welcome.email.enabled", true, "Enable welcome emails to new users.")
+    public static def WelcomeEmailSyncText = new SettingDefinition<String>('welcome.email.sync', "Welcome to DigiVol!", "The welcome email content for when the user hasn't yet transcribed a task.")
+    public static def WelcomeEmailTranscribedText = new SettingDefinition<String>('welcome.email.transcribed', "Welcome to DigiVol!", "The welcome email content for when the user has transcribed their first task.")
 
 //    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.name", "localhost", "The name or address of the SMTP server to user to send out notifications")
 //    public static def NotificationEmailServerPort = new SettingDefinition("notifications.emailServer.port", 25, "The port that the SMTP server is listening on")

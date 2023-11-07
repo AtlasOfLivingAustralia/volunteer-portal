@@ -293,8 +293,9 @@ class InstitutionMessageService {
             // Render the message, if errors, set the status and move on.
             String message
             try {
-                message = groovyPageRenderer.render(view: '/institutionMessage/messageTemplate',
-                    model: [subject                  : iMessage.subject,
+                message = groovyPageRenderer.render(view: '/mail/messageTemplate',
+                    model: [messageTemplate          : 'institutionMsg',
+                            subject                  : iMessage.subject,
                             inboxPreview             : "A message from ${iMessage.institution.name}",
                             serverUrl                : serverUrl,
                             institutionName          : iMessage.institution.name,
