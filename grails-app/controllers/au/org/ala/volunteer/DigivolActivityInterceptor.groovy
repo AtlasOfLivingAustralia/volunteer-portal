@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationCookieUtils
+import au.org.ala.web.AuthService
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
@@ -9,6 +9,7 @@ import groovy.util.logging.Slf4j
 class DigivolActivityInterceptor {
 
     UserService userService
+    AuthService authService
     SettingsService settingsService
 
     DigivolActivityInterceptor() {
@@ -25,7 +26,7 @@ class DigivolActivityInterceptor {
             return true
         }
 
-        def userId = AuthenticationCookieUtils.getUserName(request)
+        def userId = authService.userName
         if (userId) {
             userService.recordUserActivity(userId, request, params)
         }

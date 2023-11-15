@@ -11,6 +11,7 @@ import javax.sql.DataSource
 @Slf4j
 class NewUserDigestNotifierJob {
     def mailService
+    def userService
     DataSource dataSource
     static concurrent = false
 
@@ -89,6 +90,15 @@ class NewUserDigestNotifierJob {
                 sql.close()
             }
         }
+
+        // Welcome emails
+        def userList = User.findAllByWelcomeEmailSent(null)
+        if (userList.size() > 0) {
+            userList.each {user ->
+                userService.sendWelcomeEmail(user, UserService.WELCOME_EMAIL_SYNC)
+            }
+        }
+
         log.info("New User Digest Notifier job finishing at ${new Date()}")
     }
 }

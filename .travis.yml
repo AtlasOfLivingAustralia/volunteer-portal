@@ -7,7 +7,8 @@ branches:
   only:
   - master
   - develop
-  - feature/dg-101
+  - /^feature\/.*$/
+  - /^hotfix\/.*$/
 services:
   - postgresql
 addons:

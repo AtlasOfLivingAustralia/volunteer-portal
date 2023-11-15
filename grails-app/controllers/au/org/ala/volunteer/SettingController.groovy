@@ -63,7 +63,7 @@ class SettingController {
         SettingDefinition settingDefinition = getSettingDefByKey(key)
         if (settingDefinition && value) {
             settingsService.setSetting(key, value)
-            flash.message= "Setting '${key}' set to '${value}'"
+            flash.message= "Updated setting '${key}'."
         } else {
             flash.message= "Save setting failed! Either the setting key or value was missing/null"
         }

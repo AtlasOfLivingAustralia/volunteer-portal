@@ -1,13 +1,11 @@
 package au.org.ala.volunteer
 
-import au.org.ala.cas.util.AuthenticationUtils
 import au.org.ala.userdetails.UserDetailsFromIdListResponse
 import au.org.ala.userdetails.UserDetailsClient
 import au.org.ala.web.UserDetails
 import com.google.common.base.Stopwatch
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
-import groovy.sql.Sql
 import com.google.common.base.Strings
 import grails.plugin.cache.Cacheable
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -15,8 +13,6 @@ import groovy.sql.Sql
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.web.context.request.RequestContextHolder
-
 import javax.servlet.http.HttpServletRequest
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -32,10 +28,16 @@ class UserService {
     def messageSource
     def freemarkerService
     def fullTextIndexService
+    def settingsService
+    def userService
     UserDetailsClient userDetailsClient
 
     /** Recorded as the user id when changes are made automatically */
     public static final String SYSTEM_USER = "system"
+
+    /** Welcome email types */
+    public static final int WELCOME_EMAIL_TRANSCRIPTION = 0
+    public static final int WELCOME_EMAIL_SYNC = 1
 
     private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 
@@ -45,8 +47,8 @@ class UserService {
     def registerCurrentUser() {
         def userId = currentUserId
         def displayName = authService.displayName
-        def firstName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_FIRST_NAME)
-        def lastName = AuthenticationUtils.getPrincipalAttribute(RequestContextHolder.currentRequestAttributes().request, AuthenticationUtils.ATTR_LAST_NAME)
+        def firstName = authService.firstName
+        def lastName = authService.lastName
         log.debug("Checking user is registered: ${displayName} (UserId=${userId})")
         if (userId) {
             if (User.findByUserId(userId) == null) {
@@ -578,6 +580,10 @@ class UserService {
 //            return
 //        }
 
+        // Record user in vp_user table if not already:
+        registerCurrentUser()
+
+        // Now record the user's action
         def action = new StringBuilder(request.requestURI)
         def valuePairs = []
         INTERESTING_REQUEST_PARAMETERS.each { paramName ->
@@ -886,5 +892,82 @@ class UserService {
                 userRole.delete(flush: true)
             }
         }
+    }
+
+    /**
+     * Sends a welcome email to the user. Checks if the user has already welcomed and only sends if they have not yet
+     * been welcomed.
+     * @param user the user to be welcomed.
+     * @param welcomeMessageType (Optional) The origin/type of message. Either UserService.WELCOME_EMAIL_SYNC (default)
+     * or UserService.WELCOME_EMAIL_TRANSCRIPTION.
+     */
+    void sendWelcomeEmail(User user, int welcomeMessageType = WELCOME_EMAIL_SYNC) {
+        if (!user || user.hasBeenWelcomed()) {
+            log.debug("No user object OR user has already been welcomed: ${user.hasBeenWelcomed()}")
+            return
+        }
+
+        log.debug("Welcome Email being sent to ${user}")
+        def serverUrl = grailsApplication.config.getProperty('grails.serverURL', String, '')
+        if (!serverUrl) {
+            throw new Exception("Error sending welcome message. Could not find serverUrl configuration setting. " +
+                    "This is required for email messages. Contact DigiVol Admins.")
+        }
+
+        // Message content
+        String subject = messageSource.getMessage("default.user.welcome.subject", null, "Welcome to DigiVol!", LocaleContextHolder.locale)
+        String inboxPreview = "A welcome to DigiVol from the Australian Museum and the Atlas of Living Australia."
+        String messageBody
+        switch (welcomeMessageType) {
+            case WELCOME_EMAIL_SYNC:
+                messageBody = settingsService.getSetting(SettingDefinition.WelcomeEmailSyncText)
+                break
+            case WELCOME_EMAIL_TRANSCRIPTION:
+            default:
+                messageBody = settingsService.getSetting(SettingDefinition.WelcomeEmailTranscribedText)
+                break
+        }
+
+        // Build email
+        String message
+        def userVerificationHash = userService.getUserHash(user)
+        try {
+            message = groovyPageRenderer.render(view: '/mail/messageTemplate',
+                    model: [messageTemplate          : 'welcomeMessage',
+                            subject                  : subject,
+                            inboxPreview             : messageSource.getMessage("default.user.welcome.preview", null, inboxPreview, LocaleContextHolder.locale),
+                            serverUrl                : serverUrl,
+                            messageBody              : messageBody,
+                            recipientEmail           : user.email,
+                            recipient_id             : user.id,
+                            refKey                   : userVerificationHash // optout ref key
+                    ])
+        } catch (Exception e) {
+            log.error("Failed creating mail message render for welcome message for user ${user}: ${e.getMessage()}", e)
+            return
+        }
+
+        // Send to the queue
+        def welcomeEnabled = settingsService.getSetting(SettingDefinition.EnableWelcomeEmail) as String
+        log.debug("Welcome email is enabled: ${welcomeEnabled.toBoolean()}")
+        if (welcomeEnabled.toBoolean()) {
+            if (message) {
+                try {
+                    DetailedEmailMessage queuedMessage = new DetailedEmailMessage(emailAddress: user.email,
+                            subject: subject,
+                            message: message,
+                            replyTo: null,
+                            formatType: DetailedEmailMessage.FORMAT_HTML)
+                    emailService.pushMessageOnQueue(queuedMessage)
+                } catch (Exception e) {
+                    log.error("Failed sending welcome mail for user ${user}: ${e.getMessage()}", e)
+                    return
+                }
+            }
+        }
+
+        // Update user object to record email sent.
+        user.welcomeEmailSent = new Date()
+        user.save(flush: true, failOnError: true)
     }
 }

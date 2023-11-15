@@ -55,4 +55,18 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         !d.equals(null)
     }
 
+    void "Test that user can be welcomed"() {
+        when: 'User is initialised'
+        def y = u1 as User
+
+        then: 'User can be welcomed'
+        !y.hasBeenWelcomed()
+
+        when: 'User welcome date is set'
+        y.welcomeEmailSent = new Date()
+
+        then: 'User has been welcomed'
+        y.hasBeenWelcomed()
+    }
+
 }

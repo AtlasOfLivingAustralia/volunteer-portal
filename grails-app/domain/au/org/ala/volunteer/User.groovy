@@ -9,9 +9,10 @@ class User implements AsyncEntity<User> {
     String firstName
     String lastName
     String organisation
-    Integer transcribedCount = 0   //the number of tasks completed by the user
-    Integer validatedCount = 0     // the number of task completed by this user and then validated by a validator
-    Date created               //set to the date when the user first contributed
+    Integer transcribedCount = 0    // the number of tasks completed by the user
+    Integer validatedCount = 0      // the number of task completed by this user and then validated by a validator
+    Date created                    // set to the date when the user first contributed
+    Date welcomeEmailSent           // Datetime user is sent the 'welcome' email.
 
     String displayName // computed
 
@@ -23,6 +24,7 @@ class User implements AsyncEntity<User> {
         table 'vp_user'
         displayName formula: '''FIRST_NAME || ' ' || LAST_NAME'''
         version false
+        welcomeEmailSent column: 'welcome_date'
     }
 
     static constraints = {
@@ -34,6 +36,7 @@ class User implements AsyncEntity<User> {
         displayName nullable: true // nullable for unit tests
         userId maxSize: 200
         email maxSize: 200
+        welcomeEmailSent nullable: true
     }
 
     @Override
@@ -73,5 +76,14 @@ class User implements AsyncEntity<User> {
 
     public String toString() {
         "User (id: $id, userId: ${userId}, displayName: ${displayName})"
+    }
+
+    /**
+     * Returns true or false if a given user has been sent a welcome email yet.
+     * @return
+     */
+    def hasBeenWelcomed() {
+        log.debug("User.hasBeenWelcomed: ${!(welcomeEmailSent == null)}")
+        return !(welcomeEmailSent == null)
     }
 }

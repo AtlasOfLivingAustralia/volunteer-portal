@@ -23,10 +23,11 @@
             <div class="row">
                 <div class="col-md-12">
                     <p class="lead">${settingDefinition?.description}</p>
+                    <p><b>Default Value:</b> ${settingDefinition?.defaultValue}</p>
                     <g:form action="saveSetting" class="form-horizontal">
                         <g:hiddenField name="settingKey" value="${settingDefinition?.key}"/>
                         <div class="col-md-4">
-                            <g:textField class="form-control" name="settingValue" value="${currentValue}"/>
+                            <g:textArea class="form-control" name="settingValue" value="${currentValue}" rows="20" cols="600"/>
                         </div>
                         <g:submitButton class="btn btn-primary" name="save">Save</g:submitButton>
                     </g:form>
