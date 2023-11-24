@@ -89,7 +89,7 @@
 
                         $("#add-user").val('');
                     })
-                    .fail(function() { alert("Couldn't add user")});
+                    .fail(function() { alert("Couldn't add user"); });
                 return null;
         }, 'displayName');
 
@@ -111,7 +111,7 @@
                 p.remove();
                 $("#add-user").val('');
             })
-            .fail(alert("Couldn't remove user"))
+            .fail(function() { alert("Couldn't remove user"); })
             .always(hideSpinner);
         }
 
