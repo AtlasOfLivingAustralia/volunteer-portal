@@ -36,6 +36,7 @@ class LeaderBoardController {
         def category = params.category as LeaderBoardCategory
 
         def institution = Institution.get(params.int("institutionId"))
+        log.debug("Leaderboard top list")
 
         leaderBoardService.topList(category, institution)
     }

@@ -37,6 +37,7 @@ class ProjectController {
     def authService
     def groovyPageRenderer
     def templateService
+    def settingsService
     Closure<DSLContext> jooqContext
 
     /**
@@ -63,6 +64,8 @@ class ProjectController {
         } else {
             // project info
             List userIds = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>())
+            def ineligible = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers) ?: []
+            log.debug("Ineligible users: ${ineligible}")
             def expedition = grailsApplication.config.getProperty("expedition", List.class)
             def roles = [] //  List of Map
             // copy expedition data structure to "roles" & add "members"
@@ -78,7 +81,7 @@ class ProjectController {
                 def count = it[1]
                 def assigned = false
                 def user = User.findByUserId(userId)
-                if (user) {
+                if (user && !ineligible.contains(userId)) {
                     roles.eachWithIndex { role, i ->
                         if (count >= role.threshold && role.members.size() < role.max && !assigned) {
                             // assign role
