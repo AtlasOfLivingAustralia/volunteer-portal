@@ -70,7 +70,7 @@
                     <button type="button" class="insert-symbol-button" symbol="&#39;"
                             title="Insert an apostrophe (minutes) symbol"></button>
                     <button type="button" class="insert-symbol-button" symbol="&quot;"
-                            title="Insert a quote (minutes) symbol"></button>
+                            title="Insert a quote (seconds) symbol"></button>
                     <button type="button" class="insert-symbol-button" symbol="&#x2642;"
                             title="Insert the male gender symbol"></button>
                     <button type="button" class="insert-symbol-button" symbol="&#x2640;"
