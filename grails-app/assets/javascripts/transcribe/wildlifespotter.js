@@ -107,26 +107,10 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       var templateObj = {
         selectedAnimals: _.chain(selectedIndicies).keys().map(function (v,i) {
 
-          // var curval = 0;
-          // if (!selectedIndicies[v].init) {
-          //   curval = selectedIndicies[v].count;
-          // } else {
-          //   selectedIndicies[v].count = 0;
-          //   selectedIndicies[v].init = false;
-          // }
-
           return {
             index: v,
             name: wsParams.animals[v].vernacularName,
             curval: selectedIndicies[v].count,
-            //curval: curval,
-            // options: _([1,2,3,4,5,6,7,8,9,10]).map(function(opt,i) {
-            //   return {
-            //     val: opt,
-            //     selected: selectedIndicies[v].count == opt ? 'selected' : '',
-            //     isSelected: selectedIndicies[v].count == opt ? 'true' : 'false'
-            //   };
-            // }),
             comment: selectedIndicies[v].comment
           };
 
@@ -154,7 +138,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       var $this = $(this);
       var idx = $this.closest('[data-item-index]').data('item-index');
       var count = $this.val();
-      console.log("value change: " + count);
+      // console.log("value change: " + count);
       selectedIndicies[idx].count = parseInt(count);
       generateFormFields();
     });
@@ -176,12 +160,12 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
     $("#ct-container").on('keydown', '.numAnimals', function(e) {
       // Allow: backspace, delete, tab, escape, enter and .
       if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 || (e.keyCode === 65 && e.ctrlKey === true) || (e.keyCode >= 35 && e.keyCode <= 40)) {
-        console.log("key " + e.keyCode + " allowed");
+        // console.log("key " + e.keyCode + " allowed");
         return;
       }
 
       if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-        console.log("key " + e.keyCode + " not allowed");
+        // console.log("key " + e.keyCode + " not allowed");
         e.preventDefault();
       }
     });
@@ -401,7 +385,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         mu.appendTemplate($ctFields, 'input-template', {id: 'recordValues.' + i + '.comment', value: value.comment});
         ++i;
       });
-      console.log("Enable submit button? " + enableSubmit);
+
+      // console.log("Enable submit button? " + enableSubmit);
       if (enableSubmit) $('#btnSave').removeAttr('disabled');
       else $('#btnSave').attr('disabled', 'disabled');
     }
@@ -431,8 +416,6 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       });
     }
 
-
-
     transcribeValidation.addCustomValidator(function(errorList) {
       var q1 = $('input[name=recordValues\\.0\\.noAnimalsVisible]:checked').val();
       var q2 = $('input[name=recordValues\\.0\\.problemWithImage]:checked').val();
@@ -442,12 +425,10 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         errorList.push({element: null, message: "You must either indicate that there are no animals, there's a problem with the image or select at least one animal before you can submit", type: "Error" });
       }
     });
-    transcribeValidation.setErrorRenderFunctions(function (errorList) {
-      },
-      function() {
-      });
 
-    submitRequiresConfirmation = true;
+    transcribeValidation.setErrorRenderFunctions(function (errorList) {}, function() {});
+    var submitRequiresConfirmation = true;
+
     postValidationFunction = function(validationResults) {
       if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
     };
