@@ -185,9 +185,7 @@
 
                                 <td style="white-space: nowrap;">
                                     <!-- Toggle Status -->
-%{--                                    <g:form name="activationForm_${projectInstance.project.id}" id="${projectInstance.project.id}" controller="project" action="update" params="${params}">--}%
                                     <g:if test="${projectInstance.project.inactive}">
-%{--                                        <g:hiddenField name="inactive" value="true"/>--}%
                                         <g:if test="${projectInstance.project.archived}">
                                             <button role="button" class="btn btn-default btn-xs"
                                                     title="You cannot activate an archived expedition." disabled><i class="fa fa-toggle-off"></i></button>
@@ -197,7 +195,6 @@
                                         </g:else>
                                     </g:if>
                                     <g:else>
-%{--                                        <g:hiddenField name="inactive" value="false"/>--}%
                                         <a class="btn btn-xs btn-default toggle-project-status" alt="Deactivate" title="Deactivate Expedition"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
