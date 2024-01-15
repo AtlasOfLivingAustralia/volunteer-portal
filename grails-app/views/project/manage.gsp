@@ -185,9 +185,7 @@
 
                                 <td style="white-space: nowrap;">
                                     <!-- Toggle Status -->
-%{--                                    <g:form name="activationForm_${projectInstance.project.id}" id="${projectInstance.project.id}" controller="project" action="update" params="${params}">--}%
                                     <g:if test="${projectInstance.project.inactive}">
-%{--                                        <g:hiddenField name="inactive" value="true"/>--}%
                                         <g:if test="${projectInstance.project.archived}">
                                             <button role="button" class="btn btn-default btn-xs"
                                                     title="You cannot activate an archived expedition." disabled><i class="fa fa-toggle-off"></i></button>
@@ -197,10 +195,11 @@
                                         </g:else>
                                     </g:if>
                                     <g:else>
-%{--                                        <g:hiddenField name="inactive" value="false"/>--}%
                                         <a class="btn btn-xs btn-default toggle-project-status" alt="Deactivate" title="Deactivate Expedition"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
+                                    <!-- Export -->
+                                    <a class="btn btn-xs btn-default export-project" alt="Export" title="Export Expedition (all tasks)"><i class="fa fa-table"></i></a>
 
                                     <!-- Clone -->
                                     <a class="btn btn-xs btn-default clone-project" alt="Clone" title="Clone Expedition"><i class="fa fa-clone"></i></a>
@@ -262,6 +261,16 @@ jQuery(function($) {
             $form.submit();
         }
     });
+
+    $(".export-project").click(function(e) {
+            e.preventDefault();
+            var projectId = $(this).parents("[projectId]").attr("projectId");
+            var options = {
+                title:'Export all tasks',
+                url:"${createLink(controller: "task", action: "exportOptionsFragment", params: [exportCriteria: 'all']).encodeAsJavaScript()}&projectId=" + projectId
+            };
+            bvp.showModal(options);
+        });
 
     $(".clone-project").click(function(e) {
         e.preventDefault();
