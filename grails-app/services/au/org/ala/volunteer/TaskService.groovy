@@ -78,7 +78,7 @@ class TaskService {
             from Task t 
             where exists (from Field as f where f.task = t) """.stripIndent()
         def activeClause = "and t.project.inactive != true"
-        def query = querySelect + (activeOnly ? activeClause : "" ) + " group by t.project.id"
+        def query = querySelect + (activeOnly ? activeClause : "") + " group by t.project.id"
 
         def projectTaskCounts = Task.executeQuery(query)
         projectTaskCounts.toMap()
@@ -91,7 +91,7 @@ class TaskService {
         def querySelect = """select t.project.id as projectId, count(t) as taskCount
                from Transcription t """.stripIndent()
         def activeClause = "where t.project.inactive != true"
-        def query = querySelect + (activeOnly ? activeClause : "" ) + " group by t.project.id"
+        def query = querySelect + (activeOnly ? activeClause : "") + " group by t.project.id"
 
         def projectTaskCounts = Task.executeQuery(query)
         projectTaskCounts.toMap()
