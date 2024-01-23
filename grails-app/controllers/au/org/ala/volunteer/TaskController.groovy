@@ -174,6 +174,8 @@ class TaskController {
         def jsonObj = [:]
         jsonObj.put("cat", recordValues?.get(0)?.catalogNumber)
         jsonObj.put("name", recordValues?.get(0)?.scientificName)
+        jsonObj.put("id", taskInstance.id)
+        jsonObj.put("filename", taskInstance.externalIdentifier)
 
         List transcribers = []
         taskInstance.transcriptions.each {
