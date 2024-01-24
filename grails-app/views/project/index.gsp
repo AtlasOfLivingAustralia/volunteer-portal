@@ -277,7 +277,14 @@
 
                 url: "${createLink(controller: 'task', action: 'details')}/" + id,
                 success: function (data) {
-                    var content = "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber + "</div>";
+                    var content = "<div style='font-size:12px;line-height:1.3em;'>Task: " + data.id + "<br/>";
+                <cl:ifValidator project="${projectInstance}">
+                    content += "File: <a href=\"${createLink(controller: 'task', action: 'showDetails')}/" + id + "\" target=\"_blank\">" + data.filename + "</a><br/>";
+                </cl:ifValidator>
+                <cl:ifNotValidator project="${projectInstance}">
+                    content += "File: " + data.filename + "<br/>";
+                </cl:ifNotValidator>
+                    content += "Transcribed by: " + data.transcriber + "</div>";
                     infowindow.close();
                     infowindow.setContent(content);
                     infowindow.open(map, marker);
