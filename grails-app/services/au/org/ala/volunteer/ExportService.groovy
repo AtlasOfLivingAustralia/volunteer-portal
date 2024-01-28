@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.SerializationUtils
 import org.jooq.tools.StringUtils
 
+import javax.servlet.http.HttpServletResponse
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -83,7 +84,7 @@ class ExportService {
         return result
     }
 
-    def export_zipFile = { Project project, taskList, fieldNames, fieldList, response ->
+    def export_zipFile = { Project project, List<Task> taskList, ArrayList<String> fieldNames, List fieldList, HttpServletResponse response ->
         def sw = Stopwatch.createStarted()
         def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
@@ -102,7 +103,7 @@ class ExportService {
         log.debug("Generated repeating fields in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        zipExport(project, taskList, fieldNames, fieldList, response, ["dataset"], repeatingFields)
+        zipExport(project, taskList, fieldNames, fieldList, response, ["dataset"] as List<FieldCategory>, repeatingFields)
     }
 
     private Map<Transcription, Map> getTranscriptionsToExport(Project project, Task task, Map valuesMap) {
@@ -253,10 +254,11 @@ class ExportService {
         writer.close()
     }
 
-    private void zipExport(Project project, taskList, List fieldNames, fieldList, response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
+    private void zipExport(Project project, List<Task> taskList, ArrayList<String> fieldNames, List fieldList, HttpServletResponse response, List<FieldCategory> datasetCategories, List<String> otherRepeatingFields) {
         def valueMap = fieldListToMultiMap(fieldList)
         def sw = Stopwatch.createStarted()
         def datasetCategoryFields = [:]
+
         if (datasetCategories) {
             datasetCategories.each { category ->
                 // Work out which fields are a repeating group...
@@ -291,7 +293,7 @@ class ExportService {
         // Prepare the response for a zip file - use the project name as a basis of the filename
         def filename = "Project-" + (cleanFilename(project.featuredLabel) ?: project.id) + "-DwC"
 
-        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".zip");
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename + "-" + new Date().getTime() + ".zip");
         response.setContentType("application/zip");
 
         // First up write out the main tasks file -all the remaining fields are single value only
@@ -301,7 +303,7 @@ class ExportService {
 
         CSVWriter writer = new CSVWriter(outputwriter);
 
-        zipStream.putNextEntry(new ZipEntry("tasks.csv"));
+        zipStream.putNextEntry(new ZipEntry("tasks-" + new Date().getTime() + ".csv"));
         // write header line (field names)
         writer.writeNext((String[]) fieldNames.toArray(new String[0]))
 
@@ -336,6 +338,7 @@ class ExportService {
 
         // now for each repeating field category...
         if (datasetCategoryFields) {
+            log.debug("DatasetCategory Fields: ${datasetCategoryFields}")
             datasetCategoryFields.keySet().each { category ->
                 // Dataset files...
                 def dataSetFieldNames = datasetCategoryFields[category]
@@ -349,6 +352,7 @@ class ExportService {
         }
         // Now for the other repeating fields...
         if (otherRepeatingFields) {
+            log.debug("Other Repeating Fields: ${otherRepeatingFields}")
             otherRepeatingFields.each {
                 zipStream.putNextEntry(new ZipEntry("${it}.csv"))
                 exportDataSet(project, taskList, valueMap, writer, [it])
@@ -362,7 +366,7 @@ class ExportService {
         // Export multimedia as 'associatedMedia'. There may be more than one piece of multimedia per task
         // so we do it in a separate file...
 
-        zipStream.putNextEntry(new ZipEntry("associatedMedia.csv"))
+        zipStream.putNextEntry(new ZipEntry("associatedMedia-" + new Date().getTime() + ".csv"))
         exportMultimedia(taskList, writer);
         writer.flush();
         zipStream.closeEntry()
