@@ -653,7 +653,7 @@ class ExportService {
             // Check Event Date's validity
             jsonMapValues["dwc:Event"].verbatimEventDate = jsonMapValues["dwc:Event"].eventDate
             // Check if the date parses for an ISO 8601 format. If not, wipe the eventDate field (as it's invalid).
-            if (jsonMapValues["dwc:Event"].eventDate ==~ /^\d{4}(?:-\d{1,2}(?:-\d{1,2})?)$/) {
+            if (jsonMapValues["dwc:Event"].eventDate ==~ /^\d{4}(?:-\d{1,2}(?:-\d{1,2})?)?(?:\/\d{4}(?:-\d{1,2}(?:-\d{1,2})?)?)?$/) {
                 log.debug("Regex parse true: ${jsonMapValues["dwc:Event"].eventDate}")
             } else {
                 log.debug("Regex parse false ${jsonMapValues["dwc:Event"].eventDate}")
