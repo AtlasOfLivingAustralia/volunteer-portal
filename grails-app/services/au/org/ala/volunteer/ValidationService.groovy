@@ -128,7 +128,13 @@ class ValidationService {
      */
     private boolean fieldsMatch(Transcription t1, Transcription t2) {
         if (t1?.project?.projectType?.name == ProjectType.PROJECT_TYPE_CAMERATRAP) {
-            return fieldsMatch(t1, t2, CAMERATRAP_EXCLUDED_FIELDS)
+            // If validation type is set to species only, add individual count to the list of excluded fields
+            def ctExcludedFields = CAMERATRAP_EXCLUDED_FIELDS
+            def viewParams = t1?.project?.template?.viewParams
+            if (viewParams && AutoValidationType.fromString(viewParams?.autoValidationType as String) == AutoValidationType.speciesOnly) {
+                ctExcludedFields.add(DarwinCoreField.individualCount.name())
+            }
+            return fieldsMatch(t1, t2, ctExcludedFields)
         } else {
             return fieldsMatch(t1, t2, EXCLUDED_FIELDS)
         }

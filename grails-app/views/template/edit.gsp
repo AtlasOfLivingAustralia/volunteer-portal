@@ -5,6 +5,11 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <style>
+        input[type="checkbox"] {
+            margin-left: 0px !important;
+        }
+    </style>
 </head>
 
 <body class="admin">
@@ -58,7 +63,6 @@
                         </div>
 
                         <div id="row-view-params-form" style="display: none;">
-
                         </div>
 
                         <div id="row-view-params-json"
@@ -73,68 +77,58 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
-                            <label class="col-md-4 control-label" for="supportMultipleTranscriptions">
+                            <label class="col-md-3 control-label" for="supportMultipleTranscriptions">
                                 <g:message code="template.multipletanscriptions.label"
-                                           default="Support multiple transcriptions per task?"/>&nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
-                                                                                                   title="<g:message code="template.multipletanscriptions.helptext"
-                                                                                                                     default="Ignored for Specimen and Fieldnote Expedition types."/>"><span
-                                        class="help-container"><i class="fa fa-question"></i> </span></a>
+                                           default="Support multiple transcriptions per task?"/>
+
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                <g:checkBox name="supportMultipleTranscriptions"
-                                            checked="${templateInstance.supportMultipleTranscriptions}"/>
+                                    <g:checkBox name="supportMultipleTranscriptions"
+                                                checked="${templateInstance.supportMultipleTranscriptions}"/>
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                                   title="<g:message code="template.multipletanscriptions.helptext"
+                                                                     default="Ignored for Specimen and Fieldnote Expedition types."/>">
+                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
                                 </div>
                             </div>
                         </div>
 
                         <cl:ifSiteAdmin>
-                            <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
-                                <label class="col-md-4 control-label" for="isGlobal">
-                                    <g:message code="template.isglobal.label"
-                                               default="Is a Global Template (available to everyone)?"/>
-                                </label>
-                                <div class="col-md-6">
-                                    <div style="padding-top: 10px">
-                                        <g:checkBox name="isGlobal"
-                                                    checked="${templateInstance.isGlobal}"/>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
-                                <label class="col-md-4 control-label" for="isHidden">
-                                    <g:message code="template.ishidden.label"
-                                               default="Hide Template (hide from all editors)?"/>
-                                </label>
-                                <div class="col-md-6">
-                                    <div style="padding-top: 10px">
-                                        <g:checkBox name="isHidden"
-                                                    checked="${templateInstance.isHidden}"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </cl:ifSiteAdmin>
-
-                        <div id="row-view-params-json" class="form-group">
-                            <label class="col-md-4 control-label"><g:message code="template.project.label"
-                                                                                  default="Projects that use this template:"/></label>
-
+                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
+                            <label class="col-md-3 control-label" for="isGlobal">
+                                <g:message code="template.isglobal.label"
+                                           default="Is a Global Template?"/>
+                            </label>
                             <div class="col-md-6">
-                                <g:each in="${projectUsageList}" var="project">
-                                    <ul>
-                                        <li class="form-control-static">${(project.key ? project.key : "No institution")}</li>
-                                        <ul>
-                                            <g:each in="${project.value}" var="proj">
-                                                <li><g:link controller="project" action="show" id="${proj.id}">${proj.name}</g:link></li>
-                                            </g:each>
-                                        </ul>
-                                    </ul>
-                                </g:each>
+                                <div style="padding-top: 10px">
+                                    <g:checkBox name="isGlobal"
+                                                checked="${templateInstance.isGlobal}"/>
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                                   title="<g:message code="template.globaltemplate.helptext"
+                                                                     default="A global template is available to all institutions."/>">
+                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
+                                </div>
                             </div>
                         </div>
 
+                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
+                            <label class="col-md-3 control-label" for="isHidden">
+                                <g:message code="template.ishidden.label"
+                                           default="Hide Template?"/>
+                            </label>
+                            <div class="col-md-6">
+                                <div style="padding-top: 10px">
+                                    <g:checkBox name="isHidden"
+                                                checked="${templateInstance.isHidden}"/>
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                                   title="<g:message code="template.hidden.helptext"
+                                                                     default="Hide this template from all users."/>">
+                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
+                                </div>
+                            </div>
                         </div>
+                        </cl:ifSiteAdmin>
 
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
@@ -149,11 +143,31 @@
                             </div>
                         </div>
                     </g:form>
+
+                    <div id="row-view-params-json" class="form-group">
+                        <label class="col-md-3 control-label">
+                            <g:message code="template.project.label"
+                                       default="Projects that use this template:"/>
+                        </label>
+                        <div class="col-md-6">
+                            <g:each in="${projectUsageList}" var="project">
+                                <ul>
+                                    <li class="form-control-static">${(project.key ? project.key : "No institution")}</li>
+                                    <ul>
+                                        <g:each in="${project.value}" var="proj">
+                                            <li><g:link controller="project" action="show" id="${proj.id}">${proj.name}</g:link></li>
+                                        </g:each>
+                                    </ul>
+                                </ul>
+                            </g:each>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <asset:javascript src="underscore" asset-defer=""/>
 <asset:javascript src="qtip" asset-defer=""/>
 <asset:script type="text/javascript">
@@ -246,6 +260,7 @@
             p.done(function(data, textStatus, jqXHR) {
                 $('#row-view-params-form').css('display', 'initial').html(data);
                 addDefaults();
+                updateHelpTips();
                 syncParamsFields();
             });
 
@@ -254,20 +269,22 @@
             });
         }).change();
 
-        // Context sensitive help popups
-        $("a.fieldHelp").each(function() {
-        var self = this;
-            $(self).qtip({
-                content: $(self).attr('title'),
-                position: {
-                    at: "top left",
-                    my: "bottom right"
-                },
-                style: {
-                    classes: 'qtip-bootstrap'
-                }
-            }).bind('click', function(e) { e.preventDefault(); return false; });
-        });
+        function updateHelpTips() {
+            // Context sensitive help popups
+            $("a.fieldHelp").each(function() {
+                var self = this;
+                $(self).qtip({
+                    content: $(self).attr('title'),
+                    position: {
+                        at: "top left",
+                        my: "bottom right"
+                    },
+                    style: {
+                        classes: 'qtip-bootstrap'
+                    }
+                }).bind('click', function(e) { e.preventDefault(); return false; });
+            });
+        }
 
     });
 

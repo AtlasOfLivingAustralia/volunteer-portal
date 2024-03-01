@@ -79,6 +79,7 @@ class LeaderBoardService {
         def today = todaysDate
 
         def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
+        log.debug("LeaderBoardService ineligible users: ${ineligibleUsers}")
 
         def headingPrefix = "Top 20 volunteers for "
         def heading =  headingPrefix + category?.toString()?.toTitleCase()
@@ -155,46 +156,69 @@ class LeaderBoardService {
     }
 
     List getTopNForPeriod(Date startDate, Date endDate, int count, List<Institution> institutionList, List<String> ineligibleUsers = [], def pt = null) {
+        log.debug("getTopNForPeriod: ${[startDate: startDate, endDate: endDate, count: count, institutionList: institutionList, ineligibleUsers: ineligibleUsers, pt: pt]}")
         // Get a map of users who transcribed tasks during this period, along with the count
         def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institutionList, ineligibleUsers, pt)
+        log.debug("Score Map: ${scoreMap}")
         // Get a map of user who validated tasks during this periodn, along with the count
         def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institutionList, ineligibleUsers, pt)
+        log.debug("Validate Map: ${validatedMap}")
 
         return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
+    /**
+     * Merge the validated score map into the transcribed score map, forming a total activity score for the superset of users.
+     * Will omit ineligible users (saved in Admin/Inelgible Users).
+     * @param validatedMap Map of users validation scores
+     * @param scoreMap Map of users transcribe scores
+     * @param count the total number of combined users to list
+     * @param ineligibleUsers List of users to be omitted from the leaderboard
+     * @return the complete combined list with user details.
+     */
     private List mergeScores(LinkedHashMap validatedMap, LinkedHashMap scoreMap, int count, def ineligibleUsers) {
-        // merge the validated map into the transcribed map, forming a total activity score for the superset of users
+        log.debug("Ineligible users: ${ineligibleUsers}")
+
+        // combine the transcribed count with the validated count for that user.
         validatedMap.each { kvp ->
+            if (!scoreMap[kvp.key]) {
+                scoreMap[kvp.key] = 0
+            }
+            scoreMap[kvp.key] += kvp.value
+        }
+
+        // Parse the combined scoremap for ineligible users
+        scoreMap.each {kvp ->
             // If the user is excluded, set their score to -1.
             if (ineligibleUsers?.size() > 0 && ineligibleUsers?.contains(kvp.key)) {
                 scoreMap[kvp.key] = -1
-            } else {
-                // if there exists a validator who is not a transcriber, set the transcription count to 0
-                if (!scoreMap[kvp.key]) {
-                    scoreMap[kvp.key] = 0
-                }
-
-                // combine the transcribed count with the validated count for that user.
-                scoreMap[kvp.key] += kvp.value
+                log.debug("Ineligbile user [${kvp.key}] score: ${scoreMap[kvp.key]}")
             }
         }
 
+        // Sort and clip the top n volunteers
         scoreMap = scoreMap.sort { a, b -> b.value <=> a.value }
         if (scoreMap.size() > count) {
             scoreMap = scoreMap.take(count)
         }
+        log.debug("Final Score Map: ${scoreMap}")
 
-        // Flatten the map into a list for easy sorting, so we can slice off the top N
+        // Flatten the map into a list with user details
         def list = []
         def userDetails = userService.detailsForUserIds(scoreMap.keySet() as List<String>).collectEntries { [(it.userId): it] }
         scoreMap.each { kvp ->
-            def user = User.findByUserId(kvp.key)
-            def details = userDetails[kvp.key]
-            if (user) {
-                list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
+            // Only include if they have a positive score (ineligible users will have -1)
+            if (kvp.value > 0) {
+                def user = User.findByUserId(kvp.key)
+                def details = userDetails[kvp.key]
+                if (user) {
+                    list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
+                    log.debug("Adding user details for ${[name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]}")
+                } else {
+                    log.warn("Failed to find user with key: ${kvp.key}")
+                }
             } else {
-                log.warn("Failed to find user with key: ${kvp.key}")
+                log.debug("Omitting ${kvp.key} from leaderboard list")
             }
         }
 

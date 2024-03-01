@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.AutoValidationType; au.org.ala.volunteer.Picklist; au.org.ala.volunteer.FieldCategory; au.org.ala.volunteer.TemplateField; au.org.ala.volunteer.DarwinCoreField" %>
 <sitemesh:parameter name="useFluidLayout" value="${true}"/>
 <g:applyLayout name="digivol-task" model="${pageScope.variables}">
     <head>
@@ -9,6 +9,8 @@
         <div id="ct-container" >
 
             <g:set var="wsParams" value="${template.viewParams2}" />
+            <g:set var="viewParams" value="${template.viewParams}" />
+
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
                     <div id="ct-image-well" class="panel panel-default">
@@ -78,7 +80,7 @@
                                                        style="margin-bottom: 0; height: 34px;"
                                                        placeholder="${message(code: 'default.input.keywordSearch.placeholder', default: "Search by keyword")}">
                                             </div>
-                                            <g:each var="cat" in="${wsParams.categories}" status="i">
+                                            <g:each var="cat" in="${wsParams?.categories}" status="i">
                                                 <div class="btn-group category-filter">
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
@@ -117,7 +119,7 @@
                                             <g:set var="animalInfos"
                                                    value="${wsParams.animals}"/>
                                             <g:render template="/transcribe/wildlifeSpotterWidget"
-                                                      model="${[imageInfos: animalInfos]}"/>
+                                                      model="${[imageInfos: animalInfos, viewParams: viewParams]}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -220,29 +222,57 @@
         </div>
 
         <script id="status-detail-list-template" type="text/x-mustache-template">
-            <ul class="status_detail_list">
+            <table class="table table-condensed">
+                <tr style="border-top: 0;">
+                    <th class="col-md-8" style="border-top: 0;">Species Name</th>
+                <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesWithCount}">
+                    <th class="col-md-2" style="border-top: 0;">Animal Count</th>
+                </g:if>
+                    <th class="col-md-2" style="border-top: 0;">Actions</th>
+                </tr>
                 {{#selectedAnimals}}
-                <li data-item-index="{{index}}">
-                    <div>
-                        <div class="classificationRow">
-                            <div class="animalName">{{name}}</div>
-                            <button type="button" class="btn btn-mini btn-default animalDelete pull-right" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
-                            <span class="animalNum pull-right">
-                                <select tabindex="-1" name="numAnimals" class="numAnimals form-control">
-                                    {{#options}}
-                                    <option value="{{val}}" {{selected}}>{{val}}</option>
-                                    {{/options}}
-                                </select>
-                            </span>
-                            <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton pull-right" tabindex="-1" style="display:none;">Save Comment</button>
-                            <button type="button" aria-expanded="false" class="btn btn-link editCommentButton pull-right" tabindex="-1">Add Comment</button>
-                        </div>
+                <tr data-item-index="{{index}}">
+                    <td class="classificationRow col-md-8" style="border-top: 0;">
+                        <div class="animalName">{{name}}</div>
                         <div class="classificationComments">{{comment}}</div>
-                        <div class="editClassificationComments" style="display: none;"><label class="sr-only">Comment on the {{name}} you found</label><textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea></div>
-                    </div>
-                </li>
+                        <div class="editClassificationComments" style="display: none;">
+                            <label class="sr-only">Comment on the {{name}} you found</label>
+                            <textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea>
+                            <button type="button" aria-expanded="false" class="btn btn-default saveCommentButton pull-right" tabindex="-1" style="display:none;">Save</button>
+                        </div>
+                        <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesOnly}">
+                            <input type="hidden" name="numAnimals" data-validate-type="speciesOnly" data-default="{{curval}}" value="{{curval}}">
+                        </g:if>
+                    </td>
+                    <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesWithCount}">
+                    <td class="col-md-2" style="border-top: 0;">
+                        <span class="animalNum" style="padding-top: 5px; padding-right: 10px;">
+                            <input type="number"
+                                   name="numAnimals"
+                                   min="0" max="100"
+                                   data-default="{{curval}}"
+                                   data-validate-type="speciesWithCount"
+                                   value="{{curval}}"
+                                   class="form-control numAnimals"
+                                   tabindex="-1"/>
+                        </span>
+                    </td>
+                    </g:if>
+                    <td class="col-md-2" style="border-top: 0;">
+                        <button type="button"
+                                class="btn btn-default btn-xs editCommentButton"
+                                title="Add a comment">
+                            <i class="fa fa-commenting" tabindex="-1"></i>
+                            <span class="sr-only">Add a comment</span>
+                        </button>
+                        <button type="button" class="btn btn-xs btn-default animalDelete" title="Delete selection" tabindex="-1">
+                            <i aria-hidden="true" class="fa fa-trash"></i>
+                            <span class="sr-only">Delete selection</span>
+                        </button>
+                    </td>
+                </tr>
                 {{/selectedAnimals}}
-            </ul>
+            </table>
         </script>
 
         <script id="input-template" type="text/x-mustache-template">
@@ -252,7 +282,13 @@
         <script id="detail-template" type="text/x-mustache-template">
             <div class="detail-animal" >
                 <div id="ct-full-image-carousel" data-interval="0" class="carousel slide" data-item-index="{{itemIndex}}">
-                    <span class="ws-selector ws-selected ws-selected-large {{animal.selected}}" data-container="body" aria-selected="{{animal.isSelected}}" title="${g.message(code: 'wildlifespotter.widget.badge.title', args: ['{{animal.vernacularName}}'])}"><i class="fa fa-check"></i></span>
+                    <span class="ws-selector ws-selected ws-selected-large {{animal.selected}}"
+                          data-container="body"
+                          aria-selected="{{animal.isSelected}}"
+                          data-validation-type="${viewParams.autoValidationType}"
+                          title="${g.message(code: 'wildlifespotter.widget.badge.title', args: ['{{animal.vernacularName}}'])}">
+                        <i class="fa fa-check"></i>
+                    </span>
                     <span class="ws-full-image-carousel-close">&times;</span>
                     <ol class="carousel-indicators">
                         {{#animal.images}}
@@ -263,7 +299,6 @@
                         {{#animal.images}}
                         <div class="item {{active}}">
                             <cl:sizedImage prefix="wildlifespotter" name="{{hash}}" width="804" height="550" format="jpg" alt="{{animal.vernacularName}}" template="true"/>
-                            %{--<img src="{{url}}" />--}%
                         </div>
                         {{/animal.images}}
                     </div>

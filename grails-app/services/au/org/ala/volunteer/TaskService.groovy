@@ -73,13 +73,14 @@ class TaskService {
      * @return Map of project id -> count
      */
     Map getProjectTaskTranscribedCounts(boolean activeOnly = false) {
-        def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(t) as taskCount
-               from Task t 
-               where 
-                exists (from Field as f where f.task = t) 
-                ${activeOnly ? 'and t.project.inactive != true' : ''}
-               group by t.project.id""")
+        def querySelect = """
+            select t.project.id as projectId, count(t) as taskCount
+            from Task t 
+            where exists (from Field as f where f.task = t) """.stripIndent()
+        def activeClause = "and t.project.inactive != true"
+        def query = querySelect + (activeOnly ? activeClause : "") + " group by t.project.id"
+
+        def projectTaskCounts = Task.executeQuery(query)
         projectTaskCounts.toMap()
     }
 
@@ -87,14 +88,14 @@ class TaskService {
      * @return Map of project id -> count
      */
     Map getProjectTaskFullyTranscribedCounts(boolean activeOnly = false) {
-        def projectTaskCounts = Task.executeQuery(
-            """select t.project.id as projectId, count(t) as taskCount
-               from Transcription t
-                ${activeOnly ? 'where t.project.inactive != true' : ''} 
-               group by t.project.id""")
+        def querySelect = """select t.project.id as projectId, count(t) as taskCount
+               from Transcription t """.stripIndent()
+        def activeClause = "where t.project.inactive != true"
+        def query = querySelect + (activeOnly ? activeClause : "") + " group by t.project.id"
+
+        def projectTaskCounts = Task.executeQuery(query)
         projectTaskCounts.toMap()
     }
-
 
     Map getProjectDates() {
         def dates = Task.executeQuery(
@@ -109,7 +110,6 @@ class TaskService {
         }
         map
     }
-
 
     /**
      *
