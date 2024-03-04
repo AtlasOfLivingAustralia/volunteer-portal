@@ -1,8 +1,8 @@
 # DigiVol   [![Build Status](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal.svg?branch=develop)](https://travis-ci.org/AtlasOfLivingAustralia/volunteer-portal)
 
 The [Atlas of Living Australia], in collaboration with the [Australian Museum], developed [DigiVol]
-to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked up
-in biodiversity collections, field notebooks and survey sheets.
+to harness the power of online volunteers (also known as crowdsourcing) to digitise biodiversity data that is locked 
+up in biodiversity collections, field notebooks and survey sheets.
 
 ## Running
 
@@ -33,7 +33,7 @@ ansible-playbook -i inventories/vagrant --user vagrant --private-key ~/.vagrant.
 
 ## Contributing
 
-DigiVol is a [Grails] v3.2.4 based web application.  It requires [PostgreSQL] for data storage.  Development follows the 
+DigiVol is a [Grails] v5.3 based web application.  It requires [PostgreSQL] v15 for data storage.  Development follows the 
 [git flow] workflow.
 
 For git flow operations you may like to use the `git-flow` command line tools.  Either install [Atlassian SourceTree]
