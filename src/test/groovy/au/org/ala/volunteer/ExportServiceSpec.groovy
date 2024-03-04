@@ -57,7 +57,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
     }
 
     private Task createTask(String externalIdentifier = '') {
-        Task task = new Task(transcriptions: new HashSet(), project:project, externalIdentifier: externalIdentifier)
+        Task task = new Task(transcriptions: new HashSet(), multimedia: new HashSet(), project: project, externalIdentifier: externalIdentifier)
         Multimedia mm = new Multimedia().tap {
             filePath = "filepath.jpg"
             filePathToThumbnail = "filepath_thumb.jpg"
@@ -395,5 +395,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         and:
         result.size() == 1 // One row, not counting headers
+        result[0]['dwc:Occurrence'].size() == 2
+        result[0]['dwc:Occurrence'].occurrenceId == "1"
     }
 }
