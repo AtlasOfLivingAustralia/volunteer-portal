@@ -383,7 +383,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         String userId = '1234'
         List<Task> taskList = [project.tasks as List]
         List<String> fieldNames = taskOrTranscriptionFields
-        List fields = transcribeTask(task, [], userId, transcriptionDate)
+        List fieldData = [[name:"scientificName", value:"Magpie"], [name:"eventDate", value:"1984-03-23"]]
+        List fields = transcribeTask(task, fieldData, userId, transcriptionDate)
 
         when:
         List result = service.exportJson(taskList, fields)
@@ -397,5 +398,36 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         result.size() == 1 // One row, not counting headers
         result[0]['dwc:Occurrence'].size() == 2
         result[0]['dwc:Occurrence'].occurrenceId == "1"
+        result[0]['dwc:Event'].verbatimEventDate == "1984-03-23"
+        result[0]['dwc:Event'].eventDate == "1984-03-23"
+    }
+
+    def "JSON export excludes non-conforming date pattern"() {
+        setup:
+        String today = dateFormat.format(new Date())
+        Date transcriptionDate = dateTimeFormat.parse('01/07/2019 10:30:00')
+        Task task = createTask()
+        def multimedia = task.multimedia.first()
+        task.externalIdentifier = 'external id'
+        String userId = '1234'
+        List<Task> taskList = [project.tasks as List]
+        List<String> fieldNames = taskOrTranscriptionFields
+        List fieldData = [[name:"scientificName", value:"Magpie"], [name:"eventDate", value:"1984-IX"]]
+        List fields = transcribeTask(task, fieldData, userId, transcriptionDate)
+
+        when:
+        List result = service.exportJson(taskList, fields)
+        log.debug("Result: ${result}")
+
+        then:
+        1 * multimediaService.getImageUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+
+        and:
+        result.size() == 1 // One row, not counting headers
+        result[0]['dwc:Occurrence'].size() == 2
+        result[0]['dwc:Occurrence'].occurrenceId == "1"
+        result[0]['dwc:Event'].verbatimEventDate == "1984-IX"
+        !result[0]['dwc:Event'].eventDate
     }
 }
