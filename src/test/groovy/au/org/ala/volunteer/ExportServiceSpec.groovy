@@ -4,19 +4,20 @@ import grails.plugins.csv.CSVMapReader
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 
-//import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
+import groovy.util.logging.Slf4j
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
-//@TestFor(ExportService)
+@Slf4j
 class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportService>, DataTest {
 
     FieldService fieldService
     TaskService taskService
+    MultimediaService multimediaService
     GrailsMockHttpServletResponse response
     Project project
     LinkGenerator grailsLinkGenerator
@@ -28,6 +29,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
     Date defaultTranscriptionDate
 
     def setup() {
+        multimediaService = Mock(MultimediaService)
+        service.multimediaService = multimediaService
         fieldService = Mock(FieldService)
         service.fieldService = fieldService
         grailsApplication.config.exportCSVThreadPoolSize = 1
@@ -54,9 +57,16 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
     }
 
     private Task createTask(String externalIdentifier = '') {
-        Task task = new Task(transcriptions: new HashSet(), project:project, externalIdentifier: externalIdentifier)
+        Task task = new Task(transcriptions: new HashSet(), multimedia: new HashSet(), project: project, externalIdentifier: externalIdentifier)
+        Multimedia mm = new Multimedia().tap {
+            filePath = "filepath.jpg"
+            filePathToThumbnail = "filepath_thumb.jpg"
+            created = new Date()
+        }
+        task.multimedia.add(mm)
         project.tasks.add(task)
         mockDomain(Task, [task])
+        mockDomain(Multimedia, [mm])
 
         task
     }
@@ -361,5 +371,63 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         and:
         response.getHeader("Content-Disposition") == "attachment;filename=Project-Test-DwC.csv"
+    }
+
+    def "Task fields can be exported to JSON"() {
+        setup:
+        String today = dateFormat.format(new Date())
+        Date transcriptionDate = dateTimeFormat.parse('01/07/2019 10:30:00')
+        Task task = createTask()
+        def multimedia = task.multimedia.first()
+        task.externalIdentifier = 'external id'
+        String userId = '1234'
+        List<Task> taskList = [project.tasks as List]
+        List<String> fieldNames = taskOrTranscriptionFields
+        List fieldData = [[name:"scientificName", value:"Magpie"], [name:"eventDate", value:"1984-03-23"]]
+        List fields = transcribeTask(task, fieldData, userId, transcriptionDate)
+
+        when:
+        List result = service.exportJson(taskList, fields)
+        log.debug("Result: ${result}")
+
+        then:
+        1 * multimediaService.getImageUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+
+        and:
+        result.size() == 1 // One row, not counting headers
+        result[0]['dwc:Occurrence'].size() == 2
+        result[0]['dwc:Occurrence'].occurrenceId == "1"
+        result[0]['dwc:Event'].verbatimEventDate == "1984-03-23"
+        result[0]['dwc:Event'].eventDate == "1984-03-23"
+    }
+
+    def "JSON export excludes non-conforming date pattern"() {
+        setup:
+        String today = dateFormat.format(new Date())
+        Date transcriptionDate = dateTimeFormat.parse('01/07/2019 10:30:00')
+        Task task = createTask()
+        def multimedia = task.multimedia.first()
+        task.externalIdentifier = 'external id'
+        String userId = '1234'
+        List<Task> taskList = [project.tasks as List]
+        List<String> fieldNames = taskOrTranscriptionFields
+        List fieldData = [[name:"scientificName", value:"Magpie"], [name:"eventDate", value:"1984-IX"]]
+        List fields = transcribeTask(task, fieldData, userId, transcriptionDate)
+
+        when:
+        List result = service.exportJson(taskList, fields)
+        log.debug("Result: ${result}")
+
+        then:
+        1 * multimediaService.getImageUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+
+        and:
+        result.size() == 1 // One row, not counting headers
+        result[0]['dwc:Occurrence'].size() == 2
+        result[0]['dwc:Occurrence'].occurrenceId == "1"
+        result[0]['dwc:Event'].verbatimEventDate == "1984-IX"
+        !result[0]['dwc:Event'].eventDate
     }
 }
