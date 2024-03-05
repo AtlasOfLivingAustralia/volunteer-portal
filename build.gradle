@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
-        classpath "com.github.erdi:webdriver-binaries-gradle-plugin:3.2"
         classpath "org.grails.plugins:hibernate5:7.3.0" // This is different to gorm version
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
         classpath "org.postgresql:postgresql:$postgresVersion" // for flyway
@@ -22,6 +21,7 @@ plugins {
     id "com.virgo47.ClasspathJar" version "1.0.0"
     id 'java'
     id "com.dorongold.task-tree" version "2.1.1"
+    id "com.github.erdi.webdriver-binaries" version "3.2"
 }
 
 version "6.1.9-SNAPSHOT"
@@ -35,7 +35,6 @@ apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
 apply plugin:"org.grails.grails-web"
-apply plugin:"com.github.erdi.webdriver-binaries"
 apply plugin:"com.bertramlabs.asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"maven-publish"
