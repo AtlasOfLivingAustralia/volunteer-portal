@@ -316,19 +316,50 @@ class BootStrap {
         if (shouldInstall) {
             log.info("Installing default labels")
             final defaults = (JSONObject)JSON.parse(Resources.getResource('default-labels.json').newReader())
-            //final defaultsSet = defaults.keySet().collectEntries { [(it): defaults[it].toSet() ] }
-            final labels = Label.all // TODO scroll?
-            final labelSet = labels.toSet()
-            final newLabels = defaults.keySet().collect { k ->
-                final a = (JSONArray)defaults[k]
-                a.collect { new Label(category: k, value: it) }.findAll { !labelSet.contains(it) }
-            }.flatten()
-            log.info("Adding ${newLabels.size()} new labels")
-            if (newLabels) {
-                log.debug("Adding ${newLabels.join('\n')}")
+
+            // Check for categories then labels
+            def now = new Date()
+            defaults.keySet().each { k ->
+                def blah = LabelCategory.findByName(k as String)
+                if (!blah) {
+                    // Create category
+                    def zz = new Date()
+                    //log.info("Date initialised: ${zz}")
+                    def lc
+                    LabelCategory.withNewTransaction {
+                        lc = new LabelCategory(name: k)
+                        lc.dateCreated = zz
+                        lc.createdBy = 0L
+                        lc.save(flush: true, failOnError: true)
+                        lc.refresh()
+                    }
+
+                    //log.info("New category: ${lc}")
+
+                    // Create new labels for new category
+                    final labelList = (JSONArray)defaults[k]
+                    labelList.each { val ->
+                        def label = new Label(value: val)
+                        label.category = lc
+                        label.dateCreated = zz
+                        label.createdBy = 0L
+                        //log.info("new label: ${label}")
+                        label.save(flush: true, failOnError: true)
+                    }
+                } else {
+                    final labelList = (JSONArray)defaults[k]
+                    labelList.each { val ->
+                        if (!Label.findByCategoryAndValue(blah, val as String)) {
+                            def label = new Label(value: val)
+                            label.category = blah
+                            label.dateCreated = now
+                            label.createdBy = 0L
+                            //log.info("new label: ${label}")
+                            label.save(flush: true, failOnError: true)
+                        }
+                    }
+                }
             }
-//            if (newLabels) Label.saveAll(newLabels)
-            if (newLabels) newLabels*.save()
         } else {
             log.debug("Skipping default labels")
         }

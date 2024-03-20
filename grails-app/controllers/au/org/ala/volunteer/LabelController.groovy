@@ -10,10 +10,38 @@ class LabelController {
 
     def userService
 
-    def index(Integer max) {
+    /**
+     * Index page for Label/Tag admin
+     */
+    def index() {
         if (userService.isAdmin()) {
-            params.max = Math.min(max ?: 25, 100)
-            respond Label.list(params), model: [labelInstanceCount: Label.count()]
+            def labelCategories = LabelCategory.list(sort: 'name', order: 'asc')
+            render(view: 'index', model: [labelCategories: labelCategories, labelInstanceCount: Label.count()])
+        } else {
+            render(view: '/notPermitted')
+        }
+    }
+
+//    def index(Integer max) {
+//        if (userService.isAdmin()) {
+//            params.max = Math.min(max ?: 25, 100)
+//            respond Label.list(params), model: [labelInstanceCount: Label.count()]
+//        } else {
+//            render(view: '/notPermitted')
+//        }
+//    }
+
+    def editCategory() {
+        if (userService.isAdmin()) {
+            def categoryId = params.long('id')
+            def category = LabelCategory.get(categoryId)
+            if (!category) {
+                flash.message = message(code: 'default.not.found.message',
+                        args: [message(code: 'default.label.category.label', default: 'Category'), params.long('id')]) as String
+                redirect(action: "index")
+            } else {
+                render(view: 'editCategory', model: [labelCategory: category])
+            }
         } else {
             render(view: '/notPermitted')
         }
@@ -29,7 +57,7 @@ class LabelController {
             }
 
             if (labelInstance.hasErrors()) {
-                respond labelInstance.errors, view: 'index'
+                respond labelInstance.errors, view: 'index-old'
                 return
             }
 
@@ -57,7 +85,7 @@ class LabelController {
             }
 
             if (labelInstance.hasErrors()) {
-                respond labelInstance.errors, view: 'index'
+                respond labelInstance.errors, view: 'index-old'
                 return
             }
 

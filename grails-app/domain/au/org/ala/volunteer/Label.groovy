@@ -6,14 +6,21 @@ import groovy.transform.ToString
 class Label implements Serializable {
 
     Long id
-    String category
+    LabelCategory category
     String value
+    Date dateCreated
+    Long createdBy
 
-    static belongsTo = [Project, LandingPage]
+    static belongsTo = [Project, LandingPage, LabelCategory]
     static hasMany = [projects: Project, landingPages: LandingPage]
 
+    static mapping = {
+        dateCreated defaultValue: new Date()
+        createdBy defaultValue: 0L
+    }
+
     static constraints = {
-        category unique: 'value'
+        //category unique: 'value'
     }
 
     boolean equals(o) {
@@ -22,7 +29,7 @@ class Label implements Serializable {
 
         Label label = (Label) o
 
-        if (category != label.category) return false
+        if (category.name != label.category.name) return false
         if (value != label.value) return false
 
         return true
@@ -30,21 +37,20 @@ class Label implements Serializable {
 
     int hashCode() {
         int result
-        result = (category != null ? category.hashCode() : 0)
+        result = (category.name!= null ? category.name.hashCode() : 0)
         result = 31 * result + (value != null ? value.hashCode() : 0)
         return result
     }
 
     LinkedHashMap<String,Object> toMap() {
-        [id: id, category: category, value: value]
+        [id: id, category: category.name, value: value]
     }
-
 
     @Override
     public String toString() {
         return "Label{" +
                 "id=" + id +
-                ", category='" + category + '\'' +
+                ", category='" + category.name + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

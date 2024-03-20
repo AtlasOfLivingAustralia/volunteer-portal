@@ -146,6 +146,15 @@ class UserController {
         redirect(action: 'listOptOut')
     }
 
+    def adminList() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        []
+    }
+
     def list() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
