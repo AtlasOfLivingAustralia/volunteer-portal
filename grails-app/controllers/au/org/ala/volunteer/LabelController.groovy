@@ -47,6 +47,33 @@ class LabelController {
         }
     }
 
+    def saveCategory() {
+        if (userService.isAdmin()) {
+            def categoryId = params.long('categoryId')
+            def category = LabelCategory.get(categoryId)
+            if (!category) {
+                flash.message = message(code: 'default.not.found.message',
+                        args: [message(code: 'default.label.category.label', default: 'Category'), params.long('id')]) as String
+                redirect(action: "index")
+            } else {
+                def name = params.get('name')?.toString()
+                if (!name) {
+                    flash.message = message(code: 'default.not.updated.message',
+                            args: [message(code: 'default.label.category.label', default: 'Category'), category.name]) as String
+                    redirect(action: "index")
+                    return
+                }
+                category.name = name
+                category.save(flush: true, failOnError: true)
+                flash.message = message(code: 'default.updated.message',
+                        args: [message(code: 'default.label.category.label', default: 'Category'), category.name]) as String
+                redirect(view: 'index')
+            }
+        } else {
+            render(view: '/notPermitted')
+        }
+    }
+
     @Transactional
     def save(Label labelInstance) {
         if (userService.isAdmin()) {
