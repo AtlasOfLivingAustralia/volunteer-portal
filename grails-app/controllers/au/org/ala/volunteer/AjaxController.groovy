@@ -717,6 +717,8 @@ class AjaxController {
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
             result.data = exportService.exportJson(taskList, fieldList)
             result.projectId = project.id
+            result.name = project.name
+            result.url = grailsLinkGenerator.link(absolute: true, controller: 'project', action: 'index', id: project.id)
             result.institutionId = project.institution.id
 
             result.success = true
