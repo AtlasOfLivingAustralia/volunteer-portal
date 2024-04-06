@@ -6,9 +6,9 @@ grails:
         defaultPackage: au.org.ala.volunteer
     config:
         locations:
-            - file:/AM/data/volunteer-portal/config/volunteer-portal-config.properties
-            - file:/AM/data/volunteer-portal/config/volunteer-portal-config.yml
-            - file:/AM/data/volunteer-portal/config/volunteer-portal-config.groovy
+            - file:/data/volunteer-portal/config/volunteer-portal-config.properties
+            - file:/data/volunteer-portal/config/volunteer-portal-config.yml
+            - file:/data/volunteer-portal/config/volunteer-portal-config.groovy
     scaffolding:
         templates:
             domainSuffix: Instance # This causes all respond methods to add the default object as <type>Instance<container>, eg bookInstance or bookInstanceList but does not affect scaffolding in Grails 3... TODO remove Instance from all GSPs and remove this property
@@ -113,7 +113,6 @@ spring:
             max-request-size: 5000MB
     devtools:
         restart:
-            enabled: true
             exclude:
                 - grails-app/views/**
                 - grails-app/i18n/**
@@ -219,15 +218,15 @@ bvp:
         migrateIds: false
     labels:
         ensureDefault: true
-    tmpdir: C:/AM/data/volunteer-portal/config/
+    tmpdir: /data/volunteer-portal/config/
 
 
 images:
-    home: C:/AM/data/volunteer-portal
-    urlPrefix: /AM/data/volunteer/
+    home: /data/volunteer-portal
+    urlPrefix: /data/volunteer/
 
 elasticsearch:
-    location: "/AM/data/volunteer/elasticsearch"
+    location: "/data/volunteer/elasticsearch"
 
 volunteer:
     defaultProjectId: 6306
@@ -328,17 +327,16 @@ dataSource:
     jmxExport: true
     driverClassName: org.postgresql.Driver
     loggingSql: false
-    #username: volunteers
-    #password: volunteers
+#    username: root
+#    password: password
 
 environments:
     development:
         dataSource:
             dbCreate: validate
-            url: jdbc:postgresql://localhost:5432/volunteerdb
-            #url: jdbc:postgresql://localhost:5432/voltest1
-            #username: "postgres"
-            #password: "password"
+            url: jdbc:postgresql://localhost/volunteers
+            username: "postgres"
+            password: "password"
             logSql: false
             properties:
                 jdbcInterceptors: ConnectionState;StatementCache(max=200);SlowQueryReport(logFailed=true)
@@ -349,9 +347,9 @@ environments:
             baselineOnMigrate: false
         dataSource:
             dbCreate: validate
-            url: jdbc:postgresql://localhost:5432/volunteerstest
+            url: jdbc:postgresql://localhost/volunteerstest
             username: "postgres"
-            password: "admin"
+            password: "password"
         quartz:
             autoStartup: false
         grails:
