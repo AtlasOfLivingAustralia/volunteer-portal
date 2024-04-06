@@ -4,23 +4,31 @@ class LabelCategory {
 
     Long id
     String name
-    Date dateCreated
+    Boolean isDefault
+    String labelColour
+    Date updatedDate
     Long createdBy
 
     static hasMany = [labels: Label]
 
     static constraints = {
         name nullable: false
-        dateCreated nullable: false
+        labelColour nullable: true
+        isDefault nullable: false
+        updatedDate nullable: false
         createdBy nullable: false
     }
 
     static mapping = {
-        //dateCreated defaultValue: new Date()
-        //createdBy defaultValue: 0L
+        isDefault defaultValue: false
+        updatedDate defaultValue: new Date()
+        createdBy defaultValue: 0L
     }
 
     String toString() {
-        return "LabelCategory: [id: ${id}, name: ${name}, dateCreated: ${dateCreated}, createdBy: ${createdBy}]".toString()
+        return """
+            LabelCategory: [id: ${id}, name: ${name}, isDefault: ${isDefault}, updatedDate: ${updatedDate}, 
+            createdBy: ${createdBy}]
+        """.stripIndent()
     }
 }

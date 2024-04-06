@@ -8,14 +8,16 @@ class Label implements Serializable {
     Long id
     LabelCategory category
     String value
-    Date dateCreated
+    Boolean isDefault
+    Date updatedDate
     Long createdBy
 
     static belongsTo = [Project, LandingPage, LabelCategory]
     static hasMany = [projects: Project, landingPages: LandingPage]
 
     static mapping = {
-        dateCreated defaultValue: new Date()
+        isDefault defaultValue: false
+        updatedDate defaultValue: new Date()
         createdBy defaultValue: 0L
     }
 

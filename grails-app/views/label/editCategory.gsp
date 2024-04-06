@@ -1,5 +1,6 @@
 <%@ page import="au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.DateConstants" %>
+<%@ page import="au.org.ala.volunteer.LabelColour" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,26 +9,27 @@
     <g:set var="entityNamePlural" value="${message(code: 'default.label.plural.label', default: 'Tags')}"/>
     <title><g:message code="label.admin.editCategory.label" default="Edit Category"/></title>
     <style>
-        .edit-label-button, .save-label-button {
+        .label-button {
             /*display: block;*/
             /*position: absolute;*/
-            top: 0px;
+            top: 0;
             right: 20px;
             padding: 4px 10px;
             text-align: center;
             cursor: pointer;
             float: right;
+            font-size: 1.2em;
         }
 
         .btn {
             border-radius: 5px;
         }
 
-        .save-label-button {
+        .save-label-button, .cancel-label-button {
             display: none;
         }
 
-        .edit-label-button {
+        .edit-label-button, .delete-label-button {
             display: inline;
         }
 
@@ -53,33 +55,87 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <h3>Edit Category</h3>
-
-            <g:form controller="label" action="saveCategory" method="POST">
-            <div class="form-group">
-                <div class="form-row">
-                    <div class="form-group col-md-2" style="vertical-align: middle;">
+            <div class="row">
+                <div class="col-md-12" style="margin-left: 5px;">
+                    <g:form controller="label" action="updateCategory" class="form-horizontal" method="POST">
+                    <div class="form-group">
                         <label class="control-label col-md-2" for="name">
                             Category Name:
                         </label>
+                        <div class="col-md-4" style="vertical-align: middle;">
+                            <g:set var="isProtected" value="${(loadedDefaultLabels && labelCategory.isDefault)}"/>
+                            <input class="form-control" id="name" name="name" type="text"
+                                   placeholder="Enter the category name"
+                                   value="${labelCategory.name}"
+                                   ${(isProtected ? "disabled='disabled'" : '')} required/>
+                            <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
+                        </div>
                     </div>
-                    <div class="form-group col-md-4" style="vertical-align: middle;">
-                        <input class="form-control" id="name" name="name" type="text" placeholder="Enter the category name" value="${labelCategory.name}" required/>
-                        <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
-                    </div>
-                    <div class="form-group col-md-3" style="vertical-align: middle;">
-                        <input type="submit" class="save btn btn-primary" id="addButton"
-                               value="${message(code: 'default.button.add.label', default: 'Save')}"/>
-                    </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="name">
+                                Tag Colour:
+                            </label>
+                            <div class="col-md-4" style="vertical-align: middle;">
+                                <g:select name="labelColour" id="label-colour"
+                                          class="form-control"
+                                          from="${LabelColour.values()}"
+                                          keys="${LabelColour.values()*.name()}"
+                                          required=""
+                                          noSelection="['':'- Select a Tag Colour -']"
+                                          value="${labelCategory?.labelColour}"/>
+                            </div>
+                            <div class="control-label col-md-1" id="example-tag-display">
+                                <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
+                                <span class="label label-${labelColourClass}" id="example-tag">Example Tag</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4">
+                                <input type="submit" class="save btn btn-primary" id="addButton"
+                                       value="${message(code: 'default.button.add.label', default: 'Save')}"/>
+                            </div>
+                        </div>
+                    </g:form>
                 </div>
             </div>
-            </g:form>
 
+            <g:if test="${isProtected}">
+            <div class="row">
+                <div class="col-md-12" style="margin-top: 20px;margin-left: 5px;">
+                    <i>* This category is a default, system-loaded category. It and default tags are not editable. You may add to the existing tags however.</i>
+                </div>
+            </div>
+            </g:if>
+
+
+            <div class="row">
+            </div>
         </div>
     </div>
 
     <div class="panel panel-default">
         <div class="panel-body">
+            <h4>${labelCategory.name} ${entityNamePlural}</h4>
+
+            <div class="row">
+                <div class="col-md-12" style="margin-left: 5px;">
+                    <g:form controller="label" action="saveNewLabel" class="form-horizontal" method="POST">
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="value">
+                                Add ${entityName}:
+                            </label>
+                            <div class="col-md-4">
+                                <input class="form-control" id="value" name="value" type="text"
+                                       placeholder="Enter the ${entityName} name"
+                                       required/>
+                                <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
+                            </div>
+                            <input type="submit" class="save btn btn-primary" id="addLabelButton"
+                                   value="${message(code: 'default.button.add.label', default: 'Add')}"/>
+                        </div>
+                    </g:form>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
@@ -93,20 +149,45 @@
                         <thead>
                             <tr>
                                 <th>Tag Name</th>
+                                <th>Last Updated</th>
+                                <th>Created By</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                         <g:each in="${labelCategory.labels.sort { a, b -> a.value <=> b.value }}" status="i" var="label">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'} label-data">
-                                <td style="vertical-align: middle;" class="label-value col-md-10" data-label-id="${label.id}">
+                                <td style="vertical-align: middle;" class="label-value col-md-6" data-label-id="${label.id}">
                                     ${label.value}
                                 </td>
-                                <td class="col-md-2" style="text-align: center;">
-                                    <i class="fa fa-save save-label-button" style="font-size: 1.5em;" contenteditable="false" title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
-                                    <i class="fa fa-pencil edit-label-button" style="font-size: 1.5em;" contenteditable="false" title="${message(code: 'default.button.edit.label', default: 'Edit')}"></i>
+                                <td style="vertical-align: middle;" class="col-md-2">
+                                    ${formatDate(date: label.updatedDate, format: DateConstants.DATE_TIME_FORMAT)}
                                 </td>
-                                <td class="col-md-6"></td>
+                                <td style="vertical-align: middle;" class="col-md-2">
+                                    ${User.get(label.createdBy)?.displayName ?: 'System'}
+                                </td>
+                                <td class="col-md-2" style="text-align: center;">
+                                    <g:set var="isEditable" value="${(!isProtected || (isProtected && !label.isDefault))}"/>
+                                    <g:if test="${(isEditable)}">
+                                        <i class="fa fa-times label-button cancel-label-button" contenteditable="false" title="${message(code: 'default.button.cancel.label', default: 'Cancel')}"></i>
+                                        <i class="fa fa-save label-button save-label-button" contenteditable="false" title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
+
+                                        <i class="fa fa-trash label-button delete-label-button" contenteditable="false"
+                                           data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}" title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
+                                        <i class="fa fa-pencil label-button edit-label-button" contenteditable="false" title="${message(code: 'default.button.edit.label', default: 'Edit')}"></i>
+
+                                        <i class="fa fa-share-square-o label-button change-cat-button"
+                                           data-label-name="${label.value}"
+                                           data-label-id="${label.id}"
+                                           contenteditable="false"
+                                           title="${message(code: 'label.changecat.label', default: 'Move to a different Category')}"></i>
+                                    </g:if>
+                                    <i class="fa fa-tags label-button view-tags-button"
+                                       data-label-name="${label.value}"
+                                       data-label-id="${label.id}"
+                                       contenteditable="false"
+                                       title="${message(code: 'label.viewtags.label', default: 'View Tag Usage')}"></i>
+                                </td>
                             </tr>
                         </g:each>
                         </tbody>
@@ -116,11 +197,65 @@
 
         </div>
     </div>
-
 </div>
+
+<!-- View Tags Modal -->
+<div class="modal fade" id="view-labels-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>${message(code: 'default.label.label', default: 'Tag')} Usage for: '<span id="view-label-name"></span>'</h4>
+            </div>
+            <div class="modal-body">
+                <div id="view-label-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="btn-close-view-labels">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Category Modal -->
+<div class="modal fade" id="change-cat-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Change ${message(code: 'default.label.label', default: 'Tag')} Category</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" style="margin-left: 5px;">
+                        <g:form controller="label" action="changeCategory" class="form-horizontal" method="POST">
+                            <div class="form-group">
+                                <label class="control-label col-md-4" for="newCategory">
+                                    New Category:
+                                </label>
+                                <div class="col-md-8" style="vertical-align: middle;">
+                                    <g:select name="newCategory" id="change-category-select"
+                                              class="form-control"
+                                              from="${categoryList}"
+                                              optionKey="id"
+                                              optionValue="name"
+                                              noSelection="[0:'- Select a new Category -']"/>
+                                </div>
+                            </div>
+                        </g:form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="btn-save-change-cat">Save</button>
+                <button class="btn btn-default" id="btn-close-change-cat">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <asset:script type="text/javascript">
 $(function($) {
     var activeRow = null;
+    var valueBackup = "";
 
     $.extend({
         postGo: function(url, params) {
@@ -138,9 +273,66 @@ $(function($) {
         }
     });
 
+    $(".change-cat-button").click(function() {
+        $( "#change-cat-modal" ).modal( "show" );
+    });
+
+    $("#btn-close-change-cat").click(function() {
+        $( "#view-labels-modal" ).modal( "hide" );
+    });
+
+    $(".view-tags-button").click(function(e) {
+        e.preventDefault();
+        var labelName = $(this).data('label-name');
+        var labelId = $(this).data('label-id');
+        var href = "${createLink(controller: 'label', action: 'labelUsage')}?id=" + labelId;
+        $('#view-label-name').html(labelName);
+        $('#view-label-list').html("<i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i><span class='sr-only'>Loading...</span>");
+
+        $.get(href, function(data) {
+            var $div = $('<div>');
+            if (data.projects !== undefined && data.projects.length > 0) {
+                $div.append('<h4>Projects ('+ data.projects.length +'):</h4>');
+                var $ul = $('<ul>');
+                $.each(data.projects, function(index, project) {
+                    if (index > 100) {
+                        var $li = $('<li>').text((data.projects.length - index) + ' more.');
+                        $ul.append($li);
+                        return false;
+                    }
+                    var $li = $('<li>').text(project.name);
+                    $ul.append($li);
+                });
+                $div.append($ul);
+            }
+
+            if (data.landingPages !== undefined && data.landingPages.length > 0) {
+                $div.append('<h4>Landing Pages ('+ data.landingPages.length +'):</h4>');
+                var $ul = $('<ul>');
+                $.each(data.landingPages, function(index, page) {
+                    var $li = $('<li>').text(page.name);
+                    $ul.append($li);
+                });
+                $div.append($ul);
+            }
+
+            $('#view-label-list').html($div);
+        }).fail(function(jqXHR, textStatus) {
+            $('#view-label-list').html("No entities found.");
+            console.log(jqXHR);
+        });
+
+        $( "#view-labels-modal" ).modal( "show" );
+    });
+
+    $("#btn-close-view-labels").click(function(e) {
+        e.preventDefault();
+        $( "#view-labels-modal" ).modal( "hide" );
+    });
+
     // Attach click event listeners to each row
-    function toggleEdit(row) {
-        var $row = $(row).closest('tr.label-data');
+    function toggleEdit(ele) {
+        var $row = $(ele).closest('tr.label-data');
 
         if (activeRow !== null && activeRow[0] !== $row[0]) {
             // activeRow.find('td.label-value').removeAttr('contenteditable');
@@ -156,9 +348,19 @@ $(function($) {
                 // Save icon clicked
                 $(this).removeAttr('contenteditable');
                 $(this).removeClass('focus');
-                saveLabel($row);
+
+                if ($(ele).hasClass("save-label-button")) {
+                    console.log("Save button clicked");
+                    saveLabel($row);
+                } else if ($(ele).hasClass("cancel-label-button")) {
+                    console.log("Cancel button clicked");
+                    $(this).html(valueBackup);
+                }
             } else {
                 // Edit icon clicked
+                var value = $.trim($(this).text());
+                console.log("Old value: " + value);
+                valueBackup = value;
                 $(this).attr('contenteditable', 'true');
                 $(this).addClass('focus');
                 $(this).focus();
@@ -166,9 +368,7 @@ $(function($) {
             }
         });
 
-        // Toggle icon display
-        $row.find('.save-label-button').toggle();
-        $row.find('.edit-label-button').toggle();
+        toggleButtons($row);
 
         // Update the activeRow
         if ($row.find('.save-label-button').is(':hidden')) {
@@ -176,12 +376,35 @@ $(function($) {
         } else {
             activeRow = $row;
         }
-    };
+    }
+
+    function toggleButtons($row) {
+        // Toggle icon display
+        //$row.find('.label-button').toggle();
+        $row.find('.save-label-button').toggle();
+        $row.find('.edit-label-button').toggle();
+        $row.find('.cancel-label-button').toggle();
+        $row.find('.delete-label-button').toggle();
+    }
 
     function saveLabel($row) {
         console.log("Saving label");
-        var value = $row.find('td.label-value').text();
+        var td = $row.find('td.label-value');
+        var value = $(td).text();
+        var id = $(td).data('label-id');
         console.log("Saving value: " + $.trim(value));
+        console.log("ID: " + id);
+        const url = "${createLink(controller: 'label', action: 'saveLabel')}";
+        var data = {
+            labelName: $.trim(value),
+            id: id
+        }
+        $.post(url, data)
+        .done(function (data, status, xhr) {})
+        .fail(function(xhr, status, error) {
+           console.log("Couldn't delete tasks", status, error);
+           alert("Error saving label. Please try again later.");
+        });
     }
 
     // Attach click event listeners to each icon
@@ -196,20 +419,33 @@ $(function($) {
         toggleEdit(this);
     });
 
-    // When an item is selected for editing, don't allow deselection
-    // $(document.body).click(function(event) {
-    //     console.log(event);
-    //     console.log(event.target);
-    //     console.log($(event.target).closest("#myTable").length);
-    //     console.log($(event.target).hasClass("save-label-button"));
-    //     if (!$(event.target).hasClass("save-label-button")) {
-    //         if (activeRow !== null) {
-    //             $(activeRow).find("td.label-value").attr("contenteditable", "true");
-    //             $(activeRow).find(".save-label-button").show();
-    //             $(activeRow).find("td.label-value").focus();
-    //         }
-    //     }
-    // });
+    $('.cancel-label-button').click(function(event) {
+        event.stopPropagation(); // Prevent row click event from firing
+        console.log('Cancel button clicked');
+        toggleEdit(this);
+    });
+
+    $('.delete-label-button').click(function(event) {
+        event.stopPropagation(); // Prevent row click event from firing
+        console.log('Delete button clicked');
+        var $this = $(this);
+        var href = $this.data('href');
+        console.log("href: " + href);
+
+        bootbox.confirm("Are you sure you wish to delete this label? This action is permanent!", function(result) {
+            if (result) {
+                $.postGo(href);
+                toggleEdit(this);
+            }
+        });
+    });
+
+    $('#label-colour').on('change', function() {
+        var colourValue = $(this).val();
+        var newLabelColour = "label-" + colourValue;
+        $('#example-tag').removeClass().addClass("label " + newLabelColour);
+    });
+
 });
 </asset:script>
 </body>

@@ -328,7 +328,8 @@ class BootStrap {
                     def lc
                     LabelCategory.withNewTransaction {
                         lc = new LabelCategory(name: k)
-                        lc.dateCreated = zz
+                        lc.isDefault = true
+                        lc.updatedDate = zz
                         lc.createdBy = 0L
                         lc.save(flush: true, failOnError: true)
                         lc.refresh()
@@ -340,21 +341,29 @@ class BootStrap {
                     final labelList = (JSONArray)defaults[k]
                     labelList.each { val ->
                         def label = new Label(value: val)
+                        label.isDefault = true
                         label.category = lc
-                        label.dateCreated = zz
+                        label.updatedDate = zz
                         label.createdBy = 0L
                         //log.info("new label: ${label}")
                         label.save(flush: true, failOnError: true)
                     }
                 } else {
+                    blah.isDefault = true
+                    blah.save(flush: true, failOnError: true)
                     final labelList = (JSONArray)defaults[k]
                     labelList.each { val ->
-                        if (!Label.findByCategoryAndValue(blah, val as String)) {
-                            def label = new Label(value: val)
+                        def label = Label.findByCategoryAndValue(blah, val as String)
+                        if (!label) {
+                            label = new Label(value: val)
+                            label.isDefault = true
                             label.category = blah
-                            label.dateCreated = now
+                            label.updatedDate = now
                             label.createdBy = 0L
                             //log.info("new label: ${label}")
+                            label.save(flush: true, failOnError: true)
+                        } else {
+                            label.isDefault = true
                             label.save(flush: true, failOnError: true)
                         }
                     }

@@ -4,8 +4,8 @@
 <html>
 <head>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
-    <g:set var="entityName" value="${message(code: 'default.label.label', default: 'Tag')}"/>
-    <g:set var="entityNamePlural" value="${message(code: 'default.label.plural.label', default: 'Tags')}"/>
+    <g:set var="entityName" value="${message(code: 'default.label.category.label', default: 'Category')}"/>
+    <g:set var="entityNamePlural" value="${message(code: 'default.label.category.plural.label', default: 'Categories')}"/>
         <title><g:message code="default.admin.entity.title.label" args="[entityNamePlural]" default="Manage Tags"/></title>
 </head>
 
@@ -41,7 +41,8 @@
                             <tr>
                                 <th><g:message code="label.category.name.label" default="Category"/></th>
                                 <th><g:message code="label.category.labelcount.label" default="No. Tags"/></th>
-                                <th><g:message code="label.category.datecreated.label" default="Date Created"/></th>
+                                <th><g:message code="label.category.labelcolour.label" default="Tag Colour"/></th>
+                                <th><g:message code="label.category.datecreated.label" default="Date Updated"/></th>
                                 <th><g:message code="label.category.createdby.label" default="Created By"/></th>
                                 <th></th>
                             </tr>
@@ -49,11 +50,20 @@
                         <tbody>
                         <g:each in="${labelCategories}" status="i" var="labelCategory">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" categoryId="${labelCategory.id}">
+                                <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
                                 <td style="vertical-align: middle; width: 35%;"><g:link action="editCategory" id="${labelCategory.id}">${labelCategory.name}</g:link></td>
                                 <td style="vertical-align: middle; text-align: right; width: 8%;">${labelCategory.labels?.size()}</td>
-                                <td style="vertical-align: middle;">${formatDate(date: labelCategory.dateCreated, format: DateConstants.DATE_TIME_FORMAT)}</td>
+                                <td style="vertical-align: middle; text-align: right; width: 8%;"><span class="label label-${labelColourClass}">Example Tag</span></td>
+                                <td style="vertical-align: middle;">${formatDate(date: labelCategory.updatedDate, format: DateConstants.DATE_TIME_FORMAT)}</td>
                                 <td style="vertical-align: middle;">${labelCategory.createdBy == 0L ? "System" : User.get(labelCategory.createdBy).displayName}</td>
-                                <td></td>
+                                <td>
+                                    <g:if test="${(!labelCategory.isDefault)}">
+                                    <i class="fa fa-trash label-button delete-label-button"
+                                       style="font-size: 1.5em;"
+                                       data-href="${createLink(controller: 'label', action: 'deleteCategory', id: labelCategory.id)}"
+                                       title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
+                                    </g:if>
+                                </td>
                             </tr>
                         </g:each>
                         </tbody>
@@ -65,6 +75,39 @@
     </div>
 
 </div>
+<asset:script type="text/javascript">
+$(function($) {
+    $.extend({
+        postGo: function(url, params) {
+            var $form = $("<form>")
+                .attr("method", "post")
+                .attr("action", url);
+            $.each(params, function(name, value) {
+                $("<input type='hidden'>")
+                    .attr("name", name)
+                    .attr("value", value)
+                    .appendTo($form);
+            });
+            $form.appendTo("body");
+            $form.submit();
+        }
+    });
 
-</body>
-</html>
+    $('.delete-label-button').click(function(event) {
+        event.stopPropagation(); // Prevent row click event from firing
+        console.log('Delete button clicked');
+        var $this = $(this);
+        var href = $this.data('href');
+        console.log("href: " + href);
+
+        bootbox.confirm("Are you sure you wish to delete this tag category and all it's tags? This action is permanent!", function(result) {
+            if (result) {
+                $.postGo(href);
+            }
+        });
+    });
+
+});
+</asset:script>
+    </body>
+    </html>

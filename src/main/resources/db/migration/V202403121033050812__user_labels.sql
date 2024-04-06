@@ -7,14 +7,18 @@ create table if not exists label_category (
     id bigint not null,
     version bigint not null,
     name text not null,
-    date_created timestamp not null default current_timestamp,
+    label_colour varchar default null,
+    is_default boolean not null default false,
+    updated_date timestamp not null default current_timestamp,
     created_by bigint not null default 0,
     primary key (id)
 );
 comment on column label_category.id is 'Unique ID (primary key) for label category';
 comment on column label_category.version is 'Record version';
 comment on column label_category.name is 'Name of the label category';
-comment on column label_category.date_created is 'Date record was created';
+comment on column label_category.label_colour is 'Selected colour for the label category';
+comment on column label_category.is_default is 'True if a system default category, false if not';
+comment on column label_category.updated_date is 'Date record was last updated';
 comment on column label_category.created_by is 'User who created record';
 
 -- This record will be deleted after migration.
@@ -27,32 +31,30 @@ alter table label
 alter table label
     add column if not exists category_id bigint not null default 0
         constraint label_category_id_fk references label_category (id),
-    add column if not exists date_created timestamp not null default current_timestamp,
+    add column if not exists is_default boolean not null default false,
+    add column if not exists updated_date timestamp not null default current_timestamp,
     add column if not exists created_by bigint not null default 0
     ;
 comment on column label.category_id is 'Foreign key to label_category';
-comment on column label.date_created is 'Date record was created';
+comment on column label.is_default is 'True if label is system default label, false if not';
+comment on column label.updated_date is 'Date record was last updated';
 comment on column label.created_by is 'User who created record';
 
-create table if not exists user_label (
+create table if not exists user_labels (
   user_id bigint not null,
   label_id bigint not null,
-  date_created timestamp not null default current_timestamp,
-  created_by bigint not null default 0,
   primary key (user_id, label_id),
   foreign key (user_id) references vp_user (id),
   foreign key (label_id) references label (id)
 );
-comment on column user_label.user_id is 'User for user label';
-comment on column user_label.label_id is 'Label for user label';
-comment on column user_label.date_created is 'Date record was created';
-comment on column user_label.created_by is 'User who created record';
+comment on column user_labels.user_id is 'User for user label';
+comment on column user_labels.label_id is 'Label for user label';
 
 
 /* Migrate old categories to new table */
 DROP TABLE IF EXISTS category_temp;
 CREATE TABLE category_temp (
-    category TEXT NOT null
+    category TEXT
 );
 
 INSERT INTO category_temp (category)
