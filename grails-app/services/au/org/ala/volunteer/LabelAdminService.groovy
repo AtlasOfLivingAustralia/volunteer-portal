@@ -17,7 +17,7 @@ class LabelAdminService {
 
         if (label.projects?.size() > 0) return true
         if (label.landingPages?.size() > 0) return true
-        if (label.users?.size() > 0) return true
+        //if (label.users?.size() > 0) return true
 
         false
     }
