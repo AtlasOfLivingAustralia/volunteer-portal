@@ -9,7 +9,8 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 class LabelController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "POST"]
+//    static allowedMethods = [saveNewLabel: "POST", updateCategory: "POST", saveCategory: "POST", createCategory: "POST",
+//                             saveLabel: "POST", deleteCategory: "POST"]
 
     def userService
     def labelAdminService
@@ -109,6 +110,7 @@ class LabelController {
             }
 
             if (newCategory.errors.hasErrors()) {
+                log.info("LabelCategory Errors: ${newCategory.errors}")
                 render(view: 'createCategory', model: [labelCategory: newCategory])
                 return
             } else {
