@@ -7,6 +7,12 @@
     <g:set var="entityName" value="${message(code: 'default.label.category.label', default: 'Category')}"/>
     <g:set var="entityNamePlural" value="${message(code: 'default.label.category.plural.label', default: 'Categories')}"/>
         <title><g:message code="default.admin.entity.title.label" args="[entityNamePlural]" default="Manage Tags"/></title>
+    <style>
+        .label-button {
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 
 <body class="admin">
@@ -59,7 +65,6 @@
                                 <td>
                                     <g:if test="${(!labelCategory.isDefault)}">
                                     <i class="fa fa-trash label-button delete-label-button"
-                                       style="font-size: 1.5em;"
                                        data-href="${createLink(controller: 'label', action: 'deleteCategory', id: labelCategory.id)}"
                                        title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
                                     </g:if>
@@ -95,10 +100,10 @@ $(function($) {
 
     $('.delete-label-button').click(function(event) {
         event.stopPropagation(); // Prevent row click event from firing
-        console.log('Delete button clicked');
+        //console.log('Delete button clicked');
         var $this = $(this);
         var href = $this.data('href');
-        console.log("href: " + href);
+        //console.log("href: " + href);
 
         bootbox.confirm("Are you sure you wish to delete this tag category and all it's tags? This action is permanent!", function(result) {
             if (result) {

@@ -243,6 +243,42 @@ class LabelController {
         }
     }
 
+    @Transactional
+    def changeCategory() {
+        log.debug("Changing label category.")
+        if (userService.isAdmin()) {
+            Label label = Label.get(params.long('labelId'))
+            LabelCategory labelCategory = LabelCategory.get(params.long('newCategory'))
+            if (!label || !labelCategory) {
+                flash.message = "Unable to modify ${message(code: 'default.label.label', default: 'Tag')}, missing parameters: label or category."
+                redirect(action: "index")
+                return
+            }
+
+            // Check if new category already has tag of this value
+            def labelCheck = labelCategory.labels.find {
+                it.value == label.value
+            }
+
+            if (labelCheck) {
+                // One already exists. Return an error.
+                flash.message = "Unable to modify ${message(code: 'default.label.label', default: 'Tag')}, new category already has a label with the same name."
+                redirect(action: "editCategory", params: [id: label.category.id])
+                return
+            }
+
+            label.category = labelCategory
+            label.updatedDate = new Date()
+            label.save(flush: true, failOnError: true)
+
+            flash.message = message(code: 'default.updated.message',
+                    args: [message(code: 'default.label.label', default: 'Tag'), label.value]) as String
+            redirect(action: 'editCategory', params: [id: labelCategory.id])
+        } else {
+            render(view: '/notPermitted')
+        }
+    }
+
     def labelUsage() {
         if (userService.isAdmin()) {
             def labelId = params.long('id')

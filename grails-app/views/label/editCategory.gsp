@@ -169,12 +169,16 @@
                                 <td class="col-md-2" style="text-align: center;">
                                     <g:set var="isEditable" value="${(!isProtected || (isProtected && !label.isDefault))}"/>
                                     <g:if test="${(isEditable)}">
-                                        <i class="fa fa-times label-button cancel-label-button" contenteditable="false" title="${message(code: 'default.button.cancel.label', default: 'Cancel')}"></i>
-                                        <i class="fa fa-save label-button save-label-button" contenteditable="false" title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
+                                        <i class="fa fa-times label-button cancel-label-button" contenteditable="false"
+                                           title="${message(code: 'default.button.cancel.label', default: 'Cancel')}"></i>
+                                        <i class="fa fa-save label-button save-label-button" contenteditable="false"
+                                           title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
 
                                         <i class="fa fa-trash label-button delete-label-button" contenteditable="false"
-                                           data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}" title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
-                                        <i class="fa fa-pencil label-button edit-label-button" contenteditable="false" title="${message(code: 'default.button.edit.label', default: 'Edit')}"></i>
+                                           data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}"
+                                           title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
+                                        <i class="fa fa-pencil label-button edit-label-button" contenteditable="false"
+                                           title="${message(code: 'default.button.edit.label', default: 'Edit')}"></i>
 
                                         <i class="fa fa-share-square-o label-button change-cat-button"
                                            data-label-name="${label.value}"
@@ -221,26 +225,27 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>Change ${message(code: 'default.label.label', default: 'Tag')} Category</h4>
+                <h4>Change ${message(code: 'default.label.label', default: 'Tag')} Category: '<span id="change-cat-label-name"></span>'</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <p>Select the new category for this ${message(code: 'default.label.label', default: 'Tag')}.</p>
                     <div class="col-md-12" style="margin-left: 5px;">
-                        <g:form controller="label" action="changeCategory" class="form-horizontal" method="POST">
-                            <div class="form-group">
-                                <label class="control-label col-md-4" for="newCategory">
-                                    New Category:
-                                </label>
-                                <div class="col-md-8" style="vertical-align: middle;">
-                                    <g:select name="newCategory" id="change-category-select"
-                                              class="form-control"
-                                              from="${categoryList}"
-                                              optionKey="id"
-                                              optionValue="name"
-                                              noSelection="[0:'- Select a new Category -']"/>
-                                </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" for="newCategory">
+                                New Category:
+                            </label>
+                            <div class="col-md-8" style="vertical-align: middle;">
+                                <g:set var="categoryFilterList" value="${categoryList.findAll{it.id != labelCategory.id}}"/>
+                                <g:select name="newCategory"
+                                          class="form-control"
+                                          from="${categoryFilterList}"
+                                          optionKey="id"
+                                          optionValue="name"
+                                          noSelection="[0:'- Select a new Category -']"/>
+                                <input type="hidden" name="changeCatLabelId" id="cat-change-label-id" value=""/>
                             </div>
-                        </g:form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -273,12 +278,48 @@ $(function($) {
         }
     });
 
+    /**
+    * Updates the data attr with new label name. Assumes ele is the row/parent element and searches for the
+    * buttons as children.
+    * @param ele the parent element
+    * @param newLabelName the new label name.
+    */
+    function updateLabel(ele, newLabelName) {
+        var changeCatButton = $(ele).find('.change-cat-button');
+        if (changeCatButton.length > 0) {
+            $(changeCatButton).attr('data-label-name', newLabelName);
+        }
+
+        var viewTagsButton = $(ele).find('.view-tags-button');
+        if (viewTagsButton.length > 0) {
+            $(viewTagsButton).attr('data-label-name', newLabelName);
+        }
+    }
+
     $(".change-cat-button").click(function() {
+        var labelName = $(this).data('label-name');
+        var labelId = $(this).data('label-id');
+        //console.log("LabelID: " + labelId);
+        $('#change-cat-label-name').text(labelName);
+        $('#cat-change-label-id').val(labelId);
+        //console.log("Setting hidden field to " + $('#cat-change-label-id').val());
         $( "#change-cat-modal" ).modal( "show" );
     });
 
     $("#btn-close-change-cat").click(function() {
-        $( "#view-labels-modal" ).modal( "hide" );
+        $( "#change-cat-modal" ).modal( "hide" );
+    });
+
+    $("#btn-save-change-cat").click(function() {
+        // Save change category.
+        //console.log("saving category change");
+        var labelId = $('#cat-change-label-id').val();
+        var newCategory = $('#newCategory').val();
+        //console.log("Label ID: " + labelId + ", newCategory: " + newCategory);
+        if (labelId !== undefined && newCategory !== undefined) {
+            var href = "${createLink(controller: 'label', action: 'changeCategory')}?labelId=" + labelId + "&newCategory=" + newCategory;
+            $.postGo(href);
+        }
     });
 
     $(".view-tags-button").click(function(e) {
@@ -319,7 +360,7 @@ $(function($) {
             $('#view-label-list').html($div);
         }).fail(function(jqXHR, textStatus) {
             $('#view-label-list').html("No entities found.");
-            console.log(jqXHR);
+            //console.log(jqXHR);
         });
 
         $( "#view-labels-modal" ).modal( "show" );
@@ -331,6 +372,10 @@ $(function($) {
     });
 
     // Attach click event listeners to each row
+    /**
+     * Toggles the editable nature of the tag value.
+     * @param ele the element where the event originated (e.g. button).
+     */
     function toggleEdit(ele) {
         var $row = $(ele).closest('tr.label-data');
 
@@ -350,16 +395,16 @@ $(function($) {
                 $(this).removeClass('focus');
 
                 if ($(ele).hasClass("save-label-button")) {
-                    console.log("Save button clicked");
+                    //console.log("Save button clicked");
                     saveLabel($row);
                 } else if ($(ele).hasClass("cancel-label-button")) {
-                    console.log("Cancel button clicked");
+                    //console.log("Cancel button clicked");
                     $(this).html(valueBackup);
                 }
             } else {
                 // Edit icon clicked
                 var value = $.trim($(this).text());
-                console.log("Old value: " + value);
+                //console.log("Old value: " + value);
                 valueBackup = value;
                 $(this).attr('contenteditable', 'true');
                 $(this).addClass('focus');
@@ -378,6 +423,10 @@ $(function($) {
         }
     }
 
+    /**
+     * Toggles the buttons from hidden to visible and vice versa.
+     * @param $row The row to perform the toggle.
+     */
     function toggleButtons($row) {
         // Toggle icon display
         //$row.find('.label-button').toggle();
@@ -387,28 +436,48 @@ $(function($) {
         $row.find('.delete-label-button').toggle();
     }
 
+    /**
+     * Saves the value for the tag to the database.
+     * @param $row The label row to save.
+     */
     function saveLabel($row) {
-        console.log("Saving label");
+        //console.log("Saving label");
         var td = $row.find('td.label-value');
         var value = $(td).text();
         var id = $(td).data('label-id');
-        console.log("Saving value: " + $.trim(value));
-        console.log("ID: " + id);
+        //console.log("Saving value: " + $.trim(value));
+        //console.log("ID: " + id);
         const url = "${createLink(controller: 'label', action: 'saveLabel')}";
         var data = {
             labelName: $.trim(value),
             id: id
         }
         $.post(url, data)
-        .done(function (data, status, xhr) {})
+        .done(function (data, status, xhr) {
+            updateLabel($row, $.trim(value));
+        })
         .fail(function(xhr, status, error) {
-           console.log("Couldn't delete tasks", status, error);
+           //console.log("Couldn't delete tasks", status, error);
            alert("Error saving label. Please try again later.");
         });
     }
 
+    $('td.label-value').keypress(function(event) {
+        //console.log("keypress");
+        var keycode = event.charCode || event.keyCode;
+        if (keycode === 10 || keycode === 13) { // Enter key's keycode
+            event.preventDefault();
+            //console.log("Enter pressed");
+            var saveButton = $(this).closest('tr').find('.save-label-button');
+            if (saveButton.length > 0) {
+                saveButton.trigger('click');
+            }
+        }
+    });
+
     // Attach click event listeners to each icon
     $('.save-label-button').click(function(event) {
+        //console.log("Save button clicked");
         event.stopPropagation(); // Prevent row click event from firing
         toggleEdit(this); // Toggle the display of the icon
     });
@@ -421,16 +490,16 @@ $(function($) {
 
     $('.cancel-label-button').click(function(event) {
         event.stopPropagation(); // Prevent row click event from firing
-        console.log('Cancel button clicked');
+        //console.log('Cancel button clicked');
         toggleEdit(this);
     });
 
     $('.delete-label-button').click(function(event) {
         event.stopPropagation(); // Prevent row click event from firing
-        console.log('Delete button clicked');
+        //console.log('Delete button clicked');
         var $this = $(this);
         var href = $this.data('href');
-        console.log("href: " + href);
+        //console.log("href: " + href);
 
         bootbox.confirm("Are you sure you wish to delete this label? This action is permanent!", function(result) {
             if (result) {
