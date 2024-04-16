@@ -41,15 +41,19 @@ class LandingPageAdminController {
     }
 
     def editSelections(LandingPage landingPageInstance) {
-        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        //final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        final labelCats = LabelCategory.list(sort: 'name').collect { it.name }
         ['landingPageInstance': landingPageInstance, 'labels': Label.listOrderByCategory(), 'labelCats': labelCats]
     }
 
     def filterLabelCategory () {
+        log.info("Filtering by category: ${params['category']}")
         def list
         def category = params['category'] ?: null
         if (category != 'all') {
-            list = Label.findAllByCategory(category)
+            //list = Label.findAllByCategory(category)
+            LabelCategory labelCategory = LabelCategory.findByName(category as String)
+            list = Label.findAllByCategory(labelCategory)
         } else {
             list = Label.listOrderByValue()
         }

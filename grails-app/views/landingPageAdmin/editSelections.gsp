@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.LabelColour" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -35,9 +36,10 @@
     </table>
 
     <div id="labels">
-        <b>Selected tags:</b>
+        <b>Selected tags:</b><br/>
         <g:each in="${landingPageInstance.label}" var="l">
-            <span> ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
+            <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+            <span class="label label-${labelClassName}"> ${l.category.name}/${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
         </g:each>
     </div>
 </g:form>
@@ -50,13 +52,14 @@
                 type: 'GET',
                 dataType: 'json',
                 cache: false,
-                url: '/landingPageAdmin/filterLabelCategory?category=' + selectedCategory,
+                url: '${createLink(controller: "landingPageAdmin", action: "filterLabelCategory")}?category=' + selectedCategory,
+                //url: '/landingPageAdmin/filterLabelCategory?category=' + selectedCategory,
                 success: function (data) {
 
                    if (data) {
                        $('#tag option').remove();
                        for (var o in data) {
-                            if (data[o].value != undefined) {
+                            if (data[o].value !== undefined) {
                                 $('#tag').append('<option value="' + data[o].id + '">' + ("" + data[o].value) + '</option>');
                             }
                         }
@@ -79,7 +82,8 @@
                 type: 'POST',
                 dataType: 'json',
                 cache: false,
-                url: '/landingPageAdmin/deleteLabel?selectedLabelId=' + labelIdToRemove + '&landingPageId=' + landingPageId,
+                url: '${createLink(controller: "landingPageAdmin", action: "deleteLabel")}?selectedLabelId=' + labelIdToRemove + '&landingPageId=' + landingPageId,
+                //url: '/landingPageAdmin/deleteLabel?selectedLabelId=' + labelIdToRemove + '&landingPageId=' + landingPageId,
                 success: function (data) {
                     var t = $(e.target);
                     var p = t.parent("span");
@@ -91,8 +95,7 @@
         }
 
         $('#labels').on('click', 'i.delete-label', onDeleteLabelClick);
-
-    })
+    });
 
 </asset:script>
 
