@@ -137,7 +137,7 @@ class FullTextIndexService {
                         templateName           : task.project.template?.name,
                         templateViewName       : task.project.template?.viewName,
                         labels                 : task.project.labels?.collect {
-                            [category: it.category, value: it.value]
+                            [category: it.category.name, value: it.value]
                         } ?: []
                 ],
                 transcriptions       : []

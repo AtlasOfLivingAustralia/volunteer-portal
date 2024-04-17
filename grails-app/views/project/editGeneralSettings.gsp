@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Project" %>
+<%@ page import="au.org.ala.volunteer.LabelColour" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -120,7 +121,8 @@
 
         <div id="labels" class="col-md-offset-3 col-md-9">
             <g:each in="${sortedLabels}" var="l">
-                <span class="label ${labelColourMap[l.category]}" title="${l.category}">
+                <g:set var="labelColourName" value="${l.category.labelColour ?: 'base'}"/>
+                <span class="label label-${labelColourName}" title="${l.category.name}">
                     ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
                 </span>
             </g:each>
@@ -215,15 +217,18 @@
         var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
         labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
+            console.log(item);
             //var obj = JSON.parse(item);
             var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
             //showSpinner();
+            var labelColour = item.category.labelColour === undefined ? 'base' : item.category.labelColour;
             $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
                 .done(function(data) {
                     $( "<span>" )
                         .addClass("label")
-                        .addClass(labelColourMap[item.category])
-                        .attr("title", item.category)
+                        //.addClass(labelColourMap[item.category])
+                        .addClass("label-" + labelColour  )
+                        .attr("title", item.category.name)
                         .text(item.value)
                         .append(
                         $( "<i>" )
