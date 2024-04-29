@@ -12,8 +12,8 @@ class Label implements Serializable {
     Date updatedDate
     Long createdBy
 
-    static belongsTo = [Project, LandingPage, LabelCategory]
-    static hasMany = [projects: Project, landingPages: LandingPage]
+    static belongsTo = [User, Project, LandingPage, LabelCategory]
+    static hasMany = [userList: User, projects: Project, landingPages: LandingPage]
 
     static mapping = {
         isDefault defaultValue: false

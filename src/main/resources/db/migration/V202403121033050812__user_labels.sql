@@ -40,15 +40,15 @@ comment on column label.is_default is 'True if label is system default label, fa
 comment on column label.updated_date is 'Date record was last updated';
 comment on column label.created_by is 'User who created record';
 
-create table if not exists user_labels (
+create table if not exists vp_user_labels (
   user_id bigint not null,
   label_id bigint not null,
   primary key (user_id, label_id),
   foreign key (user_id) references vp_user (id),
   foreign key (label_id) references label (id)
 );
-comment on column user_labels.user_id is 'User for user label';
-comment on column user_labels.label_id is 'Label for user label';
+comment on column vp_user_labels.user_id is 'User for user label';
+comment on column vp_user_labels.label_id is 'Label for user label';
 
 
 /* Migrate old categories to new table */

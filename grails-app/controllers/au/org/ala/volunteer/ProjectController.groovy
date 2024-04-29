@@ -1112,7 +1112,6 @@ class ProjectController {
             def existingIds = existing*.id.toList()
             labels = Label.withCriteria {
                 or {
-//                    ilike 'category.name', ilikeTerm
                     category {
                         like('name', ilikeTerm)
                     }
@@ -1123,8 +1122,6 @@ class ProjectController {
                 }
             }
         } else {
-            //labels = Label.findAllByCategoryIlikeOrValueIlike(ilikeTerm, ilikeTerm)
-            //def category = LabelCategory
             labels = Label.createCriteria().list {
                 or {
                     category {

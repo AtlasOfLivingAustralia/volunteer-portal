@@ -18,27 +18,7 @@
 
     %>
 
-<!--
-    <div class="btn-group">
-        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="fa fa-cog"></i> Tools
-            <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li>
-                <a href="${createLink(action: "create")}"><i class="fa fa-plus"></i>&nbsp;Add Institution</a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a href="${createLink(action: "applications")}"><i class="fa fa-inbox"></i>&nbsp;Manage Applications</a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a href="${createLink(action: "apply")}" target="_blank"><i class="fa fa-share-square-o"></i>&nbsp;Application Form</a>
-            </li>
-        </ul>
-    </div>
--->
+
 </cl:headerContent>
 
 <div class="container">
@@ -79,59 +59,63 @@
                             <g:sortableColumn property="firstName"
                                               title="${message(code: 'user.firstName.label', default: 'First Name')}"
                                               params="${params}"/>
-                            <g:sortableColumn property="labels"
-                                              title="${message(code: 'user.tag.label', default: 'Labels')}"
-                                              params="${params}"/>
-
+                            <th>${message(code: 'user.tag.label', default: 'Labels')}</th>
+%{--                            <g:sortableColumn property="labels"--}%
+%{--                                              title="${message(code: 'user.tag.label', default: 'Labels')}"--}%
+%{--                                              params="${params}"/>--}%
+                            <g:sortableColumn style="text-align: center" property="transcribedCount"
+                                              title="${message(code: 'user.recordsTranscribedCount.label', default: 'Tasks completed')}"
+                                              params="${[q: params.q]}"/>
+                            <g:sortableColumn style="text-align: center" property="validatedCount"
+                                              title="${message(code: 'user.transcribedValidatedCount.label', default: 'Tasks validated')}"
+                                              params="${[q: params.q]}"/>
+                            <g:sortableColumn style="text-align: center" property="created"
+                                              title="${message(code: 'user.created.label', default: 'A volunteer since')}"
+                                              params="${[q: params.q]}"/>
                             <th/>
                         </tr>
 
                         </thead>
                         <tbody>
-                        <g:each in="${institutionInstanceList}" status="i" var="institutionInstance">
+                        <g:each in="${userInstanceList}" status="i" var="userInstance">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                                <td width="35%"><g:link action="edit"
-                                            id="${institutionInstance.id}">${fieldValue(bean: institutionInstance, field: "name")}</g:link>
-                                    <g:if test="${institutionInstance.isInactive}"><i>(inactive)</i></g:if>
+                                <td>
+                                    <g:link controller="user" action="show" id="${userInstance.id}" title="View Notebook">${fieldValue(bean: userInstance, field: "id")}</g:link>
                                 </td>
 
-                                <td>${fieldValue(bean: institutionInstance, field: "contactName")}</td>
+                                <td>${fieldValue(bean: userInstance, field: "lastName")}</td>
 
-                                <td>${fieldValue(bean: institutionInstance, field: "contactEmail")}</td>
-
-                                <td><g:formatDate format="yyyy-MM-dd" date="${institutionInstance.dateCreated}"/></td>
+                                <td>${fieldValue(bean: userInstance, field: "firstName")}</td>
 
                                 <td>
-                                    <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
+                                    <g:each in="${userInstance.labels}" var="userLabel">
+%{--                                        <g:set var="labelColourName" val="${userLabel.category.labelColour ?: 'base'}"/>--}%
+%{--                                        <span class="label label-${labelColourName}">${userLabel.value}</span>--}%
+                                        <span class="label label-base">${userLabel.value}</span>
+                                    </g:each>
+                                </td>
 
-                                        <a class="btn btn-xs btn-default"
-                                            title="View institution home page"
-                                           href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
-                                                class="fa fa-home"></i></a>
-                                        <a class="btn btn-xs btn-default"
-                                            title="Institution settings"
-                                           href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
-                                                class="fa fa-edit"></i></a>
-                                        <cl:ifSiteAdmin>
-                                            <g:if test="${institutionInstance.getProjectCount() == 0}">
-                                                <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
-                                            </g:if>
-                                            <g:else>
-                                                <button class="btn btn-xs btn-danger delete-institution" alt="Delete" title="You cannot delete an institution that has projects." disabled>
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            </g:else>
-                                        </cl:ifSiteAdmin>
-                                    </g:form>
+                                <td class="bold text-center">${fieldValue(bean: userInstance, field: "transcribedCount")}</td>
+
+                                <td class="bold text-center">${userInstance?.validatedCount}</td>
+
+                                <td><g:formatDate format="yyyy-MM-dd" date="${userInstance.created}"/></td>
+
+                                <td>
+                                    <a class="btn btn-xs btn-default" title="Edit User"
+                                       href="${createLink(controller: 'user', action: 'edit', id: userInstance.id)}">
+                                            <i class="fa fa-edit"></i>
+                                    </a>
+
                                 </td>
                             </tr>
                         </g:each>
                         </tbody>
                     </table>
-                    <g:if test="${institutionInstanceCount > 20}">
+                    <g:if test="${userInstanceCount > 20}">
                     <div class="pagination">
-                        <g:paginate total="${institutionInstanceCount ?: 0}" params="${params}"/>
+                        <g:paginate total="${userInstanceTotal ?: 0}" params="${params}"/>
                     </div>
                     </g:if>
                 </div>
@@ -140,65 +124,10 @@
     </div>
 </div>
 
-<div id="quick-create-modal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-
-                <h3>Quick Create Institution</h3>
-            </div>
-
-            <div class="modal-body">
-                <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
-                      method="POST">
-                    <select name="cid" id="cid" class="form-control">
-                    </select>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
-            </div>
-        </div>
-    </div>
-</div>
 <asset:script type="text/javascript">
     $(function($) {
-        var api = "${createLink(controller: 'ajax', action: 'availableCollectoryProviders')}";
 
-        $('#quick-create-modal').on('shown.bs.modal', function (e) {
-            loadQuickCreateData();
-        });
-
-        $('#quick-create-button').click(function (e) {
-            $('#quick-create-form').submit();
-        });
-
-        function loadQuickCreateData() {
-            removeOptions(document.getElementById("cid"));
-            $('#quick-create-button').button('loading');
-            $.getJSON(api, function(data) {
-                var cid = document.getElementById('cid')
-                var i;
-                for (i = 0; i < data.length; ++i) {
-                       var o = new Option(data[i].name,data[i].id);
-                       o.innerHTML = data[i].name; // required for IE 8
-                       cid.appendChild(o);
-                }
-                $('#quick-create-button').button('reset');
-            });
-        };
-
-        function removeOptions(selectbox) {
-            var i;
-            for(i=selectbox.options.length-1;i>=0;i--)
-            {
-                selectbox.remove(i);
-            }
-        }
-
+/*
         $('.delete-institution').on('click', function(e) {
             e.preventDefault();
             var self = this;
@@ -246,6 +175,8 @@
             console.log(url);
             window.location = url;
         }
+ */
+
     });
 </asset:script>
 </body>

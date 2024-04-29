@@ -146,7 +146,7 @@ class UserController {
         redirect(action: 'listOptOut')
     }
 
-    def adminList() {
+    def list() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
             return
@@ -155,16 +155,16 @@ class UserController {
         []
     }
 
-    def list() {
+    def adminList() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
             return
         }
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 25, 100)
         if (!params.sort) {
             // set default sort and order
-            params.sort = params.sort ? params.sort : "transcribedCount"
-            params.order = "desc"
+            params.sort = params.sort ? params.sort : "lastName" //"transcribedCount"
+            params.order = "asc"
         }
 
         def userList
@@ -197,6 +197,10 @@ class UserController {
             totalCount = User.count()
         }
 
+        userList.each { User it ->
+            log.debug("User: ${it}")
+            log.debug("User labels: ${it.labels}")
+        }
         def currentUser = userService.currentUserId
         [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser]
     }
@@ -314,6 +318,11 @@ class UserController {
         respond(result)
     }
 
+    /**
+     * User notebook
+     * @param user
+     * @return
+     */
     def show(User user) {
         def currentUser = userService.currentUserId
 
