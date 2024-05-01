@@ -62,19 +62,24 @@ class LandingPageAdminController {
 
     @Transactional
     def saveProjectLabels(LandingPage landingPageInstance) {
+        log.info("landing page: ${landingPageInstance}")
 
         if (landingPageInstance.hasErrors()) {
             chain action: "edit", model: ['landingPage': landingPageInstance]
         } else {
 
             def newLabel = Label.findById(params['tag'])
-            if (!landingPageInstance.label) {
-                landingPageInstance.label = new ArrayList<Label>()
-            }
+            log.info("New label: ${newLabel}")
+//            if (!landingPageInstance.label) {
+//                log.info("First label for landing page.")
+//                landingPageInstance.label = new ArrayList<Label>()
+//            }
 
             landingPageInstance.label.add(newLabel)
-            landingPageInstance.save flush: true
+            log.info("${landingPageInstance.label}")
+            landingPageInstance.save(flush: true, failOnError: true)
         }
+
         redirect(action: "editSelections", params: ['id': landingPageInstance.id])
     }
 

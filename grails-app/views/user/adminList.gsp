@@ -1,4 +1,5 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
+<%@ page import="au.org.ala.volunteer.LabelColour" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,9 +51,6 @@
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <g:sortableColumn property="id"
-                                              title="${message(code: 'user.id.label', default: 'ID')}"
-                                              params="${params}"/>
                             <g:sortableColumn property="lastName"
                                               title="${message(code: 'user.lastName.label', default: 'Last Name')}"
                                               params="${params}"/>
@@ -80,19 +78,16 @@
                         <g:each in="${userInstanceList}" status="i" var="userInstance">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                                <td>
-                                    <g:link controller="user" action="show" id="${userInstance.id}" title="View Notebook">${fieldValue(bean: userInstance, field: "id")}</g:link>
-                                </td>
 
                                 <td>${fieldValue(bean: userInstance, field: "lastName")}</td>
 
                                 <td>${fieldValue(bean: userInstance, field: "firstName")}</td>
 
                                 <td>
-                                    <g:each in="${userInstance.labels}" var="userLabel">
-%{--                                        <g:set var="labelColourName" val="${userLabel.category.labelColour ?: 'base'}"/>--}%
-%{--                                        <span class="label label-${labelColourName}">${userLabel.value}</span>--}%
-                                        <span class="label label-base">${userLabel.value}</span>
+                                    <g:each in="${userInstance.labels}" var="l">
+                                        <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+                                        <span class="label label-${labelClassName}">${l.value}</span>
+%{--                                        <span class="label label-base">${userLabel.value}</span>--}%
                                     </g:each>
                                 </td>
 
@@ -103,9 +98,13 @@
                                 <td><g:formatDate format="yyyy-MM-dd" date="${userInstance.created}"/></td>
 
                                 <td>
-                                    <a class="btn btn-xs btn-default" title="Edit User"
+                                    <a class="btn btn-link" title="Edit User"
                                        href="${createLink(controller: 'user', action: 'edit', id: userInstance.id)}">
-                                            <i class="fa fa-edit"></i>
+                                            <i class="fa fa-edit" style="font-size: 1.2em;"></i>
+                                    </a>
+                                    <a class="btn btn-link" title="Display Notebook for User"
+                                       href="${createLink(controller: 'user', action: 'show', id: userInstance.id)}">
+                                        <i class="fa fa-id-card-o" style="font-size: 1.2em;"></i>
                                     </a>
 
                                 </td>
@@ -113,7 +112,7 @@
                         </g:each>
                         </tbody>
                     </table>
-                    <g:if test="${userInstanceCount > 20}">
+                    <g:if test="${userInstanceTotal > 20}">
                     <div class="pagination">
                         <g:paginate total="${userInstanceTotal ?: 0}" params="${params}"/>
                     </div>

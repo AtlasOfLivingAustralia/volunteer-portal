@@ -120,7 +120,7 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-primary bs3"
-                                   href="${createLink(controller: 'user', action: 'list')}">User List</a></td>
+                                   href="${createLink(controller: 'user', action: 'adminList')}">Manage Users</a></td>
                             <td>List of all User accounts on DigiVol</td>
                         </tr>
                         <tr>

@@ -44,9 +44,9 @@
 <cl:headerContent title="${message(code: 'label.admin.editCategory.label', default: 'Edit Category')}" selectedNavItem="bvpadmin">
     <%
         pageScope.crumbs = [
-                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration'),
-                 link: createLink(controller: 'label'), label: message(code: 'default.label.admin', default: 'Manage Tags')
-                ]
+                [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+                [link: createLink(controller: 'label'), label: message(code: 'default.label.admin', default: 'Manage Tags')]
+
         ]
     %>
 </cl:headerContent>

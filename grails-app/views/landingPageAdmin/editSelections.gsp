@@ -21,12 +21,12 @@
 
             <th><span>
                 Select a Category filter for tags
-                <g:select name="tagCategory" from="${labelCats}" class="selectpicker form-control" noSelection="${['all': '--- All Categories ---']}"></g:select>
+                <g:select name="tagCategory" from="${labelCats}" class="selectpicker form-control" noSelection="${['all': '--- All Categories ---']}"/>
             </span></th>
             <th><span>
                 Select Tag
                 <g:select name="tag" from="${labels}" optionKey="id" class="selectpicker form-control"
-                          optionValue="value"  data-live-search="true"></g:select></span></th>
+                          optionValue="value" data-live-search="true"/></span></th>
             <th/>
 
             <th><g:actionSubmit class="save btn btn-primary" action="saveProjectLabels"

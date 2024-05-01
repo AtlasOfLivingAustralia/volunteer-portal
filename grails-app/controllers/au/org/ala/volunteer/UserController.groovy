@@ -7,6 +7,8 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
 
+import static org.springframework.http.HttpStatus.NO_CONTENT
+
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -74,7 +76,7 @@ class UserController {
 }'''
 
     def index() {
-        redirect(action: "list", params: params)
+        redirect(action: "adminList", params: params)
     }
 
     def myStats() {
@@ -386,8 +388,49 @@ class UserController {
         }
 
         def roles = UserRole.findAllByUser(user)
+        def category = LabelCategory.findByName('user')
+        def userLabelList = Label.findAllByCategory(category)
 
-        return [userInstance: user, roles: roles, userDetails: authService.getUserForUserId(user.getUserId())]
+        return [userInstance: user, roles: roles, userDetails: authService.getUserForUserId(user.getUserId()), userLabelList: userLabelList]
+    }
+
+    @Transactional
+    def addUserLabel(User user) {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        def label = Label.findById(params['tag'])
+        if (!label) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'default.label.label', default: 'Tag'), params.id]) as String
+            redirect(action: "edit", params: [id: params.id])
+        }
+
+        user.labels.add(label)
+        user.save(flush: true, failOnError: true)
+
+        flash.message = message(code: 'user.label.added',
+                args: [label.value]) as String
+        redirect(action: "edit", params: [id: params.id])
+    }
+
+    @Transactional
+    def deleteLabel () {
+        def userId = params['userId']
+        if (userId.isLong()) {
+            def user = User.findById(userId.toLong())
+            def labels = user.labels
+            def labelIdToRemove = params['selectedLabelId']
+            if (labelIdToRemove && labelIdToRemove.isLong()) {
+                user.labels = labels.grep {label ->
+                    label.id != labelIdToRemove.toLong()
+                }
+                user.save(flush: true)
+                render status: NO_CONTENT
+            }
+        }
     }
 
     @Transactional
