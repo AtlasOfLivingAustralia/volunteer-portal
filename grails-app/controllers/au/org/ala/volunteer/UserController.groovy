@@ -172,13 +172,52 @@ class UserController {
         def userList
         def totalCount = 0
 
+        def closure = {
+            if (params.q) {
+                or {
+                    ilike("displayName", '%' + params.q + '%')
+                    ilike("email", '%' + params.q + '%')
+                }
+            }
+            if (params.labelFilter) {
+                and {
+                    labels {
+                        eq("id", params.long('labelFilter'))
+                    }
+                }
+            }
+        }
+
+        userList = User.createCriteria().list(params) {
+            closure.delegate = delegate
+            closure()
+        } as List
+
+        def countResult = User.createCriteria().get {
+            closure.delegate = delegate
+            closure()
+            projections {
+                countDistinct('id')
+            }
+        }
+        totalCount = countResult
+
+        /*
         if (params.q) {
-            // TODO Migrate away from database email addresses
             def c = User.createCriteria()
             userList = c.list(params) {
                 or {
                     ilike("displayName", '%' + params.q + '%')
                     ilike("email", '%' + params.q + '%')
+                }
+                if (params.labelFilter) {
+                    and {
+                        labels {
+                            category {
+                                eq("name", params.labelFilter)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -188,23 +227,32 @@ class UserController {
                     ilike("displayName", '%' + params.q + '%')
                     ilike("email", '%' + params.q + '%')
                 }
+                if (params.labelFilter) {
+                    and {
+                        labels {
+                            eq("id", params.labelFilter)
+                        }
+                    }
+                }
                 projections {
                     countDistinct('id')
                 }
             } as List
+
             // log.info("totalcount: ${totalCount}")
             totalCount = countResult.first()
         } else {
             userList = User.list(params)
             totalCount = User.count()
         }
+*/
 
-        userList.each { User it ->
-            log.debug("User: ${it}")
-            log.debug("User labels: ${it.labels}")
-        }
         def currentUser = userService.currentUserId
-        [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser]
+
+        LabelCategory userCategory = LabelCategory.findByName('user')
+        def userLabels = Label.findAllByCategory(userCategory)
+
+        [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser, userLabels: userLabels]
     }
 
     /**
