@@ -167,6 +167,12 @@
                         </tr>
                         </cl:ifSiteAdmin>
                         <tr>
+                            <td><a class="btn btn-primary bs3"
+                                   href="${createLink(controller: 'report', action: 'index')}">DigiVol Reporting</a>
+                            </td>
+                            <td>Admin Reports</td>
+                        </tr>
+                        <tr>
                             <td>Admin reports</td>
                             <td>
                                 <cl:ifSiteAdmin>
