@@ -19,16 +19,40 @@
     .prev, .next, .day, .month, .year, .today, .datepicker-switch {
         cursor: pointer;
     }
-    </style>
 
-</style>
+    .loader {
+        border: 4px solid #e0e0e0; /* Light grey */
+        border-top: 4px solid #000000;
+        border-radius: 50%;
+        width: 2.475rem;
+        height: 2.475rem;
+        animation: spin 1s linear infinite;
+        }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .float-right {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        /*line-height: 2.375rem;*/
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+        right:40px;
+        top: 4px;
+    }
+    </style>
 </head>
 
 <body class="admin">
 
     <content tag="pageTitle"><g:message code="admin.user.report.label" default="User Reporting"/></content>
 
-    <g:form action="runUserReport" class="form-horizontal" method="POST">
+    <g:form action="requestUserReport" class="form-horizontal" method="POST">
         <div class="form-group">
             <label for="dateSelect" class="col-md-3 control-label">Date Range*</label>
             <div class="col-md-8 input-daterange input-group" id="datepicker">
@@ -50,23 +74,86 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-8 input-group">
-                <g:actionSubmit class="save btn btn-primary" action="runUserReport"
+                <g:actionSubmit class="save btn btn-primary" action="requestUserReport"
                                 value="${message(code: 'admin.report.button.label', default: 'Generate Report')}"/>
             </div>
         </div>
     </g:form>
+
+    <div class="row" style="padding-top: 20px;">
+        <div class="col-md-12">
+            <h4>Your Previous Reports</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table class="table table-striped table-hover" id="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 <asset:script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" asset-defer=""/>
 <asset:script type="text/javascript" asset-defer="">
-    $(function () {
-        $('.input-daterange').datepicker({
-            format: "dd/mm/yyyy",
-            autoclose: true,
-            todayBtn: true,
-            orientation: "bottom auto",
-            todayHighlight: true,
-            endDate: "${defaultEndDate}"
-        });
+$(function () {
+    $('.input-daterange').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true,
+        todayBtn: true,
+        orientation: "bottom auto",
+        todayHighlight: true,
+        endDate: "${defaultEndDate}"
     });
+
+    function loadReportData() {
+        const reportName = 'user';
+        const url = "${createLink(controller: 'report', action: 'getReports')}?reportName=" + reportName;
+        $.get({
+            url: url,
+            dataType: 'json'
+        }).done(function(data) {
+            console.log(data)
+            updateReportTable(data);
+        });
+    }
+
+    function updateReportTable(data) {
+        var tableData = [];
+
+        $.each(data, function(idx, report) {
+            console.log(report);
+            var tableRow = "<tr>";
+            tableRow += "<td><span title='Parameters: " + JSON.stringify(report.params) + "'>" + report.dateCreated + "</span></td>";
+            if (report.dateCompleted === null || report.dateCompleted === undefined) {
+                tableRow += "<td>Pending</td>";
+            } else {
+                tableRow += "<td>" + report.dateCompleted + "</td>";
+            }
+
+            tableRow += "</tr>";
+            tableData.push(tableRow);
+        });
+
+        if (data === null || data.length === 0) {
+            tableData.push("<tr><td colspan='2'>No reports found.</td></tr>");
+        }
+
+        $('#report-table').find('tbody').html(tableData.join(""));
+    }
+
+    loadReportData();
+    var intervalId = window.setInterval(function(){
+        console.log("Loading report data");
+        loadReportData();
+    }, 60000);
+});
 </asset:script>
 </body>
 </html>
