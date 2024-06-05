@@ -15,6 +15,8 @@ public class SettingDefinition<T> {
     public static def EnableWelcomeEmail = new SettingDefinition("welcome.email.enabled", true, "Enable welcome emails to new users.")
     public static def WelcomeEmailSyncText = new SettingDefinition<String>('welcome.email.sync', "Welcome to DigiVol!", "The welcome email content for when the user hasn't yet transcribed a task.")
     public static def WelcomeEmailTranscribedText = new SettingDefinition<String>('welcome.email.transcribed', "Welcome to DigiVol!", "The welcome email content for when the user has transcribed their first task.")
+    public static def ReportCleanupEnabled = new SettingDefinition("report.cleanup.enabled", true, "Enable the cleanup job to delete old reports.")
+    public static def ReportCleanupAge = new SettingDefinition("report.cleanup.ageToDelete", 5, "The age of reports in weeks to delete in the cleanup job")
 
 //    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.name", "localhost", "The name or address of the SMTP server to user to send out notifications")
 //    public static def NotificationEmailServerPort = new SettingDefinition("notifications.emailServer.port", 25, "The port that the SMTP server is listening on")

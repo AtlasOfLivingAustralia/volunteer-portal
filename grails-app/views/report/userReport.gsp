@@ -52,6 +52,16 @@
 
     <content tag="pageTitle"><g:message code="admin.user.report.label" default="User Reporting"/></content>
 
+    <div class="panel panel-default" style="margin-top: 5px;">
+        <div class="panel-body">
+            <p>This report has two flavours: Filtered by tag and all users.</p>
+            <p><b>Filtered by tag:</b> This report collates users who are tagged by the selected tag and who
+            transcribed tasks between the provided start and end dates.</p>
+            <p><b>All users:</b> Due to the number of users, this report ignores the start and end date parameters and
+            provides a summary of user activity on DigiVol.</p>
+        </div>
+    </div>
+
     <g:form action="requestUserReport" class="form-horizontal" method="POST">
         <div class="form-group">
             <label for="dateSelect" class="col-md-3 control-label">Date Range*</label>
@@ -90,7 +100,7 @@
             <table class="table table-striped table-hover" id="report-table">
                 <thead>
                     <tr>
-                        <th>Date</th>
+                        <th>Date Requested</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -133,8 +143,10 @@ $(function () {
             tableRow += "<td><span title='Parameters: " + JSON.stringify(report.params) + "'>" + report.dateCreated + "</span></td>";
             if (report.dateCompleted === null || report.dateCompleted === undefined) {
                 tableRow += "<td>Pending</td>";
+            } else if (report.filepath !== undefined && report.dateArchived === null) {
+                tableRow += "<td><a href='" + report.filepath + "'>Download</a></td>";
             } else {
-                tableRow += "<td>" + report.dateCompleted + "</td>";
+                tableRow += "<td>Archived</td>";
             }
 
             tableRow += "</tr>";

@@ -20,8 +20,8 @@ class ProcessReportRequestJob {
     }
 
     def execute() {
-        log.info("Report Process running.")
+        log.debug("Report Process running.")
         reportRequestService.processPendingReportRequests()
-        log.info("Report Process completed.")
+        log.debug("Report Process completed.")
     }
 }

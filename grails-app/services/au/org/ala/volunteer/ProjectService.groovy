@@ -606,6 +606,31 @@ class ProjectService implements EventPublisher {
         else return query
     }
 
+    /**
+     * Retrieves a list of project summaries for all projects, unless an institution list is provided.
+     * Intended to be called for reporting purposes, not for UI consumption.
+     * @param institutionList the list of institutions if any
+     * @param countUser specify true to include user counts
+     * @return project summary list
+     */
+    def getAllProjectSummaries(def institutionList, boolean countUser) {
+        def conditions
+        if (institutionList && institutionList.size() > 0) {
+            def institutionAdminClause = [ACTIVE_ONLY, PROJECT.INSTITUTION_ID.in(institutionList*.id)]
+            conditions = [jOr(institutionAdminClause)]
+        } else {
+            conditions = []
+        }
+
+        return makeSummaryListFromConditions(conditions, null, null, null, null, null, null, null, null, countUser)
+    }
+
+    /**
+     * Retrieves a list of project summaries for the given querystring parameters.
+     * @param params querystring parameters such as statusFilter, activeFilter, search filter query, tag, sort etc
+     * @param countUser specify true to include user counts
+     * @return project summary list
+     */
     ProjectSummaryList getProjectSummaryList(GrailsParameterMap params, boolean countUser) {
 
         def statusFilterMode = ProjectStatusFilterType.fromString(params?.statusFilter)

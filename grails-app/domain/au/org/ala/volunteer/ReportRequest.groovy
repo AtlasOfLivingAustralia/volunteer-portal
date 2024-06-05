@@ -8,6 +8,7 @@ class ReportRequest {
     Date dateCreated
     String reportName
     Date dateCompleted
+    Date dateArchived
     Map reportParams
 
     static belongsTo = [requestUser: User]
@@ -20,7 +21,18 @@ class ReportRequest {
     static constraints = {
         dateCreated nullable: false
         dateCompleted nullable: true
+        dateArchived nullable: true
         reportParams nullable: true
+    }
+
+    /**
+     * Returns the current status of the report.
+     * @return One of three values depending on the status: Archived, Download or Pending.
+     */
+    def getStatus() {
+        if (this.dateArchived != null) return "Archived"
+        if (this.dateCompleted != null) return "Download"
+        return "Pending"
     }
 
     @Override
@@ -31,7 +43,8 @@ class ReportRequest {
                 dateCreated: [${dateCreated}],
                 requestUser: [${requestUser.displayName}],
                 reportName: [${reportName}],
-                dateCompleted: [${dateCompleted}]
+                dateCompleted: [${dateCompleted}],
+                dateArchived: [${dateArchived}]
             }
         """.stripIndent()
         return output
@@ -43,6 +56,7 @@ class ReportRequest {
                 id: [${id}],
                 reportName: [${reportName}],
                 dateCreated: [${dateCreated}],
+                dateArchived: [${dateArchived}],
                 reportParams: ${reportParams}
             }
         """.stripIndent()

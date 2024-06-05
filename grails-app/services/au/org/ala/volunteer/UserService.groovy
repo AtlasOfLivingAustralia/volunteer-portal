@@ -39,6 +39,10 @@ class UserService {
     public static final int WELCOME_EMAIL_TRANSCRIPTION = 0
     public static final int WELCOME_EMAIL_SYNC = 1
 
+    static final String USER_LEVEL_USER = "user"
+    static final String USER_LEVEL_INSTITUTION = "institution"
+    static final String USER_LEVEL_ADMIN = "admin"
+
     private static Queue<UserActivity> _userActivityQueue = new ConcurrentLinkedQueue<UserActivity>()
 
     /**
@@ -233,7 +237,8 @@ class UserService {
     }
 
     /**
-     * Determines if the current user holds the institution admin role for any institution.
+     * Determines if the provided user holds the institution admin role for any institution. Can be called with no user
+     * parameter to check the current logged in user.
      * To find if a user holds the institution admin role for a specific institution, call
      * {@link UserService#isInstitutionAdmin(Institution)}
      * <br />
@@ -270,10 +275,12 @@ class UserService {
     /**
      * Returns a list of institutions the current user holds the Institution Admin for.
      */
-    def getAdminInstitutionList() {
-        def user = currentUser
+    def getAdminInstitutionList(User user = null) {
         if (!user) {
-            return []
+            user = currentUser
+            if (!user) {
+                return []
+            }
         }
 
         def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)

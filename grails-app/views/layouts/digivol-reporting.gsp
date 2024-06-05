@@ -22,19 +22,23 @@
                 <div class="col-md-3">
                     <ul class="list-group">
                         <cl:settingsMenuItem
-                                href="${createLink(controller: 'report', action: 'userReport')}"
-                                title="User Reporting"/>
-
-                        <cl:settingsMenuItem
-                                href="${createLink(controller: 'admin', action: 'currentUsers')}"
-                                title="Current Online Users"
-                                target="_blank"/>
+                                href="${createLink(controller: 'report', action: 'reportHistory')}"
+                                title="Report History"/>
 
                         <cl:ifSiteAdmin>
                             <cl:settingsMenuItem
-                                    href="${createLink(controller: 'admin', action: 'projectSummaryReport')}"
-                                    title="Expedition Summary Report"/>
+                                    href="${createLink(controller: 'report', action: 'userReport')}"
+                                    title="User Reporting"/>
+
+                            <cl:settingsMenuItem
+                                    href="${createLink(controller: 'admin', action: 'currentUsers')}"
+                                    title="Current Online Users"
+                                    target="_blank"/>
                         </cl:ifSiteAdmin>
+
+                        <cl:settingsMenuItem
+                                href="${createLink(controller: 'report', action: 'projectSummary')}"
+                                title="Project Summary Report"/>
                     </ul>
                 </div>
 
