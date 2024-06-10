@@ -140,6 +140,7 @@ class ReportRequestService {
         if (pendingReports.size() > 0) {
             def report = pendingReports?.first()
             if (report) {
+                log.info("Running Report: ${report.printReportParams()}")
                 report.dateCompleted = new Date()
                 report.save(flush: true, failOnError: true)
 
@@ -253,16 +254,6 @@ class ReportRequestService {
     def userReport(ReportRequest reportRequest) {
         log.debug("User report running...")
         def csvFile = setupFile(reportRequest)
-
-//        def fileName = getReportFilename(reportRequest)
-//        def filePath = createFilePath(fileName)
-//        def csvFile = new File(filePath)
-//
-//        if (csvFile.exists()) {
-//            // Stop, another process may be writing to the file, so don't continue.
-//            log.warn("Picked up an existing file for this report.")
-//            csvFile.delete()
-//        }
 
         // Report Parameters
         def params = reportRequest.reportParams
