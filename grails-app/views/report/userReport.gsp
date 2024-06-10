@@ -127,9 +127,9 @@ $(function () {
         const url = "${createLink(controller: 'report', action: 'getReports')}?reportName=" + reportName;
         $.get({
             url: url,
-            dataType: 'json'
+            dataType: 'json',
+            cache: false
         }).done(function(data) {
-            console.log(data)
             updateReportTable(data);
         });
     }
@@ -138,7 +138,7 @@ $(function () {
         var tableData = [];
 
         $.each(data, function(idx, report) {
-            console.log(report);
+
             var tableRow = "<tr>";
             tableRow += "<td><span title='Parameters: " + JSON.stringify(report.params) + "'>" + report.dateCreated + "</span></td>";
             if (report.dateCompleted === null || report.dateCompleted === undefined) {
@@ -162,7 +162,6 @@ $(function () {
 
     loadReportData();
     var intervalId = window.setInterval(function(){
-        console.log("Loading report data");
         loadReportData();
     }, 60000);
 });

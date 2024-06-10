@@ -186,15 +186,13 @@ class ReportController {
         reportList.each { report ->
             def filename = reportRequestService.checkReportFile(report)
 
-            if (filename) {
-                def out = [dateCreated  : report.dateCreated.format(DateConstants.DATE_TIME_FORMAT),
-                           requestUser  : [id: report.requestUser.id, displayName: report.requestUser.displayName],
-                           dateCompleted: report.dateCompleted?.format(DateConstants.DATE_TIME_FORMAT),
-                           dateArchived : report.dateArchived?.format(DateConstants.DATE_TIME_FORMAT),
-                           params       : report.reportParams,
-                           filepath     : (filename) ? reportRequestService.getReportUrlPrefix() + filename : ""]
-                results.add(out)
-            }
+            def out = [dateCreated  : report.dateCreated.format(DateConstants.DATE_TIME_FORMAT),
+                       requestUser  : [id: report.requestUser.id, displayName: report.requestUser.displayName],
+                       dateCompleted: report.dateCompleted?.format(DateConstants.DATE_TIME_FORMAT),
+                       dateArchived : report.dateArchived?.format(DateConstants.DATE_TIME_FORMAT),
+                       params       : report.reportParams,
+                       filepath     : (filename) ? reportRequestService.getReportUrlPrefix() + filename : ""]
+            results.add(out)
         }
 
         render results as JSON

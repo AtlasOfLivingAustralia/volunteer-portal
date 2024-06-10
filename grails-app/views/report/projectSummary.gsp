@@ -7,46 +7,6 @@
     <title><g:message code="admin.project.summary.label" default="Project Summary Report"/></title>
     <asset:stylesheet src="bootstrap-select.css" />
     <asset:stylesheet src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
-    <style>
-    .label-button {
-        cursor: pointer;
-        font-size: 1.2em;
-    }
-
-    .today, .active {
-        font-weight: bold;
-    }
-
-    .prev, .next, .day, .month, .year, .today, .datepicker-switch {
-        cursor: pointer;
-    }
-
-    .loader {
-        border: 4px solid #e0e0e0; /* Light grey */
-        border-top: 4px solid #000000;
-        border-radius: 50%;
-        width: 2.475rem;
-        height: 2.475rem;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .float-right {
-        position: absolute;
-        z-index: 2;
-        display: block;
-        /*line-height: 2.375rem;*/
-        text-align: center;
-        pointer-events: none;
-        color: #aaa;
-        right:40px;
-        top: 4px;
-    }
-    </style>
 </head>
 
 <body class="admin">
@@ -55,30 +15,13 @@
 
 <div class="panel panel-default" style="margin-top: 5px;">
     <div class="panel-body">
-        <p>Blurb.</p>
+        <p>This report provides a summary outlook of all projects you have access to. <br/>
+            Includes task counts, transcribe and validation counts, expedition type, percentage complete, date started
+            and finished, and average transcription time.</p>
     </div>
 </div>
 
 <g:form action="requestProjectSummaryReport" class="form-horizontal" method="POST">
-%{--    <div class="form-group">--}%
-%{--        <label for="dateSelect" class="col-md-3 control-label">Date Range*</label>--}%
-%{--        <div class="col-md-8 input-daterange input-group" id="datepicker">--}%
-%{--            <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" />--}%
-%{--            <span class="input-group-addon">to</span>--}%
-%{--            <input type="text" class="input-sm col-sm-3 form-control" value="${defaultEndDate}" name="dateEnd" />--}%
-%{--        </div>--}%
-%{--    </div>--}%
-%{--    <div class="form-group">--}%
-%{--        <label for="labelFilter" class="col-md-3 control-label">Filter by User Tag</label>--}%
-%{--        <div class="col-md-8 input-group">--}%
-%{--            <g:select name="labelFilter"--}%
-%{--                      from="${userLabelList}"--}%
-%{--                      optionKey="id"--}%
-%{--                      class="input-sm form-control col-md-9"--}%
-%{--                      optionValue="value"--}%
-%{--                      noSelection="['':'- Filter by Tag -']"/>--}%
-%{--        </div>--}%
-%{--    </div>--}%
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-8 input-group">
             <g:actionSubmit class="save btn btn-primary" action="requestProjectSummaryReport"
@@ -114,9 +57,9 @@ $(function () {
         const url = "${createLink(controller: 'report', action: 'getReports')}?reportName=" + reportName;
         $.get({
             url: url,
-            dataType: 'json'
+            dataType: 'json',
+            cache: false
         }).done(function(data) {
-            console.log(data)
             updateReportTable(data);
         });
     }
@@ -125,7 +68,7 @@ $(function () {
         var tableData = [];
 
         $.each(data, function(idx, report) {
-            console.log(report);
+
             var tableRow = "<tr>";
             tableRow += "<td><span title='Parameters: " + JSON.stringify(report.params) + "'>" + report.dateCreated + "</span></td>";
             if (report.dateCompleted === null || report.dateCompleted === undefined) {
@@ -149,7 +92,6 @@ $(function () {
 
     loadReportData();
     var intervalId = window.setInterval(function(){
-        console.log("Loading report data");
         loadReportData();
     }, 60000);
 });
