@@ -202,51 +202,6 @@ class UserController {
         }
         totalCount = countResult
 
-        /*
-        if (params.q) {
-            def c = User.createCriteria()
-            userList = c.list(params) {
-                or {
-                    ilike("displayName", '%' + params.q + '%')
-                    ilike("email", '%' + params.q + '%')
-                }
-                if (params.labelFilter) {
-                    and {
-                        labels {
-                            category {
-                                eq("name", params.labelFilter)
-                            }
-                        }
-                    }
-                }
-            }
-
-            def cc = User.createCriteria()
-            def countResult = cc.list() {
-                or {
-                    ilike("displayName", '%' + params.q + '%')
-                    ilike("email", '%' + params.q + '%')
-                }
-                if (params.labelFilter) {
-                    and {
-                        labels {
-                            eq("id", params.labelFilter)
-                        }
-                    }
-                }
-                projections {
-                    countDistinct('id')
-                }
-            } as List
-
-            // log.info("totalcount: ${totalCount}")
-            totalCount = countResult.first()
-        } else {
-            userList = User.list(params)
-            totalCount = User.count()
-        }
-*/
-
         def currentUser = userService.currentUserId
 
         LabelCategory userCategory = LabelCategory.findByName('user')
@@ -454,13 +409,13 @@ class UserController {
             flash.message = message(code: 'default.not.found.message',
                     args: [message(code: 'default.label.label', default: 'Tag'), params.id]) as String
             redirect(action: "edit", params: [id: params.id])
+            return
         }
 
         user.labels.add(label)
         user.save(flush: true, failOnError: true)
 
-        flash.message = message(code: 'user.label.added',
-                args: [label.value]) as String
+        flash.message = message(code: 'user.label.added', args: [label.value]) as String
         redirect(action: "edit", params: [id: params.id])
     }
 

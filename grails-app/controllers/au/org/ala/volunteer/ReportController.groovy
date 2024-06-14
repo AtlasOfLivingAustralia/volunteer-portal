@@ -58,6 +58,7 @@ class ReportController {
             flash.message = message(code: 'default.invalid.parameter.message',
                     args: ["Start and/or End Date"]) as String
             redirect(action: 'userReport')
+            return
         }
 
         def newReport = new ReportRequest(requestUser: userService.currentUser,

@@ -1113,7 +1113,7 @@ class ProjectController {
             labels = Label.withCriteria {
                 or {
                     category {
-                        like('name', ilikeTerm)
+                        ilike('name', ilikeTerm)
                     }
                     ilike 'value', ilikeTerm
                 }
@@ -1125,7 +1125,7 @@ class ProjectController {
             labels = Label.createCriteria().list {
                 or {
                     category {
-                        like('name', ilikeTerm)
+                        ilike('name', ilikeTerm)
                     }
                     ilike 'value', ilikeTerm
                 }

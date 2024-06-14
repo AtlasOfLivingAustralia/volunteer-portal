@@ -9,8 +9,8 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 class LabelController {
 
-//    static allowedMethods = [saveNewLabel: "POST", updateCategory: "POST", saveCategory: "POST", createCategory: "POST",
-//                             saveLabel: "POST", deleteCategory: "POST"]
+    static allowedMethods = [saveNewLabel: "POST", updateCategory: "POST", saveCategory: "POST",
+                             saveLabel: "POST", deleteCategory: "POST"]
 
     def userService
     def labelAdminService
@@ -32,12 +32,12 @@ class LabelController {
             def categoryId = params.long('id')
             def category = LabelCategory.get(categoryId)
             if (!category) {
-                log.info("No category found,  redirecting back to index.")
+                log.debug("No category found,  redirecting back to index.")
                 flash.message = message(code: 'default.not.found.message',
                         args: [message(code: 'default.label.category.label', default: 'Category'), params.long('id')]) as String
                 redirect(action: "index")
             } else {
-                log.info("Edit category: ${category.name}")
+                log.debug("Edit category: ${category.name}")
                 final def loadedDefaultLabels = grailsApplication.config.getProperty("bvp.labels.ensureDefault", Boolean, false)
                 render(view: 'editCategory', model: [labelCategory: category, categoryList: LabelCategory.list(), loadedDefaultLabels: loadedDefaultLabels])
             }
@@ -110,7 +110,7 @@ class LabelController {
             }
 
             if (newCategory.errors.hasErrors()) {
-                log.info("LabelCategory Errors: ${newCategory.errors}")
+                log.debug("LabelCategory Errors: ${newCategory.errors}")
                 render(view: 'createCategory', model: [labelCategory: newCategory])
                 return
             } else {
@@ -126,7 +126,7 @@ class LabelController {
 
     @Transactional
     def saveNewLabel() {
-        log.info("Saving new label")
+        log.debug("Saving new label")
         if (userService.isAdmin()) {
             LabelCategory labelCategory = LabelCategory.get(params.long('categoryId'))
             if (!labelCategory) {
@@ -161,11 +161,11 @@ class LabelController {
 
     @Transactional
     def saveLabel() {
-        log.info("Saving label")
+        log.debug("Saving label")
         if (userService.isAdmin()) {
-            log.info("id: ${params.long('id')}, value: ${params.get('labelName')}")
+            log.debug("id: ${params.long('id')}, value: ${params.get('labelName')}")
             def label = Label.get(params.long('id'))
-            log.info("Label: ${label}")
+            log.debug("Label: ${label}")
             if (label == null) {
                 notFound()
                 return
@@ -174,7 +174,7 @@ class LabelController {
             label.value = params.get('labelName')
             label.updatedDate = new Date()
             label.save(flush: true, failOnError: true)
-            log.info("label saved: ${label}")
+            log.debug("label saved: ${label}")
             render([message: "Successfully updated label '${label.value}'"] as JSON)
         } else {
             response.status = SC_FORBIDDEN
@@ -211,7 +211,7 @@ class LabelController {
 
     @Transactional
     def deleteCategory() {
-        log.info("Deleting category.")
+        log.debug("Deleting category.")
         if (userService.isAdmin()) {
             LabelCategory labelCategory = LabelCategory.get(params.long('id'))
             if (!labelCategory) {
