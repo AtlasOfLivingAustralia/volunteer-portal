@@ -36,7 +36,7 @@ before_install:
   - export GRAILS_ENV=test
 after_success:
 # - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && GRAILS_ENV=production travis_retry ./gradlew publish'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && GRAILS_ENV=production travis_wait 30 ./gradlew publish'
 #- '[ "${TRAVIS_BRANCH}" = "develop" ] && travis_retry curl -X POST --header "X-DEPLOY-KEY:
 #  ${DEPLOY_KEY}" https://volunteer-dev.ala.org.au/deploy/${APP_VERSION}'
 env:
