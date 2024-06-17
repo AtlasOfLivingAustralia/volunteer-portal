@@ -41,15 +41,19 @@ class LandingPageAdminController {
     }
 
     def editSelections(LandingPage landingPageInstance) {
-        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        //final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        final labelCats = LabelCategory.list(sort: 'name').collect { it.name }
         ['landingPageInstance': landingPageInstance, 'labels': Label.listOrderByCategory(), 'labelCats': labelCats]
     }
 
     def filterLabelCategory () {
+        log.info("Filtering by category: ${params['category']}")
         def list
         def category = params['category'] ?: null
         if (category != 'all') {
-            list = Label.findAllByCategory(category)
+            //list = Label.findAllByCategory(category)
+            LabelCategory labelCategory = LabelCategory.findByName(category as String)
+            list = Label.findAllByCategory(labelCategory)
         } else {
             list = Label.listOrderByValue()
         }
@@ -58,19 +62,23 @@ class LandingPageAdminController {
 
     @Transactional
     def saveProjectLabels(LandingPage landingPageInstance) {
+        log.debug("landing page: ${landingPageInstance}")
 
         if (landingPageInstance.hasErrors()) {
             chain action: "edit", model: ['landingPage': landingPageInstance]
         } else {
-
             def newLabel = Label.findById(params['tag'])
-            if (!landingPageInstance.label) {
-                landingPageInstance.label = new ArrayList<Label>()
-            }
+            log.debug("New label: ${newLabel}")
 
-            landingPageInstance.label.add(newLabel)
-            landingPageInstance.save flush: true
+            if (newLabel) {
+                landingPageInstance.label.add(newLabel)
+                log.debug("${landingPageInstance.label}")
+                landingPageInstance.save(flush: true, failOnError: true)
+            } else {
+                log.warn("Attempted to add a non-existent tag: ${params['tag']}")
+            }
         }
+
         redirect(action: "editSelections", params: ['id': landingPageInstance.id])
     }
 

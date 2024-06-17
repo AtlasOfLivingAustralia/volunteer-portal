@@ -1558,6 +1558,25 @@ ORDER BY record_idx, name;
     }
 
     /**
+     * Returns a map of user activity between two given dates.
+     * @param startDate the start date
+     * @param endDate the end date
+     * @return a Map of user activity for a given date range.
+     */
+    def getUserActivityBetweenDates(Date startDate, Date endDate) {
+        String query = """\
+            select vt.userId, to_timestamp(min(vt.lastView)/1000), to_timestamp(max(vt.lastView)/1000)
+            from ViewedTask vt
+            where vt.lastView/1000 >= cast(extract(epoch FROM :startDate::timestamp) AS bigint)
+              and vt.lastView/1000 <= cast(extract(epoch FROM :endDate::timestamp) AS bigint)
+            group by vt.userId
+        """.stripIndent()
+        def userActivity = ViewedTask.executeQuery(query, [startDate: startDate, endDate: endDate])
+                .collectEntries { [(it[0]): it[1]] }
+        userActivity
+    }
+
+    /**
      * Returns a Map of transcription counts grouped by user (Transcription.fullyTranscribedBy).
      * @return a Map of transcription counts grouped by user
      */

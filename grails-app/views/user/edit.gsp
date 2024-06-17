@@ -1,19 +1,24 @@
 <%@ page import="au.org.ala.volunteer.User" %>
+<%@ page import="au.org.ala.volunteer.LabelColour" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
+    <asset:stylesheet src="bootstrap-select.css" />
+    <asset:javascript src="bootstrap-select.js" asset-defer="" />
 </head>
 
 <body class="admin">
 
 <cl:headerContent crumbLabel="Edit User"
-                  title="Edit User ${userInstance.userId} - ${userDetails?.displayName} (${userDetails?.userName})" selectedNavItem="bvpadmin">
+                  title="Edit User" selectedNavItem="bvpadmin">
     <%
-        pageScope.crumbs = []
-        pageScope.crumbs << [link: createLink(controller: 'user', action: 'show', id: userInstance.id), label: userInstance?.displayName]
+        pageScope.crumbs = [
+            [link: createLink(controller: 'admin'), label: message(code: 'default.admin.label', default: 'Administration')],
+            [link: createLink(controller: 'user', action: 'adminList'), label: message(code: 'default.users.admin.label', default: 'Manage Users')]
+        ]
     %>
 </cl:headerContent>
 
@@ -30,14 +35,14 @@
 
                     <g:form method="post" class="form-horizontal">
                         <g:hiddenField name="id" value="${userInstance?.id}"/>
-                        <g:hiddenField name="version" value="${userInstance?.version}"/>
-                        <div class="form-group ${hasErrors(bean: userInstance, field: 'created', 'has-error')}">
-                            <label class="control-label col-md-3" for="created"><g:message code="user.created.label" default="Created"/></label>
-                            <div class="col-md-6 grails-date">
-                                <g:datePicker name="created" precision="day" value="${userInstance?.created}"/>
+
+                        <div class="form-group">
+                            <label for="displayName" class="control-label col-md-3"><g:message code="user.displayName.label" default="Name"/></label>
+                            <div class="col-md-6">
+                                <g:textField name="displayName" class="form-control" disabled="disabled"
+                                             value="${fieldValue(bean: userInstance, field: 'displayName')}"/>
                             </div>
                         </div>
-
 
                         <div class="form-group  ${hasErrors(bean: userInstance, field: 'transcribedCount', 'has-error')}">
                             <label for="transcribedCount" class="control-label col-md-3">
@@ -64,18 +69,8 @@
                                 <g:message code="user.userId.label" default="User Id"/>
                             </label>
                             <div class="col-md-6">
-                                <g:textField name="userId" class="form-control"
+                                <g:textField name="transcribedCount" class="form-control" disabled="disabled"
                                              value="${fieldValue(bean: userInstance, field: 'userId')}"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'displayName', 'has-error')}">
-                            <label for="displayName" class="control-label col-md-3">
-                                <g:message code="user.displayName.label" default="Display Name"/>
-                            </label>
-                            <div class="col-md-6">
-                                <g:textField name="displayName" class="form-control"
-                                             value="${fieldValue(bean: userInstance, field: 'displayName')}"/>
                             </div>
                         </div>
 
@@ -89,24 +84,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'roles', 'has-error')}">
-                            <label for="roles" class="control-label col-md-3">
-                                <g:message code="user.roles.label" default="Roles"/>
-                            </label>
-                            <div class="col-md-3">
-                                <ul id="roles" class="form-control-static">
-                                    <g:each var="role" in="${roles}">
-                                        <li>${role.role.name}
-                                        (${role.project == null ? '<All Projects>' : role.project.featuredLabel})
-                                        </li>
-                                    </g:each>
-                                </ul>
-                                <a class="btn btn-sm btn-default"
-                                   href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}">Edit roles</a>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
+                        <div class="form-group" style="padding-bottom: 20px;">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:actionSubmit class="save btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
@@ -116,17 +94,89 @@
                             </div>
                         </div>
                     </g:form>
+
+                        <div class="well form-horizontal" style="padding: 10px !important;">
+                            <div class="form-group">
+                                <label for="roles" class="control-label col-md-3">
+                                    <g:message code="user.roles.label" default="Roles"/>
+                                    <a class="btn btn-link"
+                                       href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
+                                       title="Edit User Roles">
+                                        <i class="fa fa-users" style="font-size: 1.2em;"></i>
+                                    </a>
+                                </label>
+
+                                <div class="col-md-6">
+                                    <ul id="roles" class="form-control-static">
+                                        <g:each var="role" in="${roles}">
+                                            <li>${role.role.name}
+                                            (${role.project == null ? '<All Projects>' : role.project.featuredLabel})
+                                            </li>
+                                        </g:each>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="well" style="padding: 10px !important;">
+                            <g:form method="post" class="form-horizontal">
+                                <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}" />
+                            <div class="form-group">
+                                <label for="label" class="control-label col-md-3">
+                                    <g:message code="user.labels.label" default="Tags"/>
+                                </label>
+                                <div class="col-md-3">
+                                    <g:select name="tag" from="${userLabelList}" optionKey="id" class="selectpicker form-control"
+                                              noSelection="['':'- Select a Tag -']"
+                                              optionValue="value" data-live-search="true"/>
+                                    <div id="labels" style="padding-top: 10px;">
+                                    <g:each in="${userInstance.labels}" var="l">
+                                        <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+                                        <span class="label label-${labelClassName}"> ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
+                                    </g:each>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <g:actionSubmit class="save btn btn-primary" action="addUserLabel"
+                                                    value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/>
+                                </div>
+                            </div>
+                            </g:form>
+                        </div>
+
+                    </div>
+
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-<asset:script>
-    $(function() {
-        $('.grails-date select').each(function(){
-            $(this).addClass('form-control');
+<asset:script type="text/javascript" asset-defer="">
+$(function() {
+    function onDeleteLabelClick (e) {
+        e.preventDefault();
+        var userId = $('#add-label-user-id').val();
+        var labelIdToRemove = e.target.dataset.labelId
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            cache: false,
+            url: '${createLink(controller: "user", action: "deleteLabel")}?selectedLabelId=' + labelIdToRemove + '&userId=' + userId,
+            success: function (data) {
+                var t = $(e.target);
+                var p = t.parent("span");
+                p.remove();
+            },  error: function (jqXHR, textStatus, errorThrown) {
+                console.log('user/deleteLabel: Error - ' + errorThrown);
+            }
         });
-    });
+    }
+
+    $('#labels').on('click', 'i.delete-label', onDeleteLabelClick);
+});
 </asset:script>
 </body>
 </html>

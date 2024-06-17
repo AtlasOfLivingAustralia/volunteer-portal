@@ -535,11 +535,12 @@ class ProjectController {
 
     def getGeneralProjectLists(Project project) {
         final insts = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-        final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        //final labelCats = Label.withCriteria { projections { distinct 'category' } }
+        final labelCats = LabelCategory.list(sort: 'name').collect { it.name }
         final templates = templateService.getTemplatesForProject(project, userService.isSiteAdmin())
 
         final sortedLabels = project.labels.sort { a,b ->
-            def x = a.category?.compareTo(b.category)
+            def x = a.category.name?.compareTo(b.category.name)
             return x == 0 ? a.value <=> b.value : x
         }
 
@@ -1091,6 +1092,11 @@ class ProjectController {
         render status: 204
     }
 
+    /**
+     * Search for labels
+     * @param project the project to search
+     * @return
+     */
     def newLabels(Project project) {
         if (!projectService.isAdminForProject(project)) {
             render(view: '/notPermitted')
@@ -1106,7 +1112,9 @@ class ProjectController {
             def existingIds = existing*.id.toList()
             labels = Label.withCriteria {
                 or {
-                    ilike 'category', ilikeTerm
+                    category {
+                        ilike('name', ilikeTerm)
+                    }
                     ilike 'value', ilikeTerm
                 }
                 not {
@@ -1114,10 +1122,25 @@ class ProjectController {
                 }
             }
         } else {
-            labels = Label.findAllByCategoryIlikeOrValueIlike(ilikeTerm, ilikeTerm)
+            labels = Label.createCriteria().list {
+                or {
+                    category {
+                        ilike('name', ilikeTerm)
+                    }
+                    ilike 'value', ilikeTerm
+                }
+            }
         }
 
-        render labels as JSON
+        def result = []
+        labels.each { Label label ->
+            Map labelInfo = [id: label.id, value: label.value]
+            Map labelCategory = [id: label.category.id, name: label.category.name, labelColour: label.category.labelColour]
+            labelInfo.put("category", labelCategory)
+            result.add(labelInfo)
+        }
+
+        render result as JSON
     }
 
     /**

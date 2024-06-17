@@ -496,3 +496,40 @@ a.fieldHelp {
     white-space: normal;
 }
 
+/* Labels */
+
+.label-base {
+    background-color: #777;
+}
+
+.label-green {
+    background-color: #5cb85c;
+}
+
+.label-red {
+    background-color: #d9534f;
+}
+
+.label-yellow {
+    background-color: #f0ad4e;
+}
+
+.label-blue {
+    background-color: #337ab7;
+}
+
+.label-lightblue {
+    background-color: #3498db;
+}
+
+.label-orange {
+    background-color: #e67e22;
+}
+
+.label-purple {
+    background-color: #9b59b6;
+}
+
+.label-darkgrey {
+    background-color: #4b5359;
+}
