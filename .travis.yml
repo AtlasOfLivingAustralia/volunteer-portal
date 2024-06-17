@@ -34,6 +34,8 @@ before_install:
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
   - export GRAILS_ENV=test
+install:
+  - travis_wait 30 ./gradlew assemble
 after_success:
 # - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && GRAILS_ENV=production travis_retry ./gradlew publish'
@@ -44,7 +46,3 @@ env:
   - secure: 2MEDHHQ3nxNwf+YGgtC/GXx6kb0y4ixYA7Ia50pZHaN8xMHYdQ8EymKZJ8F9SXw0Feg9FsDc5I90lBJB8URYZZ4hPZN9+uj9crOvnOFMByvJpPikrQ6Yw8IdUjmYxHO/zv+kmOkqVnu6zCtS42olSM7ljeZs0PzW484Ci9w5eM4=
   - secure: iR4/BuaBNTKIGQENUdQQjzqhUgefvJnfyC0aK0j9NNLVwcH6lE//TAqz22n7TuzTDPq7My+0clua8DEbJt2k7/kMrbrAohCEXtWvI2pBa43GmB+D5/qOW0+MZk46QJ0pR+hmjHZ3U9DjhuNuF3w7zlNsUnItk70FlzV+sRrYgwg=
   - secure: pOWY7dwZRDcgsrYcwscdXHNPfhsPOSGhKNrG0G7AA4mhxaRKd9+1D31i5lhiA9qvbA0/lqD7A8Fnzvsf99MkUC6CSCQOh5n104UalYyiRQ/vhwfc0l9HdlCH86hShYq4PKvXA0hK5iCcIdltzn8pSnM4uHQiVKlbEJiX/qYNx7E=
-notifications:
-  hipchat:
-    rooms:
-      secure: GV/Ckk/00dAExEE4A2bb/6yuwIdTn6EQ63cdKOH0CSLYiUspolHbueuB/2bGVy1ErmL3+l6A/bwZidnGoiR6N3Id/SWRbXBnxn9s7VRFVPsoKLviJ1Xku2rMf/fFW+/PTm2FtEeGiGlvFcbzuIv+b6Vplm8ixIyosFdsEIB2mqc=
