@@ -3,6 +3,7 @@ package au.org.ala.volunteer.helper
 import au.org.ala.volunteer.Field
 import au.org.ala.volunteer.ForumMessage
 import au.org.ala.volunteer.ForumTopic
+import au.org.ala.volunteer.Institution
 import au.org.ala.volunteer.Project
 import au.org.ala.volunteer.ProjectForumTopic
 import au.org.ala.volunteer.ProjectType
@@ -36,6 +37,11 @@ class TaskDataHelper {
             supportMultipleTranscriptions = true
             viewParams = [param1:'value1']
             viewParams2 = [param1:'value1']
+        }
+        p.institution = new Institution().tap {
+            name = "Test Institution"
+            contactName = "Test Institution Admin"
+            contactEmail = "test@institution.me"
         }
         pt.save(failOnError:true)
         p.template.save(failOnError:true)

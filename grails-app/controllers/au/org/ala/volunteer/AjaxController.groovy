@@ -717,6 +717,8 @@ class AjaxController {
             fieldNames.addAll(fieldList.name.unique().sort() as List<String>)
             result.data = exportService.exportJson(taskList, fieldList)
             result.projectId = project.id
+            result.name = project.name
+            result.url = grailsLinkGenerator.link(absolute: true, controller: 'project', action: 'index', id: project.id)
             result.institutionId = project.institution.id
 
             result.success = true
@@ -738,6 +740,8 @@ class AjaxController {
     def hasValidatorRole() {
         def project = Project.get(params.long('projectId'))
         def userId = params.userid as String
+        log.info("Access to ws/hasValidatorRole().")
+        log.info("Params: project: ${params.long('projectId')}, userId: ${params.userid}")
 
         if (!StringUtils.isEmpty(userId) && project) {
             // Get user object from string userId
@@ -745,11 +749,14 @@ class AjaxController {
             def user
             if (userList && userList.size() > 0) user = userList.first()
             if (user) {
+                log.info("Info requested for ${user}")
+                log.info("Result; userHasValidatorRole: ${userService.userHasValidatorRole(user as User, project.id, project.institution.id)}")
                 render(["result": userService.userHasValidatorRole(user as User, project.id, project.institution.id)] as JSON)
                 return
             }
         }
 
+        log.warn("hasValidatorRole(): User or project not found.")
         response.status = SC_NOT_FOUND
         render([message: "User or Project not found."] as JSON)
     }

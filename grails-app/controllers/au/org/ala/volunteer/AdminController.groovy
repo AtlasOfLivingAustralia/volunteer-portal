@@ -742,6 +742,11 @@ class AdminController {
         }
     }
 
+    /**
+     * @deprecated
+     * @see {@link ReportRequestService#projectSummaryReport()}
+     * @return
+     */
     def projectSummaryReport() {
         if (!checkAdminAccess(true)) {
             render(view: '/notPermitted')

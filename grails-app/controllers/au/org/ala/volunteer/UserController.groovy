@@ -7,6 +7,8 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
 
+import static org.springframework.http.HttpStatus.NO_CONTENT
+
 class UserController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -74,7 +76,7 @@ class UserController {
 }'''
 
     def index() {
-        redirect(action: "list", params: params)
+        redirect(action: "adminList", params: params)
     }
 
     def myStats() {
@@ -151,45 +153,61 @@ class UserController {
             render(view: '/notPermitted')
             return
         }
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        []
+    }
+
+    def adminList() {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        params.max = Math.min(params.max ? params.int('max') : 25, 100)
         if (!params.sort) {
             // set default sort and order
-            params.sort = params.sort ? params.sort : "transcribedCount"
-            params.order = "desc"
+            params.sort = params.sort ? params.sort : "lastName" //"transcribedCount"
+            params.order = "asc"
         }
 
         def userList
         def totalCount = 0
 
-        if (params.q) {
-            // TODO Migrate away from database email addresses
-            def c = User.createCriteria()
-            userList = c.list(params) {
+        def closure = {
+            if (params.q) {
                 or {
                     ilike("displayName", '%' + params.q + '%')
                     ilike("email", '%' + params.q + '%')
                 }
             }
-
-            def cc = User.createCriteria()
-            def countResult = cc.list() {
-                or {
-                    ilike("displayName", '%' + params.q + '%')
-                    ilike("email", '%' + params.q + '%')
+            if (params.labelFilter) {
+                and {
+                    labels {
+                        eq("id", params.long('labelFilter'))
+                    }
                 }
-                projections {
-                    countDistinct('id')
-                }
-            } as List
-            // log.info("totalcount: ${totalCount}")
-            totalCount = countResult.first()
-        } else {
-            userList = User.list(params)
-            totalCount = User.count()
+            }
         }
 
+        userList = User.createCriteria().list(params) {
+            closure.delegate = delegate
+            closure()
+        } as List
+
+        def countResult = User.createCriteria().get {
+            closure.delegate = delegate
+            closure()
+            projections {
+                countDistinct('id')
+            }
+        }
+        totalCount = countResult
+
         def currentUser = userService.currentUserId
-        [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser]
+
+        LabelCategory userCategory = LabelCategory.findByName('user')
+        def userLabels = Label.findAllByCategory(userCategory)
+
+        [userInstanceList: userList, userInstanceTotal: totalCount, currentUser: currentUser, userLabels: userLabels]
     }
 
     /**
@@ -305,6 +323,11 @@ class UserController {
         respond(result)
     }
 
+    /**
+     * User notebook
+     * @param user
+     * @return
+     */
     def show(User user) {
         def currentUser = userService.currentUserId
 
@@ -368,8 +391,49 @@ class UserController {
         }
 
         def roles = UserRole.findAllByUser(user)
+        def category = LabelCategory.findByName('user')
+        def userLabelList = Label.findAllByCategory(category)
 
-        return [userInstance: user, roles: roles, userDetails: authService.getUserForUserId(user.getUserId())]
+        return [userInstance: user, roles: roles, userDetails: authService.getUserForUserId(user.getUserId()), userLabelList: userLabelList]
+    }
+
+    @Transactional
+    def addUserLabel(User user) {
+        if (!userService.isAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        def label = Label.findById(params['tag'])
+        if (!label) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'default.label.label', default: 'Tag'), params.id]) as String
+            redirect(action: "edit", params: [id: params.id])
+            return
+        }
+
+        user.labels.add(label)
+        user.save(flush: true, failOnError: true)
+
+        flash.message = message(code: 'user.label.added', args: [label.value]) as String
+        redirect(action: "edit", params: [id: params.id])
+    }
+
+    @Transactional
+    def deleteLabel () {
+        def userId = params['userId']
+        if (userId.isLong()) {
+            def user = User.findById(userId.toLong())
+            def labels = user.labels
+            def labelIdToRemove = params['selectedLabelId']
+            if (labelIdToRemove && labelIdToRemove.isLong()) {
+                user.labels = labels.grep {label ->
+                    label.id != labelIdToRemove.toLong()
+                }
+                user.save(flush: true)
+                render status: NO_CONTENT
+            }
+        }
     }
 
     @Transactional

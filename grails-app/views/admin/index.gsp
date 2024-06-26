@@ -120,7 +120,7 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-primary bs3"
-                                   href="${createLink(controller: 'user', action: 'list')}">User List</a></td>
+                                   href="${createLink(controller: 'user', action: 'adminList')}">Manage Users</a></td>
                             <td>List of all User accounts on DigiVol</td>
                         </tr>
                         <tr>
@@ -166,6 +166,12 @@
                             <td>Advanced Settings</td>
                         </tr>
                         </cl:ifSiteAdmin>
+                        <tr>
+                            <td><a class="btn btn-primary bs3"
+                                   href="${createLink(controller: 'report', action: 'index')}">DigiVol Reporting</a>
+                            </td>
+                            <td>Admin Reports</td>
+                        </tr>
                         <tr>
                             <td>Admin reports</td>
                             <td>

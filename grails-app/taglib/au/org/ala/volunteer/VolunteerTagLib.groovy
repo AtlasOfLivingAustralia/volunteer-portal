@@ -743,11 +743,12 @@ class VolunteerTagLib {
         if (!active) {
             active = attrs.title
         }
+        def target = attrs.target
         def current = pageProperty(name:'page.pageTitle')?.toString()
 
         def mb = new MarkupBuilder(out)
         mb.li(class: "list-group-item ${active == current ? 'active' : ''}") {
-            a(href:attrs.href) {
+            a(href:attrs.href, target: "${target ?: ''}") {
                 i(class:'fa fa-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
                 mkp.yield(attrs.title)
             }
