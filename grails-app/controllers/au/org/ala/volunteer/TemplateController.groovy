@@ -12,7 +12,7 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class TemplateController {
 
-    static allowedMethods = [save: "POST", update: "POST", cloneTemplate: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", cloneTemplate: "POST", addField: "POST"]
 
     def userService
     def templateFieldService
@@ -371,9 +371,11 @@ class TemplateController {
     @Transactional
     def addField() {
         if (!userService.isInstitutionAdmin()) {
-            render(view: '/notPermitted')
+            log.error("User is not allowed to edit this template (user permission check).")
+            render (status: 403 as JSON)
             return
         }
+
         Template template = Template.get(params.int("id"))
         String fieldType = params.fieldType
         String classifier = params.fieldTypeClassifier
@@ -381,24 +383,37 @@ class TemplateController {
         if (template && fieldType) {
             def permissions = templateService.getTemplatePermissions(template)
             if (!permissions.canEdit) {
-                render(view: '/notPermitted')
+                log.error("User is not allowed to edit this template (template permissions check).")
+                render (status: 403 as JSON)
                 return
             }
 
             def existing = TemplateField.findAllByTemplateAndFieldTypeAndFieldTypeClassifier(template, fieldType as DarwinCoreField, classifier)
             if (existing && fieldType != DarwinCoreField.spacer.toString() && fieldType != DarwinCoreField.widgetPlaceholder.toString()) {
-                flash.message = "Add field failed: Field type " + fieldType + " already exists in this template!"
+                def result = [:]
+                result.result = false
+                result.message = "Add field failed: Field type ${fieldType} already exists in this template!".toString()
+                render (result as JSON)
             } else {
                 def displayOrder = getLastDisplayOrder(template) + 1
                 FieldCategory category = params.category ?: FieldCategory.none
                 FieldType type = params.type ?: FieldType.text
                 def label = params.label ?: ""
                 def field = new TemplateField(template: template, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
-                field.save(failOnError: true)
-            }
-        }
+                field.save(flush: true, failOnError: true)
 
-        redirect(action:'manageFields', id: template?.id)
+                flash.message = message(code: 'templateField.field.added', args: [field.fieldType?.label]) as String
+                def resultMap = [:]
+                resultMap.result = true
+                render (resultMap as JSON)
+            }
+        } else {
+            log.error("Template: ${template}, fieldType: ${fieldType}")
+            def resultMap = [:]
+            resultMap.result = false
+            resultMap.message = "Add field failed: No template found"
+            render (resultMap as JSON)
+        }
     }
 
     private int getLastDisplayOrder(Template template) {
@@ -429,7 +444,9 @@ class TemplateController {
 
         def field = TemplateField.findByTemplateAndId(template, params.int("fieldId"))
         if (field && template) {
+            def fieldLabel = field.fieldType?.label
             field.delete()
+            flash.message = message(code: 'templateField.field.removed', args: [fieldLabel]) as String
         }
         redirect(action:'manageFields', id: template?.id)
     }
