@@ -1195,10 +1195,13 @@ class ProjectService implements EventPublisher {
     }
 
     /**
-     * Retrieves background image url
-     * @return background image url or null if non existent
+     * Retrieves background image path. If webUrl parameter is true, returns web URL for the image, otherwise the local
+     * filesystem path is returned.
+     * @param project The project the image is requested from
+     * @param webUrl Use true to return the web URL for the image, false to return the local filepath.
+     * @return String path or web URL of the background image.
      */
-    String getBackgroundImage(Project project, boolean absolute = true) {
+    String getBackgroundImage(Project project, boolean webUrl = true) {
         if (!project) return null
 
         String localPath = "${grailsApplication.config.getProperty('images.home', String) as String}/project/${project.id}/expedition-background-image"
@@ -1209,9 +1212,9 @@ class ProjectService implements EventPublisher {
 
         String returnPath = "${grailsApplication.config.getProperty('server.url', String)}${grailsApplication.config.getProperty('images.urlPrefix', String) as String}project/${project.id}/expedition-background-image."
         if (fileJpg.exists()) {
-            return absolute ? returnPath + "jpg" : localPathJpg
+            return webUrl ? returnPath + "jpg" : localPathJpg
         } else if (filePng.exists()) {
-            return absolute ? returnPath + "png" : localPathPng
+            return webUrl ? returnPath + "png" : localPathPng
         } else {
             return null
         }
