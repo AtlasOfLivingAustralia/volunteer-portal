@@ -243,7 +243,8 @@ class VolunteerTagLib {
      * @attr preLoad if true, allows for pre-load and resizing (jquery plugin)
      */
     def featuredImage = { attrs, body ->
-        def featuredImageUrl = projectService.getFeaturedImage(attrs.project as Project)
+        def featuredImageUrl = projectService.getFeaturedImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
         def cssClass = attrs.remove("class")
         def style = attrs.remove("style")
         def dataErrorUrl = attrs.remove("data-error-url")

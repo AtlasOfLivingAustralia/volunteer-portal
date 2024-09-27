@@ -1187,6 +1187,16 @@ class ProjectService implements EventPublisher {
     }
 
     /**
+     * Returns a queryString parameter to assist with cache-busting images.
+     * @param project the project being used.
+     * @return the querystring parameter consisting of the datetime the project was last updated.
+     */
+    String cacheBust(Project project) {
+        if (!project) return ""
+        return "v=${project.lastUpdated.format(DateConstants.DATE_FORMAT_QS)}"
+    }
+
+    /**
      * Checks if the provided Project has enabled support for multiple transcriptions. Also checks if project is of a
      * supported type (cameratrap/audio).
      * @param project the project to check

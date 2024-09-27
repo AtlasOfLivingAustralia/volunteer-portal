@@ -225,8 +225,9 @@ class ForumTagLib {
                                     }
                                     if (topic instanceof ProjectForumTopic) {
                                         def projectFeaturedImage = projectService.getFeaturedImage((topic as ProjectForumTopic).project)
+                                        def imageUrl = projectFeaturedImage + "?" + projectService.cacheBust((topic as ProjectForumTopic).project)
                                         //delegate.img(src: (topic as ProjectForumTopic).project.featuredImage, width: '40')
-                                        delegate.img(src: projectFeaturedImage, width: '40')
+                                        delegate.img(src: imageUrl, width: '40')
                                     } else if (topic instanceof TaskForumTopic) {
                                         def mm = (topic as TaskForumTopic).task.multimedia?.first()
                                         if (mm) {
