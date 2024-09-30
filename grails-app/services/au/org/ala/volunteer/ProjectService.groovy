@@ -741,6 +741,10 @@ class ProjectService implements EventPublisher {
             } else {
                 log.info "Image Ok. No scaling required."
             }
+
+            // Update project lastUpdated
+            tagProjectLastUpdated(projectInstance)
+
             return true
         } catch (Exception ex) {
             log.error("Could not check and resize expedition image for $projectInstance", ex)
@@ -1192,6 +1196,17 @@ class ProjectService implements EventPublisher {
                 filePng.delete()
             }
         }
+
+        tagProjectLastUpdated(project)
+    }
+
+    /**
+     * Force an update of the project.lastUpdated value as this is used for the cache busting query string parameter.
+     *
+     */
+    private def tagProjectLastUpdated(Project project) {
+        project.lastUpdated = new Date()
+        project.save(flush: true)
     }
 
     /**

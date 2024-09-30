@@ -209,7 +209,8 @@ class VolunteerTagLib {
     }
 
     def backgroundImageUrl = { attrs, body ->
-        out << projectService.getBackgroundImage(attrs.project as Project)
+        out << projectService.getBackgroundImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
     }
 
     /**
@@ -219,7 +220,8 @@ class VolunteerTagLib {
      * @attr style Any custom CSS style to add to the element
      */
     def backgroundImage = { attrs, body ->
-        def backgroundImageUrl = projectService.getBackgroundImage(attrs.project as Project)
+        def backgroundImageUrl = projectService.getBackgroundImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
         def cssClass = attrs.remove("class")
         def style = attrs.remove("style")
 
