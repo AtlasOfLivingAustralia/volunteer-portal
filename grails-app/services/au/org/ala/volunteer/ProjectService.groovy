@@ -23,6 +23,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
 import javax.sql.DataSource
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.concurrent.ThreadLocalRandom
 
 import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
@@ -75,6 +77,7 @@ class ProjectService implements EventPublisher {
     def grailsApplication
     def emailService
     def messageSource
+    def projectStagingService
     @Autowired
     Closure<DSLContext> jooqContextFactory
 
@@ -684,6 +687,40 @@ class ProjectService implements EventPublisher {
         return makeSummaryListFromConditions(conditions, tag, q, sort, offset, max, order, statusFilter, activeFilter, countUser)
     }
 
+    /**
+     * Copies the expedition banner image and the background image from one project to another (To be used with the clone project process).
+     * @param sourceProject the source project being copied from.
+     * @param destinationProject The new destination project.
+     */
+    def copyExpeditionImages(Project sourceProject, Project destinationProject) {
+        try {
+            def bannerFilePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${sourceProject.id}/expedition-image.jpg"
+            def bannerFile = new File(bannerFilePath)
+            def bgFilePath = getBackgroundImage(sourceProject, false)
+            log.info("bg file path: ${bgFilePath}")
+            def bgFile = new File(bgFilePath)
+
+            if (bannerFile.exists()) {
+                def destinationBannerFilePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${destinationProject.id}/expedition-image.jpg"
+                def destinationBannerFile = new File(destinationBannerFilePath)
+                destinationBannerFile.getParentFile().mkdirs()
+                Files.copy(bannerFile.toPath(), destinationBannerFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+
+            if (bgFile.exists()) {
+                def destinationBgFilePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${destinationProject.id}/expedition-background-image"
+                destinationBgFilePath = destinationBgFilePath + (bgFilePath.contains("expedition-background-image.jpg") ? ".jpg" : ".png")
+                def destinationBgFile = new File(destinationBgFilePath)
+                destinationBgFile.getParentFile().mkdirs()
+                Files.copy(bgFile.toPath(), destinationBgFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            } else {
+                log.info("No BG file.")
+            }
+        } catch (Exception ex) {
+            log.error("Could not copy expedition images from $sourceProject to $destinationProject", ex)
+        }
+    }
+
     def checkAndResizeExpeditionImage(Project projectInstance) {
         try {
             def filePath = "${grailsApplication.config.getProperty('images.home', String)}/project/${projectInstance.id}/expedition-image.jpg"
@@ -848,6 +885,14 @@ class ProjectService implements EventPublisher {
         }
     }
 
+    /**
+     * Creates a clone of the source project with the provided new name. Copies the fields contained in
+     * {@link Project#getCloneableFields()} as well as banner/background images and the task staging fields.
+     * @param sourceProject the source project to clone from
+     * @param newName the name of the new project
+     * @see {@link #copyExpeditionImages(Project, Project)}
+     * @see {@link ProjectStagingService#cloneProjectStagingProfile(Project, Project)}
+     */
     def cloneProject(Project sourceProject, String newName) {
         def newProject = new Project(name: newName, featuredLabel: newName, inactive: true,
                 createdBy: userService.getCurrentUser())
@@ -865,6 +910,12 @@ class ProjectService implements EventPublisher {
         }
 
         newProject.save(failOnError: true, flush: true)
+
+        // Copy the banner and background images, if they exist.
+        copyExpeditionImages(sourceProject, newProject)
+
+        // Copy the project staging fields.
+        projectStagingService.cloneProjectStagingProfile(sourceProject, newProject)
 
         return newProject
     }
@@ -1144,10 +1195,13 @@ class ProjectService implements EventPublisher {
     }
 
     /**
-     * Retrieves background image url
-     * @return background image url or null if non existent
+     * Retrieves background image path. If webUrl parameter is true, returns web URL for the image, otherwise the local
+     * filesystem path is returned.
+     * @param project The project the image is requested from
+     * @param webUrl Use true to return the web URL for the image, false to return the local filepath.
+     * @return String path or web URL of the background image.
      */
-    String getBackgroundImage(Project project) {
+    String getBackgroundImage(Project project, boolean webUrl = true) {
         if (!project) return null
 
         String localPath = "${grailsApplication.config.getProperty('images.home', String) as String}/project/${project.id}/expedition-background-image"
@@ -1158,9 +1212,9 @@ class ProjectService implements EventPublisher {
 
         String returnPath = "${grailsApplication.config.getProperty('server.url', String)}${grailsApplication.config.getProperty('images.urlPrefix', String) as String}project/${project.id}/expedition-background-image."
         if (fileJpg.exists()) {
-            return returnPath + "jpg"
+            return webUrl ? returnPath + "jpg" : localPathJpg
         } else if (filePng.exists()) {
-            return returnPath + "png"
+            return webUrl ? returnPath + "png" : localPathPng
         } else {
             return null
         }
