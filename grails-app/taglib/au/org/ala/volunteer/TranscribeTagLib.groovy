@@ -873,7 +873,7 @@ class TranscribeTagLib {
         if (task?.project?.institution) {
             out << institutionService.getLogoImageUrl(task.project.institution)
         } else if (task?.project) {
-            out << projectService.getFeaturedImage(task.project)
+            out << projectService.getFeaturedImage(task.project) + "?" + projectService.cacheBust(task.project)
         } else {
             out << grailsLinkGenerator.resource( file: '/logoDigivolGrey.png' )
         }

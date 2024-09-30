@@ -209,7 +209,8 @@ class VolunteerTagLib {
     }
 
     def backgroundImageUrl = { attrs, body ->
-        out << projectService.getBackgroundImage(attrs.project as Project)
+        out << projectService.getBackgroundImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
     }
 
     /**
@@ -219,7 +220,8 @@ class VolunteerTagLib {
      * @attr style Any custom CSS style to add to the element
      */
     def backgroundImage = { attrs, body ->
-        def backgroundImageUrl = projectService.getBackgroundImage(attrs.project as Project)
+        def backgroundImageUrl = projectService.getBackgroundImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
         def cssClass = attrs.remove("class")
         def style = attrs.remove("style")
 
@@ -243,7 +245,8 @@ class VolunteerTagLib {
      * @attr preLoad if true, allows for pre-load and resizing (jquery plugin)
      */
     def featuredImage = { attrs, body ->
-        def featuredImageUrl = projectService.getFeaturedImage(attrs.project as Project)
+        def featuredImageUrl = projectService.getFeaturedImage(attrs.project as Project) + "?" +
+                projectService.cacheBust(attrs.project as Project)
         def cssClass = attrs.remove("class")
         def style = attrs.remove("style")
         def dataErrorUrl = attrs.remove("data-error-url")
