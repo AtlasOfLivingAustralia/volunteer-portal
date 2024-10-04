@@ -1,11 +1,14 @@
 package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
+import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.util.regex.Pattern
 
 import static org.springframework.http.HttpStatus.NO_CONTENT
 
@@ -618,32 +621,40 @@ class UserController {
         log.debug("ajaxGetPoints| Transcription.countByFullyTranscribedBy(): ${sw.toString()}")
         sw.reset().start()
 
-        final query = """{
-  "constant_score": {
-    "filter": {
-      "and": [
-        { "term": { "transcriptions.fullyTranscribedBy": "${userInstance.userId}" } },
-        { "nested" :
-          {
-            "path" : "fields",
-            "filter" : { "term" : { "name": "decimalLongitude"}}
-          }
-        },
-        { "nested" :
-          {
-            "path" : "fields",
-            "filter" : { "term" : { "name": "decimalLongitude"}}
-          }
+        final query = """
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": { 
+                        "transcriptions.fullyTranscribedBy": "${userInstance.userId}" 
+                    }
+                },
+                {
+                    "term": { 
+                        "fields.name": "decimalLongitude" 
+                    }
+                },
+                {
+                    "term": { 
+                        "fields.name": "decimalLatitude" 
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }"""
-
-        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, taskCount.intValue(), fullTextIndexService.rawResponse)
+        final int MAX_SEARCH = 10000
+        def maxSearchResults = (MAX_SEARCH <= taskCount.intValue() ? MAX_SEARCH : taskCount.intValue())
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, /*taskCount.intValue()*/ maxSearchResults, fullTextIndexService.rawResponse)
         sw.stop()
         log.debug("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
         sw.reset().start()
+
+        // Leaving this here in case I need something more complex.
+        //def regex = Pattern.compile("((((?<deg>([+|-]?)\\d+)°)?)(((?<min>([+|-]?)\\d+)')?))(((?<sec>([+|-]?)\\d+((\\.(\\d+))?))'')?)(?<dir>[NnSsEeWw])")
+        def regex = Pattern.compile(/(((\d+)°)?)(((\d+)')?)(((\d+)")?)([NnSsEeWw])/)
 
         def data = searchResponse.hits.hits.collect { hit ->
             def field = hit.source['fields']
@@ -651,7 +662,34 @@ class UserController {
             def pt = field.findAll { value ->
                 value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
             }.collectEntries { value ->
-                def dVal = value['value']
+                def dVal = value['value'] as String
+                log.debug("ajaxGetPoints| dVal: ${dVal}")
+
+                def matcher = regex.matcher(dVal)
+                if (matcher.find()) {
+                    log.debug("ajaxGetPoints| Group count: ${matcher.groupCount()}")
+                    for (int i = 0; i <= matcher.groupCount(); i++) {
+                        log.debug("match[${i}]: ${matcher.group(i)}")
+                    }
+                    try {
+                        BigDecimal minutes = (getBigDecimalFromString(matcher.group(6).toString()) / new BigDecimal(60))
+                        BigDecimal seconds = (getBigDecimalFromString(matcher.group(9).toString()) / new BigDecimal(3600))
+                        BigDecimal degrees = getBigDecimalFromString(matcher.group(3).toString())
+                        log.debug("Conversion: degrees: [${degrees}], minutes: [${minutes}], seconds: [${seconds}]")
+                        degrees += (minutes + seconds)
+
+                        // Check direction and assign negative if necessary
+                        if (matcher.group(10).equalsIgnoreCase("S") ||
+                                matcher.group(10).equalsIgnoreCase("W")) {
+                            degrees = -degrees
+                        }
+
+                        dVal = degrees.toString()
+                        log.debug("dVal: ${dVal}")
+                    } catch (Exception e) {
+                        log.error("Error attempting to convert degrees, minutes and seconds to a decimal value ${dVal}, skipping.", e)
+                    }
+                }
 
                 if (value['name'] == 'decimalLongitude') {
                     [lng: dVal]
@@ -667,6 +705,19 @@ class UserController {
         log.debug("ajaxGetPoints| generateResults: ${sw.toString()}")
 
         render(data as JSON)
+    }
+
+    /**
+     * Converts a string value to a BigDecimal, returning 0 if the value isn't parseable.
+     * @param input the value to convert
+     * @return a BigDecimal or 0 if null/empty.
+     */
+    def getBigDecimalFromString(String input) {
+        if (!Strings.isNullOrEmpty(input) && !input.equalsIgnoreCase("null")) {
+            return new BigDecimal(input.toInteger().intValue())
+        } else {
+            return new BigDecimal(0)
+        }
     }
 
     def notebookMainFragment() {
