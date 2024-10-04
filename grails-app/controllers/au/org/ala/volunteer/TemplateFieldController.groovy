@@ -67,7 +67,7 @@ class TemplateFieldController {
             bindData(templateField, params)
             if (!templateField.hasErrors() && templateField.save(flush: true)) {
                 flash.message = message(code: 'default.updated.message',
-                         args: [message(code: 'templateField.label', default: 'TemplateField'), templateField.id]) as String
+                         args: [message(code: 'templateField.label', default: 'TemplateField'), templateField.fieldType.label ]) as String
                 redirect(controller: 'template', action: "manageFields", id: templateField.template.id)
             } else {
                 render(view: "edit", model: [templateFieldInstance: templateField])
@@ -86,14 +86,15 @@ class TemplateFieldController {
         }
         def templateField = TemplateField.get(params.long('id'))
         if (templateField) {
+            def fieldLabel = templateField.fieldType.label
             try {
                 templateField.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message',
-                         args: [message(code: 'templateField.label', default: 'TemplateField'), params.id]) as String
+                         args: [message(code: 'templateField.label', default: 'TemplateField'), fieldLabel]) as String
                 redirect(controller: 'template', action: "manageFields", id: templateField.template.id)
             } catch (DataIntegrityViolationException e) {
                 String message = message(code: 'default.not.deleted.message',
-                          args: [message(code: 'templateField.label', default: 'TemplateField'), params.id])
+                          args: [message(code: 'templateField.label', default: 'TemplateField'), fieldLabel])
                 flash.message = message
                 log.error(message, e)
                 redirect(action: "show", id: params.id)
