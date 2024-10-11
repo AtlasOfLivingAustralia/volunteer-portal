@@ -1,4 +1,5 @@
 ---
+
 grails:
     profile: web
     codegen:

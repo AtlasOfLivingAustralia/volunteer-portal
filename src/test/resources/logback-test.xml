@@ -11,7 +11,7 @@
 <!--    <logger name="au.org.ala.volunteer" level="DEBUG" />-->
 <!--    <logger name="org.flywaydb" level="TRACE" />-->
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

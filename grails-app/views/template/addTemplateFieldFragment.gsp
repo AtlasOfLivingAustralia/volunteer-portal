@@ -35,32 +35,58 @@
 </form>
 
 <script>
+
     $('#btnSaveField').click(function (e) {
         e.preventDefault();
-        var fieldType = encodeURIComponent($("#fieldName").val());
+
+        const fieldType = encodeURIComponent($("#fieldName").val());
         if (fieldType) {
-            var url = "${createLink(controller:'template', action:'addField', id:templateInstance.id)}?fieldType=" + fieldType;
+            $('#btnCancelAddField').prop('disabled', 'disabled');
+            $('#btnSaveField').prop('disabled', 'disabled');
 
-            var classifier = $('#fieldTypeClassifier').val();
-            if (classifier) {
-                url += "&fieldTypeClassifier=" + encodeURIComponent(classifier);
+            const url = "${createLink(controller: 'template', action: 'addField')}";
+            let data = {
+                id: ${templateInstance.id},
+                fieldType: fieldType
             }
 
-            var label = $("#label").val();
-            if (label) {
-                url += "&label=" + encodeURIComponent(label);
-            }
-            var category = $("#category").val();
-            if (category) {
-                url += "&category=" + encodeURIComponent(category);
-            }
-            var type = $("#type").val();
-            if (type) {
-                url += "&type=" + encodeURIComponent(type);
-            }
-            window.location = url;
+            let classifier = $('#fieldTypeClassifier').val();
+            if (classifier) data.fieldTypeClassifier = encodeURIComponent(classifier);
+
+            let label = $("#label").val();
+            if (label) data.label = encodeURIComponent(label);
+
+            let category = $("#category").val();
+            if (category) data.category = encodeURIComponent(category);
+
+            let type = $("#type").val();
+            if (type) data.type = encodeURIComponent(type);
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json"
+            }).done(function(data, textStatus, jqXHR) {
+                if (data['result'] === true) {
+                    window.location.reload();
+                    return false;
+                } else {
+                    if (data.message) {
+                        alert(data.message);
+                    }
+                    $('#btnCancelAddField').prop('disabled', '');
+                    $('#btnSaveField').prop('disabled', '');
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.log("Error textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+                $('#btnCancelAddField').prop('disabled', '');
+                $('#btnSaveField').prop('disabled', '');
+
+                alert('There was an error adding the field: ' + errorThrown);
+            });
         }
-
     });
 
     $("#btnCancelAddField").click(function (e) {

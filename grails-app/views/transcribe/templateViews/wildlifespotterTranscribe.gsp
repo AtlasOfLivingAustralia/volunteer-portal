@@ -80,7 +80,7 @@
                                                        style="margin-bottom: 0; height: 34px;"
                                                        placeholder="${message(code: 'default.input.keywordSearch.placeholder', default: "Search by keyword")}">
                                             </div>
-                                            <g:each var="cat" in="${wsParams.categories}" status="i">
+                                            <g:each var="cat" in="${wsParams?.categories}" status="i">
                                                 <div class="btn-group category-filter">
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">

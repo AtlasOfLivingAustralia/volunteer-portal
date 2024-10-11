@@ -4,6 +4,7 @@ import au.org.ala.volunteer.DigivolServletContextConfig
 import au.org.ala.volunteer.collectory.CollectoryClientFactoryBean
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.ClassicConfiguration
+import org.postgresql.ds.PGSimpleDataSource
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 
@@ -31,8 +32,14 @@ beans = {
 
     if (application.config.getProperty('spring.flyway.enabled', Boolean)) {
 
+        flywayDataSource(PGSimpleDataSource) { bean ->
+            url = application.config.getProperty('spring.flyway.jdbcUrl') ?: application.config.getProperty('dataSource.url')
+            user = application.config.getProperty('spring.flyway.username') ?: application.config.getProperty('dataSource.username')
+            password = application.config.getProperty('spring.flyway.password') ?: application.config.getProperty('dataSource.password')
+        }
+
         flywayConfiguration(ClassicConfiguration) { bean ->
-            dataSource = ref('dataSource')
+            dataSource = ref('flywayDataSource')
             defaultSchema = application.config.getProperty('spring.flyway.default-schema')
             table = application.config.getProperty('spring.flyway.table')
             baselineOnMigrate = application.config.getProperty('spring.flyway.baselineOnMigrate', Boolean, true)

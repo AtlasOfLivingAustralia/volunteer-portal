@@ -5,13 +5,14 @@
         <p>This will copy the following fields:</p>
         <ul>
             <li>Description</li>
+            <li>Banner/Background Image(s)</li>
             <li>Template</li>
             <li>Expedition type</li>
             <li>Tags</li>
             <li>Picklist Institution</li>
             <li>Tutorial info</li>
             <li>Map settings</li>
-            <li>Task/transcription settings</li>
+            <li>Task/transcription settings (including task field definitions)</li>
         </ul>
     </div>
 

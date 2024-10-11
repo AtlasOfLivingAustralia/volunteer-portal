@@ -177,7 +177,7 @@ class VolunteerStatsService {
             if (topic instanceof ProjectForumTopic) {
                 def forumProject = ((ProjectForumTopic) topic).project
                 forumName = forumProject.name
-                thumbnail = projectService.getFeaturedImage(forumProject)
+                thumbnail = projectService.getFeaturedImage(forumProject) + "?" + projectService.cacheBust(forumProject)
                 forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: forumProject.id])
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task

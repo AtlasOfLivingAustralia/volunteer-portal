@@ -192,4 +192,28 @@ class ProjectStagingService {
         }
         profile
     }
+
+    /**
+     * Clones the project staging profile of a source project to a new project.
+     * @param sourceProject The source project to copy from
+     * @param newProject The destination project
+     */
+    def cloneProjectStagingProfile(Project sourceProject, Project newProject) {
+        def sourceProjectProfile = findProjectStagingProfile(sourceProject)
+
+        // Clone to new project
+        def newProfile = new ProjectStagingProfile(project: newProject)
+        newProfile.save(flush: true, failOnError: true)
+
+        for (StagingFieldDefinition fieldDefinition : sourceProjectProfile.fieldDefinitions) {
+            def newFieldDef = new StagingFieldDefinition(fieldDefinitionType: fieldDefinition.fieldDefinitionType,
+                fieldName: fieldDefinition.fieldName,
+                format: fieldDefinition.format,
+                profile: newProfile,
+                recordIndex: fieldDefinition.recordIndex
+            )
+            newFieldDef.save(flush: true, failOnError: true)
+            newProfile.addToFieldDefinitions(newFieldDef)
+        }
+    }
 }
