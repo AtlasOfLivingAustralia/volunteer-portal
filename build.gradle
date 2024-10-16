@@ -149,7 +149,7 @@ dependencies {
     implementation "au.org.ala.plugins:openapi:1.3.0"
     implementation "org.grails.plugins:ala-admin-plugin:2.3.0"
     implementation "org.grails.plugins:spring-session-helper:2.0.1"
-    implementation "au.org.ala.plugins.grails:downloads-plugin:4.2.2"
+    //implementation "au.org.ala.plugins.grails:downloads-plugin:4.2.2"
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20160526.1-ALA'
 
     // Dependencies
