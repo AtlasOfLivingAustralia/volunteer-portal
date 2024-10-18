@@ -71,8 +71,12 @@ var notebook = {
     function load_content(marker, id) {
       $.ajax($('#map').attr('infowindow-url') + "/" + id).done(function(data) {
         var content =
-          "<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber +
-          "</div>";
+            "<div style='font-size:12px;line-height:1.3em;'>" +
+            "Task: " + id +
+            "<br />File: <a href=\"${createLink(controller: 'task', action: 'showDetails')}/" + id + "\" target=\"_blank\">" + data.filename + "</a>";
+        if (data.name !== "" && data.name !== undefined && data.name !== null) content += "<br />Taxon: " + data.name
+          //"<div style='font-size:12px;line-height:1.3em;'>Catalogue No.: " + data.cat + "<br/>Taxon: " + data.name + "<br/>Transcribed by: " + data.transcriber +
+        content += "</div>";
         notebook.infowindow.close();
         notebook.infowindow.setContent(content);
         notebook.infowindow.open(notebook.map, marker);
