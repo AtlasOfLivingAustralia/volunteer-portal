@@ -187,7 +187,8 @@
 
     <div id="map"
          markers-url="${createLink(controller: "user", action: 'ajaxGetPoints', id: userInstance.id)}"
-         infowindow-url="${createLink(controller: 'task', action: 'details')}">
+         infowindow-url="${createLink(controller: 'task', action: 'details')}"
+         taskview-url="${createLink(controller: 'task', action: 'showDetails')}">
     </div>
 </section>
 
