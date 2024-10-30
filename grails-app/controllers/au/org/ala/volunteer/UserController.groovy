@@ -645,15 +645,15 @@ class UserController {
         }
     }
 }"""
+        // Elastic Search max value.
         final int MAX_SEARCH = 10000
         def maxSearchResults = (MAX_SEARCH <= taskCount.intValue() ? MAX_SEARCH : taskCount.intValue())
-        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, /*taskCount.intValue()*/ maxSearchResults, fullTextIndexService.rawResponse)
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, maxSearchResults, fullTextIndexService.rawResponse)
         sw.stop()
         log.debug("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
         sw.reset().start()
 
-        // Leaving this here in case I need something more complex.
-        //def regex = Pattern.compile("((((?<deg>([+|-]?)\\d+)°)?)(((?<min>([+|-]?)\\d+)')?))(((?<sec>([+|-]?)\\d+((\\.(\\d+))?))'')?)(?<dir>[NnSsEeWw])")
+        // Regex for detecting traditional latitude/longitude. We will convert to decimal for Google Maps.
         def regex = Pattern.compile(/(((\d+)°)?)(((\d+)')?)(((\d+)")?)([NnSsEeWw])/)
 
         def data = searchResponse.hits.hits.collect { hit ->
