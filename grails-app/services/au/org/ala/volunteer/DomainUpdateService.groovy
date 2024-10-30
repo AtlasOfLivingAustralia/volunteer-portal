@@ -96,7 +96,7 @@ class DomainUpdateService {
     }
 
     @Transactional
-    def processTaskQueue(int maxTasks = 10000) {
+    def processTaskQueue(int maxTasks = 1000) {
         int taskCount = 0
         QueueTask jobDescriptor = null
 
@@ -144,7 +144,7 @@ class DomainUpdateService {
                 }
             }
         }
-        log.trace("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to get tasks from queue")
+        log.debug("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms to get tasks from queue")
 
         currentlyProcessing.set(indexes.size())
         log.debug("Took ${indexes.size()} jobs from queue, current queue length: $queueLength")

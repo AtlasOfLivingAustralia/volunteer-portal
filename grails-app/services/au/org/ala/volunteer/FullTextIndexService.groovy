@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import grails.async.Promises
 import grails.converters.JSON
 import grails.gorm.transactions.NotTransactional
@@ -30,6 +31,7 @@ import org.hibernate.FetchMode
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import java.util.concurrent.TimeUnit
 
 import static au.org.ala.volunteer.BenchmarkUtils.benchmark
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder
@@ -45,6 +47,11 @@ class FullTextIndexService {
 
     private Node node
     private Client client
+
+    private LapTime fieldQueries
+    private LapTime fieldRead
+    private LapTime transcriptionQueries
+    private LapTime transcriptionRead
 
     @NotTransactional
     @PostConstruct
@@ -100,18 +107,14 @@ class FullTextIndexService {
     }
 
     def indexTask(Task task) {
-
-        //def ct = new CodeTimer("Indexing task ${task.id}")
-
         LinkedHashMap<String, Serializable> data = esObjectFromTask(task)
-
         return indexEsObject(data)
-        //ct.stop(true)
     }
 
     private LinkedHashMap<String, Serializable> esObjectFromTask(Task task) {
 //        User validator = task.fullyValidatedBy ? User.findByUserId(task.fullyValidatedBy) : null
 //        User transcriber = task.fullyTranscribedBy ? User.findByUserId(task.fullyTranscribedBy) : null
+        //Stopwatch sw = Stopwatch.createStarted()
         def data = [
                 id                  : task.id,
                 projectid           : task.project.id,
@@ -142,10 +145,14 @@ class FullTextIndexService {
                 ],
                 transcriptions       : []
         ]
+        //log.debug("IndexService| Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms build task object")
 
         if (task.project.mapInitLatitude && task.project.mapInitLongitude) {
             data.project.put('mapRef', [lat: task.project.mapInitLatitude, lon: task.project.mapInitLongitude])
         }
+
+        Stopwatch sw = Stopwatch.createStarted()
+        //sw.reset().start()
 
         def c = Field.createCriteria()
         def fields = c {
@@ -153,13 +160,25 @@ class FullTextIndexService {
             eq("superceded", false)
         }
 
+        //log.debug("IndexService| Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms query task fields")
+        fieldQueries.addTime(sw.stop().elapsed(TimeUnit.MILLISECONDS))
+        sw.reset().start()
+
         fields.each { field ->
             if (field.value) {
                 data.fields << [fieldid: field.id, name: field.name, recordIdx: field.recordIdx, value: field.value, transcribedByUserId: field.transcribedByUserId, validatedByUserId: field.validatedByUserId, updated: field.updated, created: field.created]
             }
         }
 
+        //log.debug("IndexService| Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms add field data to object")
+//        fieldRead.addTime(sw.stop().elapsed(TimeUnit.MILLISECONDS))
+        sw.reset().start()
+
         def transcriptions = Transcription.findAllByTask(task)
+
+        //log.debug("IndexService| Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms query transaction")
+        transcriptionQueries.addTime(sw.stop().elapsed(TimeUnit.MILLISECONDS))
+        sw.reset().start()
 
         transcriptions.each { transcription ->
             if (transcription.fullyTranscribedBy) {
@@ -167,6 +186,9 @@ class FullTextIndexService {
                                        fullyValidatedBy: transcription.fullyValidatedBy, dateFullyValidated: transcription.dateFullyValidated]
             }
         }
+
+        //log.debug("IndexService| Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms add transaction data")
+//        transcriptionRead.addTime(sw.stop().elapsed(TimeUnit.MILLISECONDS))
 
         return data
     }
@@ -505,8 +527,14 @@ class FullTextIndexService {
     @Transactional(readOnly = true)
     def indexTasks(Set<Long> ids, Closure cb = null) {
         if (ids) {
+            fieldQueries = new LapTime("Field Queries")
+//            fieldRead = new LapTime("Field Read")
+            transcriptionQueries = new LapTime("Transcription Queries")
+//            transcriptionRead = new LapTime("Transcription Read")
 
             final numBuckets = (int)(ids.size() / Runtime.runtime.availableProcessors()) + 1
+            LapTime indexTimes = new LapTime("Index Times", LapTime.TIMEFACTOR_SECONDS)
+            int counter = 0;
 
             def promises = ids.toList()
                 .collate(numBuckets)
@@ -524,7 +552,16 @@ class FullTextIndexService {
                             }.collect { task ->
                                 IndexResponse r = null
                                 try {
+                                    Stopwatch sw = Stopwatch.createStarted()
                                     r = indexTask(task)
+                                    //log.debug("Took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)}ms total time to index task")
+                                    indexTimes.addTime(sw.stop().elapsed(TimeUnit.MILLISECONDS))
+                                    counter++
+//                                    if (counter % 500 == 0) {
+//                                        log.debug("FullTextIndexService | After ${counter} tasks: ${indexTimes.getTimes()}")
+//                                        log.debug("${fieldQueries?.getTimes()}")
+//                                        log.debug("${transcriptionQueries?.getTimes()}")
+//                                    }
                                     if (cb) cb.call(task.id)
                                 } catch (e) {
                                     log.error("exception trying to index task $task.id", e)
@@ -535,6 +572,9 @@ class FullTextIndexService {
                     }
                 }
             Promises.waitAll(promises).flatten()
+            log.debug("FullTextIndexService | After ${counter} tasks: ${indexTimes.getTimes()}")
+            log.debug("${fieldQueries?.getTimes()}")
+            log.debug("${transcriptionQueries?.getTimes()}")
         } else { [] }
     }
 
