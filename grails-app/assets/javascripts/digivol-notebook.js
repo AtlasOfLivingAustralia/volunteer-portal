@@ -74,7 +74,9 @@ var notebook = {
         var content =
             "<div style='font-size:12px;line-height:1.3em;'>" +
             "Task: " + id +
-            "<br />File: <a href=\"" + taskViewUrl + "/" + id + "\" target=\"_blank\">" + data.filename + "</a>";
+            "<br />File: ";
+        if (taskViewUrl !== "" && taskViewUrl !== undefined) content += "<a href=\"" + taskViewUrl + "/" + id + "\" target=\"_blank\">" + data.filename + "</a>";
+        else content += data.filename;
         if (data.name !== "" && data.name !== undefined && data.name !== null) content += "<br />Taxon: " + data.name
         content += "</div>";
         notebook.infowindow.close();
