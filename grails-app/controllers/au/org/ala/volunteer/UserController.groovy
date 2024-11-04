@@ -647,8 +647,7 @@ class UserController {
 }"""
         // Elastic Search max value.
         final int MAX_SEARCH = 10000
-        def maxSearchResults = (MAX_SEARCH <= taskCount.intValue() ? MAX_SEARCH : taskCount.intValue())
-        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, maxSearchResults, fullTextIndexService.rawResponse)
+        def searchResponse = fullTextIndexService.rawSearch(query, SearchType.QUERY_THEN_FETCH, MAX_SEARCH, fullTextIndexService.rawResponse)
         sw.stop()
         log.debug("ajaxGetPoints| fullTextIndexService.rawSearch(): ${sw.toString()}")
         sw.reset().start()
