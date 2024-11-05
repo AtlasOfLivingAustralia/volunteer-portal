@@ -186,7 +186,7 @@
     </div>
 
     <g:if test="${isValidator}">
-        <g:set var="taskViewUrl" value="${createLink(controller: 'task', action: 'showDetails')}""/>
+        <g:set var="taskViewUrl" value="${createLink(controller: 'task', action: 'showDetails')}"/>
     </g:if>
     <g:else>
         <g:set var="taskViewUrl" value=""/>
