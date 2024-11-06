@@ -390,7 +390,8 @@ class UserController {
         if (!user) {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            redirect(action: "list")
+            redirect(action: "adminList")
+            return
         }
 
         def roles = UserRole.findAllByUser(user)
@@ -473,7 +474,7 @@ class UserController {
         else {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            redirect(action: "list")
+            redirect(action: "adminList")
         }
     }
 
@@ -491,7 +492,7 @@ class UserController {
                 user.delete(flush: true)
                 flash.message = message(code: 'default.deleted.message',
                          args: [message(code: 'user.label', default: 'User'), params.id]) as String
-                redirect(action: "list")
+                redirect(action: "adminList")
             } catch (DataIntegrityViolationException e) {
                 String message = message(code: 'default.not.deleted.message',
                           args: [message(code: 'user.label', default: 'User'), params.id]) as String
@@ -502,7 +503,7 @@ class UserController {
         } else {
             flash.message = message(code: 'default.not.found.message',
                      args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            redirect(action: "list")
+            redirect(action: "adminList")
         }
     }
 
