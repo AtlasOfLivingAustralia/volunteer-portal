@@ -185,9 +185,17 @@
         </div>
     </div>
 
+    <g:if test="${isValidator}">
+        <g:set var="taskViewUrl" value="${createLink(controller: 'task', action: 'showDetails')}"/>
+    </g:if>
+    <g:else>
+        <g:set var="taskViewUrl" value=""/>
+    </g:else>
+
     <div id="map"
          markers-url="${createLink(controller: "user", action: 'ajaxGetPoints', id: userInstance.id)}"
-         infowindow-url="${createLink(controller: 'task', action: 'details')}">
+         infowindow-url="${createLink(controller: 'task', action: 'details')}"
+         taskview-url="${taskViewUrl}">
     </div>
 </section>
 
