@@ -43,7 +43,7 @@
                 <div class="input-group">
                     <g:textField name="q" class="form-control input-lg" placeholder="Search e.g. Bivalve" />
                     <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button">
+                        <button class="btn btn-info btn-lg" id="header-search" type="submit">
                             <i class="glyphicon glyphicon-search"></i>
                         </button>
                     </span>
