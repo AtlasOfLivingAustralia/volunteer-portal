@@ -161,7 +161,7 @@ dependencies {
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.3' // old: 2.8.0
     implementation 'org.apache.commons:commons-compress:1.11'
     implementation 'org.apache.commons:commons-pool2:2.11.1' // old: 2.4.2
-    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0' //''2.5'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.17.0' //''2.5'
     implementation 'org.elasticsearch:elasticsearch:2.4.6'
     // optional for elastic search, version should match elastic search optional dep
     implementation group: 'org.apache.lucene', name: 'lucene-expressions', version: '4.9.1' //6.0.0 for ES 5.0, 8.11.1 for ES 7.17

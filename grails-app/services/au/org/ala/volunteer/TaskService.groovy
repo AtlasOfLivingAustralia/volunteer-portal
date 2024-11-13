@@ -899,8 +899,12 @@ ORDER BY record_idx, name;
             fileMap.dir = dir.absolutePath
             def file = new File(dir, filename)
             file << conn.inputStream
-            fileMap.raw = file.name
-            fileMap.localPath = file.getAbsolutePath()
+
+            File processedFile = new File(dir, filename)
+            boolean result = ImageUtils.reorientImage(file, processedFile)
+
+            fileMap.raw = processedFile.name
+            fileMap.localPath = processedFile.getAbsolutePath()
             fileMap.localUrlPrefix = urlPrefix + "${projectId}/${taskId}/${multimediaId}/"
             fileMap.contentType = conn.contentType
             return fileMap
