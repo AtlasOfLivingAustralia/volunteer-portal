@@ -78,7 +78,7 @@
                     </g:if>
                     <g:else>
                         <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
-                        <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
+                        <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType.name?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
                     </g:else>
 
                 </div>
