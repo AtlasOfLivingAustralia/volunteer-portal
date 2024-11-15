@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import grails.converters.JSON
 import org.apache.catalina.connector.ClientAbortException
+import org.apache.commons.io.FilenameUtils
 
 import javax.imageio.ImageIO
 
@@ -27,8 +28,17 @@ class ImageController {
 
         format = format.toLowerCase()
         if (!FORMATS.contains(format)) {
-            render([error: "${format} not supported"] as JSON, status: SC_BAD_REQUEST)
-            return
+            // Did the extension get screwed up? Check if the file does exist:
+            File fileCheck = findImage(encodedPrefix, encodedName)
+            if (fileCheck) {
+                // Image is there with a different extension.
+                log.debug("Found file under different file extension (or broken input): ${fileCheck.name}")
+                format = FilenameUtils.getExtension(fileCheck.name)?.toLowerCase()
+            } else {
+                log.debug("No file found with supported extension: ${encodedName}.${format}")
+                render([error: "${format} not supported"] as JSON, status: SC_BAD_REQUEST)
+                return
+            }
         }
 
         if (width < 0 || width >  MAX_WIDTH || height < 0 || height > MAX_HEIGHT) {
