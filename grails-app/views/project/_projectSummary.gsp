@@ -3,7 +3,7 @@
                                  id="${projectSummary.project?.id}">${projectSummary.project?.featuredLabel}</g:link></h4>
 
     <div class="not-a-badge-row ellipsis primary-color">
-        <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconLabel, statusFilter: statusFilterMode, activeFilter: activeFilterMode]"
+        <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconName, statusFilter: statusFilterMode, activeFilter: activeFilterMode]"
                 class="not-a-badge">
             <span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link>
         <g:link controller="institution" action="index" id="${projectSummary.project?.institutionId}"

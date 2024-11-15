@@ -402,10 +402,12 @@ class ProjectService implements EventPublisher {
         // Default, if all else fails
         def iconImage = grailsLinkGenerator.resource(file:'/iconLabels.png')
         def iconLabel = 'Specimens'
+        def iconName = 'specimens'
 
         if (project.projectType) {
             iconImage = projectTypeService.getIconURL(project.projectType)
             iconLabel = project.projectType.label
+            iconName = project.projectType.name
         }
 
         // def volunteer = User.findAll("from User where userId in (select distinct fullyTranscribedBy from Task where project_id = ${project.id})")
@@ -413,6 +415,7 @@ class ProjectService implements EventPublisher {
         def ps = new ProjectSummary(project: project)
         ps.iconImage = iconImage
         ps.iconLabel = iconLabel
+        ps.iconName = iconName
 
         ps.taskCount = taskCount.toLong()
         ps.transcribedCount = transcribedCount.toLong()
@@ -540,7 +543,7 @@ class ProjectService implements EventPublisher {
             // #392 Add Project Type to the tag search (i.e. clicking on Project Type searches by 'tag')
             def tagSearch = []
             def labelJoinTable = context.select([PROJECT_LABELS.PROJECT_ID]).from(PROJECT_LABELS.leftJoin(LABEL).on(PROJECT_LABELS.LABEL_ID.eq(LABEL.ID))).where(LABEL.VALUE.in(tag))
-            def typeJoinTable = context.select([PROJECT.ID]).from(PROJECT.leftJoin(PROJECT_TYPE).on(PROJECT.PROJECT_TYPE_ID.eq(PROJECT_TYPE.ID))).where(PROJECT_TYPE.LABEL.in(tag))
+            def typeJoinTable = context.select([PROJECT.ID]).from(PROJECT.leftJoin(PROJECT_TYPE).on(PROJECT.PROJECT_TYPE_ID.eq(PROJECT_TYPE.ID))).where(PROJECT_TYPE.NAME.in(tag))
 
             tagSearch.add(PROJECT.ID.in(labelJoinTable))
             tagSearch.add(PROJECT.ID.in(typeJoinTable))
@@ -580,7 +583,7 @@ class ProjectService implements EventPublisher {
                 sortCondition = jNvl(INSTITUTION.NAME, PROJECT.FEATURED_OWNER)
                 break
             case 'type':
-                sortCondition = PROJECT_TYPE.LABEL
+                sortCondition = PROJECT_TYPE.NAME
                 break
             default:
                 sortCondition = jLower(PROJECT.FEATURED_LABEL)
