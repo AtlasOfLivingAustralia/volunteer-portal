@@ -206,8 +206,9 @@ public class ImageUtils {
                 transforms << Scalr.Rotation.FLIP_VERT
                 break
             case 5:
-                transforms << Scalr.Rotation.CW_180
+                transforms << Scalr.Rotation.CW_90
                 transforms << Scalr.Rotation.FLIP_HORZ
+                break
             case 6:
                 transforms << Scalr.Rotation.CW_90
                 break
@@ -226,7 +227,7 @@ public class ImageUtils {
             BufferedImage result = ImageIO.read(original)
 
             transforms.each { transform ->
-                result = Scalr.rotate(result, transform, Scalr.OP_ANTIALIAS)
+                result = Scalr.rotate(result, transform, null)
             }
             processed = ImageIO.write(result, FilenameUtils.getExtension(original.name), output)
         }
