@@ -28,7 +28,7 @@
                                 </div>
                             </div>
                             <div class="col-xs-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
-                                <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: true]" />
+                                <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: true, maxDescriptionLen: 250]" />
                             </div>
                         </div>
                     </div>

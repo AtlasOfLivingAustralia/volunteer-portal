@@ -19,7 +19,16 @@
     </div>
 
     <g:if test="${includeDescription}">
-        <g:set var="descrptionSnippet"><cl:truncate maxlength="${params.mode == 'list' ? '150' : '85'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
+        <g:set var="descrptionSnippet">
+            <cl:truncate maxlength="${Integer.toString(maxDescriptionLen) ?: '200'}">
+                <g:if test="${projectSummary.project?.shortDescription}">
+                    ${raw(projectSummary.project?.shortDescription)}
+                </g:if>
+                <g:else>
+                    ${raw(projectSummary.project?.description)}
+                </g:else>
+            </cl:truncate>
+        </g:set>
         <p class="projectDescription">${raw(descrptionSnippet)}</p>
     </g:if>
 
