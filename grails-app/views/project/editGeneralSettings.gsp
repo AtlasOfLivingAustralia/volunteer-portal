@@ -5,6 +5,20 @@
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
     <asset:stylesheet src="label-autocomplete"/>
+
+    <style>
+        #count_message {
+          background-color: smoke;
+          /* Leaving this here for now (places counter inside field) */
+          /*margin-top: -26px;*/
+          /*margin-right: 3px;*/
+        }
+
+        #shortDescription {
+            resize: none;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -52,7 +66,9 @@
         <label class="control-label col-md-3" for="shortDescription">Short description</label>
 
         <div class="col-md-6">
-            <g:textField class="form-control" name="shortDescription" value="${projectInstance.shortDescription}"/>
+            %{-- <g:textField class="form-control" maxlength="500" name="shortDescription" value="${projectInstance.shortDescription}"/> --}%
+            <g:textArea class="form-control" name="shortDescription" maxlength="500" rows="5" value="${projectInstance.shortDescription}" />
+            <span class="pull-right label label-default" id="count_message"></span>
         </div>
     </div>
 
@@ -261,6 +277,14 @@
         }
 
         $('#labels').on('click', 'span.label i.delete-label', onDeleteClick);
+
+        var shortDescMax = 500;
+        $('#count_message').html($('#shortDescription').val().length + ' / ' + shortDescMax );
+
+        $('#shortDescription').keyup(function() {
+            var text_length = $('#shortDescription').val().length;
+            $('#count_message').html(text_length + ' / ' + shortDescMax);
+        });
     });
 </asset:script>
 </body>

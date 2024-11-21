@@ -801,6 +801,14 @@ class ProjectController {
                             return false
                         }
                     }
+
+                    if (params.shortDescription) {
+                        if (params.shortDescription.toString().length() > 500) {
+                            project.errors.rejectValue("shortDescription", "project.shortdescription.toolarge",
+                                    "Short Description is too long.")
+                            return false
+                        }
+                    }
                 }
 
                 bindData(project, params)
