@@ -7,6 +7,7 @@ branches:
   only:
   - master
   - develop
+  - qa
   - /^feature\/.*$/
   - /^hotfix\/.*$/
 services:
