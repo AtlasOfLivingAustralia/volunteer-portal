@@ -5,6 +5,10 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.SettingsService" %>
+<%
+    SettingsService settingsService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.SettingsService').newInstance()
+%>
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
