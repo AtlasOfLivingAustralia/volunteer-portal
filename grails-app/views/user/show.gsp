@@ -276,7 +276,7 @@
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
                 <td>
-                    <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
+                    {{ taskInstance.id }}
                 </td>
                 <td>
                     <a ng-if="taskInstance.isValidator" ng-href="${createLink(controller: 'task', action: 'showDetails')}/{{ taskInstance.id }}" title="${g.message(code: 'task.details.button.label')}"><i class="glyphicon glyphicon-list-alt"></i></a>
@@ -301,7 +301,7 @@
 
                 <td style="text-align: center; width: 120px;">
                     <span ng-show="$ctrl.tabIndex > 0"> <!-- notebook.tasklist.tableAction.label -->
-                        <a ng-show="taskInstance.isFullyTranscribed" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.isFullyTranscribed && (taskInstance.fullyTranscribedBy == '${currentUser}' || taskInstance.isValidator)" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}?userId=${userInstance.userId}">
                             <g:message code="action.view.label" />
                         </a>
