@@ -3,7 +3,7 @@
                                  id="${projectSummary.project?.id}">${projectSummary.project?.featuredLabel}</g:link></h4>
 
     <div class="not-a-badge-row ellipsis primary-color">
-        <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconLabel, statusFilter: statusFilterMode, activeFilter: activeFilterMode]"
+        <g:link controller="project" action="list" params="[mode: params.mode, tag: projectSummary.iconName, statusFilter: statusFilterMode, activeFilter: activeFilterMode]"
                 class="not-a-badge">
             <span class="glyphicon glyphicon-tag icon-flipped"></span>${projectSummary.iconLabel}</g:link>
         <g:link controller="institution" action="index" id="${projectSummary.project?.institutionId}"
@@ -19,7 +19,16 @@
     </div>
 
     <g:if test="${includeDescription}">
-        <g:set var="descrptionSnippet"><cl:truncate maxlength="${params.mode == 'list' ? '150' : '85'}">${raw(projectSummary.project?.description)}</cl:truncate></g:set>
+        <g:set var="descrptionSnippet">
+            <cl:truncate maxlength="${Integer.toString(maxDescriptionLen) ?: '200'}">
+                <g:if test="${projectSummary.project?.shortDescription}">
+                    ${raw(projectSummary.project?.shortDescription)}
+                </g:if>
+                <g:else>
+                    ${raw(projectSummary.project?.description)}
+                </g:else>
+            </cl:truncate>
+        </g:set>
         <p class="projectDescription">${raw(descrptionSnippet)}</p>
     </g:if>
 

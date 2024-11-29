@@ -185,9 +185,17 @@
         </div>
     </div>
 
+    <g:if test="${isValidator}">
+        <g:set var="taskViewUrl" value="${createLink(controller: 'task', action: 'showDetails')}"/>
+    </g:if>
+    <g:else>
+        <g:set var="taskViewUrl" value=""/>
+    </g:else>
+
     <div id="map"
          markers-url="${createLink(controller: "user", action: 'ajaxGetPoints', id: userInstance.id)}"
-         infowindow-url="${createLink(controller: 'task', action: 'details')}">
+         infowindow-url="${createLink(controller: 'task', action: 'details')}"
+         taskview-url="${taskViewUrl}">
     </div>
 </section>
 
@@ -268,7 +276,7 @@
             <tr ng-repeat="taskInstance in $ctrl.data.viewList track by taskInstance.id">
 
                 <td>
-                    <a ng-href="${createLink(controller: 'task', action: 'show')}/{{ taskInstance.id }}?userId=${userInstance.userId}" class="listLink">{{ taskInstance.id }}</a>
+                    {{ taskInstance.id }}
                 </td>
                 <td>
                     <a ng-if="taskInstance.isValidator" ng-href="${createLink(controller: 'task', action: 'showDetails')}/{{ taskInstance.id }}" title="${g.message(code: 'task.details.button.label')}"><i class="glyphicon glyphicon-list-alt"></i></a>
@@ -293,7 +301,7 @@
 
                 <td style="text-align: center; width: 120px;">
                     <span ng-show="$ctrl.tabIndex > 0"> <!-- notebook.tasklist.tableAction.label -->
-                        <a ng-show="taskInstance.isFullyTranscribed" class="btn btn-default btn-xs"
+                        <a ng-show="taskInstance.isFullyTranscribed && (taskInstance.fullyTranscribedBy == '${currentUser}' || taskInstance.isValidator)" class="btn btn-default btn-xs"
                            ng-href="${createLink(controller: 'task', action:'show')}/{{taskInstance.id}}?userId=${userInstance.userId}">
                             <g:message code="action.view.label" />
                         </a>

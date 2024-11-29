@@ -8,7 +8,7 @@
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats
-            <cl:ifSiteAdmin><g:link controller="user" action="list" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
+            <cl:ifSiteAdmin><g:link controller="user" action="adminList" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
         </h2>
 
         <h3>
