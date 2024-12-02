@@ -1490,6 +1490,7 @@ ORDER BY record_idx, name;
                 [ id: row.id,
                   externalIdentifier: row.external_identifier,
                   isFullyTranscribed: row.is_fully_transcribed,
+                  fullyTranscribedBy: row.fully_transcribed_by,
                   //fullyValidatedBy: row.validator_display_name,
                   projectId: row.project_id,
                   institutionId: row.institution_id,
