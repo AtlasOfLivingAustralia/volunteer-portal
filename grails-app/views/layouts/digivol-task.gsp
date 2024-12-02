@@ -6,6 +6,7 @@
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
 <%@ page import="au.org.ala.volunteer.SettingsService" %>
+<%@ page import="au.org.ala.volunteer.SettingDefinition" %>
 <%
     SettingsService settingsService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.SettingsService').newInstance()
 %>
@@ -737,8 +738,18 @@
 
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
+        <%
+            def getTaskLockTimeout = {
+                def interval = settingsService.getSetting(SettingDefinition.TaskLockTimeout)
+                if (interval) {
+                    return interval
+                } else {
+                    return SettingDefinition.TaskLockTimeout.defaultValue
+                }
+            }
+        %>
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = 90 * 60; // 90 mins in Seconds
+        var taskLockTimeout = ${getTaskLockTimeout()} * 60; // 90 mins is default. Configure in adv. settings.
         setPageTimeoutTimer();
 
         function setPageTimeoutTimer() {
@@ -972,7 +983,18 @@
     }
 
     $(document).ready(function() {
-        var bgSaveTimer = 15 * 60; // 15 minutes in seconds
+    <%
+        def getBgSaveInterval = {
+            def interval = settingsService.getSetting(SettingDefinition.TaskBackgroundSaveTimer)
+            if (interval) {
+                return interval
+            } else {
+                return SettingDefinition.TaskBackgroundSaveTimer.defaultValue
+            }
+        }
+    %>
+        var bgSaveInterval = ${getBgSaveInterval()};
+        var bgSaveTimer = bgSaveInterval * 60;
         var timerInitial = 0;
 
     <g:if test="${!validator}">
