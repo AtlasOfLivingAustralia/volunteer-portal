@@ -4,6 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
+
+    <style>
+    .count_message {
+        background-color: smoke;
+    }
+    </style>
 </head>
 
 <body class="admin">
@@ -55,8 +61,8 @@
                             <label for="systemMessage" class="control-label col-md-3"><g:message code="frontPage.systemMessage.label"
                                                                                             default="System message"/></label>
                             <div class="col-md-6">
-                                <g:textArea class="form-control" rows="4" name="systemMessage"
-                                                value="${frontPage?.systemMessage}"/>
+                                <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
+                                <span class="pull-right label label-default count_message" id="count_message"></span>
                                 <span class="help-block">(Displayed on every page)</span>
                             </div>
                         </div>
@@ -98,7 +104,8 @@
                                 <g:message code="frontPage.heroImageAttribution" default="Hero Image Attribution Text" />
                             </label>
                             <div class="col-md-6">
-                                <g:field name="heroImageAttribution" type="text" class="form-control" value="${frontPage.heroImageAttribution}" />
+                                <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control" value="${frontPage.heroImageAttribution}" />
+                                <span class="pull-right label label-default count_message" id="hero_count_message"></span>
                             </div>
                         </div>
 
@@ -278,6 +285,20 @@
             mu.appendTemplate($logos, 'logo-item', { src: logo, idx: i });
           });
         }
+
+        var systemMessageMax = 255;
+        $('#count_message').html($('#systemMessage').val().length + ' / ' + systemMessageMax );
+        $('#hero_count_message').html($('#hero_count_message').val().length + ' / ' + systemMessageMax );
+
+        $('#systemMessage').keyup(function() {
+            var text_length = $('#systemMessage').val().length;
+            $('#count_message').html(text_length + ' / ' + systemMessageMax);
+        });
+
+        $('#heroImageAttribution').keyup(function() {
+            var text_length = $('#heroImageAttribution').val().length;
+            $('#hero_count_message').html(text_length + ' / ' + systemMessageMax);
+        });
     });
 
 </asset:script>
