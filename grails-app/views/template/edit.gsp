@@ -9,6 +9,23 @@
         input[type="checkbox"] {
             margin-left: 0px !important;
         }
+
+        h4.panel-title {
+            font-size: 12px;
+
+        }
+
+        .panel-title:hover {
+            cursor: pointer;
+        }
+
+        .panel {
+            margin: 5px !important;
+        }
+
+        .collapse-toggle {
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -144,22 +161,40 @@
                         </div>
                     </g:form>
 
-                    <div id="row-view-params-json" class="form-group">
-                        <label class="col-md-3 control-label">
+                    <div class="form-group" style="padding-top: 10px;">
+                        <label class="col-md-3 control-label" style="padding-top: 5px;">
                             <g:message code="template.project.label"
                                        default="Projects that use this template:"/>
+                            &nbsp;
+                            <button class="btn btn-xs btn-default collapse-toggle" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
                         </label>
+
                         <div class="col-md-6">
-                            <g:each in="${projectUsageList}" var="project">
-                                <ul>
-                                    <li class="form-control-static">${(project.key ? project.key : "No institution")}</li>
-                                    <ul>
-                                        <g:each in="${project.value}" var="proj">
-                                            <li><g:link controller="project" action="show" id="${proj.id}">${proj.name}</g:link></li>
-                                        </g:each>
-                                    </ul>
-                                </ul>
+                            %{-- Accordian display --}%
+                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                            <g:set var="instCounter" value="0"/>
+                            <g:each in="${projectUsageList}" var="institution">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading${instCounter}">
+                                        <h4 class="panel-title" data-toggle="collapse" data-target="#collapse${instCounter}">
+                                            ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
+                                        </h4>
+                                    </div>
+                                    <div id="collapse${instCounter}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${instCounter}">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <g:each in="${institution.value}" var="project">
+                                                    <li style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
+                                                </g:each>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <%
+                                    instCounter++
+                                %>
                             </g:each>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,6 +208,14 @@
 <asset:script type="text/javascript">
 
     $(document).ready(function() {
+        $('#collapse-all-button').on('click', function () {
+            $('#accordion .panel-collapse').collapse('toggle');
+            if ($('#collapse-all').hasClass('fa-expand')) {
+                $('#collapse-all').removeClass('fa-expand').addClass('fa-compress');
+            } else {
+                $('#collapse-all').removeClass('fa-compress').addClass('fa-expand');
+            }
+        });
 
         $("#btnPreview").click(function(e) {
             e.preventDefault();
