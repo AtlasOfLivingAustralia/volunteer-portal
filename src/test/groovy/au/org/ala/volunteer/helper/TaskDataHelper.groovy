@@ -3,6 +3,7 @@ package au.org.ala.volunteer.helper
 import au.org.ala.volunteer.Field
 import au.org.ala.volunteer.ForumMessage
 import au.org.ala.volunteer.ForumTopic
+import au.org.ala.volunteer.FrontPage
 import au.org.ala.volunteer.Institution
 import au.org.ala.volunteer.Project
 import au.org.ala.volunteer.ProjectForumTopic
@@ -165,5 +166,18 @@ class TaskDataHelper {
             text = 'test'
             deleted = false
         } }.toSet()
+    }
+
+    static FrontPage setupFrontPage() {
+        FrontPage frontPage = new FrontPage().tap {
+            featured
+            randomProjectOfTheDay = true
+            numberOfContributors = 10
+            useGlobalNewsItem = false
+            systemMessage = ""
+            showAchievements = true
+            enableTaskComments = true
+
+        }
     }
 }
