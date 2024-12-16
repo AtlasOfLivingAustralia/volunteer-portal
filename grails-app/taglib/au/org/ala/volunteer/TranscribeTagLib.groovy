@@ -34,6 +34,7 @@ class TranscribeTagLib {
     def fieldService
     def fullTextIndexService
     def projectService
+    def settingsService
 
     static returnObjectForTags = ['imageInfos', 'templateFields', 'widgetName', 'sequenceNumbers', 'taskSequence']
 
@@ -916,6 +917,14 @@ class TranscribeTagLib {
     def sectionNumber = { attrs, body ->
         def sectionNumber = nextSectionNumber()
         out << sectionNumber
+    }
+
+    def advSetting = {attrs, body ->
+        def settingDef = attrs.definition as SettingDefinition
+        def defaultValue = attrs.defaultValue
+        def setting = settingsService.getSetting(settingDef)
+        if (!setting) out << defaultValue
+        else out << setting
     }
 
 }

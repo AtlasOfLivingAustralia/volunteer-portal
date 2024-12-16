@@ -5,11 +5,7 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
-<%@ page import="au.org.ala.volunteer.SettingsService" %>
 <%@ page import="au.org.ala.volunteer.SettingDefinition" %>
-<%
-    SettingsService settingsService = grailsApplication.classLoader.loadClass('au.org.ala.volunteer.SettingsService').newInstance()
-%>
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
@@ -738,18 +734,9 @@
 
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
-        <%
-            def getTaskLockTimeout = {
-                def interval = settingsService.getSetting(SettingDefinition.TaskLockTimeout)
-                if (interval) {
-                    return interval
-                } else {
-                    return SettingDefinition.TaskLockTimeout.defaultValue
-                }
-            }
-        %>
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = ${getTaskLockTimeout()} * 60; // 90 mins is default. Configure in adv. settings.
+        var taskLockTimeoutValue = <g:advSetting definition="${SettingDefinition.TaskLockTimeout}" defaultValue="${SettingDefinition.TaskLockTimeout.defaultValue}" />;
+        var taskLockTimeout = taskLockTimeoutValue * 60;
         setPageTimeoutTimer();
 
         function setPageTimeoutTimer() {
@@ -983,17 +970,7 @@
     }
 
     $(document).ready(function() {
-    <%
-        def getBgSaveInterval = {
-            def interval = settingsService.getSetting(SettingDefinition.TaskBackgroundSaveTimer)
-            if (interval) {
-                return interval
-            } else {
-                return SettingDefinition.TaskBackgroundSaveTimer.defaultValue
-            }
-        }
-    %>
-        var bgSaveInterval = ${getBgSaveInterval()};
+        var bgSaveInterval = <g:advSetting definition="${SettingDefinition.TaskBackgroundSaveTimer}" defaultValue="${SettingDefinition.TaskBackgroundSaveTimer.defaultValue}" />;
         var bgSaveTimer = bgSaveInterval * 60;
         var timerInitial = 0;
 
