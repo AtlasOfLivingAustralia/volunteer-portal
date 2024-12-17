@@ -1,8 +1,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="exportGroupByIndex" data-default="true"/>
+            <g:checkBox name="exportGroupByIndex" data-default="true"/>
+            <label for="exportGroupByIndex">
                 <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
             </label>
         </div>
@@ -12,8 +12,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="hideNames" data-default="false"/>
+            <g:checkBox name="hideNames" data-default="false"/>
+            <label for="hideNames">
                 <g:message code="template.hideNames.label" default="Hide Individual Fields Section"/>
             </label>
         </div>
@@ -23,8 +23,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="doublePage" data-default="false"/>
+            <g:checkBox name="doublePage" data-default="false"/>
+            <label for="doublePage">
                 <g:message code="template.doublePage.label" default="Double page"/>
             </label>
         </div>

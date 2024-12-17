@@ -1,8 +1,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="hideDefaultButtons" value="${true}"/>
+            <g:checkBox name="hideDefaultButtons" value="${true}"/>
+            <label for="hideDefaultButtons">
                 <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
             </label>
         </div>
@@ -12,8 +12,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="hideNotesSection" value="${true}" />
+            <g:checkBox name="hideNotesSection" value="${true}" />
+            <label for="hideNotesSection">
                 <g:message code="template.hideNotesSection.label" default="Hide Notes Section" />
             </label>
         </div>
@@ -23,8 +23,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="hideSectionNumbers" value="${true}"/>
+            <g:checkBox name="hideSectionNumbers" value="${true}"/>
+            <label for="hideSectionNumbers">
                 <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
             </label>
         </div>
@@ -34,8 +34,8 @@
 <div class="form-group">
     <div class="col-md-offset-3 col-md-6">
         <div class="checkbox">
-            <label>
-                <g:checkBox name="hideQuestionNumbers" value="${true}"/>
+            <g:checkBox name="hideQuestionNumbers" value="${true}"/>
+            <label for="hideQuestionNumbers">
                 <g:message code="template.hideQuestionNumbers.label" default="Hide Question Numbers"/>
             </label>
         </div>
