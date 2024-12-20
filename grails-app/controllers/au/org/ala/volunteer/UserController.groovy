@@ -22,6 +22,7 @@ class UserController {
     def authService
     def fullTextIndexService
     def freemarkerService
+    def fieldService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -662,34 +663,9 @@ class UserController {
             def pt = field.findAll { value ->
                 value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
             }.collectEntries { value ->
-                def dVal = value['value'] as String
-                log.debug("ajaxGetPoints| dVal: ${dVal}")
-
-                def matcher = regex.matcher(dVal)
-                if (matcher.find()) {
-                    log.debug("ajaxGetPoints| Group count: ${matcher.groupCount()}")
-                    for (int i = 0; i <= matcher.groupCount(); i++) {
-                        log.debug("match[${i}]: ${matcher.group(i)}")
-                    }
-                    try {
-                        BigDecimal minutes = (getBigDecimalFromString(matcher.group(6).toString()) / new BigDecimal(60))
-                        BigDecimal seconds = (getBigDecimalFromString(matcher.group(9).toString()) / new BigDecimal(3600))
-                        BigDecimal degrees = getBigDecimalFromString(matcher.group(3).toString())
-                        log.debug("Conversion: degrees: [${degrees}], minutes: [${minutes}], seconds: [${seconds}]")
-                        degrees += (minutes + seconds)
-
-                        // Check direction and assign negative if necessary
-                        if (matcher.group(10).equalsIgnoreCase("S") ||
-                                matcher.group(10).equalsIgnoreCase("W")) {
-                            degrees = -degrees
-                        }
-
-                        dVal = degrees.toString()
-                        log.debug("dVal: ${dVal}")
-                    } catch (Exception e) {
-                        log.error("Error attempting to convert degrees, minutes and seconds to a decimal value ${dVal}, skipping.", e)
-                    }
-                }
+                //def dVal = value['value'] as String
+                def dVal = fieldService.convertLocationToDecimal(value['value'] as String)
+                log.debug("ajaxGetPoints| dVal: ${value['value']}")
 
                 if (value['name'] == 'decimalLongitude') {
                     [lng: dVal]
