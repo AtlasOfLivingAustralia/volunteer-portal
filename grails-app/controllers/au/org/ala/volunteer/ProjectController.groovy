@@ -152,6 +152,7 @@ class ProjectController {
                 long endQ  = System.currentTimeMillis()
                 log.debug("DB query took " + (endQ - startQ) + " ms")
                 log.debug("List sizes: task = " + taskList.size() + "; lats = " + lats.size() + "; lngs = " + lngs.size())
+
                 taskList.eachWithIndex { tsk, i ->
                     def jsonObj = [:]
                     jsonObj.put("id",tsk.id)
@@ -159,8 +160,12 @@ class ProjectController {
                     jsonObj.put("cat", cats[tsk.id])
 
                     if (lats.containsKey(tsk.id) && lngs.containsKey(tsk.id)) {
-                        jsonObj.put("lat",lats.get(tsk.id))
-                        jsonObj.put("lng",lngs.get(tsk.id))
+                        log.debug("Value before: ${lats.get(tsk.id)}, ${lngs.get(tsk.id)}")
+                        def lat = fieldService.convertLocationToDecimal(lats.get(tsk.id) as String)
+                        def lng = fieldService.convertLocationToDecimal(lngs.get(tsk.id) as String)
+                        log.debug("Value after: ${lat}, ${lng}")
+                        jsonObj.put("lat", lat)
+                        jsonObj.put("lng", lng)
                         taskListFields.add(jsonObj)
                     }
                 }

@@ -1,8 +1,10 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Strings
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import javax.sql.DataSource
+import java.util.regex.Pattern
 
 @Transactional
 class FieldService {
@@ -272,6 +274,62 @@ class FieldService {
         sql.close()
 
         taskList
+    }
+
+    /**
+     * Converts a location with degrees, minutes and seconds to a decimal value. If the value does not contain the
+     * degrees symbol, the original value is returned.
+     * @param location the location to convert.
+     */
+    def convertLocationToDecimal(final String location) {
+        // Regex for detecting traditional latitude/longitude. We will convert to decimal for Google Maps.
+        def regex = Pattern.compile(/(((\d+)°)?)(((\d+)')?)(((\d*\.?\d*)")?)([NnSsEeWw])/)
+        def matcher = regex.matcher(location)
+        String dVal = ""
+
+        if (matcher.find()) {
+            log.debug("ajaxGetPoints| Group count: ${matcher.groupCount()}")
+            for (int i = 0; i <= matcher.groupCount(); i++) {
+                log.debug("match[${i}]: ${matcher.group(i)}")
+            }
+            try {
+                BigDecimal minutes = (getBigDecimalFromString(matcher.group(6).toString()) / new BigDecimal(60))
+                BigDecimal seconds = (getBigDecimalFromString(matcher.group(9).toString()) / new BigDecimal(3600))
+                BigDecimal degrees = getBigDecimalFromString(matcher.group(3).toString())
+                log.debug("Conversion: degrees: [${degrees}], minutes: [${minutes}], seconds: [${seconds}]")
+                degrees += (minutes + seconds)
+
+                // Check direction and assign negative if necessary
+                if (matcher.group(10).equalsIgnoreCase("S") ||
+                        matcher.group(10).equalsIgnoreCase("W")) {
+                    degrees = -degrees
+                }
+
+                dVal = degrees.toString()
+                log.debug("dVal: ${dVal}")
+                return dVal
+            } catch (Exception e) {
+                log.error("Error attempting to convert degrees, minutes and seconds to a decimal value ${dVal}, skipping.", e)
+            }
+        }
+
+        return location
+    }
+
+    /**
+     * Converts a string value to a BigDecimal, returning 0 if the value isn't parseable.
+     * @param input the value to convert
+     * @return a BigDecimal or 0 if null/empty.
+     */
+    def getBigDecimalFromString(String input) {
+        if (!Strings.isNullOrEmpty(input) && !input.equalsIgnoreCase("null")) {
+            if (input.contains(".")) {
+                return new BigDecimal(input) // more precise than casting to double
+            }
+            return new BigDecimal(input.toInteger().intValue())
+        } else {
+            return new BigDecimal(0)
+        }
     }
 
 }
