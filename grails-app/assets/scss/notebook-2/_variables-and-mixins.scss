@@ -1,0 +1,69 @@
+/////////////////////////////////////////////////
+// Variables
+/////////////////////////////////////////////////
+
+// Font size
+
+$text-xs: 0.75rem;
+$text-sm: 0.875rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+$text-2xl: 1.5rem;
+$text-3xl: 1.875rem;
+$text-4xl: 2.25rem;
+$text-5xl: 3.25rem;
+$text-6xl: 4.5rem;
+
+// Space
+
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-5: 1.25rem;
+$space-6: 1.5rem;
+$space-10: 2.5rem;
+
+// Color
+
+$blue: #416afa;
+$green: #37ffab;
+$orange: #ffae50;
+$purple: #8f37ff;
+$digivol-orange: #d5502a;
+
+$light-grey: #d9d9d9;
+$dark-grey: #595959;
+
+// Screen size
+
+$screen-sm: 400px;
+$screen-md: 786px;
+$screen-lg: 1024px;
+$screen-xl: 1024px;
+
+/////////////////////////////////////////////////
+// Mixins
+/////////////////////////////////////////////////
+
+@mixin page-wrapper() {
+  //max-width: $screen-xl;
+  margin-left: $space-3;
+  margin-right: $space-3;
+
+  @media screen and (min-width: $screen-xl) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@mixin page-grid() {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: $space-3;
+
+  @media screen and (min-width: $screen-lg) {
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: $space-5;
+  }
+}

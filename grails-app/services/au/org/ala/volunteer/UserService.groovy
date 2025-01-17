@@ -30,6 +30,7 @@ class UserService {
     def fullTextIndexService
     def settingsService
     def userService
+    def leaderBoardService
     UserDetailsClient userDetailsClient
 
     /** Recorded as the user id when changes are made automatically */
@@ -860,6 +861,9 @@ class UserService {
             userPercent = String.format('%.2f', (userCount / totalCount) * 100)
         }
 
+        def userRank = WebUtils.formatNumberWithCommas(leaderBoardService.getUserRank(model.userInstance.userId as String))
+        def totalUsers = WebUtils.formatNumberWithCommas(User.countByTranscribedCountGreaterThanOrValidatedCountGreaterThan(0, 0))
+
         sw.stop()
         log.debug("notbookMainFragment.percentage ${sw.toString()}")
 
@@ -868,7 +872,9 @@ class UserService {
                 speciesList: speciesList2,
                 fieldObservationCount: fieldObservationCount,
                 expeditionCount: expeditions ? expeditions[0] : 0,
-                userPercent: userPercent
+                userPercent: userPercent,
+                userRank: userRank,
+                totalUsers: totalUsers
         ]
     }
 

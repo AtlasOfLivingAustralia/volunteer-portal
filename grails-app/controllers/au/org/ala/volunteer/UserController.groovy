@@ -8,6 +8,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
 
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 import static org.springframework.http.HttpStatus.NO_CONTENT
@@ -355,7 +356,7 @@ class UserController {
         }
 
         def achievements = user.achievementAwards
-        def score = userService.getUserScore(user)
+        def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
         int selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
 
         if (!user) {
@@ -378,6 +379,22 @@ class UserController {
 
             userService.appendNotebookFunctionalityToModel(myModel)
         }
+    }
+
+    def achievements() {
+        def currentUser = userService.currentUserId
+
+        if (!currentUser) {
+            // flash.message = "Missing user id, or user not found!"
+            render(view: '/notPermitted')
+            return
+        }
+
+
+        def acvhievementList = AchievementDescription.list()
+
+
+        render view: 'achievements', model: [currentUser: currentUser]
     }
 
     def edit() {

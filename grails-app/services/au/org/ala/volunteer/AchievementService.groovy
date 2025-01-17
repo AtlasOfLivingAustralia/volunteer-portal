@@ -28,6 +28,13 @@ import java.nio.file.Paths
 
 import static org.hibernate.FetchMode.*
 
+import org.jooq.DSLContext
+import org.springframework.beans.factory.annotation.Autowired
+import static au.org.ala.volunteer.jooq.tables.AchievementDescription.ACHIEVEMENT_DESCRIPTION
+import static au.org.ala.volunteer.jooq.tables.AchievementAward.ACHIEVEMENT_AWARD
+import static org.jooq.impl.DSL.select
+import static org.jooq.impl.DSL.count
+
 @Consumer
 @Transactional
 @Slf4j
@@ -45,6 +52,9 @@ class AchievementService implements EventPublisher {
     def scriptPool
 
     def eventSourceStartMessage
+
+    @Autowired
+    Closure<DSLContext> jooqContextFactory
 
     @PostConstruct
     void init() {
@@ -426,5 +436,25 @@ class AchievementService implements EventPublisher {
             default:
                 return ''
         }
+    }
+
+    /**
+     *
+     */
+    def getAchievementsWithCounts() {
+        DSLContext context = jooqContextFactory()
+        def results = context.select(ACHIEVEMENT_DESCRIPTION.ID,
+                count(ACHIEVEMENT_AWARD.ID).as("Awarded"))
+        .from(ACHIEVEMENT_DESCRIPTION)
+        .leftJoin(ACHIEVEMENT_AWARD).on(ACHIEVEMENT_AWARD.ACHIEVEMENT_ID.eq(ACHIEVEMENT_DESCRIPTION.ID))
+        .where(ACHIEVEMENT_DESCRIPTION.ENABLED.eq(true))
+        .orderBy(ACHIEVEMENT_DESCRIPTION.COUNT.asc())
+        .fetch()
+
+        def achievements = []
+        results.each { row ->
+
+        }
+
     }
 }

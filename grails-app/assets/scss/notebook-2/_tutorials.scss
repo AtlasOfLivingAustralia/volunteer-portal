@@ -1,0 +1,54 @@
+@use "variables-and-mixins";
+
+.tutorial-library-list {
+  @include variables-and-mixins.page-grid;
+  row-gap: variables-and-mixins.$space-3;
+  margin-top: variables-and-mixins.$space-6;
+}
+
+.tutorial-library-list-item {
+  grid-column: span 3;
+  height: 200px;
+  padding: variables-and-mixins.$space-3;
+  border: solid variables-and-mixins.$light-grey 1px;
+  border-radius: 10px;
+  transition: background-color 0.5s ease, color 0.5s ease;
+
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    grid-column: span 2;
+  }
+
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    grid-column: span 3;
+  }
+
+  &:hover {
+    color: white;
+    background-color: black;
+  }
+}
+
+.tutorial-library-list-item--bg-digivol-orange {
+  color: white;
+  background-color: variables-and-mixins.$digivol-orange;
+}
+
+.tutorial-library-list-item__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  text-decoration: none;
+}
+
+.tutorial-library-list-item__heading {
+  font-size: variables-and-mixins.$text-lg;
+
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    font-size: variables-and-mixins.$text-xl;
+  }
+}
+
+.tutorial-library-list-item__logo {
+  width: 50%;
+}

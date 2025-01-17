@@ -1,0 +1,310 @@
+@use "variables-and-mixins";
+
+/////////////////////////////////////////////////
+// Global styles
+/////////////////////////////////////////////////
+
+body {
+  @include variables-and-mixins.page-wrapper;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  //font-size: variables-and-mixins.$text-lg;
+}
+
+h1 {
+  font-size: variables-and-mixins.$text-3xl;
+  line-height: 1.2;
+  word-break: break-word;
+
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    font-size: variables-and-mixins.$text-4xl;
+  }
+}
+
+h2 {
+  font-size: variables-and-mixins.$text-2xl;
+  line-height: 1.2;
+  word-break: break-word;
+
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    font-size: variables-and-mixins.$text-3xl;
+  }
+}
+
+p + p {
+  margin-top: 1em;
+}
+
+//a {
+//  text-decoration: underline;
+//}
+
+// Pills
+
+.pill {
+  display: inline-block;
+  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
+  font-size: variables-and-mixins.$text-sm;
+  border-radius: variables-and-mixins.$space-3;
+}
+
+.pill--bg-black {
+  color: white;
+  background-color: black;
+}
+
+.pill--bg-blue {
+  color: white;
+  background-color: variables-and-mixins.$blue;
+}
+
+.pill--bg-green {
+  color: black;
+  background-color: variables-and-mixins.$green;
+}
+
+.pill--bg-orange {
+  background-color: variables-and-mixins.$orange;
+}
+
+.pill--bg-purple {
+  color: white;
+  background-color: variables-and-mixins.$purple;
+}
+
+// Filter navigation
+
+.filter-nav {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter-nav--mt-3 {
+  margin-top: variables-and-mixins.$space-3;
+}
+
+.filter-nav--mt-6 {
+  margin-top: variables-and-mixins.$space-6;
+}
+
+.filter-nav__label {
+  width: 33.33333333333333%;
+  margin-right: variables-and-mixins.$space-1;
+  white-space: nowrap;
+
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    width: 16.6666666666666%;
+  }
+}
+
+.filter-nav__list-item {
+  display: inline-block;
+  margin-bottom: variables-and-mixins.$space-2;
+
+  & + .filter-nav__list-item {
+    margin-left: variables-and-mixins.$space-3;
+  }
+}
+
+// Pagination
+
+.pagination-list {
+  display: flex;
+}
+
+.pagination-list__item {
+  display: inline-block;
+  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
+  border: solid variables-and-mixins.$light-grey 1px;
+
+  & + .pagination-list__item {
+    margin-left: -1px;
+  }
+}
+
+.pagination-list__item--highlight {
+  color: white;
+  background-color: variables-and-mixins.$digivol-orange;
+}
+
+// Dropdowns
+
+//.dropdown {
+//  border: solid #d9d9d9 1px;
+//  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
+//  background-color: transparent;
+//}
+
+// Tables
+// Default behaviour is desktop. Unlike other styles, we are writing desktop-first rules
+
+// Mobile tables
+
+@media screen and (max-width: variables-and-mixins.$screen-md) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr,
+  thead th {
+    // "Hide" thead. Don't use `display: none` for accessibility purposes
+    display: none;
+    position: absolute;
+    top: -9999px;
+    bottom: -9999px;
+    border: transparent;
+  }
+
+  tbody {
+    position: relative;
+
+    tr {
+      padding: variables-and-mixins.$space-3;
+      border: solid variables-and-mixins.$light-grey 1px;
+      border-radius: 10px;
+
+      & + tr {
+        margin-top: variables-and-mixins.$space-6;
+      }
+    }
+
+    td,
+    th {
+      /* Behave  like a "row" */
+      padding: 0;
+      border: none;
+      position: relative;
+
+      &:first-child {
+        border: none;
+      }
+
+      &:last-child {
+        border: none;
+      }
+    }
+  }
+
+  // td order
+  .td--order-1 {
+    order: 1;
+  }
+
+  .td--order-2 {
+    order: 2;
+  }
+
+  .td--order-3 {
+    order: 3;
+  }
+
+  .td--order-4 {
+    order: 4;
+  }
+
+  .td--order-5 {
+    order: 5;
+  }
+
+  .td--order-6 {
+    order: 6;
+  }
+
+  .td--order-7 {
+    order: 7;
+  }
+
+  .td--order-8 {
+    order: 8;
+  }
+}
+
+// Desktop tables
+
+table {
+  border-collapse: separate;
+  border-spacing: 0 variables-and-mixins.$space-6;
+}
+
+thead {
+  color: variables-and-mixins.$dark-grey;
+
+  th {
+    border: solid white 1px;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    &:first-child {
+      border-left: solid white 1px;
+      border-radius: 10px 0 0 10px;
+    }
+
+    &:last-child {
+      border-right: solid white 1px;
+      border-radius: 0 10px 10px 0;
+    }
+  }
+}
+
+th,
+td {
+  padding-top: variables-and-mixins.$space-6;
+  padding-bottom: variables-and-mixins.$space-6;
+  padding-left: variables-and-mixins.$space-3;
+  padding-right: variables-and-mixins.$space-3;
+  font-weight: 400;
+  text-align: left;
+  border-top: solid variables-and-mixins.$light-grey 1px;
+  border-bottom: solid variables-and-mixins.$light-grey 1px;
+
+  &:first-child {
+    border-left: solid variables-and-mixins.$light-grey 1px;
+    border-radius: 10px 0 0 10px;
+  }
+
+  &:last-child {
+    border-right: solid variables-and-mixins.$light-grey 1px;
+    border-radius: 0 10px 10px 0;
+  }
+}
+
+// Column widths
+
+.td--1\/12 {
+  width: 8.3333333333%;
+}
+
+.td--2\/12 {
+  width: 16.6666666667%;
+}
+
+.td--4\/12 {
+  width: 33.3333333333%;
+}
+
+.td--5\/12 {
+  width: 41.66666667%;
+}
+
+// Text align
+
+.td--text-right {
+  text-align: right;
+}
+
+.lg\:td--text-right {
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    text-align: right;
+  }
+}
+
+// Account elements
+
+.user-icon {
+  display: inline-block;
+  vertical-align: text-bottom;
+}
