@@ -9,6 +9,7 @@ import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.imgscalr.Scalr
 import org.jooq.DSLContext
+import org.jooq.SortOrder
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
@@ -19,9 +20,21 @@ import java.sql.Connection
 import java.text.SimpleDateFormat
 
 import static au.org.ala.volunteer.jooq.tables.Field.FIELD
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.select
+import static org.jooq.impl.DSL.with
+import static org.jooq.impl.DSL.table
+import static org.jooq.impl.DSL.field
+import static org.jooq.impl.DSL.when
+import static org.jooq.impl.DSL.or as jOr
+import static org.jooq.impl.DSL.field
+import static org.jooq.impl.DSL.coalesce
+import static org.jooq.impl.DSL.count as jCount
+import static org.jooq.impl.DSL.countDistinct as jCountDistinct
+
 
 @Transactional
 class TaskService {
@@ -1262,6 +1275,118 @@ ORDER BY record_idx, name;
         return [:]
     }
 
+    /**
+     *
+     * @param filter
+     * @param user
+     * @param project
+     * @param offset
+     * @param max
+     * @param sort
+     * @param order
+     * @return
+     */
+    Map getNotebookTaskList(String filter, User user, Project project, Integer offset, Integer max, String sort, String order) {
+        log.debug("Retrieving task list for notebook for user ${user}")
+        DSLContext create = jooqContext()
+
+        if (!offset) offset = 0
+        max = Math.max(Math.min(max ?: 0, 100), 1)
+
+        final projectFilter = PROJECT.ID.eq(project?.id)
+        def withWhereClauseList = []
+        withWhereClauseList.add(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.eq(user.userId))
+        withWhereClauseList.add(TASK.FULLY_VALIDATED_BY.eq(user.userId))
+        def mainWhereClauseList = []
+        if (project) mainWhereClauseList.add(projectFilter)
+
+        final withClause =
+                select(TRANSCRIPTION.ID.as("transcription_id"),
+                       TRANSCRIPTION.TASK_ID.as("task_id"),
+                       TRANSCRIPTION.FULLY_TRANSCRIBED_BY.as("fully_transcribed_by"),
+                        TASK.FULLY_VALIDATED_BY.as("fully_validated_by"),
+                        TRANSCRIPTION.DATE_FULLY_TRANSCRIBED.as("date_fully_transcribed"),
+                        TASK.DATE_FULLY_VALIDATED.as("date_fully_validated"),
+                        TASK.IS_VALID.as("is_valid"),
+                        TASK.IS_FULLY_TRANSCRIBED.as("is_fully_transcribed"),
+                        TASK.PROJECT_ID.as("project_id"))
+                .from(TRANSCRIPTION)
+                .join(TASK).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))
+                .where(jOr(withWhereClauseList))
+
+        // SORTING
+        final validSorts = [
+                'id': 'id',
+                'projectName': 'project_name',
+                'dateTranscribed': 'date_transcribed',
+                'status': 'status'
+        ].withDefault { 'date_transcribed' }
+        def sortColumn = validSorts[sort]
+        if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
+
+        // Status Column
+        final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
+        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'In progress')
+        final transcribedStatus = i18nService.message(code: 'status.transcribed', default: 'Transcribed')
+        final savedStatus = i18nService.message(code: 'status.saved', default: 'Saved')
+
+        // Main select query
+        def taskQuery = create.with("user_transcription").as(withClause)
+            .select(
+                field(name("user_transcription", "transcription_id")),
+                field(name("user_transcription", "task_id")),
+                field(name("user_transcription", "fully_transcribed_by")),
+                field(name("user_transcription", "fully_validated_by")),
+                PROJECT.NAME.as("project_name"),
+                when(field(name("user_transcription", "fully_validated_by")).eq(user.userId), field(name("user_transcription", "date_fully_validated")))
+                    .otherwise(field(name("user_transcription", "date_fully_transcribed")))
+                    .as("date_transcribed"),
+                when(field(name("user_transcription", "is_valid")).eq(true), validatedStatus)
+                    .when(field(name("user_transcription", "is_valid")).eq(false), invalidatedStatus)
+                    .when(field(name("user_transcription", "is_fully_transcribed")).eq(true), transcribedStatus)
+                    .otherwise(savedStatus)
+                    .as("status")
+            ).distinctOn(field(name("user_transcription", "task_id")))
+            .from(table(name("user_transcription")))
+            .join(PROJECT).on(field(name("user_transcription", "project_id")).eq(PROJECT.ID))
+            .where(mainWhereClauseList)
+            .orderBy(field(name("user_transcription", "task_id")).desc())
+
+        // Wrapper query with column sort
+        def query = select(taskQuery.fields())
+            .from(taskQuery)
+            .orderBy(taskQuery.field(sortColumn).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC))
+
+        // Get the total rows
+        Stopwatch sw = Stopwatch.createStarted()
+        def result = [:]
+        def totalCount = create.fetchCount(query)
+        result.totalMatchingTasks = totalCount
+        sw.stop()
+        log.debug("TaskService.getNotebookTaskList()#CountTasks ${sw.toString()}")
+
+        // Get the rows for the page
+        query = query
+                .offset(offset)
+                .limit(max)
+
+        sw.reset().start()
+        result.viewList = create.fetch(query).collect {row ->
+            [
+                    id: row.transcription_id,
+                    task_id: row.task_id,
+                    fullyTranscribedBy: row.fully_transcribed_by,
+                    projectName: row.project_name,
+                    dateTranscribed: row.date_transcribed,
+                    status: row.status
+            ]
+        }
+        sw.stop()
+        log.debug("TaskService.getNotebookTaskList()#getTasks ${sw.toString()}")
+
+        result
+    }
+
 
     @NotTransactional // handle the read only transaction at the sql level
     // TODO Use Gradle, Flyway, JOOQ instead of plain SQL
@@ -1331,6 +1456,10 @@ ORDER BY record_idx, name;
                 break
             case 3:
                 filter = 't.fully_validated_by = :userId'
+                distinctTasks = true
+                break
+            case 4:
+                filter = 'tr.fully_transcribed_by = :userId OR t.is_fully_transcribed = false'
                 distinctTasks = true
                 break
             default:

@@ -88,39 +88,42 @@
                 <div class="filter-nav__label">Filter by:</div>
                 <ul class="forum-nav__list">
                     <li class="filter-nav__list-item"><button class="pill pill--bg-black">All</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-orange">Saved</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-purple">Transcribed</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-green">Validated</button></li>
+                    <li class="filter-nav__list-item"><button class="pill pill--bg-saved">Saved</button></li>
+                    <li class="filter-nav__list-item"><button class="pill pill--bg-transcribed">Transcribed</button></li>
+                    <li class="filter-nav__list-item"><button class="pill pill--bg-validated">Validated</button></li>
                 </ul>
             </div>
 
+%{--            <div class="task-history-nav-col task-history-nav-col__pagination">--}%
+%{--                <ol class="pagination-list">--}%
+%{--                    <li class="pagination-list__item"><a href="">Prev</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">1</a></li>--}%
+%{--                    <li class="pagination-list__item pagination-list__item--highlight"><a href="">2</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">3</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">4</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">...</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">325</a></li>--}%
+%{--                    <li class="pagination-list__item"><a href="">Next</a></li>--}%
+%{--                </ol>--}%
+%{--            </div>--}%
             <div class="task-history-nav-col task-history-nav-col__pagination">
-                <ol class="pagination-list">
-                    <li class="pagination-list__item"><a href="">Prev</a></li>
-                    <li class="pagination-list__item"><a href="">1</a></li>
-                    <li class="pagination-list__item pagination-list__item--highlight"><a href="">2</a></li>
-                    <li class="pagination-list__item"><a href="">3</a></li>
-                    <li class="pagination-list__item"><a href="">4</a></li>
-                    <li class="pagination-list__item"><a href="">...</a></li>
-                    <li class="pagination-list__item"><a href="">325</a></li>
-                    <li class="pagination-list__item"><a href="">Next</a></li>
-                </ol>
+                <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}"/>
             </div>
 
-            <div class="task-history-nav-col task-history-nav-col__mode">
-                <ol class="pagination-list">
-                    <li class="pagination-list__item pagination-list__item--highlight">
-                        <a href="">
-                            <i class="glyphicon glyphicon-th-large "></i>
-                        </a>
-                    </li>
-                    <li class="pagination-list__item">
-                        <a href="">
-                            <i class="glyphicon glyphicon-th-list "></i>
-                        </a>
-                    </li>
-                </ol>
-            </div>
+%{--            <div class="task-history-nav-col task-history-nav-col__mode">--}%
+%{--                <ol class="pagination-list">--}%
+%{--                    <li class="pagination-list__item pagination-list__item--highlight">--}%
+%{--                        <a href="">--}%
+%{--                            <i class="glyphicon glyphicon-th-large "></i>--}%
+%{--                        </a>--}%
+%{--                    </li>--}%
+%{--                    <li class="pagination-list__item">--}%
+%{--                        <a href="">--}%
+%{--                            <i class="glyphicon glyphicon-th-list "></i>--}%
+%{--                        </a>--}%
+%{--                    </li>--}%
+%{--                </ol>--}%
+%{--            </div>--}%
         </nav>
     </section>
 
@@ -137,56 +140,23 @@
             </tr>
             </thead>
             <tbody>
+            <g:each in="${viewTaskList}" var="row">
             <tr>
-                <th class="task-history-table__thumbnail" data-key="task"><a href="post.html"><img src="https://dummyimage.com/600x400/009994/00f492" alt=""></a></th>
-                <td data-key="id">39209380</td>
-                <td data-key="expedition">Bush Heritage Australia Bon Bon Core 47 (1 of 12)</td>
-                <td data-key="transcribed">29 May 2024</td>
+                <th class="task-history-table__thumbnail" data-key="task">
+                    <cl:taskThumbnail taskId="${row.task_id}"/>
+                </th>
+                <td data-key="id"><g:link controller="task" action="showDetails" id="${row.task_id}">${row.task_id}</g:link></td>
+                <td data-key="expedition">${row.projectName}</td>
+                <td data-key="transcribed">
+                    <g:formatDate date="${row.dateTranscribed}"
+                                  format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
+                </td>
                 <td data-key="status">
-                    <span class="pill pill--bg-purple">Transcribed</span>
+                    <span class="pill pill--bg-${row.status.trim().toLowerCase()}">${row.status}</span>
                 </td>
                 <td data-key="action"><a href="">Edit</a></td>
             </tr>
-            <tr>
-                <th class="task-history-table__thumbnail" data-key="task"><a href="post.html"><img src="https://dummyimage.com/600x400/009994/00f492" alt=""></a></th>
-                <td data-key="id">39209380</td>
-                <td data-key="expedition">Bush Heritage Australia Bon Bon Core 47 (1 of 12)</td>
-                <td data-key="transcribed">29 May 2024</td>
-                <td data-key="status">
-                    <span class="pill pill--bg-orange">Saved</span>
-                </td>
-                <td data-key="action"><a href="">View</a></td>
-            </tr>
-            <tr>
-                <th class="task-history-table__thumbnail" data-key="task"><a href="post.html"><img src="https://dummyimage.com/600x400/009994/00f492" alt=""></a></th>
-                <td data-key="id">39209380</td>
-                <td data-key="expedition">Bush Heritage Australia Bon Bon Core 47 (1 of 12)</td>
-                <td data-key="transcribed">29 May 2024</td>
-                <td data-key="status">
-                    <span class="pill pill--bg-orange">Saved</span>
-                </td>
-                <td data-key="action"><a href="">View</a></td>
-            </tr>
-            <tr>
-                <th class="task-history-table__thumbnail" data-key="task"><a href="post.html"><img src="https://dummyimage.com/600x400/009994/00f492" alt=""></a></th>
-                <td data-key="id">39209380</td>
-                <td data-key="expedition">Bush Heritage Australia Bon Bon Core 47 (1 of 12)</td>
-                <td data-key="transcribed">29 May 2024</td>
-                <td data-key="status">
-                    <span class="pill pill--bg-orange">Saved</span>
-                </td>
-                <td data-key="action"><a href="">View</a></td>
-            </tr>
-            <tr>
-                <th class="task-history-table__thumbnail" data-key="task"><a href="post.html"><img src="https://dummyimage.com/600x400/009994/00f492" alt=""></a></th>
-                <td data-key="id">39209380</td>
-                <td data-key="expedition">Bush Heritage Australia Bon Bon Core 47 (1 of 12)</td>
-                <td data-key="transcribed">29 May 2024</td>
-                <td data-key="status">
-                    <span class="pill pill--bg-orange">Saved</span>
-                </td>
-                <td data-key="action"><a href="">View</a></td>
-            </tr>
+            </g:each>
             </tbody>
         </table>
 

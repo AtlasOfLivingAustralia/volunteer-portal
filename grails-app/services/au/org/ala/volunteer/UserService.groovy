@@ -828,12 +828,12 @@ class UserService {
         log.debug("notebookMainFragment.speciesList2 ${sw.toString()}")
         log.debug("specieslist2: ${speciesList2}")
 
-        sw.reset().start()
-        def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
-        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
+        //sw.reset().start()
+        //def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
+        //def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
 
-        sw.stop()
-        log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
+        //sw.stop()
+        //log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
         def c = Transcription.createCriteria()
@@ -852,27 +852,29 @@ class UserService {
 
         sw.reset().start()
 
-        final matchAllQuery = UserController.MATCH_ALL
+        //final matchAllQuery = UserController.MATCH_ALL
 
-        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
-        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
+        //def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
+        //def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
+        /*
         def userPercent = "0"
         if (totalCount > 0) {
             userPercent = String.format('%.2f', (userCount / totalCount) * 100)
         }
+         */
 
         def userRank = WebUtils.formatNumberWithCommas(leaderBoardService.getUserRank(model.userInstance.userId as String))
         def totalUsers = WebUtils.formatNumberWithCommas(User.countByTranscribedCountGreaterThanOrValidatedCountGreaterThan(0, 0))
 
         sw.stop()
-        log.debug("notbookMainFragment.percentage ${sw.toString()}")
+        log.debug("notbookMainFragment.userRank ${sw.toString()}")
 
         return model << [
                 totalSpeciesCount: totalSpeciesCount,
                 speciesList: speciesList2,
-                fieldObservationCount: fieldObservationCount,
+                //fieldObservationCount: fieldObservationCount,
                 expeditionCount: expeditions ? expeditions[0] : 0,
-                userPercent: userPercent,
+                //userPercent: userPercent,
                 userRank: userRank,
                 totalUsers: totalUsers
         ]

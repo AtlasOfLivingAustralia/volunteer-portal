@@ -24,6 +24,7 @@ class UserController {
     def fullTextIndexService
     def freemarkerService
     def fieldService
+    def achievementService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -328,16 +329,60 @@ class UserController {
         respond(result)
     }
 
+    def show(User user) {
+        def currentUser = userService.currentUserId
+        def filter = params.taskFilter as String
+
+        if (!user) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
+            render(view: '/notPermitted')
+            return
+        }
+
+        def project = null
+        if (params.projectId) {
+            project = Project.get(params.long('projectId'))
+        }
+
+        def achievements = user.achievementAwards
+        def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
+
+        Stopwatch sw = Stopwatch.createStarted()
+        def taskList = taskService.getNotebookTaskList(filter, user, project,
+                params.int('offset', 0), params.int('max', 10),
+                params.sort as String, params.order as String)
+        sw.stop()
+        log.debug("User.show()#taskList ${sw.toString()}")
+
+        log.info("ViewList: ${taskList}")
+
+        Map myModel = [
+                userInstance         : user,
+                currentUser          : currentUser,
+                project              : project,
+                achievements         : achievements,
+                score                : score,
+                viewTaskList         : taskList.viewList,
+                totalMatchingTasks   : taskList.totalMatchingTasks,
+                isValidator          : userService.isValidator(project),
+                isAdmin              : userService.isAdmin()
+        ]
+
+        render(view: 'show', model: userService.appendNotebookFunctionalityToModel(myModel))
+    }
+
     /**
      * User notebook
      * @param user
      * @return
      */
-    def show(User user) {
+    def showOld(User user) {
         def currentUser = userService.currentUserId
 
         if (!user) {
-            // flash.message = "Missing user id, or user not found!"
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
             render(view: '/notPermitted')
             return
         }
@@ -359,30 +404,26 @@ class UserController {
         def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
         int selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
 
-        if (!user) {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            render(view: '/notPermitted')
-        } else {
-            Map myModel = [
-                    userInstance         : user,
-                    currentUser          : currentUser,
-                    project              : project,
-                    totalTranscribedTasks: totalTranscribedTasks,
-                    achievements         : achievements,
-                    validatedCount       : taskService.countValidUserTranscriptionsForProject(user.getUserId(), project),
-                    score                : score,
-                    selectedTab          : selectedTab,
-                    isValidator          : userService.isValidator(project),
-                    isAdmin              : userService.isAdmin()
-            ]
 
-            userService.appendNotebookFunctionalityToModel(myModel)
-        }
+        Map myModel = [
+                userInstance         : user,
+                currentUser          : currentUser,
+                project              : project,
+                totalTranscribedTasks: totalTranscribedTasks,
+                achievements         : achievements,
+                validatedCount       : taskService.countValidUserTranscriptionsForProject(user.getUserId(), project),
+                score                : score,
+                selectedTab          : selectedTab,
+                isValidator          : userService.isValidator(project),
+                isAdmin              : userService.isAdmin()
+        ]
+
+        render(view: 'showOld', model: userService.appendNotebookFunctionalityToModel(myModel))
+
     }
 
     def achievements() {
-        def currentUser = userService.currentUserId
+        def currentUser = userService.currentUser
 
         if (!currentUser) {
             // flash.message = "Missing user id, or user not found!"
@@ -390,11 +431,9 @@ class UserController {
             return
         }
 
+        def achievementList = achievementService.getAchievementsWithCounts(currentUser)
 
-        def acvhievementList = AchievementDescription.list()
-
-
-        render view: 'achievements', model: [currentUser: currentUser]
+        render view: 'achievements', model: [currentUser: currentUser, achievementList: achievementList]
     }
 
     def edit() {

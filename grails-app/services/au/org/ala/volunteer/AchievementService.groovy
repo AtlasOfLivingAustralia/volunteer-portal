@@ -25,6 +25,7 @@ import java.nio.file.DirectoryStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.text.DecimalFormat
 
 import static org.hibernate.FetchMode.*
 
@@ -138,10 +139,10 @@ class AchievementService implements EventPublisher {
         }
     }
 
-    def evaluateAchievement(AchievementDescription cheev, String userId) {
+    def evaluateAchievement(AchievementDescription cheev, String userId, Boolean checkOnly = true) {
         switch (cheev.type) {
             case AchievementType.ELASTIC_SEARCH_QUERY:
-                return evaluateElasticSearchAchievement(cheev, userId)
+                return evaluateElasticSearchAchievement(cheev, userId, checkOnly)
             case AchievementType.GROOVY_SCRIPT:
                 return evaluateGroovyAchievement(cheev, userId)
             case AchievementType.ELASTIC_SEARCH_AGGREGATION_QUERY:
@@ -180,13 +181,17 @@ class AchievementService implements EventPublisher {
         return runScript(code, new Binding([applicationContext: grailsApplication.mainContext, userId: userId]))
     }
 
-    private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, String userId) {
+    private def evaluateElasticSearchAchievement(AchievementDescription achievementDescription, String userId, Boolean checkOnly = true) {
         final template = achievementDescription.searchQuery
         final count = achievementDescription.count
 
         final binding = ["userId":userId]
 
         def query = freemarkerService.runTemplate(template, binding)
+
+        if (!checkOnly) {
+            return fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseTotalHits())
+        }
         
         fullTextIndexService.rawSearch(query.toString(), SearchType.COUNT, fullTextIndexService.searchResponseHitsGreaterThanOrEqual(count))
     }
@@ -441,20 +446,54 @@ class AchievementService implements EventPublisher {
     /**
      *
      */
-    def getAchievementsWithCounts() {
+    def getAchievementsWithCounts(User user = null) {
         DSLContext context = jooqContextFactory()
         def results = context.select(ACHIEVEMENT_DESCRIPTION.ID,
                 count(ACHIEVEMENT_AWARD.ID).as("Awarded"))
         .from(ACHIEVEMENT_DESCRIPTION)
         .leftJoin(ACHIEVEMENT_AWARD).on(ACHIEVEMENT_AWARD.ACHIEVEMENT_ID.eq(ACHIEVEMENT_DESCRIPTION.ID))
         .where(ACHIEVEMENT_DESCRIPTION.ENABLED.eq(true))
-        .orderBy(ACHIEVEMENT_DESCRIPTION.COUNT.asc())
+        .groupBy(ACHIEVEMENT_DESCRIPTION.ID)
+        .orderBy(count(ACHIEVEMENT_AWARD.ID).desc())
         .fetch()
 
-        def achievements = []
-        results.each { row ->
+        def result = results.collect {record ->
+            def achievementId = record.value1()
+            def awardCount = record.value2()
+            def achievement = AchievementDescription.get(achievementId)
+            def awarded = null
+            def status = null
+            def transcriberCount = User.countByTranscribedCountGreaterThan(0)
+            def percentage = (awardCount / transcriberCount)
+            percentage = percentage * 100
+            DecimalFormat df = new DecimalFormat("0.0")
+            String awardedPercentage = df.format(percentage)
 
+            // If a user is provided, find out if the user has this achievement. If not, find out how far they have to go.
+            if (user) {
+                def achievementAward = AchievementAward.findByAchievementAndUser(achievement, user)
+                if (achievementAward) {
+                    awarded = achievementAward.awarded
+                }
+
+                if (!awarded) {
+                    if (achievement.type == AchievementType.ELASTIC_SEARCH_QUERY) {
+                        def achievementCheck = evaluateAchievement(achievement, user.userId, false) as long
+                        status = achievement.count - achievementCheck
+                    }
+                }
+            }
+
+            [
+                    id: achievementId,
+                    awardCount: awardCount,
+                    awardedPercentage: awardedPercentage,
+                    achievement: achievement,
+                    awarded: awarded,
+                    status: status
+            ]
         }
 
+        result
     }
 }

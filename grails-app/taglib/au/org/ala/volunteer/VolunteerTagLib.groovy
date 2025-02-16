@@ -681,7 +681,10 @@ class VolunteerTagLib {
 
     def taskThumbnail = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        def task = attrs.task as Task
+        def task
+        if (attrs.taskId) task = Task.get(attrs.taskId as long)
+        else if (attrs.task) task = attrs.task as Task
+
         def fixedHeight = attrs.fixedHeight
         def withHidden = attrs.withHidden
 
