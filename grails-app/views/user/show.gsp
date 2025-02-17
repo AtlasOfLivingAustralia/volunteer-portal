@@ -14,6 +14,7 @@
         <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
     </g:else>
 
+    <asset:stylesheet src="notebook-reset.css"/>
     <asset:stylesheet src="notebook-2.css"/>
 </head>
 <body>
