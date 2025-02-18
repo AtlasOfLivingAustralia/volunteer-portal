@@ -331,7 +331,7 @@ class UserController {
 
     def show(User user) {
         def currentUser = userService.currentUserId
-        def filter = params.taskFilter as String
+        def filter = params.filter as String
 
         if (!user) {
             flash.message = message(code: 'default.not.found.message',
