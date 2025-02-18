@@ -88,10 +88,11 @@
             <div class="task-history-nav-col task-history-nav-col__filter">
                 <div class="filter-nav__label">Filter by:</div>
                 <ul class="forum-nav__list">
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-black">All</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-saved">Saved</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-transcribed">Transcribed</button></li>
-                    <li class="filter-nav__list-item"><button class="pill pill--bg-validated">Validated</button></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-black">All</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-grey" title="Tasks transcribed by you">Transcribed</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-grey" title="Tasks validated by you">Validated</span></g:link></li>
+                    <li class="filter-nav__list-item">|</li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-grey" title="Tasks you have saved for later">Saved</span></g:link></li>
                 </ul>
             </div>
 
@@ -108,7 +109,7 @@
 %{--                </ol>--}%
 %{--            </div>--}%
             <div class="task-history-nav-col task-history-nav-col__pagination">
-                <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}"/>
+                <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
             </div>
 
 %{--            <div class="task-history-nav-col task-history-nav-col__mode">--}%
@@ -153,7 +154,7 @@
                                   format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
                 </td>
                 <td data-key="status">
-                    <span class="pill pill--bg-${row.status.trim().toLowerCase()}">${row.status}</span>
+                    <span class="pill pill--bg-${row.status.replace(" ", "-").toLowerCase()}">${row.status}</span>
                 </td>
                 <td data-key="action"><a href="">Edit</a></td>
             </tr>

@@ -44,7 +44,7 @@ p + p {
   display: inline-block;
   padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
   font-size: variables-and-mixins.$text-sm;
-  border-radius: variables-and-mixins.$space-3;
+  border-radius: variables-and-mixins.$space-2;
 }
 
 .pill--bg-black {
@@ -52,7 +52,12 @@ p + p {
   background-color: black;
 }
 
-.pill--bg-blue {
+.pill--bg-grey {
+  color: black;
+  background-color: #c8c8c8;
+}
+
+.pill--bg-blue, .pill--bg-in-progress {
   color: white;
   background-color: variables-and-mixins.$blue;
 }
@@ -88,6 +93,7 @@ p + p {
 
 .filter-nav__label {
   width: 33.33333333333333%;
+  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
   margin-right: variables-and-mixins.$space-1;
   white-space: nowrap;
 
@@ -99,6 +105,7 @@ p + p {
 .filter-nav__list-item {
   display: inline-block;
   margin-bottom: variables-and-mixins.$space-2;
+  white-space: nowrap;
 
   & + .filter-nav__list-item {
     margin-left: variables-and-mixins.$space-3;
@@ -109,6 +116,7 @@ p + p {
 
 .pagination-list {
   display: flex;
+  margin: 0;
 }
 
 .pagination-list__item {

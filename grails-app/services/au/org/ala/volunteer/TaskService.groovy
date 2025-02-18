@@ -1343,7 +1343,7 @@ ORDER BY record_idx, name;
                     .as("date_transcribed"),
                 when(field(name("user_transcription", "is_valid")).eq(true), validatedStatus)
                     .when(field(name("user_transcription", "is_valid")).eq(false), invalidatedStatus)
-                    .when(field(name("user_transcription", "is_fully_transcribed")).eq(true), transcribedStatus)
+                    .when(field(name("user_transcription", "fully_transcribed_by")).isNotNull(), transcribedStatus)
                     .otherwise(savedStatus)
                     .as("status")
             ).distinctOn(field(name("user_transcription", "task_id")))
