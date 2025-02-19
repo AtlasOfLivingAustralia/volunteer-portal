@@ -116,7 +116,7 @@
   .task-list-nav-section {
     @include variables-and-mixins.page-grid;
 
-    h2 {
+    p, h2 {
       grid-column: span 12;
     }
   }
@@ -151,10 +151,12 @@
     grid-column: span 6;
   }
 
-
-
   .task-history-table {
     margin-top: variables-and-mixins.$space-6;
+
+    td, th {
+      font-size: variables-and-mixins.$text-xl;
+    }
   }
 
   // Mobile table

@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.User" %>
+<%@ page import="au.org.ala.volunteer.DateConstants; au.org.ala.volunteer.User" %>
 <%@ page import="au.org.ala.volunteer.Task" %>
 <%@ page import="au.org.ala.volunteer.Project" %>
 
@@ -83,8 +83,8 @@
 
     <section class="task-list-nav-section">
         <h2>Task history</h2>
+        <p>${totalMatchingTasks} tasks found.</p>
         <nav class="task-history-nav">
-
             <div class="task-history-nav-col task-history-nav-col__filter">
                 <div class="filter-nav__label">Filter by:</div>
                 <ul class="forum-nav__list">
@@ -121,12 +121,16 @@
         <table class="task-history-table">
             <thead>
             <tr>
-                <th class="td--2/12">Task</th>
-                <th class="td--1/12">ID</th>
-                <th class="td--4/12">Expedition</th>
-                <th class="td--2/12">Transcribed</th>
-                <th class="td--2/12">Status</th>
-                <th class="td--1/12">Action</th>
+                <th class="td--2/12">${message(code: 'task.label', default: 'Task')}</th>
+                <g:sortableColumn property="id" class="td--1/12"
+                                  title="${message(code: 'task.id.label', default: 'Task ID')}" params="${[filter: params.filter]}"/>
+                <g:sortableColumn property="projectName" class="td--4/12"
+                                  title="${message(code: 'project.name.label', default: 'Expedition')}" params="${[filter: params.filter]}"/>
+                <g:sortableColumn property="dateTranscribed" class="td--2/12"
+                                  title="${message(code: 'task.dateFullyTranscribed.label', default: 'Transcribed')}" params="${[filter: params.filter]}"/>
+                <g:sortableColumn property="status" class="td--2/12"
+                                  title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>
+                <th class="td--1/12">${message(code: 'notebook.tasklist.tableAction.label', default: 'Action')}</th>
             </tr>
             </thead>
             <tbody>
@@ -139,30 +143,58 @@
                 <td data-key="expedition">${row.projectName}</td>
                 <td data-key="transcribed">
                     <g:formatDate date="${row.dateTranscribed}"
-                                  format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
+                                  format="${DateConstants.DATE_TIME_FORMAT}"/>
                 </td>
                 <td data-key="status">
                     <span class="pill pill--bg-${row.status.replace(" ", "-").toLowerCase()}">${row.status}</span>
                 </td>
                 <td data-key="action">
-                    <g:if test="${row.isFullyTranscribed && (row.fullyTranscribedBy == currentUser || isValidator)}">
-                        <!-- show task -->
-                        <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
-                            <i class="fa fa-2x fa-eye" title="View task"></i>
-                        </a>
+                <!-- Already Validated. Allow view or continue validation -->
+                    <g:if test="${row.fullyValidatedBy}">
+                        <g:if test="${row.isValid}">
+                            <!-- show task -->
+                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
+                                <i class="fa fa-eye task-action-icon" title="View task"></i>
+                            </a>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${row.fullyValidatedBy == currentUser}">
+                                <!-- validate task -->
+                                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
+                                    <i class="fa fa-check-square-o task-action-icon" title="Continue Validation"></i>
+                                </a>
+                            </g:if>
+                            <g:else>
+                                <!-- show task -->
+                                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
+                                    <i class="fa fa-eye task-action-icon" title="View task"></i>
+                                </a>
+                            </g:else>
+                        </g:else>
                     </g:if>
-                    <g:if test="${row.isFullyTranscribed && isValidator}">
-                        <!-- validate task -->
-                        <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
-                            <i class="fa fa-2x fa-check-square-o" title="Validate"></i>
-                        </a>
-                    </g:if>
-                    <g:if test="${!row.isFullyTranscribed}">
+                    <g:elseif test="${row.isFullyTranscribed}">
+                        <!-- Task has been transcribed but not validated -->
+                        <g:if test="${isValidator}">
+                            <!-- validate task -->
+                            <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
+                                <i class="fa fa-check-square-o task-action-icon" title="Validate"></i>
+                            </a>
+                        </g:if>
+                        <g:else>
+                            <!-- show task -->
+                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
+                                <i class="fa fa-eye task-action-icon" title="View task"></i>
+                            </a>
+                        </g:else>
+                    </g:elseif>
+                    <g:else>
+                        <!-- Task has not been completely transcribed yet -->
                         <!-- transcribe task -->
                         <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: row.task_id)}">
-                            <i class="fa fa-2x fa-pencil-square-o" title="Transcribe"></i>
+                            <i class="fa fa-pencil-square-o task-action-icon" title="Transcribe"></i>
                         </a>
-                    </g:if>
+                    </g:else>
+
                 </td>
             </tr>
             </g:each>

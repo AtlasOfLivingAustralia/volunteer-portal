@@ -1327,7 +1327,7 @@ ORDER BY record_idx, name;
 
         // SORTING
         final validSorts = [
-                'id': 'id',
+                'id': 'task_id',
                 'projectName': 'project_name',
                 'dateTranscribed': 'date_transcribed',
                 'status': 'status'
@@ -1337,15 +1337,11 @@ ORDER BY record_idx, name;
 
         // Status Column
         def statusColumn = getTaskStatus()
-//        final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
-//        final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'In progress')
-//        final transcribedStatus = i18nService.message(code: 'status.transcribed', default: 'Transcribed')
-//        final savedStatus = i18nService.message(code: 'status.saved', default: 'Saved')
 
         // Main select query
         def taskQuery
         if (FILTER_SAVED.equalsIgnoreCase(filter)) {
-            taskQuery = getSavedTaskQuery(create, user)
+            taskQuery = getSavedTaskQuery(create, user, project)
         } else {
             taskQuery = create.with("user_transcription").as(withClause)
                     .select(
@@ -1353,6 +1349,7 @@ ORDER BY record_idx, name;
                             field(name("user_transcription", "task_id")),
                             field(name("user_transcription", "fully_transcribed_by")),
                             field(name("user_transcription", "fully_validated_by")),
+                            field(name("user_transcription", "is_valid")),
                             PROJECT.NAME.as("project_name"),
                             field(name("user_transcription", "is_fully_transcribed")),
                             when(field(name("user_transcription", "fully_validated_by")).eq(user.userId), field(name("user_transcription", "date_fully_validated")))
@@ -1394,6 +1391,8 @@ ORDER BY record_idx, name;
                     id: row.transcription_id,
                     task_id: row.task_id,
                     fullyTranscribedBy: row.fully_transcribed_by,
+                    fullyValidatedBy: row.fully_validated_by,
+                    isValid: row.is_valid,
                     projectName: row.project_name,
                     isFullyTranscribed: row.is_fully_transcribed,
                     dateTranscribed: row.date_transcribed,
@@ -1406,32 +1405,40 @@ ORDER BY record_idx, name;
         result
     }
 
-    def getSavedTaskQuery(DSLContext context, User user) {
+    def getSavedTaskQuery(DSLContext context, User user, Project project) {
         def statusColumn = getTaskStatus()
+
+        def whereClause = []
+        whereClause.add(TASK.IS_FULLY_TRANSCRIBED.eq(false))
+        whereClause.add(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.isNull())
+        if (project) whereClause.add(PROJECT.ID.eq(project.id))
 
         def taskQuery = context.select(TRANSCRIPTION.ID.as("transcription_id"),
                 TRANSCRIPTION.TASK_ID,
                 TRANSCRIPTION.FULLY_TRANSCRIBED_BY,
                 TASK.FULLY_VALIDATED_BY,
+                TASK.IS_FULLY_TRANSCRIBED,
+                TASK.IS_VALID,
                 PROJECT.NAME.as("project_name"),
                 when(TASK.FULLY_VALIDATED_BY.eq(user.userId), TASK.DATE_FULLY_VALIDATED)
                     .when(TRANSCRIPTION.DATE_FULLY_TRANSCRIBED.isNotNull(), TRANSCRIPTION.DATE_FULLY_TRANSCRIBED)
                     .otherwise(field(name("field_entries", "date_last_updated")))
                     .as("date_transcribed"),
                 when(TASK.IS_VALID.eq(true), statusColumn.validatedStatus as String)
-                        .when(TASK.IS_VALID.eq(false), statusColumn.invalidatedStatus as String)
-                        .when(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.isNotNull(), statusColumn.transcribedStatus as String)
-                        .otherwise(statusColumn.savedStatus as String)
-                        .as("status"))
+                    .when(TASK.IS_VALID.eq(false), statusColumn.invalidatedStatus as String)
+                    .when(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.isNotNull(), statusColumn.transcribedStatus as String)
+                    .otherwise(statusColumn.savedStatus as String)
+                    .as("status"))
+            .distinctOn(TASK.ID)
             .from(TRANSCRIPTION)
             .join(TASK).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))
             .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
-            .leftOuterJoin((select(FIELD.TASK_ID, FIELD.TRANSCRIBED_BY_USER_ID, max(FIELD.UPDATED).as("date_last_updated"))
+            .join((select(FIELD.TASK_ID, FIELD.TRANSCRIBED_BY_USER_ID, max(FIELD.UPDATED).as("date_last_updated"))
                     .from(FIELD)
                     .where(FIELD.SUPERCEDED.eq(false)) & FIELD.TRANSCRIBED_BY_USER_ID.eq(user.userId))
-                    .groupBy(FIELD.TASK_ID, FIELD.TRANSCRIBED_BY_USER_ID).asTable("field_entries")
-            ).on(field(name("field_entries", "task_id")).eq(TASK.ID))
-            .where(TASK.IS_FULLY_TRANSCRIBED.eq(false))
+                    .groupBy(FIELD.TASK_ID, FIELD.TRANSCRIBED_BY_USER_ID).asTable("field_entries"))
+                .on(field(name("field_entries", "task_id")).eq(TASK.ID))
+            .where(whereClause)
 
         return taskQuery
     }
@@ -1444,9 +1451,6 @@ ORDER BY record_idx, name;
 
         [validatedStatus: validatedStatus, invalidatedStatus: invalidatedStatus, transcribedStatus: transcribedStatus, savedStatus: savedStatus]
     }
-
-
-
 
     @NotTransactional // handle the read only transaction at the sql level
     // TODO Use Gradle, Flyway, JOOQ instead of plain SQL
