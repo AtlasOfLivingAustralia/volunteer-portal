@@ -10,6 +10,7 @@
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [currentUser?.displayName])}"/></title>
 
+    <asset:stylesheet src="notebook-reset.css"/>
     <asset:stylesheet src="notebook-2.css"/>
 </head>
 <body>
