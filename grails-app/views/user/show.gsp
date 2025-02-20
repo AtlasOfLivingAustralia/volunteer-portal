@@ -81,11 +81,13 @@
         </ul>
     </section>
 
+%{--    <section class="task-list-nav-section">--}%
     <section class="task-list-nav-section">
         <h2>Task history</h2>
         <p>${totalMatchingTasks} tasks found.</p>
         <nav class="task-history-nav">
-            <div class="task-history-nav-col task-history-nav-col__filter">
+%{--            <div class="task-history-nav-col task-history-nav-col__filter">--}%
+            <div class="filter-nav filter-nav--mt-3">
                 <div class="filter-nav__label">Filter by:</div>
                 <ul class="forum-nav__list">
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All</span></g:link></li>
@@ -96,7 +98,8 @@
                 </ul>
             </div>
 
-            <div class="task-history-nav-col task-history-nav-col__pagination">
+%{--            <div class="task-history-nav-col task-history-nav-col__pagination">--}%
+            <div class="forum-pagination-nav">
                 <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
             </div>
 

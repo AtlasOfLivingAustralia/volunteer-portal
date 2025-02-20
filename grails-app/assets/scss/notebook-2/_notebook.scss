@@ -114,34 +114,42 @@
   /////////////////////////////////
 
   .task-list-nav-section {
-    @include variables-and-mixins.page-grid;
 
-    p, h2 {
-      grid-column: span 12;
+
+    p {
+      font-size: variables-and-mixins.$text-sm;
     }
   }
 
-  .task-history-nav {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: span 12;
-    max-width: $screen-xl;
+  .forum-pagination-nav {
     margin-left: auto;
-    margin-right: auto;
-    margin-top: variables-and-mixins.$space-3;
+  }
 
+  .task-history-nav {
 
-    .task-history-nav-col__filter {
-      justify-self: start;
+    @media screen and (min-width: variables-and-mixins.$screen-lg) {
+      display: flex;
     }
-
-    .task-history-nav-col__pagination {
-      justify-self: center;
-    }
-
-    .task-history-nav-col__mode {
-      justify-self: end;
-    }
+    //display: grid;
+    //grid-template-columns: subgrid;
+    //grid-column: span 12;
+    //max-width: $screen-xl;
+    //margin-left: auto;
+    //margin-right: auto;
+    //margin-top: variables-and-mixins.$space-3;
+    //
+    //
+    //.task-history-nav-col__filter {
+    //  justify-self: start;
+    //}
+    //
+    //.task-history-nav-col__pagination {
+    //  justify-self: center;
+    //}
+    //
+    //.task-history-nav-col__mode {
+    //  justify-self: end;
+    //}
   }
 
   .task-history-nav-col {
