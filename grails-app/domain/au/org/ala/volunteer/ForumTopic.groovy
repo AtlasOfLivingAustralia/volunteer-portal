@@ -7,7 +7,10 @@ class ForumTopic {
     String title
     Boolean sticky
     Boolean locked
+    // DEPRECATED
     ForumTopicPriority priority = ForumTopicPriority.Normal
+    ForumTopicType topicType = ForumTopicType.Discussion
+    Boolean isAnswered
     Integer views = 0
     Boolean deleted
     Date lastReplyDate
@@ -24,6 +27,8 @@ class ForumTopic {
         sticky nullable:  true
         locked nullable:  true
         priority nullable: true
+        topicType nullable: true
+        isAnswered nullable: true
         views nullable: true
         deleted nullable: true
         lastReplyDate nullable: true
@@ -32,6 +37,7 @@ class ForumTopic {
 
     static mapping = {
         priority enumType:"ordinal"
+        topicType enumType:"ordinal"
         messages fetch: 'join'
     }
 

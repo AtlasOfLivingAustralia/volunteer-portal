@@ -1,11 +1,73 @@
 @use "variables-and-mixins";
 
+main {
+  background-color: white;
+
+  section {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    padding-top: 1%;
+    padding-bottom: 1%;
+  }
+}
+
 //////////////////////////////////
 // Navigation
 //////////////////////////////////
+.forum-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forum-nav-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    flex-direction: column;
+  }
+}
+
+.forum-nav-section, .forum-table-section, .forum-search-section, .topic-view-section {
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    width: 1140px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
 
 .forum-nav {
   margin-top: variables-and-mixins.$space-4;
+}
+
+.forum-filter-nav {
+  flex: 1;
+  padding: variables-and-mixins.$space-2;
+  //border: 1px solid #ccc;
+  //background: #f9f9f9;
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    width: 100%; /* Full width on small screens */
+  }
+}
+
+.forum-nav-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  select, input {
+    padding: 5px;
+    width: 100%;
+    font-size: variables-and-mixins.$text-sm
+  }
+}
+
+.forum-nav-pagination {
+  float: right;
 }
 
 .forum-nav__list {
@@ -19,16 +81,65 @@
 }
 
 .forum-pagination-nav {
+  flex: 1;
+  padding: 10px;
   font-size: variables-and-mixins.$text-sm;
   margin-top: variables-and-mixins.$space-4;
+  margin-left: auto;
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    width: 100%; /* Full width on small screens */
+  }
 }
+
+
 
 //////////////////////////////////
 // Table
 //////////////////////////////////
 
+.forum-topic-count {
+  font-size: variables-and-mixins.$text-lg;
+}
+
 .forum-posts-table {
   margin-top: variables-and-mixins.$space-4;
+  font-size: variables-and-mixins.$text-lg;
+}
+
+.forum-table-topic {
+  font-size: variables-and-mixins.$text-xl;
+}
+
+.forum-table-topic-watched {
+  padding: 3px 5px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: auto;
+  float: right;
+  color: #d5502a;
+}
+
+.forum-table-topic-not-watched {
+  color: inherit  !important;
+}
+
+.forum-table-watched {
+ text-align: right;
+}
+
+.forum-table-topic-project {
+  font-size: variables-and-mixins.$text-sm;
+  margin-left: variables-and-mixins.$space-4;
+}
+
+.forum-table-info {
+  font-size: 1.5em;
+}
+
+.toggleWatch {
+  font-size: variables-and-mixins.$text-xl;
+  cursor: pointer;
 }
 
 // Mobile table
@@ -84,8 +195,8 @@
 
   .forum-posts-table__status {
     position: absolute;
-    right: -7px;
-    top: -10px;
+    right: 11px;
+    top: 20px;
   }
 }
 
@@ -107,6 +218,12 @@
   align-items: center;
   margin-top: variables-and-mixins.$space-3;
   margin-bottom: variables-and-mixins.$space-3;
+  padding-left: variables-and-mixins.$space-3;
+
+  nav {
+    font-size: variables-and-mixins.$text-xl;
+    float: right;
+  }
 }
 
 .forum-post__list-item {
@@ -125,16 +242,35 @@
   margin-bottom: variables-and-mixins.$space-4;
 }
 
+.forum-post__footer {
+  display: flex;
+  justify-content: right;
+  margin-top: variables-and-mixins.$space-4;
+}
+
 .forum-post__heading {
   font-size: variables-and-mixins.$text-sm;
   font-weight: 800;
 }
 
 .forum-post__date-time {
-  color: variables-and-mixins.$dark-grey;
+  font-size: variables-and-mixins.$text-lg;
+  color: variables-and-mixins.$medium-grey;
+}
+
+.forum-post__text {
+  font-size: variables-and-mixins.$text-xl;
+}
+
+blockquote {
+  font-size: variables-and-mixins.$text-xl;
 }
 
 // Reply
+
+.forum-post__form {
+  margin-top: variables-and-mixins.$space-4;
+}
 
 .forum-post__textarea {
   display: block;
@@ -170,10 +306,12 @@
 .forum-post-button {
   min-height: variables-and-mixins.$space-10;
   margin-bottom: variables-and-mixins.$space-1;
-  padding-left: variables-and-mixins.$space-2;
-  padding-right: variables-and-mixins.$space-2;
+  //padding-left: variables-and-mixins.$space-2;
+  //padding-right: variables-and-mixins.$space-2;
+  padding: variables-and-mixins.$space-2;
   color: white;
   background-color: black;
+  border-radius: 4px;
 
   &:hover {
     // color: black;

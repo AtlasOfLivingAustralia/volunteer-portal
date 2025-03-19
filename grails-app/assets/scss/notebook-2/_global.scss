@@ -38,6 +38,11 @@ p + p {
 //  text-decoration: underline;
 //}
 
+.a-feature.simple-header {
+  padding-top: variables-and-mixins.$space-8;
+  padding-bottom: variables-and-mixins.$space-4;
+}
+
 // Icons
 
 .task-action-icon {
@@ -48,7 +53,10 @@ p + p {
 
 .pill {
   display: inline-block;
-  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
+  padding-left: variables-and-mixins.$space-3;
+  padding-right: variables-and-mixins.$space-3;
+  padding-top: variables-and-mixins.$space-2;
+  padding-bottom: variables-and-mixins.$space-1;
   font-size: variables-and-mixins.$text-sm;
   border-radius: variables-and-mixins.$space-2;
 }
@@ -63,24 +71,33 @@ p + p {
   background-color: #c8c8c8;
 }
 
-.pill--bg-blue, .pill--bg-in-progress {
+.pill--bg-blue, .pill--bg-in-progress, .pill--bg-discussion {
   color: white;
   background-color: variables-and-mixins.$blue;
 }
 
-.pill--bg-green, .pill--bg-validated {
+.pill--bg-green, .pill--bg-validated, .pill--bg-answered {
   color: black;
   background-color: variables-and-mixins.$green;
 }
 
-.pill--bg-orange, .pill--bg-saved {
+.pill--bg-orange, .pill--bg-saved, .pill--bg-question {
   background-color: variables-and-mixins.$orange;
 }
 
-.pill--bg-purple, .pill--bg-transcribed {
+.pill--bg-purple, .pill--bg-transcribed, .pill--bg-announcement {
   color: white;
   background-color: variables-and-mixins.$purple;
 }
+
+.pill--bg-watched {
+  color: white;
+  background-color: #d5502a;
+  padding: 1px 1px;
+  font-size: variables-and-mixins.$text-lg;
+  cursor: pointer;
+}
+
 
 // Filter navigation
 
@@ -143,11 +160,12 @@ p + p {
 
 // Dropdowns
 
-//.dropdown {
-//  border: solid #d9d9d9 1px;
-//  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
-//  background-color: transparent;
-//}
+.nav-dropdown {
+  border: solid #d9d9d9 1px;
+  border-radius: 4px;
+  padding: variables-and-mixins.$space-1 variables-and-mixins.$space-3;
+  background-color: transparent;
+}
 
 // Tables
 // Default behaviour is desktop. Unlike other styles, we are writing desktop-first rules
@@ -297,6 +315,10 @@ td {
   width: 16.6666666667%;
 }
 
+.td--3\/12 {
+  width: 25%;
+}
+
 .td--4\/12 {
   width: 33.3333333333%;
 }
@@ -314,6 +336,7 @@ td {
 .lg\:td--text-right {
   @media screen and (min-width: variables-and-mixins.$screen-lg) {
     text-align: right;
+    text-wrap: nowrap;
   }
 }
 

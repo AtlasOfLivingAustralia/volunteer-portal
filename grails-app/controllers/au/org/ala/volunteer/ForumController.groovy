@@ -13,6 +13,32 @@ class ForumController {
     def markdownService
 
     def index() {
+        def currentUser = userService.currentUser
+        def filter = params.filter as String
+        def searchQuery = params.q as String
+        def watched = "true".equalsIgnoreCase(params.watched as String)
+
+        if (!currentUser) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
+            render(view: '/notPermitted')
+            return
+        }
+
+        def project = null
+        if (params.projectId) {
+            project = Project.get(params.long('projectId'))
+        }
+
+        def forumTopics = forumService.getForumTopics(project, currentUser, searchQuery, filter, watched,
+                params.int('offset', 0),
+                params.int('max', 30),
+                params.sort as String,
+                params.order as String)
+
+        def projectFilterList = projectService.getProjectsWithTopicCounts()
+
+        [topicList: forumTopics.topicList, topicCount: forumTopics.topicCount, project: project, projectFilterList: projectFilterList]
     }
 
     def ajaxRecentTopicsList() {
@@ -255,7 +281,7 @@ class ForumController {
     }
 
     def viewForumTopic() {
-        def topic = ForumTopic.get(params.id as long)
+        def topic = ForumTopic.get((params.id ?: params.topicId) as long)
         if (topic) {
             forumService.incrementTopicView(topic)
         } else {
@@ -265,41 +291,55 @@ class ForumController {
             return
         }
 
-        Project projectInstance = null
-        Task taskInstance = null
-        if (topic.instanceOf(ProjectForumTopic)) {
-            projectInstance = (topic as ProjectForumTopic).project
-        } else if (topic.instanceOf(TaskForumTopic)) {
-            taskInstance = (topic as TaskForumTopic).task
-        }
+//        Project projectInstance = null
+//        Task taskInstance = null
+//        if (topic.instanceOf(ProjectForumTopic)) {
+//            projectInstance = (topic as ProjectForumTopic).project
+//        } else if (topic.instanceOf(TaskForumTopic)) {
+//            taskInstance = (topic as TaskForumTopic).task
+//        }
 
-        def userInstance = userService.currentUser
-        def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
+//        def userInstance = userService.currentUser
+//        def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
+//
+//        ForumMessage replyTo = null
+//        if (params.replyTo) {
+//            replyTo = ForumMessage.get(params.int("replyTo"))
+//        } else {
+//            replyTo = forumService.getFirstMessageForTopic(topic)
+//        }
 
-        [topic: topic, userInstance: userInstance, projectInstance: projectInstance, taskInstance: taskInstance, isWatched: isWatching]
+        def topicValues = getTopicParameters(topic)
+
+        [topic: topic, userInstance: topicValues.user, projectInstance: topicValues.projectInstance,
+         taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatching, replyTo: topicValues.replyTo]
     }
 
     def postMessage() {
         def topic = ForumTopic.get(params.int("topicId"))
         if (topic) {
-            ForumMessage replyTo = null
-            if (params.replyTo) {
-               replyTo = ForumMessage.get(params.int("replyTo"))
-            } else {
-               replyTo = forumService.getFirstMessageForTopic(topic)
-            }
+//            ForumMessage replyTo = null
+//            if (params.replyTo) {
+//               replyTo = ForumMessage.get(params.int("replyTo"))
+//            } else {
+//               replyTo = forumService.getFirstMessageForTopic(topic)
+//            }
+//
+//            Project projectInstance = null
+//            Task taskInstance = null
+//            if (topic.instanceOf(ProjectForumTopic)) {
+//                projectInstance = (topic as ProjectForumTopic).project
+//            } else if (topic.instanceOf(TaskForumTopic)) {
+//                taskInstance = (topic as TaskForumTopic).task
+//            }
+//
+//            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
 
-            Project projectInstance = null
-            Task taskInstance = null
-            if (topic.instanceOf(ProjectForumTopic)) {
-                projectInstance = (topic as ProjectForumTopic).project
-            } else if (topic.instanceOf(TaskForumTopic)) {
-                taskInstance = (topic as TaskForumTopic).task
-            }
+            def topicValues = getTopicParameters(topic)
 
-            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-
-            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, taskInstance: taskInstance, projectInstance: projectInstance]
+            [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
+             isWatched: topicValues.isWatched, taskInstance: topicValues.taskInstance,
+             projectInstance: topicValues.projectInstance]
         } else {
             redirect(controller:'forum', action: 'index')
         }
@@ -310,21 +350,37 @@ class ForumController {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
 
-        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText ?: message.text]
+        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser,
+         messageText: params.messageText ?: message.text]
     }
 
     def previewMessage() {
         def topic = ForumTopic.get(params.topicId)
         if (topic) {
-            ForumMessage replyTo = null
-            if (params.replyTo) {
-                replyTo = ForumMessage.get(params.int("replyTo"))
-            } else {
-                replyTo = forumService.getFirstMessageForTopic(topic)
-            }
-            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postMessage',
-                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched],
+//            ForumMessage replyTo = null
+//            if (params.replyTo) {
+//                replyTo = ForumMessage.get(params.int("replyTo"))
+//            } else {
+//                replyTo = forumService.getFirstMessageForTopic(topic)
+//            }
+
+//            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
+//
+//            Project projectInstance = null
+//            Task taskInstance = null
+//            if (topic.instanceOf(ProjectForumTopic)) {
+//                projectInstance = (topic as ProjectForumTopic).project
+//            } else if (topic.instanceOf(TaskForumTopic)) {
+//                taskInstance = (topic as TaskForumTopic).task
+//            }
+            def topicValues = getTopicParameters(topic)
+
+            log.debug("previewMessage | ${params}")
+
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance,
+                            isWatching: topicValues.isWatched],
                     params: [messageText: markdownService.sanitizeMarkdown(params.messageText)]
         }
     }
@@ -404,45 +460,158 @@ class ForumController {
         }
     }
 
+    def saveNewTopicMessageAnswered() {
+        def topic = ForumTopic.get(params.topicId as long)
+
+        if (!topic) {
+            flash.message = "No topic found. No access"
+            redirect (controller: 'forum', action: 'index')
+            return
+        }
+
+        params.isAnswered = true
+
+        def topicValues = saveTopicMessage(topic)
+        if (topicValues.errors?.size() > 0) {
+            flash.message = formatMessages(errors)
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
+                    params: [messageText: params.messageText]
+        } else {
+            redirect(action: 'viewForumTopic', id: topic?.id)
+        }
+    }
+
     def saveNewTopicMessage() {
         def topic = ForumTopic.get(params.topicId as long)
-//        def user = userService.currentUser
-        def msgParams = [:]
-        //ForumMessage replyTo = null
-        msgParams.user = userService.currentUser
-        msgParams.watchTopic = params.watchTopic
 
-        if (params.replyTo) {
-            msgParams.replyTo = ForumMessage.get(params.int("replyTo"))
-            if (!msgParams.replyTo) msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
+        if (!topic) {
+            flash.message = "No topic found. No access"
+            redirect (controller: 'forum', action: 'index')
+            return
         }
-//
-//        if (msgParams.replyTo == null) {
-//            msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
-//        }
 
-        def errors = []
-        if (topic && params.messageText && msgParams.user) {
+        def topicValues = saveTopicMessage(topic)
 
-            def text = params.messageText as String
-            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-            msgParams.text = markdownService.sanitizeMarkdown(text)
-
-            if (text.length() > maxSize) {
-                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
-            }
-
-            if (!errors) {
-                forumService.addForumMessage(topic, msgParams)
-                redirect(action: 'viewForumTopic', id: topic?.id)
-                return
-            }
+        if (topicValues.errors?.size() > 0) {
+            flash.message = formatMessages(errors)
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
+                    params: [messageText: params.messageText]
         } else {
-            errors << "Message text must not be empty"
+            redirect(action: 'viewForumTopic', id: topic?.id)
+        }
+    }
+
+    /**
+     *
+     * @param topic
+     * @param topicValues
+     * @return
+     */
+    private def saveTopicMessage(ForumTopic topic) {
+        def topicValues = getTopicParameters(topic) as Map
+        def msgParams = [:]
+        msgParams.user = topicValues.user
+        msgParams.watchTopic = params.watchTopic
+        msgParams.replyTo = topicValues.replyTo
+
+        if ((params.isAnswered && Boolean.valueOf(params.isAnswered as String)) || topicValues.isAnswered) {
+            msgParams.isAnswered = true
+            topicValues.isAnswered = true
         }
 
-        flash.message = formatMessages(errors)
-        render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText]
+        if (!params.messageText) {
+            topicValues.errors << "Message text must not be empty"
+            return topicValues
+        }
+
+        def text = params.messageText as String
+        def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
+
+        if (text.length() > maxSize) {
+            topicValues.errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+            return topicValues
+        }
+
+        msgParams.text = markdownService.sanitizeMarkdown(text)
+        forumService.addForumMessage(topic, msgParams)
+
+        return topicValues
+    }
+
+//    def saveNewTopicMessage() {
+//        def topic = ForumTopic.get(params.topicId as long)
+//        def msgParams = [:]
+//        ForumMessage replyTo = null
+//        msgParams.user = userService.currentUser
+//        msgParams.watchTopic = params.watchTopic
+//
+//        if (params.isAnswered && Boolean.valueOf(params.isAnswered as String)) {
+//            msgParams.isAnswered = true
+//        }
+//
+//        if (params.replyTo) {
+//            replyTo = ForumMessage.get(params.int("replyTo"))
+//            msgParams.replyTo = replyTo
+//            if (!msgParams.replyTo) msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
+//        }
+//
+//        def errors = []
+//        if (topic && params.messageText && msgParams.user) {
+//
+//            def text = params.messageText as String
+//            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
+//            msgParams.text = markdownService.sanitizeMarkdown(text)
+//
+//            if (text.length() > maxSize) {
+//                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+//            }
+//
+//            if (!errors) {
+//                forumService.addForumMessage(topic, msgParams)
+//                redirect(action: 'viewForumTopic', id: topic?.id)
+//                return
+//            }
+//        } else {
+//            errors << "Message text must not be empty"
+//        }
+//
+//        def topicValues = getTopicParameters(topic)
+//
+//        flash.message = formatMessages(errors)
+//        render view:'viewForumTopic',
+//                model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+//                        projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
+//                params: [messageText: params.messageText]
+//    }
+
+    /**
+     * Helper method to get parameters for view topic views that are commonly used.
+     * @param topic the topic being viewed.
+     * @return a Map of parameters: Project, Task, isWatched (boolean), replyTo (ForumMessage) and User.
+     */
+    private def getTopicParameters(ForumTopic topic) {
+        Project projectInstance = null
+        Task taskInstance = null
+        if (topic.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topic as ProjectForumTopic).project
+        } else if (topic.instanceOf(TaskForumTopic)) {
+            taskInstance = (topic as TaskForumTopic).task
+        }
+
+        def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
+
+        ForumMessage replyTo = null
+        if (params.replyTo) {
+            replyTo = ForumMessage.get(params.int("replyTo"))
+        } else {
+            replyTo = forumService.getFirstMessageForTopic(topic)
+        }
+
+        [projectInstance: projectInstance, taskInstance: taskInstance, user: userService.currentUser, replyTo: replyTo, isWatched: isWatched]
     }
 
     def deleteTopic() {
@@ -502,7 +671,7 @@ class ForumController {
     def ajaxWatchTopic() {
         def topic = ForumTopic.get(params.int("topicId"))
         def watch = params.boolean("watch")
-        def results =[success: 'false']
+        def results = [success: 'false']
         if (topic) {
             def userInstance = userService.currentUser
             if (watch) {

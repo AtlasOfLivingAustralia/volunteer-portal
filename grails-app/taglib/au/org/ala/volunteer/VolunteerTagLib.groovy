@@ -618,7 +618,7 @@ class VolunteerTagLib {
                 mb.mkp.yieldUnescaped(bodyContent)
             } else {
                 mb.div(class:"row") {
-                    div(class:"col-sm-10") {
+                    div(class:"col-sm-12") {
                         if (heading) {
                             mb.h1(class:'bvp-heading') {
                                 mkp.yield(attrs.title)

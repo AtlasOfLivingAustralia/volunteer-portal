@@ -28,15 +28,11 @@ import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static org.jooq.impl.DSL.max
 import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.select
-import static org.jooq.impl.DSL.with
 import static org.jooq.impl.DSL.table
-import static org.jooq.impl.DSL.field
 import static org.jooq.impl.DSL.when
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.field
-import static org.jooq.impl.DSL.coalesce
-import static org.jooq.impl.DSL.count as jCount
-import static org.jooq.impl.DSL.countDistinct as jCountDistinct
+
 
 
 @Transactional

@@ -41,6 +41,8 @@ import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
 //import static org.jooq.impl.DSL.*
 import static org.jooq.impl.DSL.not
+import static org.jooq.impl.DSL.field
+import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.condition
 import static org.jooq.impl.DSL.coalesce
 import static org.jooq.impl.DSL.select
@@ -1289,5 +1291,36 @@ class ProjectService implements EventPublisher {
             log.debug("doesTemplateSupportMultiTranscriptions: no template, returning false")
             return false
         }
+    }
+
+    def getProjectsWithTopicCounts() {
+        log.debug("Retrieving list of projects grouped into institutions including forum topic counts")
+        DSLContext create = jooqContextFactory()
+
+        def subQuery = create.select(PROJECT.ID.as("id"), jCount(FORUM_TOPIC.ID).as("topic_count"))
+            .from(TASK)
+            .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
+            .leftOuterJoin(FORUM_TOPIC).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
+            .groupBy(PROJECT.ID).asTable("sq")
+
+        def query = create.select(PROJECT.ID.as("id"),
+            INSTITUTION.NAME.as("institution_name"),
+            PROJECT.NAME.as("project_name"),
+            field(name("sq", "topic_count")))
+        .from(PROJECT)
+        .join(subQuery).on(PROJECT.ID.eq(subQuery.field("id")))
+        .join(INSTITUTION).on(INSTITUTION.ID.eq(PROJECT.INSTITUTION_ID))
+        .orderBy(INSTITUTION.NAME.asc(), PROJECT.ID.asc())
+
+        def result = query.fetch().collect { row ->
+            [
+                    projectId: row.id,
+                    projectName: row.project_name,
+                    institutionName: row.institution_name,
+                    topicCount: row.topic_count
+            ]
+        }
+
+        result
     }
 }
