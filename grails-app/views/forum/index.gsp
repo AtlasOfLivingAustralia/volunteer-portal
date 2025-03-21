@@ -210,37 +210,8 @@
         });
 
         function doSearch() {
-            // const params = new URLSearchParams(window.location.search);
-            // let topicFilter = params.get('filter');
-            // let projectId = params.get('projectId');
-            // let q = params.get('q');
-
             let q = encodeURIComponent($('#searchbox').val());
             window.location = getLink("${createLink(controller: 'forum', action: 'index')}", "q", q);
-
-%{--            let hasParams = false;--}%
-%{--            let url = "${createLink(controller: 'forum', action: 'index')}?";--}%
-
-%{--            if (topicFilter) {--}%
-%{--                url += "filter=" + topicFilter;--}%
-%{--                if (!hasParams) hasParams = true;--}%
-%{--            }--}%
-%{--            if (projectId) {--}%
-%{--                if (hasParams) {--}%
-%{--                    url += "&";--}%
-%{--                }--}%
-%{--                url += "projectId=" + projectId;--}%
-%{--                if (!hasParams) hasParams = true;--}%
-%{--            }--}%
-%{--            if (q) {--}%
-%{--                if (hasParams) {--}%
-%{--                    url += "&";--}%
-%{--                }--}%
-%{--                url += "q=" + q;--}%
-%{--                if (!hasParams) hasParams = true;--}%
-%{--            }--}%
-
-%{--            window.location = url;--}%
         }
 
         $('.toggleWatch').click(function() {
@@ -266,7 +237,6 @@
                     }
                 });
             }
-
         });
 
     });

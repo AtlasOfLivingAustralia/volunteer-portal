@@ -34,7 +34,6 @@
 
         <ol>
             <vpf:topicMessageList topic="${topic}" />
-            <!-- ${params} -->
 
             <g:if test="${params.messageText}">
                 <vpf:messagePreview user="${userInstance}" messageText="${params.messageText}" />
@@ -59,15 +58,10 @@
             if (messageText && messageText.length > 0) {
                 let newLine = "\n";
 
-                // Remove blockquote tags and their content
                 let formattedString = messageText.replace(/<blockquote>.*?<\/blockquote>/gis, "")
-                // Replace closing <p> tags with newline
                     .replace(/<\/p>/gi, newLine)
-                // Remove all remaining HTML tags
                     .replace(/<\/?[^>]+(>|$)/g, "")
-                // Split by newlines, trim, and filter out empty lines
                     .split(newLine)
-                // Prepend '>' to each line
                     .map(function(line) {
                         return '> ' + line.trim();
                     })
@@ -78,6 +72,50 @@
 
             }
         });
+
+        $('.edit-message').click(function() {
+            const parentDiv = $(this).closest('.forum-post__footer');
+            const messageId = $(parentDiv).attr('data-message-id');
+            if (messageId) {
+                window.location = "${createLink(action: 'editMessage')}?messageId=" + messageId;
+            }
+        });
+
+        $('.delete-message').click(function() {
+            const parentDiv = $(this).closest('.forum-post__footer');
+            const messageId = $(parentDiv).attr('data-message-id');
+            if (messageId) {
+                if (confirm("Are you sure you wish to permanently delete this message?")) {
+                    window.location = "${createLink(action: 'deleteTopicMessage')}?messageId=" + messageId;
+                }
+            }
+        });
+
+        $('.toggleWatch').click(function() {
+            let iconSpan = $(this).find('span');
+            let div = $(this);
+            let watched = $(this).attr("data-watched") === "true";
+            let topicId = $(this).attr("data-topic-id");
+
+            if (topicId) {
+                // Toggle watched flag
+                watched = !watched;
+
+                $.ajax("${createLink(controller: 'forum', action:'ajaxWatchTopic')}?watch="+ watched +"&topicId=" + topicId).done(function (results) {
+                    $(div).attr('data-watched', watched);
+                    if (watched) {
+                        $(iconSpan).removeClass('fa-star-o').removeClass('forum-post-not-watched')
+                            .addClass('fa-star')
+                            .attr('title', "${message(code: 'forumTopic.watched.stopwatching', default: 'Click to unwatch')}");
+                    } else {
+                        $(iconSpan).removeClass('fa-star')
+                            .addClass('fa-star-o').addClass('forum-post-not-watched')
+                            .attr('title', "${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}");
+                    }
+                });
+            }
+        });
+
     });
 </asset:script>
 

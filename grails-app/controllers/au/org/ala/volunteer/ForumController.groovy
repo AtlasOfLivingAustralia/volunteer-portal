@@ -291,24 +291,6 @@ class ForumController {
             return
         }
 
-//        Project projectInstance = null
-//        Task taskInstance = null
-//        if (topic.instanceOf(ProjectForumTopic)) {
-//            projectInstance = (topic as ProjectForumTopic).project
-//        } else if (topic.instanceOf(TaskForumTopic)) {
-//            taskInstance = (topic as TaskForumTopic).task
-//        }
-
-//        def userInstance = userService.currentUser
-//        def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
-//
-//        ForumMessage replyTo = null
-//        if (params.replyTo) {
-//            replyTo = ForumMessage.get(params.int("replyTo"))
-//        } else {
-//            replyTo = forumService.getFirstMessageForTopic(topic)
-//        }
-
         def topicValues = getTopicParameters(topic)
 
         [topic: topic, userInstance: topicValues.user, projectInstance: topicValues.projectInstance,
@@ -318,23 +300,6 @@ class ForumController {
     def postMessage() {
         def topic = ForumTopic.get(params.int("topicId"))
         if (topic) {
-//            ForumMessage replyTo = null
-//            if (params.replyTo) {
-//               replyTo = ForumMessage.get(params.int("replyTo"))
-//            } else {
-//               replyTo = forumService.getFirstMessageForTopic(topic)
-//            }
-//
-//            Project projectInstance = null
-//            Task taskInstance = null
-//            if (topic.instanceOf(ProjectForumTopic)) {
-//                projectInstance = (topic as ProjectForumTopic).project
-//            } else if (topic.instanceOf(TaskForumTopic)) {
-//                taskInstance = (topic as TaskForumTopic).task
-//            }
-//
-//            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-
             def topicValues = getTopicParameters(topic)
 
             [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
@@ -350,32 +315,16 @@ class ForumController {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
 
-        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser,
-         messageText: params.messageText ?: message.text]
+        def topicValues = getTopicParameters(message.topic)
+
+        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, taskInstance: topicValues.taskInstance,
+            projectInstance: topicValues.projectInstance, messageText: params.messageText ?: message.text]
     }
 
     def previewMessage() {
-        def topic = ForumTopic.get(params.topicId)
+        def topic = ForumTopic.get(params.long("topicId"))
         if (topic) {
-//            ForumMessage replyTo = null
-//            if (params.replyTo) {
-//                replyTo = ForumMessage.get(params.int("replyTo"))
-//            } else {
-//                replyTo = forumService.getFirstMessageForTopic(topic)
-//            }
-
-//            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-//
-//            Project projectInstance = null
-//            Task taskInstance = null
-//            if (topic.instanceOf(ProjectForumTopic)) {
-//                projectInstance = (topic as ProjectForumTopic).project
-//            } else if (topic.instanceOf(TaskForumTopic)) {
-//                taskInstance = (topic as TaskForumTopic).task
-//            }
             def topicValues = getTopicParameters(topic)
-
-            log.debug("previewMessage | ${params}")
 
             render view:'viewForumTopic',
                     model: [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
@@ -596,10 +545,13 @@ class ForumController {
     private def getTopicParameters(ForumTopic topic) {
         Project projectInstance = null
         Task taskInstance = null
-        if (topic.instanceOf(ProjectForumTopic)) {
-            projectInstance = (topic as ProjectForumTopic).project
-        } else if (topic.instanceOf(TaskForumTopic)) {
-            taskInstance = (topic as TaskForumTopic).task
+
+        def topicInstance = ForumTopic.get(topic.id)
+
+        if (topicInstance.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topicInstance as ProjectForumTopic).project
+        } else if (topicInstance.instanceOf(TaskForumTopic)) {
+            taskInstance = (topicInstance as TaskForumTopic).task
         }
 
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)

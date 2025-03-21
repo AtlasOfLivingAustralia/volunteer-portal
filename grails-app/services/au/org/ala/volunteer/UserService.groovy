@@ -446,6 +446,7 @@ class UserService {
 
     def isUserForumModerator(User user, Project projectInstance) {
         if (!user) return false
+        if (!projectInstance) return false
         def moderators = getUsersWithRole("forum_moderator", projectInstance, user)
         return moderators.find { it?.userId == user?.userId }
     }

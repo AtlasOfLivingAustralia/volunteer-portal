@@ -39,27 +39,28 @@ class ForumTagLib {
             replies.each { ForumMessage reply ->
                 attrs.user = reply.user
                 attrs.messageId = reply.id
-//                def userProps = userService.detailsForUserId(reply.user.userId)
-//                mb.li(class: 'forum-post__list-item') {
-//                    article {
-//                        div(class: 'forum-post__header') {
-//                            h2(class: 'forum-post__heading') {
-//                                a(href: createLink(controller: 'user', action: 'show', id: reply.user.id), title: "Open user's notebook in new window", target: "_blank") {
-//                                    mkp.yield(userProps.displayName)
-//                                }
-//                            }
-//                            time(class: 'forum-post__date-time') {
-//                                mkp.yieldUnescaped(formatDate(date: reply.date, format: DateConstants.DATE_FORUM_POST))
-//                            }
-//                        }
-//                        div(class: 'forum-post__text') {
-//                            mkp.yieldUnescaped(markdownService.renderMarkdown(reply.text ?: ""))
-//                        }
-//                    }
-//                }
+
                 printMessageRow(attrs, false, reply)
             }
         }
+    }
+
+    /**
+     *
+     * @param topic
+     * @return
+     */
+    private def getProjectFromTopic(ForumTopic topic) {
+        Project projectInstance = null
+        if (topic.instanceOf(ProjectForumTopic)) {
+            def projectTopic = topic as ProjectForumTopic
+            projectInstance = projectTopic.project
+        } else if (topic.instanceOf(TaskForumTopic)) {
+            def taskTopic = topic as TaskForumTopic
+            projectInstance = Project.get(taskTopic.task.project.id)
+        }
+
+        projectInstance
     }
 
     /**
@@ -71,12 +72,23 @@ class ForumTagLib {
      */
     private def printMessageRow(attrs, isPreview, message = null) {
         def user = attrs.user as User
+        def canEdit = false
+        def authorIsModerator = false
+        def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
+
+        def forumMessage
+        if (isEdit) {
+            forumMessage = attrs.forumMessage as ForumMessage
+        }
 
         def messageText
         if (isPreview) {
             messageText = attrs.messageText as String
         } else {
             messageText = message.text
+            canEdit = forumService.isMessageEditable(message as ForumMessage, userService.currentUser)
+            def project = getProjectFromTopic(attrs.topic as ForumTopic)
+            //authorIsModerator = userService.isUserForumModerator(user, project)
         }
 
         log.debug("ForumTagLib | messageText: ${messageText}")
@@ -85,12 +97,17 @@ class ForumTagLib {
             def userProps = userService.detailsForUserId(user.userId)
             def mb = new MarkupBuilder(out)
 
-            mb.li(class: 'forum-post__list-item') {
+            mb.li(class: "forum-post__list-item ${isEdit ? 'hr-spacer' : ''}") {
                 article {
                     div(class: 'forum-post__header') {
                         h2(class: 'forum-post__heading') {
                             if (isPreview) {
-                                mkp.yield(userProps.displayName + " - PREVIEW")
+                                if (isEdit) {
+                                    def postUserProps = userService.detailsForUserId(forumMessage.user.userId as String)
+                                    mkp.yield(postUserProps.displayName + " - PREVIEW")
+                                } else {
+                                    mkp.yield(userProps.displayName + " - PREVIEW")
+                                }
                             } else {
                                 a(href: createLink(controller: 'user', action: 'show', id: message.user.id), title: "Open user's notebook in new window", target: "_blank") {
                                     mkp.yield(userProps.displayName)
@@ -99,7 +116,11 @@ class ForumTagLib {
                         }
                         time(class: 'forum-post__date-time') {
                             if (isPreview) {
-                                mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
+                                if (isEdit) {
+                                    mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
+                                } else {
+                                    mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
+                                }
                             } else {
                                 mkp.yieldUnescaped(formatDate(date: message.date, format: DateConstants.DATE_FORUM_POST))
                             }
@@ -111,8 +132,28 @@ class ForumTagLib {
                     mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
                     mkp.yieldUnescaped("</div>")
 
-                    div(class: 'forum-post__footer') {
-                        mkp.yieldUnescaped("<button class='fa fa-quote-right message-quote' title='Click to quote this message'></button>")
+                    if (!isPreview) {
+                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${message.id}'>")
+                        //div(class: 'forum-post__footer') {
+                            if (canEdit) {
+                                mkp.yieldUnescaped("<button class='fa fa-pencil message-icon edit-message' title='Edit message'></button>")
+
+                                if ((message as ForumMessage).replyTo) {
+                                    mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-message' title='Delete message'></button>")
+                                }
+                            }
+
+                            mkp.yieldUnescaped("<button class='fa fa-quote-right message-icon message-quote' title='Click to quote this message'></button>")
+                        //}
+                        mkp.yieldUnescaped("</div>")
+
+                        def timeLeft = forumService.messageEditTimeLeft(message as ForumMessage, userService.currentUser)
+
+                        if (timeLeft) {
+                            div(class: 'forum-post__footer forum-post__edit-warning') {
+                                mkp.yield("You have ${timeLeft.minutes} minutes to edit or delete this message.")
+                            }
+                        }
                     }
                  }
             }
@@ -124,28 +165,7 @@ class ForumTagLib {
      */
     def messagePreview = { attrs, body ->
         log.debug("ForumTagLib | attrs: ${attrs}")
-//        def user = attrs.user as User
-//        def messageText = attrs.messageText as String
-//        if (user) {
-//            def userProps = userService.detailsForUserId(user.userId)
-//            def mb = new MarkupBuilder(out)
-//
-//            mb.li(class: 'forum-post__list-item') {
-//                article {
-//                    div(class: 'forum-post__header') {
-//                        h2(class: 'forum-post__heading') {
-//                            mkp.yield(userProps.displayName)
-//                        }
-//                        time(class: 'forum-post__date-time') {
-//                            mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
-//                        }
-//                    }
-//                    div(class: 'forum-post__text') {
-//                        mkp.yieldUnescaped(markdownService.renderMarkdown(messageText ?: ""))
-//                    }
-//                }
-//            }
-//        }
+
         printMessageRow(attrs, true)
     }
 
@@ -154,32 +174,72 @@ class ForumTagLib {
      */
     def topicReplyBox = {attrs, body ->
         def user = attrs.user as User
-        def topic = attrs.topic as ForumTopic
+        def topic
+        def forumMessage = attrs.forumMessage as ForumMessage
+        def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
+
+        // If coming from edit, it seems to not know the subclass
+        if (isEdit) {
+            topic = ForumTopic.get(attrs.topic.id as long)
+        } else {
+            topic = attrs.topic
+        }
+
+        def isWatching = forumService.isUserWatchingTopic(user, topic)
 
         if (user) {
             def userProps = userService.detailsForUserId(user.userId)
             def mb = new MarkupBuilder(out)
 
-            mb.li(class: 'forum-post__list-item') {
+            mb.li(class: "forum-post__list-item") {
                 label(for: 'post', class: 'forum-post__header') {
                     span(class: 'forum-post__heading') {
-                        mkp.yield(userProps.displayName)
+                        if (isEdit) {
+                            def postAuthorProps = userService.detailsForUserId(forumMessage.user.userId)
+                            mkp.yield(postAuthorProps.displayName)
+                        } else {
+                            mkp.yield(userProps.displayName)
+                        }
                     }
-                    time(class: 'forum-post__date-time') {
-                        mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
+                    if (!isEdit) {
+                        time(class: 'forum-post__date-time') {
+                            mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
+                        }
                     }
                 }
 
-                mkp.yieldUnescaped("<textarea type=\"text\" id=\"messageText\" name=\"messageText\" class=\"forum-post__textarea\">${params.messageText ?: ""}</textarea>")
+                // Message text is either blank, a query string parameter or the message text.
+                def messageText = params.messageText ?: ""
+                if (isEdit) {
+                    messageText = params.messageText ?: forumMessage.text
+                }
+                mkp.yieldUnescaped("<textarea type=\"text\" id=\"messageText\" name=\"messageText\" class=\"forum-post__textarea\">${messageText}</textarea>")
 
-                div(class: 'forum-post-buttons') {
-                    mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessage', value: message(code: 'forum.project.reply.preview', default: 'Preview'))
-                    mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.project.reply.comment', default: 'Comment'))
-                    if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
-                        String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Comment and mark as ')}"
-                        buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
-                        mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
-                            mkp.yieldUnescaped(buttonLabel)
+                div(class: 'forum-post-button-row') {
+
+                    mkp.yieldUnescaped("<div data-topic-id=\"${topic.id}\" data-watched='${isWatching ? 'true':'false'}' class='forum-post-buttons--justify-left toggleWatch'>")
+                    if (isWatching) {
+                        mkp.yieldUnescaped("<span class=\"fa fa-star forum-post-watched\" title=\"${message(code: 'forumTopic.watched.stopwatching', default: 'Click to stop watching')}\"></span>")
+                    } else {
+                        mkp.yieldUnescaped("<span class=\"fa fa-star-o forum-post-watched forum-post-not-watched\" title=\"${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}\"></span>")
+                    }
+                    mkp.yieldUnescaped("</div>")
+
+                    div(class: 'forum-post-buttons') {
+                        if (isEdit) {
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessageEdit', value: message(code: 'forum.project.reply.preview', default: 'Preview'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_updateTopicMessage', value: message(code: 'forum.project.reply.comment', default: 'Comment'))
+                        } else {
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessage', value: message(code: 'forum.project.reply.preview', default: 'Preview'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.project.reply.comment', default: 'Comment'))
+                        }
+
+                        if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
+                            String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Comment and mark as ')}"
+                            buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
+                            mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
+                                mkp.yieldUnescaped(buttonLabel)
+                            }
                         }
                     }
                 }

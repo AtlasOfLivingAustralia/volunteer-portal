@@ -2,78 +2,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
-    <asset:stylesheet src="forum.css"/>
+    <g:set var="entityName" value="${message(code: 'user.label')}"/>
+    <title><cl:pageTitle title="Edit Forum Message: ${forumMessage.topic.title}"/></title>
 
-    <style type="text/css">
-
-    h2 {
-        padding-top: 10px;
-    }
-
-    textarea {
-        width: 100%;
-    }
-
-    </style>
+    <asset:stylesheet src="notebook-reset.css"/>
+    <asset:stylesheet src="forum-2.scss"/>
+    <asset:stylesheet src="image-viewer"/>
 
 </head>
 
-<body class="forum">
-
-<asset:script type="text/javascript">
-
-            $(function () {
-
-                $("#btnCancel").click(function (e) {
-                    e.preventDefault();
-                    window.location = "${createLink(controller: 'forum', action: 'viewForumTopic', id: forumMessage?.topic?.id)}";
-                });
-
-            });
-
-</asset:script>
-
-<cl:headerContent title="${message(code: 'forum.project.editMessage', default: 'Edit Message')}" selectedNavItem="forum" hideTitle="${true}">
-    <vpf:forumNavItems topic="${forumMessage?.topic}"
-                       lastLabel="true"/>
+<body>
+<cl:headerContent title="${forumMessage.topic.title}" selectedNavItem="forum" hideTitle="${true}">
+%{-- Breadcrumps and title --}%
+    <vpf:forumNavItems topic="${forumMessage.topic}"/>
+    <div class="forum-post-page-header__status-and-nav">
+        <g:set var="topicTypeName" value="${forumMessage.topic.topicType.name()}" />
+        <div class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</div>
+        <g:if test="${forumMessage.topic.isAnswered}">
+            <div class="pill pill--bg-answered">Answered</div>
+        </g:if>
+    </div>
 </cl:headerContent>
 
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2>Your message:</h2>
-                    <small>* Note: To see help on how to format your messages, including bold and italics, see <a
-                            href="${createLink(action: 'markdownHelp')}" target="popup">here</a></small>
-                    <g:form id="messageForm" controller="forum">
-                        <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
-                        <g:textArea id="messageText" name="messageText" rows="12" cols="120" value="${messageText}"/>
-                        <label for="watchTopic">
-                            <g:checkBox name="watchTopic" checked="${isWatched}"/>
-                            Watch this topic
-                        </label>
+<main>
+    <section class="topic-view-section">
+        <g:if test="${taskInstance}">
+            <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
+        </g:if>
 
-                        <div>
-                            <g:actionSubmit class="btn btn-success" value="Preview" action="previewMessageEdit"/>
-                            <g:actionSubmit class="btn btn-primary" value="Save message" action="updateTopicMessage"/>
-                            <button class="btn btn-default" id="btnCancel">Cancel</button>
-                        </div>
+        <ol>
+            <g:form id="messageForm" controller="forum" class="forum-post__form">
+                <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
+                <vpf:topicReplyBox topic="${forumMessage.topic}" forumMessage="${forumMessage}" isEdit="true" user="${userInstance}" />
+            </g:form>
 
-                    </g:form>
+            <g:if test="${params.messageText}">
+                <vpf:messagePreview user="${userInstance}" isEdit="true" messageText="${params.messageText}" forumMessage="${forumMessage}" />
+            </g:if>
+        </ol>
+    </section>
+</main>
 
-                    <g:if test="${messageText}">
-                        <div class="messagePreview">
-                            <h3>Message preview</h3>
-                            <markdown:renderHtml>${messageText}</markdown:renderHtml>
-                        </div>
-                    </g:if>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
