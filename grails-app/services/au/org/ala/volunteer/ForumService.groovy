@@ -738,16 +738,19 @@ class ForumService {
             // Task forum topic
             topic = new TaskForumTopic(task: task, title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         } else if (!task && project) {
             // Project forum topic
             topic = new ProjectForumTopic(project: project, title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         } else {
             // Site forum topic
             topic = new SiteForumTopic(title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         }
 

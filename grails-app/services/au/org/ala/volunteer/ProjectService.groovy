@@ -1297,18 +1297,28 @@ class ProjectService implements EventPublisher {
         log.debug("Retrieving list of projects grouped into institutions including forum topic counts")
         DSLContext create = jooqContextFactory()
 
-        def subQuery = create.select(PROJECT.ID.as("id"), jCount(FORUM_TOPIC.ID).as("topic_count"))
-            .from(TASK)
-            .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
-            .leftOuterJoin(FORUM_TOPIC).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
-            .groupBy(PROJECT.ID).asTable("sq")
+//        def subQuery = create.select(PROJECT.ID.as("id"), jCount(FORUM_TOPIC.ID).as("topic_count"))
+//            .from(TASK)
+//            .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
+//            .leftOuterJoin(FORUM_TOPIC).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
+//            .groupBy(PROJECT.ID).asTable("sq")
+        def subQuery = create.select(
+//                coalesce(FORUM_TOPIC.PROJECT_ID, TASK.PROJECT_ID).as("project_id"),
+                jWhen(FORUM_TOPIC.PROJECT_ID.isNotNull(), FORUM_TOPIC.PROJECT_ID)
+                        .otherwise(TASK.PROJECT_ID).as("id"),
+                jCount(FORUM_TOPIC.ID).as("topic_count"))
+            .from(FORUM_TOPIC)
+            .leftJoin(TASK).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
+            .groupBy(jWhen(FORUM_TOPIC.PROJECT_ID.isNotNull(), FORUM_TOPIC.PROJECT_ID)
+                    .otherwise(TASK.PROJECT_ID))
+            .asTable("sq")
 
         def query = create.select(PROJECT.ID.as("id"),
             INSTITUTION.NAME.as("institution_name"),
             PROJECT.NAME.as("project_name"),
-            field(name("sq", "topic_count")))
+            coalesce(field(name("sq", "topic_count")), 0).as("topic_count"))
         .from(PROJECT)
-        .join(subQuery).on(PROJECT.ID.eq(subQuery.field("id")))
+        .leftJoin(subQuery).on(PROJECT.ID.eq(subQuery.field("id")))
         .join(INSTITUTION).on(INSTITUTION.ID.eq(PROJECT.INSTITUTION_ID))
         .orderBy(INSTITUTION.NAME.asc(), PROJECT.ID.asc())
 

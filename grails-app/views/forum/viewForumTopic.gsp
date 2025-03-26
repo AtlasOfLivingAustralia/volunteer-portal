@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.TaskForumTopic; au.org.ala.volunteer.DateConstants; au.org.ala.volunteer.User; au.org.ala.volunteer.ForumTopicType; au.org.ala.volunteer.ForumTopic" %>
+<%@ page import="au.org.ala.volunteer.ForumController; au.org.ala.volunteer.TaskForumTopic; au.org.ala.volunteer.DateConstants; au.org.ala.volunteer.User; au.org.ala.volunteer.ForumTopicType; au.org.ala.volunteer.ForumTopic" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -16,17 +16,32 @@
 <cl:headerContent title="${topic.title}" selectedNavItem="forum" hideTitle="${true}">
     %{-- Breadcrumps and title --}%
     <vpf:forumNavItems topic="${topic}"/>
-    <div class="forum-post-page-header__status-and-nav">
-        <g:set var="topicTypeName" value="${topic.topicType.name()}" />
-        <div class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</div>
-        <g:if test="${topic.isAnswered}">
-            <div class="pill pill--bg-answered">Answered</div>
-        </g:if>
-        <nav><a href="${createLink(controller: 'forum', action: 'index')}">Return to forum</a></nav>
-    </div>
 </cl:headerContent>
 
 <main>
+    <section class="forum-nav-section">
+        <g:set var="topicTypeName" value="${topic.topicType.name()}" />
+        <div class="forum-nav-row">
+            <nav class="forum-filter-nav">
+                <div class="forum-nav-header">
+                    <span class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</span>
+                    <g:if test="${topic.isAnswered}">
+                        <span class="pill pill--bg-answered">Answered</span>
+                    </g:if>
+                </div>
+            </nav>
+            <nav class="forum-filter-nav">
+                <div class="forum-nav-header">
+
+                    <g:set var="projectId" value="${session[ForumController.SESSION_KEY_PROJECT_ID]}" />
+                    <div class="forum-nav-return">
+                        <g:link controller="forum" action="index" params="${projectId ? [projectId: projectId] : [:]}">Return to forum</g:link>
+                        %{--            <a href="${createLink(controller: 'forum', action: 'index')}">Return to forum</a>--}%
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </section>
     <section class="topic-view-section">
         <g:if test="${taskInstance}">
             <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
@@ -81,12 +96,24 @@
             }
         });
 
-        $('.delete-message').click(function() {
+        $('.delete-message').click(function(e) {
+            e.preventDefault();
             const parentDiv = $(this).closest('.forum-post__footer');
             const messageId = $(parentDiv).attr('data-message-id');
             if (messageId) {
                 if (confirm("Are you sure you wish to permanently delete this message?")) {
                     window.location = "${createLink(action: 'deleteTopicMessage')}?messageId=" + messageId;
+                }
+            }
+        });
+
+        $('.delete-topic').click(function(e) {
+            e.preventDefault();
+            const parentDiv = $(this).closest('article');
+            const topicId = $(parentDiv).attr('data-topic-id');
+            if (topicId) {
+                if (confirm("Are you sure you wish to permanently delete this topic and ALL replies?")) {
+                    window.location = "${createLink(action: 'deleteTopic')}?topicId=" + topicId;
                 }
             }
         });

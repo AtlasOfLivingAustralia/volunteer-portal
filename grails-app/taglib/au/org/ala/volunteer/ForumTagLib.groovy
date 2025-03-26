@@ -75,20 +75,27 @@ class ForumTagLib {
         def canEdit = false
         def authorIsModerator = false
         def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
+        def topicId
 
         def forumMessage
         if (isEdit) {
             forumMessage = attrs.forumMessage as ForumMessage
+        } else {
+            if (message) {
+                forumMessage = message as ForumMessage
+            }
         }
+        topicId = forumMessage != null ? forumMessage.topic.id : 0L
 
         def messageText
         if (isPreview) {
             messageText = attrs.messageText as String
         } else {
-            messageText = message.text
-            canEdit = forumService.isMessageEditable(message as ForumMessage, userService.currentUser)
+            messageText = forumMessage.text
+            //canEdit = forumService.isMessageEditable(message as ForumMessage, userService.currentUser)
+            canEdit = forumService.isMessageEditable(forumMessage as ForumMessage, userService.currentUser)
             def project = getProjectFromTopic(attrs.topic as ForumTopic)
-            //authorIsModerator = userService.isUserForumModerator(user, project)
+            authorIsModerator = userService.isAdmin() ?: userService.isUserForumModerator(user, project)
         }
 
         log.debug("ForumTagLib | messageText: ${messageText}")
@@ -98,7 +105,7 @@ class ForumTagLib {
             def mb = new MarkupBuilder(out)
 
             mb.li(class: "forum-post__list-item ${isEdit ? 'hr-spacer' : ''}") {
-                article {
+                article('data-topic-id': topicId) {
                     div(class: 'forum-post__header') {
                         h2(class: 'forum-post__heading') {
                             if (isPreview) {
@@ -109,7 +116,7 @@ class ForumTagLib {
                                     mkp.yield(userProps.displayName + " - PREVIEW")
                                 }
                             } else {
-                                a(href: createLink(controller: 'user', action: 'show', id: message.user.id), title: "Open user's notebook in new window", target: "_blank") {
+                                a(href: createLink(controller: 'user', action: 'show', id: forumMessage.user.id), title: "Open user's notebook in new window", target: "_blank") {
                                     mkp.yield(userProps.displayName)
                                 }
                             }
@@ -122,32 +129,47 @@ class ForumTagLib {
                                     mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
                                 }
                             } else {
-                                mkp.yieldUnescaped(formatDate(date: message.date, format: DateConstants.DATE_FORUM_POST))
+                                mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
                             }
                         }
                     }
 
-                    mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
+                    if (isEdit && !forumMessage.replyTo) {
+                        //def topicId = forumMessage.topic.id
+                        mkp.yieldUnescaped("<div data-topic-id='${topicId}' class='forum-post__text message-text'>")
+                    } else {
+                        mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
+                    }
                     String processedMarkdown = messageText.replace("\n", "  \n")
                     mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
                     mkp.yieldUnescaped("</div>")
+                    log.debug("authorIsModerator: ${authorIsModerator}")
 
                     if (!isPreview) {
-                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${message.id}'>")
-                        //div(class: 'forum-post__footer') {
-                            if (canEdit) {
-                                mkp.yieldUnescaped("<button class='fa fa-pencil message-icon edit-message' title='Edit message'></button>")
+                        log.debug("Not a preview")
+                        def timeLeft = forumService.messageEditTimeLeft(forumMessage as ForumMessage, userService.currentUser)
+                        log.debug("timeleft to edit: ${timeLeft}")
 
-                                if ((message as ForumMessage).replyTo) {
-                                    mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-message' title='Delete message'></button>")
+                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage.id}'>")
+
+                        if (canEdit) {
+                            log.debug("Can edit post")
+                            mkp.yieldUnescaped("<button class='fa fa-pencil message-icon edit-message' title='Edit message'></button>")
+
+                            if ((forumMessage as ForumMessage).replyTo) {
+                                log.debug("Message is a reply")
+                                mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-message' title='Delete message'></button>")
+                            } else {
+                                log.debug("Message is not a reply")
+                                if (authorIsModerator) {
+                                    log.debug("Moderator has ability to delete")
+                                    mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-topic' title='Delete topic'></button>")
                                 }
                             }
+                        }
 
-                            mkp.yieldUnescaped("<button class='fa fa-quote-right message-icon message-quote' title='Click to quote this message'></button>")
-                        //}
+                        mkp.yieldUnescaped("<button class='fa fa-quote-right message-icon message-quote' title='Click to quote this message'></button>")
                         mkp.yieldUnescaped("</div>")
-
-                        def timeLeft = forumService.messageEditTimeLeft(message as ForumMessage, userService.currentUser)
 
                         if (timeLeft) {
                             div(class: 'forum-post__footer forum-post__edit-warning') {
@@ -177,6 +199,8 @@ class ForumTagLib {
         def topic
         def forumMessage = attrs.forumMessage as ForumMessage
         def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
+        def newPost = attrs.newPost ? attrs.newPost == "true" : false
+        def isWatching = false
 
         // If coming from edit, it seems to not know the subclass
         if (isEdit) {
@@ -185,7 +209,9 @@ class ForumTagLib {
             topic = attrs.topic
         }
 
-        def isWatching = forumService.isUserWatchingTopic(user, topic)
+        if (!newPost) {
+            isWatching = forumService.isUserWatchingTopic(user, topic)
+        }
 
         if (user) {
             def userProps = userService.detailsForUserId(user.userId)
@@ -215,30 +241,63 @@ class ForumTagLib {
                 }
                 mkp.yieldUnescaped("<textarea type=\"text\" id=\"messageText\" name=\"messageText\" class=\"forum-post__textarea\">${messageText}</textarea>")
 
+                if (newPost) {
+                    div(class: 'forum-post-button-row') {
+                        mkp.yieldUnescaped("<div data-watched='${isWatching ? 'true' : 'false'}' class='forum-post-buttons--justify-left toggleWatch'>")
+                        mkp.yieldUnescaped("<span class=\"fa fa-star-o forum-post-watched forum-post-not-watched\" title=\"${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}\"></span>")
+                        mkp.yieldUnescaped("</div>")
+
+                        div(class: 'forum-post-helplinks') {
+                            mb.a(href: createLink(controller: 'forum', action: 'markdownHelp'), target: '_blank') {
+                                mkp.yield(message(code: 'forum.newpost.markdownhelp.link', default: 'Markdown help'))
+                                mkp.yieldUnescaped("<span class='fa fa-external-link message-icon-small'></span>")
+                            }
+                        }
+                    }
+                }
+
                 div(class: 'forum-post-button-row') {
 
-                    mkp.yieldUnescaped("<div data-topic-id=\"${topic.id}\" data-watched='${isWatching ? 'true':'false'}' class='forum-post-buttons--justify-left toggleWatch'>")
-                    if (isWatching) {
-                        mkp.yieldUnescaped("<span class=\"fa fa-star forum-post-watched\" title=\"${message(code: 'forumTopic.watched.stopwatching', default: 'Click to stop watching')}\"></span>")
+                    if (!newPost) {
+                        mkp.yieldUnescaped("<div data-topic-id=\"${topic.id}\" data-watched='${isWatching ? 'true' : 'false'}' class='forum-post-buttons--justify-left toggleWatch'>")
+                        if (isWatching) {
+                            mkp.yieldUnescaped("<span class=\"fa fa-star forum-post-watched\" title=\"${message(code: 'forumTopic.watched.stopwatching', default: 'Click to stop watching')}\"></span>")
+                        } else {
+                            mkp.yieldUnescaped("<span class=\"fa fa-star-o forum-post-watched forum-post-not-watched\" title=\"${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}\"></span>")
+                        }
+                        mkp.yieldUnescaped("</div>")
                     } else {
-                        mkp.yieldUnescaped("<span class=\"fa fa-star-o forum-post-watched forum-post-not-watched\" title=\"${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}\"></span>")
+                        // Forum Topic Type
+                        div(class: 'forum-post-buttons--new-post-type hr-spacer') {
+                            div(class: 'filter-nav__label') {
+                               label(class: 'forum-post__title_label') {
+                                   mkp.yield(message(code: 'forum.newpost.topictype.label', default: 'Mark as:'))
+                               }
+                            }
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link \"><span class=\"pill pill--bg-question pill--bg-selected\" data-topic-type=\"${ForumTopicType.Question.ordinal()}\" title=\"Question Topics\">Question</span></a>")
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-announcement\" data-topic-type=\"${ForumTopicType.Announcement.ordinal()}\" title=\"Announcement Topics\">Announcement</span></a>")
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-discussion\" data-topic-type=\"${ForumTopicType.Discussion.ordinal()}\" title=\"Discussion Topics\">Discussion</span></a>")
+                        }
                     }
-                    mkp.yieldUnescaped("</div>")
 
                     div(class: 'forum-post-buttons') {
-                        if (isEdit) {
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessageEdit', value: message(code: 'forum.project.reply.preview', default: 'Preview'))
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_updateTopicMessage', value: message(code: 'forum.project.reply.comment', default: 'Comment'))
+                        if (newPost) {
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_insertForumTopic', value: message(code: 'forum.newpost.save', default: 'Save message'))
+                        } else if (isEdit) {
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessageEdit', value: message(code: 'forum.reply.preview', default: 'Preview'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_updateTopicMessage', value: message(code: 'forum.reply.comment', default: 'Comment'))
                         } else {
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessage', value: message(code: 'forum.project.reply.preview', default: 'Preview'))
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.project.reply.comment', default: 'Comment'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessage', value: message(code: 'forum.reply.preview', default: 'Preview'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.reply.comment', default: 'Comment'))
                         }
 
-                        if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
-                            String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Comment and mark as ')}"
-                            buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
-                            mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
-                                mkp.yieldUnescaped(buttonLabel)
+                        if (!newPost) {
+                            if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
+                                String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Comment and mark as ')}"
+                                buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
+                                mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
+                                    mkp.yieldUnescaped(buttonLabel)
+                                }
                             }
                         }
                     }
@@ -573,35 +632,38 @@ class ForumTagLib {
         }
 
         def mb = new MarkupBuilder(out)
+        String pageTitle = attrs.title
 
         if (topic) {
-            mb.h1() {
-                mkp.yieldUnescaped(topic.title as String)
-                if (taskInstance || projectInstance) {
-                    // External link icon
-                    def link = ""
-                    String title = ""
-                    if (taskInstance) {
-                        link = createLink(controller: 'task', action: 'show', id: taskInstance.id)
-                        title = "Open task in new window"
-                    } else if (projectInstance) {
-                        link = createLink(controller: 'project', action: 'index', id: projectInstance.id)
-                        title = "Open expedition in new window"
-                    }
-                    a(href: link, target: "_blank", title: title) {
-                        span(class: 'forum-post-page-header__external-link') {
-                            mkp.yieldUnescaped("<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">")
-                            mkp.yieldUnescaped("<path d=\"M25.8031 0H17.15C16.4562 0 15.8939 0.562293 15.8939 1.25611C15.8939 1.94992 16.4562 2.51222 17.15 2.51222H22.9102L10.5832 14.8392C10.0924 15.3297 10.0924 16.1252 10.5832 16.6157C10.8284 16.8609 11.15 16.9837 11.4713 16.9837C11.7925 16.9837 12.1141 16.8609 12.3594 16.6157L24.547 4.42775V9.9089C24.547 10.6027 25.1093 11.165 25.8031 11.165C26.4969 11.165 27.0592 10.6027 27.0592 9.9089V1.25611C27.0592 0.562293 26.4969 0 25.8031 0Z\" fill=\"#020202\" />")
-                            mkp.yieldUnescaped("<path d=\"M21.4582 12.6504C20.7644 12.6504 20.2021 13.2127 20.2021 13.9065V23.8166C20.2021 24.2706 19.8187 24.654 19.3647 24.654H3.34962C2.89563 24.654 2.51222 24.2706 2.51222 23.8166V7.80153C2.51222 7.34753 2.89563 6.96412 3.34962 6.96412H13.2947C13.9885 6.96412 14.5508 6.40183 14.5508 5.70801C14.5508 5.0142 13.9885 4.4519 13.2947 4.4519H3.34962C1.50256 4.4519 0 5.95447 0 7.80153V23.8166C0 25.6637 1.50256 27.1662 3.34962 27.1662H19.3647C21.2118 27.1662 22.7143 25.6637 22.7143 23.8166V13.9065C22.7143 13.213 22.152 12.6504 21.4582 12.6504Z\" fill=\"#020202\" />")
-                            mkp.yieldUnescaped("</svg>")
-                        }
+            pageTitle = topic.title as String
+        }
+
+        mb.h1() {
+            mkp.yieldUnescaped(pageTitle)
+            if (taskInstance || projectInstance) {
+                // External link icon
+                def link = ""
+                String title = ""
+                if (taskInstance) {
+                    link = createLink(controller: 'task', action: 'show', id: taskInstance.id)
+                    title = "Open task in new window"
+                } else if (projectInstance) {
+                    link = createLink(controller: 'project', action: 'index', id: projectInstance.id)
+                    title = "Open expedition in new window"
+                }
+                a(href: link, target: "_blank", title: title) {
+                    span(class: 'forum-post-page-header__external-link') {
+                        mkp.yieldUnescaped("<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">")
+                        mkp.yieldUnescaped("<path d=\"M25.8031 0H17.15C16.4562 0 15.8939 0.562293 15.8939 1.25611C15.8939 1.94992 16.4562 2.51222 17.15 2.51222H22.9102L10.5832 14.8392C10.0924 15.3297 10.0924 16.1252 10.5832 16.6157C10.8284 16.8609 11.15 16.9837 11.4713 16.9837C11.7925 16.9837 12.1141 16.8609 12.3594 16.6157L24.547 4.42775V9.9089C24.547 10.6027 25.1093 11.165 25.8031 11.165C26.4969 11.165 27.0592 10.6027 27.0592 9.9089V1.25611C27.0592 0.562293 26.4969 0 25.8031 0Z\" fill=\"#020202\" />")
+                        mkp.yieldUnescaped("<path d=\"M21.4582 12.6504C20.7644 12.6504 20.2021 13.2127 20.2021 13.9065V23.8166C20.2021 24.2706 19.8187 24.654 19.3647 24.654H3.34962C2.89563 24.654 2.51222 24.2706 2.51222 23.8166V7.80153C2.51222 7.34753 2.89563 6.96412 3.34962 6.96412H13.2947C13.9885 6.96412 14.5508 6.40183 14.5508 5.70801C14.5508 5.0142 13.9885 4.4519 13.2947 4.4519H3.34962C1.50256 4.4519 0 5.95447 0 7.80153V23.8166C0 25.6637 1.50256 27.1662 3.34962 27.1662H19.3647C21.2118 27.1662 22.7143 25.6637 22.7143 23.8166V13.9065C22.7143 13.213 22.152 12.6504 21.4582 12.6504Z\" fill=\"#020202\" />")
+                        mkp.yieldUnescaped("</svg>")
                     }
                 }
             }
-            if (taskInstance || projectInstance) {
-                mb.div {
-                        mkp.yieldUnescaped(message(code: 'forum.project.heading', default: 'from: {0}', args: [taskInstance ? taskInstance.project.name : projectInstance.name]))
-                }
+        }
+        if (taskInstance || projectInstance) {
+            mb.div {
+                mkp.yieldUnescaped(message(code: 'forum.project.heading', default: 'from: {0}', args: [taskInstance ? taskInstance.project.name : projectInstance.name]))
             }
         }
 

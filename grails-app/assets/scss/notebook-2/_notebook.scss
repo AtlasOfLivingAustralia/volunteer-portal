@@ -201,6 +201,10 @@
           grid-row: 1;
           justify-self: end;
         }
+
+        &[data-key="action"]:before {
+          content: "Action: ";
+        }
       }
     }
   }
@@ -278,8 +282,8 @@
     td {
       &[data-key="status"] {
         position: absolute;
-        top: variables-and-mixins.$space-3;
-        right: 0;
+        //top: variables-and-mixins.$space-3;
+        right: 7px;
       }
 
       &[data-key="percentage-achieved"] {

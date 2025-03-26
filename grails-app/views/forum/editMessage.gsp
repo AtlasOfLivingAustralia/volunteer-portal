@@ -17,16 +17,36 @@
 <cl:headerContent title="${forumMessage.topic.title}" selectedNavItem="forum" hideTitle="${true}">
 %{-- Breadcrumps and title --}%
     <vpf:forumNavItems topic="${forumMessage.topic}"/>
-    <div class="forum-post-page-header__status-and-nav">
-        <g:set var="topicTypeName" value="${forumMessage.topic.topicType.name()}" />
-        <div class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</div>
-        <g:if test="${forumMessage.topic.isAnswered}">
-            <div class="pill pill--bg-answered">Answered</div>
-        </g:if>
-    </div>
+%{--    <div class="forum-post-page-header__status-and-nav">--}%
+%{--        <g:set var="topicTypeName" value="${forumMessage.topic.topicType.name()}" />--}%
+%{--        <div class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</div>--}%
+%{--        <g:if test="${forumMessage.topic.isAnswered}">--}%
+%{--            <div class="pill pill--bg-answered">Answered</div>--}%
+%{--        </g:if>--}%
+%{--    </div>--}%
 </cl:headerContent>
 
 <main>
+    <section class="forum-nav-section">
+        <g:set var="topicTypeName" value="${forumMessage.topic.topicType.name()}" />
+        <div class="forum-nav-row">
+            <nav class="forum-filter-nav">
+                <div class="forum-nav-header">
+                    <span class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</span>
+                    <g:if test="${forumMessage.topic.isAnswered}">
+                        <span class="pill pill--bg-answered">Answered</span>
+                    </g:if>
+                </div>
+            </nav>
+            <nav class="forum-filter-nav">
+                <div class="forum-nav-header">
+                    <div class="forum-nav-return">
+                        <g:link controller="forum" action="viewForumTopic" id="${forumMessage.topic.id}">Return to topic</g:link>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </section>
     <section class="topic-view-section">
         <g:if test="${taskInstance}">
             <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>

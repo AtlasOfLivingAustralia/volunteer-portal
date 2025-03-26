@@ -12,6 +12,8 @@ class ForumController {
     def fieldService
     def markdownService
 
+    public static final String SESSION_KEY_PROJECT_ID = "forum_project_id"
+
     def index() {
         def currentUser = userService.currentUser
         def filter = params.filter as String
@@ -28,6 +30,9 @@ class ForumController {
         def project = null
         if (params.projectId) {
             project = Project.get(params.long('projectId'))
+            session[SESSION_KEY_PROJECT_ID] = project.id
+        } else {
+            session.removeAttribute(SESSION_KEY_PROJECT_ID)
         }
 
         def forumTopics = forumService.getForumTopics(project, currentUser, searchQuery, filter, watched,
@@ -95,7 +100,7 @@ class ForumController {
             catalogNumber = fieldService.getFieldForTask(taskInstance, "catalogNumber")?.value
         }
 
-        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber]
+        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber, userInstance: userService.currentUser]
     }
 
     def editTopic() {
@@ -129,7 +134,7 @@ class ForumController {
         [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
     }
 
-    public redirectTopicParent() {
+    def redirectTopicParent() {
 
         def topic = ForumTopic.get(params.int("id"))
 
@@ -141,7 +146,7 @@ class ForumController {
                 def taskInstance = (topic as TaskForumTopic).task
                 redirect(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])
             } else {
-                redirect(controller: 'forum', action: 'index', params:[selectedTab: 1])
+                redirect(controller: 'forum', action: 'index')
             }
         } else {
             redirect(controller: 'forum', action: 'index')
@@ -159,8 +164,8 @@ class ForumController {
     }
 
     def insertForumTopic() {
-
-        def parameters = [title: params.title, text: params.text]
+        log.debug("Forum params: ${params}")
+        def parameters = [title: params.title, text: params.messageText]
         def messages = []
 
         if (!parameters.title) {
@@ -172,7 +177,10 @@ class ForumController {
         }
 
         if (messages) {
+            log.debug("Error messages: ${messages}")
             flash.message = formatMessages(messages)
+            params.remove('action')
+            params.remove('_action_insertForumTopic')
             redirect(action: 'addForumTopic', params: params)
             return
         }
@@ -180,53 +188,60 @@ class ForumController {
         parameters.locked = false
         parameters.sticky = false
         parameters.priority = ForumTopicPriority.Normal
+        parameters.topicType = ForumTopicType.getInstance(params.int('topicType'))
         parameters.featured = false
+        log.debug("topicType: ${parameters.topicType}")
 
         ForumTopic topic = null
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
-            if (task) {
-                if (userService.isForumModerator(task.project)) {
-                    parameters.locked = params.locked == 'on'
-                    parameters.sticky = params.sticky == 'on'
-                    if (params.priotity) {
-                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                    }
-                    parameters.featured = params.featured == 'on'
-                }
-            }
+//            if (task) {
+//                if (userService.isForumModerator(task.project)) {
+//                    parameters.locked = params.locked == 'on'
+//                    parameters.sticky = params.sticky == 'on'
+//                    if (params.priotity) {
+//                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+//                    }
+//                    parameters.featured = params.featured == 'on'
+//                }
+//            }
             topic = forumService.createForumTopic(task, parameters)
         } else if (params.projectId) {
             def project = Project.get(params.int("projectId"))
-            if (project) {
-                if (userService.isForumModerator(project)) {
-                    parameters.locked = params.locked == 'on'
-                    parameters.sticky = params.sticky == 'on'
-                    if (params.priotity) {
-                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                    }
-                    parameters.featured = params.featured == 'on'
-                }
-            }
+//            if (project) {
+//                if (userService.isForumModerator(project)) {
+//                    parameters.locked = params.locked == 'on'
+//                    parameters.sticky = params.sticky == 'on'
+//                    if (params.priotity) {
+//                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+//                    }
+//                    parameters.featured = params.featured == 'on'
+//                }
+//            }
             topic = forumService. createForumTopic(project, parameters)
         } else {
             // new general discussion topic
-            if (userService.isForumModerator(null)) {
-                parameters.locked = params.locked == 'on'
-                parameters.sticky = params.sticky == 'on'
-                if (params.priotity) {
-                    parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                }
-                parameters.featured = params.featured == 'on'
-            }
+//            if (userService.isForumModerator(null)) {
+//                parameters.locked = params.locked == 'on'
+//                parameters.sticky = params.sticky == 'on'
+//                if (params.priotity) {
+//                    parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
+//                }
+//                parameters.featured = params.featured == 'on'
+//            }
             topic = forumService.createForumTopic(parameters)
         }
 
-        if (params.watchTopic == 'on') {
+        if (params.watched == 'true' || params.watchTopic == 'on') {
             forumService.watchTopic(topic.creator, topic)
         }
 
-        redirect(action: 'redirectTopicParent', id: topic.id)
+        //redirect(action: 'redirectTopicParent', id: topic.id)
+        if (session[SESSION_KEY_PROJECT_ID]) {
+            redirect(controller: 'forum', action: 'index', params: [projectId: session[SESSION_KEY_PROJECT_ID]])
+        } else {
+            redirect(controller: 'forum', action: 'index')
+        }
     }
 
     private boolean checkModerator(ForumTopic topic = null) {

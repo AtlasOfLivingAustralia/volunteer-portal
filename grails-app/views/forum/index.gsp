@@ -79,7 +79,7 @@
             </nav>
             <nav class="forum-filter-nav filter-nav--mt-6">
                 <div class="forum-nav-header">
-                    <div class="filter-nav__label">Project:</div>
+                    <div class="filter-nav__label">Search by Expedition:</div>
                     <select name="projectFilter" id="projectFilter" class="nav-dropdown filter-nav__list-item">
                         <vpf:projectSelectOptions projectFilterList="${projectFilterList}" currentSelectedProject="${params.projectId}"/>
                     </select>
@@ -88,7 +88,20 @@
         </div>
     </section>
     <section class="forum-table-section">
-        <p class="forum-topic-count">${topicCount} forum topics found.</p>
+        <div class="forum-nav-header">
+            <g:if test="${params.projectId}" >
+            <a href="${createLink(controller: 'forum', action: 'addForumTopic', params: [projectId: params.projectId])}">
+            </g:if>
+            <g:else>
+            <a href="${createLink(controller: 'forum', action: 'addForumTopic')}">
+            </g:else>
+                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
+            </a>
+        </a>
+        </div>
+        <p class="forum-topic-count">
+            ${topicCount} forum topics found<g:if test="${project}"> for ${project.name}</g:if>.
+        </p>
         <table class="forum-posts-table">
             <thead>
             <tr>
@@ -99,13 +112,13 @@
                                   title="${message(code: 'forumTopic.type.label', default: 'Type')}" params="${params}"/>
                 <g:sortableColumn property="postedBy" class="td--1/12"
                                   title="${message(code: 'forumTopic.creator.label', default: 'Author')}" params="${params}"/>
-                <g:sortableColumn property="posted" class="td--1/12"
+                <g:sortableColumn property="posted" class="td--1/12 lg:td--text-right"
                                   title="${message(code: 'forumTopic.posted.label', default: 'Posted')}" params="${params}"/>
-                <g:sortableColumn property="lastReply" class="td--1/12"
+                <g:sortableColumn property="lastReply" class="td--1/12 lg:td--text-right"
                                   title="${message(code: 'forumTopic.lastReply.label', default: 'Last reply')}" params="${params}"/>
-                <g:sortableColumn property="views" class="td--1/12"
+                <g:sortableColumn property="views" class="td--1/12 td--text-right"
                                   title="${message(code: 'forumTopic.views.label', default: 'Views')}" params="${params}"/>
-                <g:sortableColumn property="replies" class="td--1/12"
+                <g:sortableColumn property="replies" class="td--1/12 td--text-right"
                                   title="${message(code: 'forumTopic.replies.label', default: 'Replies')}" params="${params}"/>
                 <th class="td--1/12">&nbsp;</th>
             </tr>
@@ -129,10 +142,10 @@
                         <div class="pill pill--bg-${topicTypeStyle}">${topic.topicType.name()}</div>
                     </g:else>
                 </td>
-                <td class="td--order-2">${topic.creator.displayName}</td>
-                <td class="td--order-3 lg:td--text-right"><g:formatDate date="${topic.dateCreated}"
+                <td class="td--order-3">${topic.creator.displayName}</td>
+                <td class="td--order-4 lg:td--text-right"><g:formatDate date="${topic.dateCreated}"
                                                                         format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/></td>
-                <td class="td--order-4 lg:td--text-right">
+                <td class="td--order-5 lg:td--text-right">
                 <g:if test="${topic.lastReply}">
                     <g:formatDate date="${topic.lastReply}" format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/>
                 </g:if>
@@ -140,10 +153,10 @@
                     -
                 </g:else>
                 </td>
-                <td class="td--order-5 lg:td--text-right">${topic.views}</td>
-                <td class="td--order-6 lg:td--text-right">${topic.replies}</td>
+                <td class="td--order-6 lg:td--text-right">${topic.views}</td>
+                <td class="td--order-7 lg:td--text-right">${topic.replies}</td>
 
-                <td class="forum-table-watched">
+                <td class="forum-table-watched td--order-8 lg:td--text-right">
                     <g:if test="${topic.isWatched}">
                         <div data-topic-id="${topic.id}" data-watched="true" class="toggleWatch">
                             <span class="fa fa-star forum-table-topic-watched" title="${message(code: 'forumTopic.watched.stopwatching', default: 'Click to stop watching')}"></span>
@@ -160,6 +173,32 @@
 
             </tbody>
         </table>
+    </section>
+
+    <section class="forum-nav-section">
+
+        <div class="forum-nav-row">
+
+            <nav class="forum-filter-nav filter-nav--mt-6">
+                <div class="forum-nav-header">
+                <g:if test="${params.projectId}" >
+                    <a href="${createLink(controller: 'forum', action: 'addForumTopic', params: [projectId: params.projectId])}">
+                </g:if>
+                <g:else>
+                    <a href="${createLink(controller: 'forum', action: 'addForumTopic')}">
+                </g:else>
+                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
+                </a>
+                </div>
+            </nav>
+
+            <div class="forum-pagination-nav">
+                <div class="forum-nav-header forum-nav-pagination">
+                    <g:paginate total="${topicCount ?: 0}" action="index" params="${params}" class="pagination-list" max="30"/>
+                </div>
+            </div>
+
+        </div>
     </section>
 </main>
 

@@ -7,7 +7,7 @@ main {
     margin-left: auto;
     margin-right: auto;
     background-color: white;
-    padding-top: 1%;
+    padding-top: 1rem;
     padding-bottom: 1%;
   }
 }
@@ -71,6 +71,7 @@ main {
 }
 
 .forum-nav__list {
+  font-size: variables-and-mixins.$text-lg;
   display: flex;
 }
 
@@ -78,6 +79,11 @@ main {
   & + .forum-nav__list-item {
     margin-left: variables-and-mixins.$space-6;
   }
+}
+
+.forum-nav-return {
+  margin-left: auto;
+  font-size: variables-and-mixins.$text-lg;
 }
 
 .forum-pagination-nav {
@@ -99,6 +105,7 @@ main {
 //////////////////////////////////
 
 .forum-topic-count {
+  margin-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-lg;
 }
 
@@ -116,8 +123,11 @@ main {
   display: inline-block;
   vertical-align: middle;
   margin-left: auto;
-  float: right;
   color: #d5502a;
+
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    float: right;
+  }
 }
 
 .forum-post-watched {
@@ -129,9 +139,9 @@ main {
   color: inherit  !important;
 }
 
-.forum-table-watched {
- text-align: right;
-}
+//.forum-table-watched {
+// text-align: right;
+//}
 
 .forum-table-topic-project {
   font-size: variables-and-mixins.$text-sm;
@@ -145,6 +155,12 @@ main {
 .toggleWatch {
   font-size: variables-and-mixins.$text-xl;
   cursor: pointer;
+}
+
+.filter-topic-link {
+  & + .filter-topic-link {
+    margin-left: variables-and-mixins.$space-3;
+  }
 }
 
 // Mobile table
@@ -168,24 +184,28 @@ main {
 
         // Mobile cell labels
         td {
-          &:nth-of-type(3):before {
+          &:nth-of-type(2):before {
             content: "Posted by: ";
           }
 
-          &:nth-of-type(4):before {
+          &:nth-of-type(3):before {
             content: "Posted on: ";
           }
 
-          &:nth-of-type(5):before {
+          &:nth-of-type(4):before {
             content: "Last reply: ";
           }
 
-          &:nth-of-type(6):before {
+          &:nth-of-type(5):before {
             content: "Views: ";
           }
 
-          &:nth-of-type(7):before {
+          &:nth-of-type(6):before {
             content: "Replies: ";
+          }
+
+          &:nth-of-type(7):before {
+            content: "Watched: ";
           }
         }
       }
@@ -201,7 +221,7 @@ main {
   .forum-posts-table__status {
     position: absolute;
     right: 11px;
-    top: 20px;
+    top: 4px;
   }
 }
 
@@ -241,10 +261,18 @@ main {
   }
 }
 
-.forum-post__header {
+.forum-post__header, .forum-post__header-title {
   display: flex;
   justify-content: space-between;
   margin-bottom: variables-and-mixins.$space-4;
+}
+
+.forum-post__header-title {
+  margin-top: variables-and-mixins.$space-4;
+}
+
+.forum-post__title_label {
+  font-size: variables-and-mixins.$text-lg;
 }
 
 .forum-post__footer {
@@ -304,14 +332,29 @@ blockquote {
   justify-content: space-between;
 }
 
-.forum-post-buttons--justify-left {
+.forum-post-buttons--justify-left, .forum-post-buttons--new-post-type {
   justify-content: flex-start;
+}
+
+.forum-post-buttons--new-post-type {
+  display: flex;
+  flex: 1;
 }
 
 .forum-post-buttons {
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+
+.forum-post-helplinks {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  font-size: variables-and-mixins.$text-lg;
+
+  .message-icon-small {
+    margin-left: variables-and-mixins.$space-2;
+  }
 }
 
 .forum-post-buttons--justify-between {

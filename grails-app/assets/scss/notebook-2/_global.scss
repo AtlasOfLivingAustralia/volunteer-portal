@@ -65,9 +65,9 @@ p + p {
   border-radius: variables-and-mixins.$space-2;
 }
 
-.pill--bg-black {
-  color: white;
-  background-color: black;
+.pill--bg-black, .pill--bg-selected {
+  color: white !important;
+  background-color: black !important;
 }
 
 .pill--bg-grey {
@@ -94,6 +94,16 @@ p + p {
   background-color: variables-and-mixins.$purple;
 }
 
+.pill--bg-new-post {
+  color: white;
+  background-color: #d5502a;
+  font-size: variables-and-mixins.$text-lg;
+
+  & + .pill--bg-new-post {
+    padding-left: variables-and-mixins.$space-2;
+  }
+}
+
 .pill--bg-watched {
   color: white;
   background-color: #d5502a;
@@ -102,6 +112,11 @@ p + p {
   cursor: pointer;
 }
 
+.pill--selected {
+  display: inline-block;
+  border-bottom: 3px solid black;
+  padding-bottom: variables-and-mixins.$space-2;
+}
 
 // Filter navigation
 
@@ -115,7 +130,9 @@ p + p {
 }
 
 .filter-nav--mt-6 {
-  margin-top: variables-and-mixins.$space-6;
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    margin-top: variables-and-mixins.$space-6;
+  }
 }
 
 .filter-nav__label {
