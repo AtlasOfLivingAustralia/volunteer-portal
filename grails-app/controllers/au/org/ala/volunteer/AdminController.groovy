@@ -27,6 +27,7 @@ class AdminController {
     def fullTextIndexService
     def eventSourceService
     def institutionService
+    def domainUpdateService
 
     def index() {
         if (!checkAdminAccess(true)) {
@@ -822,7 +823,7 @@ class AdminController {
             render(view: '/notPermitted')
             return
         }
-
+/*
         def c = Task.createCriteria()
         def results = c.list() {
             projections {
@@ -834,7 +835,8 @@ class AdminController {
         results?.each { long taskId ->
             DomainUpdateService.scheduleTaskIndex(taskId)
         }
-
+*/
+        domainUpdateService.reindexAllTasksTrigger()
         redirect(action: 'tools')
     }
 

@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch
 import grails.gorm.transactions.Transactional
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -93,6 +94,38 @@ class DomainUpdateService {
 
     def getQueueLength() {
         return _backgroundQueue.size() + currentlyProcessing.get()
+    }
+
+    @Async
+    def reindexAllTasksTrigger() {
+        reindexAllTasksAction()
+    }
+
+    @Transactional
+    def reindexAllTasksAction() {
+        log.warn(">> RE-INDEXING ALL TASKS COMMENCING <<")
+        int batchSize = 100000
+
+//        def c = Task.createCriteria()
+        def totalTasks = Task.count()
+        int batches = (int) ((totalTasks / batchSize) + (totalTasks % batchSize ? 1 : 0))
+        log.info("Re-indexing will be performed in ${batches} batches of ${batchSize} tasks.")
+
+        for (int i = 0; i < batches; i++) {
+            int offset = i * batches
+            List<Long> tasks = Task.createCriteria().list(max: batchSize, offset: offset) {
+                projections {
+                    property("id")
+                    order("lastViewed", "desc")
+                }
+            } as List<Long>
+
+            tasks?.each {  taskId ->
+                scheduleTaskIndex(taskId)
+            }
+
+            log.info("Completed batch [${i + 1}]")
+        }
     }
 
     @Transactional
