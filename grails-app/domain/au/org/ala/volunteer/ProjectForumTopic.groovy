@@ -4,6 +4,8 @@ class ProjectForumTopic extends ForumTopic {
 
     Project project
 
+    static belongsTo = [Project]
+
     static constraints = {
         project nullable: false
     }

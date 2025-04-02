@@ -15,7 +15,7 @@ class TutorialService {
         return tutorialDirectory + "/" + name
     }
 
-    def listTutorials(def searchTerm) {
+    def listTutorials(String searchTerm) {
         def dir = new File(tutorialDirectory)
         if (!dir.exists()) {
             dir.mkdirs();

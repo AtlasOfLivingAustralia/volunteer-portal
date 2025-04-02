@@ -16,6 +16,10 @@ import org.hibernate.FlushMode
 import org.springframework.core.io.Resource
 import org.springframework.web.context.support.ServletContextResource
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+
 @Slf4j
 class BootStrap {
 
@@ -27,6 +31,7 @@ class BootStrap {
     def authService
     def fullTextIndexService
     def sanitizerService
+    def tutorialService
 
     def init = { servletContext ->
 
@@ -48,6 +53,9 @@ class BootStrap {
 
         prepareDefaultLabels()
 
+        // For DigiVol 6.2.0 - Remove in following release.
+//        migrateTutorials()
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
@@ -61,6 +69,65 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
+    }
+
+    /**
+     * Migrates filesystem list of tutorials into new DB table for release 6.2.0
+     * Disable this in next release.
+     */
+    private void migrateTutorials() {
+        log.info("Initialising tutorial migration...")
+
+        def tutorials = tutorialService.listTutorials()
+        log.info("Found ${tutorials.size() ?: 0} files.")
+        int totalMigrated = 0
+        tutorials.each { tutorialFile ->
+            log.debug("=> Tutorial: ${tutorialFile}")
+            def tutorialChk = Tutorial.findByFilename(tutorialFile.name as String)
+
+            // If no file already saved, create a new record.
+            if (!tutorialChk) {
+                log.debug("=> No db entry yet")
+                Tutorial tutorial = new Tutorial(filename: tutorialFile.name, name: tutorialFile.name, isActive: true)
+                def createdBy = null
+
+                // Find any projects using this tutorial
+                // - Get the institution
+                // - Get the user who either created the project or institution (if any)
+                def projectList = Project.findAllByTutorialLinksLike("%${tutorialFile.url}%", [sort: 'dateCreated', order: 'desc'])
+                if (projectList) {
+                    def institution = projectList.first()?.institution
+                    if (institution) {
+                        tutorial.institution = institution
+                        createdBy = institution.createdBy
+                        log.debug("=> Tutorial institution: ${institution}")
+                    }
+
+                    if (!createdBy) {
+                        def project = projectList.find {
+                            it.createdBy != null
+                        }
+
+                        createdBy = project.createdBy ?: null
+                    }
+                }
+
+                log.debug("=> Tutorial createdBy: ${createdBy}")
+                tutorial.createdBy = createdBy
+
+                // Get the file's creation date.
+                Path path = (tutorialFile.file as File).toPath()
+                BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes)
+                def createdDate = new Date(attrs.creationTime().toMillis())
+                tutorial.dateCreated = createdDate ?: new Date()
+                tutorial.save(flush: true, failOnError: true)
+                log.debug("=> Tutorial dateCreated: ${tutorial.dateCreated} ")
+                totalMigrated++
+                log.debug("# Tutorial created: ${tutorial}")
+            }
+        }
+
+        log.info("Tutorial migration completed; ${totalMigrated} files migrated.")
     }
 
     /**

@@ -62,7 +62,7 @@ class Project implements Serializable {
     static final String EDIT_SECTION_TUTORIAL = 'tutorial'
 
     static belongsTo = [template: Template, projectType: ProjectType]
-    static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription]
+    static hasMany = [tasks: Task, labels: Label, transcriptions: Transcription, forumTopics: ProjectForumTopic/*, 'tutorialList': Tutorial*/]
     //static transients = ['featuredImage', 'backgroundImage', 'grailsApplication', 'grailsLinkGenerator', 'requiredNumberOfTranscriptions']
     static transients = ['requiredNumberOfTranscriptions']
 
