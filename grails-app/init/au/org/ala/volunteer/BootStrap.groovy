@@ -9,6 +9,7 @@ import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.builder.ToStringBuilder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
@@ -32,6 +33,7 @@ class BootStrap {
     def fullTextIndexService
     def sanitizerService
     def tutorialService
+    def institutionService
 
     def init = { servletContext ->
 
@@ -54,7 +56,8 @@ class BootStrap {
         prepareDefaultLabels()
 
         // For DigiVol 6.2.0 - Remove in following release.
-//        migrateTutorials()
+        migrateTutorials()
+        renameTutorials()
 
         // add system user
         if (!User.findByUserId('system')) {
@@ -75,6 +78,7 @@ class BootStrap {
      * Migrates filesystem list of tutorials into new DB table for release 6.2.0
      * Disable this in next release.
      */
+    @Transactional
     private void migrateTutorials() {
         log.info("Initialising tutorial migration...")
 
@@ -88,13 +92,19 @@ class BootStrap {
             // If no file already saved, create a new record.
             if (!tutorialChk) {
                 log.debug("=> No db entry yet")
-                Tutorial tutorial = new Tutorial(filename: tutorialFile.name, name: tutorialFile.name, isActive: true)
+                def title = tutorialFile.name
+                int fileExtnSep = title.lastIndexOf('.')
+                if (fileExtnSep > 0) title = title.subSequence(0, fileExtnSep)
+                Tutorial tutorial = new Tutorial(filename: tutorialFile.name, name: title, isActive: true)
                 def createdBy = null
 
                 // Find any projects using this tutorial
                 // - Get the institution
                 // - Get the user who either created the project or institution (if any)
-                def projectList = Project.findAllByTutorialLinksLike("%${tutorialFile.url}%", [sort: 'dateCreated', order: 'desc'])
+
+                def escapedTutorialFilename = (tutorialFile.name as String).replace(" ", "%20")
+                def projectList = Project.findAllByTutorialLinksLikeOrTutorialLinksLike("%${tutorialFile.name}%",
+                        "%${escapedTutorialFilename}%", [sort: 'dateCreated', order: 'desc'])
                 if (projectList) {
                     def institution = projectList.first()?.institution
                     if (institution) {
@@ -108,26 +118,66 @@ class BootStrap {
                             it.createdBy != null
                         }
 
-                        createdBy = project.createdBy ?: null
+                        createdBy = project ? project.createdBy : null
+                    }
+
+                    // Associate tutorial with project if possible.
+                    projectList.each { Project project ->
+                        if (!tutorial.projects) tutorial.projects = []
+                        tutorial.addToProjects(project)
+                        log.debug("=> Tutorial Project: ${project}")
                     }
                 }
 
                 log.debug("=> Tutorial createdBy: ${createdBy}")
-                tutorial.createdBy = createdBy
+                tutorial.createdBy = createdBy ? createdBy : null
 
                 // Get the file's creation date.
                 Path path = (tutorialFile.file as File).toPath()
+                log.debug("Path: ${path}")
                 BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes)
-                def createdDate = new Date(attrs.creationTime().toMillis())
-                tutorial.dateCreated = createdDate ?: new Date()
-                tutorial.save(flush: true, failOnError: true)
+                log.debug("attrs.creationTime(): ${attrs.creationTime().toMillis()}")
+                if (attrs) {
+                    def createdDate = new Date(attrs.creationTime().toMillis())
+                    tutorial.dateCreated = createdDate
+                } else {
+                    tutorial.dateCreated = new Date()
+                }
                 log.debug("=> Tutorial dateCreated: ${tutorial.dateCreated} ")
+
+                tutorial.save(flush: true, failOnError: true)
                 totalMigrated++
                 log.debug("# Tutorial created: ${tutorial}")
             }
         }
 
         log.info("Tutorial migration completed; ${totalMigrated} files migrated.")
+    }
+
+    @Transactional
+    private void renameTutorials() {
+        log.info("Rename Tutorials")
+
+        def tutorialList = Tutorial.findAllByInstitutionIsNotNull()
+        tutorialList.each {tutorial ->
+            // Rename file to new structure
+            // <institution_acronym>_<tutorial_id>_tutorial_<timestamp>.pdf
+            if (tutorial.filename.equalsIgnoreCase("${tutorial.name}.pdf")) {
+                def newFileName = new StringBuilder()
+
+                def acronym = institutionService.generateAcronym(tutorial.institution.name)
+                newFileName.append("${acronym.toLowerCase()}_")
+                        .append("${tutorial.id}_")
+                        .append("tutorial_")
+
+                        .append("${new Date().getTime()}")
+                        .append(".pdf")
+
+                tutorialService.renameTutorial(tutorial.filename, newFileName.toString())
+                tutorial.filename = newFileName
+                tutorial.save(flush: true, failOnError: true)
+            }
+        }
     }
 
     /**

@@ -7,42 +7,54 @@ import org.apache.commons.lang3.builder.ToStringBuilder
  */
 class Tutorial {
 
-    long id
-    String tutorialName
+    String name
     String filename
     String description
     boolean isActive
-    //Institution institution
-    Long institutionId
+    Institution institution
 
     Date dateCreated
-    Date dateUpdated
-    // REPLACE WITH LONGS - HIBERNATE DOESNT LIKE THIS
-    //User createdBy
-    //User updatedBy
-    long createdBy
-    long updatedBy
+    Date lastUpdated
+    User createdBy
+    User updatedBy
 
     static belongsTo = [Project]
-    static hasMany = ['projectList': Project]
+    static hasMany = ['projects': Project]
 
 
     static constraints = {
-        name nullable: false, maxSize: 60
+        name nullable: false, maxSize: 130
         filename nullable: false, maxSize: 255
         description nullable: true, maxSize: 255
         isActive nullable: false
-        institutionId nullable: true
-
-        dateCreated nullable: false
-        dateUpdated nullable: true
-        createdBy nullable: false
+        institution nullable: true
+        dateCreated nullable: true
+        lastUpdated nullable: true
+        createdBy nullable: true
         updatedBy nullable: true
     }
 
     static mapping = {
-        //name column: 'tutorial_name'
+        autoTimestamp false
+        name column: 'tutorial_name'
         isActive defaultValue: true
+        projects joinTable: [name: 'tutorial_projects', key: 'tutorial_id']
+    }
+
+    /**
+     * Ensures the date created is defaulted to the current datetime.
+     * @return
+     */
+    def beforeInsert() {
+        if (!dateCreated) {
+            dateCreated = new Date()
+        }
+    }
+
+    def beforeUpdate() {
+        if (!lastUpdated) {
+            lastUpdated = new Date()
+        }
     }
 
     @Override
@@ -52,6 +64,7 @@ class Tutorial {
                 .append("id", id)
                 .append("name", name)
                 .append("isActive", isActive)
+                .append("dateCreated", dateCreated)
                 .toString();
     }
 }
