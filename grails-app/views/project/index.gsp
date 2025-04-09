@@ -70,7 +70,22 @@
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks}">
                             <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial">View tutorial</a>
-                            <div id="tutorialContent" class="hidden">${raw(projectInstance.tutorialLinks)}</div>
+                            <div id="tutorialContent" class="hidden">
+                                <h4>Expedition Tutorial Information</h4>
+                                <div id="tutorial-intro">
+                                ${raw(projectInstance.tutorialLinks)}
+                                </div>
+                                <h4 style="padding-top: 1rem;">Expedition Tutorial List</h4>
+                                <div id="tutorialList">
+                                    <table class="table table-striped">
+                                        <g:each in="${projectInstance.tutorials}" var="tutorial">
+                                        <tr>
+                                            <td><cl:tutorialLink tutorial="${tutorial}">${tutorial.name}</cl:tutorialLink></td>
+                                        </tr>
+                                        </g:each>
+                                    </table>
+                                </div>
+                            </div>
                         </g:if>
                         <g:else>
                             <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow ${oldClass}  tutorial">View tutorial</a>

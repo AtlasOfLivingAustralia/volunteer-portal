@@ -25,6 +25,7 @@ class VolunteerTagLib {
     def adminService
     def templateService
     def projectService
+    def tutorialService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -1316,4 +1317,20 @@ function notify() {
         out << output
     }
 
+    /**
+     * Builds a link to a given tutorial.
+     * @attr tutorial the tutorial to link to
+     * @hideLinkIcon flag to determine when to show an external link icon.
+     */
+    def tutorialLink = { attrs, body ->
+        Tutorial tutorial = attrs.tutorial as Tutorial
+        def hideLinkIcon = Boolean.parseBoolean(attrs.hideLinkIcon as String)
+        def mb = new MarkupBuilder(out)
+        mb.a([href: tutorialService.getTutorialUrl(tutorial), target: "_blank"]) {
+            if (!hideLinkIcon) {
+                mkp.yieldUnescaped("&nbsp;<span class='fa fa-external-link'></span>&nbsp;")
+            }
+            mkp.yieldUnescaped(body())
+        }
+    }
 }

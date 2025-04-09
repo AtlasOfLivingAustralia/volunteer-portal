@@ -1333,4 +1333,28 @@ class ProjectService implements EventPublisher {
 
         result
     }
+
+    /**
+     * Synchronises the list of tutorials related to a project.
+     * @param project the project to be updated
+     * @param tutorialList the list of tutorials to synchronise
+     */
+    def syncProjectTutorials(Project project, List<Tutorial> tutorialList) {
+        log.debug("=> syncProjectTutorials: ${tutorialList}")
+        if (!project || tutorialList == null) return
+        def currentTutorials = project.tutorials as Set
+        def updatedTutorialSet = tutorialList as Set
+
+        (updatedTutorialSet - currentTutorials).each { tutorialToAdd ->
+            log.debug("==> Adding tutorial: ${tutorialToAdd}")
+            project.addToTutorials(tutorialToAdd)
+        }
+
+        (currentTutorials - updatedTutorialSet).each { tutorialToRemove ->
+            log.debug("==> Removing tutorial: ${tutorialToRemove}")
+            project.removeFromTutorials(tutorialToRemove)
+        }
+
+        project.save(flush: true, failOnError: true)
+    }
 }

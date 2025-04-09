@@ -436,6 +436,7 @@ class AdminController {
         }
 
         def searchTerm = (params.q) ? params.q : null
+
         def tutorials = tutorialService.listTutorials(searchTerm)
         render (view: 'tutorialManagement', model: [tutorials: tutorials])
     }

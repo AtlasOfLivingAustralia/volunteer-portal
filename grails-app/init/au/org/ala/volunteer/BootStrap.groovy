@@ -6,16 +6,12 @@ import com.google.common.io.Resources
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
-import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
-import org.apache.commons.lang3.builder.ToStringBuilder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 import org.hibernate.FlushMode
-import org.springframework.core.io.Resource
-import org.springframework.web.context.support.ServletContextResource
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -57,6 +53,7 @@ class BootStrap {
 
         // For DigiVol 6.2.0 - Remove in following release.
         migrateTutorials()
+        findProjectsForTutorials()
         renameTutorials()
 
         // add system user
@@ -152,6 +149,44 @@ class BootStrap {
         }
 
         log.info("Tutorial migration completed; ${totalMigrated} files migrated.")
+    }
+
+    @Transactional
+    private void findProjectsForTutorials() {
+        log.info("Find tutorial project links")
+        // Do a search of project.tutorialLinks column for references to files and match that way.
+
+        def params = [sort: 'id', order: 'asc', max: 1000]
+        def tl = tutorialService.getTutorialsForManagement([], "", params, false, true)
+        def tlList = tl.tutorialList as List<Tutorial>
+        tlList.each { tutorial ->
+            def projectMatchList = tutorialService.findProjectsForMigration(tutorial)
+            if (projectMatchList.size() > 0) {
+                def matchedProjectRows = projectMatchList.findAll {
+                    it.matchPercentage == 100
+                }
+                matchedProjectRows.each { matchedProjectRow ->
+                    def matchedProject = matchedProjectRow.project as Project
+                    log.debug("=> Found project: ${matchedProject}")
+
+                    def institution = matchedProject.institution
+                    if (institution) {
+                        tutorial.institution = institution
+                        tutorial.createdBy = institution.createdBy
+                        log.debug("=> Tutorial institution: ${institution}")
+                    }
+
+                    if (!tutorial.createdBy) {
+                        tutorial.createdBy = matchedProject ? matchedProject.createdBy : null
+                    }
+
+                    tutorial.addToProjects(matchedProject)
+                }
+            }
+
+            tutorial.save(flush: true, failOnError: true)
+        }
+
     }
 
     @Transactional

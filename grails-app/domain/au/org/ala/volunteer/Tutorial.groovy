@@ -10,7 +10,7 @@ class Tutorial {
     String name
     String filename
     String description
-    boolean isActive
+    Boolean isActive
     Institution institution
 
     Date dateCreated
@@ -51,10 +51,12 @@ class Tutorial {
         }
     }
 
+    /**
+     * Assigns the current date to the last updated value before saving.
+     * @return
+     */
     def beforeUpdate() {
-        if (!lastUpdated) {
-            lastUpdated = new Date()
-        }
+        lastUpdated = new Date()
     }
 
     @Override

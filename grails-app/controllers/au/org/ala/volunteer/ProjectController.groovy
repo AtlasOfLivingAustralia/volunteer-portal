@@ -566,8 +566,6 @@ class ProjectController {
         render(["supportMultipleTranscriptions": "${projectService.doesTemplateSupportMultiTranscriptions(project)}"] as JSON)
     }
 
-
-
     def editTutorialLinksSettings() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {
@@ -580,8 +578,41 @@ class ProjectController {
                      args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
-            return [projectInstance: project, templates: Template.list(), projectTypes: ProjectType.list() ]
+            def tutorialList = Tutorial.findAllByInstitution(project.institution, [sort: 'name', order: 'asc'])
+
+            return [projectInstance: project, templates: Template.list(), projectTypes: ProjectType.list(), tutorialList: tutorialList]
         }
+    }
+
+    def updateTutorialsInProject() {
+        def project = Project.get(params.long("id"))
+        if (!projectService.isAdminForProject(project)) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        if (!project) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
+            redirect(action: "list")
+        }
+
+        // Update the list of projects
+        log.debug("Params: ${params}")
+        def selectedTutorials = params.list('tutorials')
+        def tutorialList = []
+        log.debug("Selected tutorials: ${selectedTutorials} ${selectedTutorials.class.getName()}")
+        if (selectedTutorials && selectedTutorials.size() > 0) {
+            selectedTutorials.each { id ->
+                def tutorial = Tutorial.get(id as Long)
+                if (tutorial) tutorialList.add(tutorial)
+            }
+        }
+        log.debug("Tutorial List: ${tutorialList}")
+        projectService.syncProjectTutorials(project, tutorialList)
+
+        flash.message = "Expedition Tutorials updated"
+        redirect(action:'editTutorialLinksSettings', id: project.id)
     }
 
     def editPicklistSettings() {
