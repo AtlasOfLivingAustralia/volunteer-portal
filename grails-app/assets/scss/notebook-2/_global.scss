@@ -7,7 +7,6 @@
 body {
   @include variables-and-mixins.page-wrapper;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  //font-size: variables-and-mixins.$text-sm;
 }
 
 h1 {
@@ -33,10 +32,6 @@ h2 {
 p + p {
   margin-top: 1em;
 }
-
-//a {
-//  text-decoration: underline;
-//}
 
 .a-feature.simple-header {
   padding-top: variables-and-mixins.$space-8;

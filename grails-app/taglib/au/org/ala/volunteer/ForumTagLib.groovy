@@ -27,7 +27,8 @@ class ForumTagLib {
     }
 
     /**
-     *
+     * Constrcts the list of forum topic messages.
+     * @attr topic the Forum topic to display
      */
     def topicMessageList = { attrs, body ->
         def topic = attrs.topic as ForumTopic
@@ -46,9 +47,9 @@ class ForumTagLib {
     }
 
     /**
-     *
-     * @param topic
-     * @return
+     * Retrieves the project record from the forum topic if applicable.
+     * @param topic the topic to query
+     * @return the project record
      */
     private def getProjectFromTopic(ForumTopic topic) {
         Project projectInstance = null
@@ -64,10 +65,10 @@ class ForumTagLib {
     }
 
     /**
-     *
-     * @param attrs
-     * @param isPreview
-     * @param message
+     * Prints a forum message row.
+     * @param attrs the taglib attributes
+     * @param isPreview true if the message is a message being previewed
+     * @param message optional message object to display
      * @return
      */
     private def printMessageRow(attrs, isPreview, message = null) {
@@ -92,7 +93,6 @@ class ForumTagLib {
             messageText = attrs.messageText as String
         } else {
             messageText = forumMessage.text
-            //canEdit = forumService.isMessageEditable(message as ForumMessage, userService.currentUser)
             canEdit = forumService.isMessageEditable(forumMessage as ForumMessage, userService.currentUser)
             def project = getProjectFromTopic(attrs.topic as ForumTopic)
             authorIsModerator = userService.isAdmin() ?: userService.isUserForumModerator(user, project)
@@ -135,7 +135,6 @@ class ForumTagLib {
                     }
 
                     if (isEdit && !forumMessage.replyTo) {
-                        //def topicId = forumMessage.topic.id
                         mkp.yieldUnescaped("<div data-topic-id='${topicId}' class='forum-post__text message-text'>")
                     } else {
                         mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
@@ -183,7 +182,11 @@ class ForumTagLib {
     }
 
     /**
-     *
+     * Previews a message
+     * @attr user The user viewing the message
+     * @attr isEdit true if the message is being edited
+     * @attr messageText the message content (i.e. being previewed)
+     * @attr forumMessage (optional) the forum message object being edited
      */
     def messagePreview = { attrs, body ->
         log.debug("ForumTagLib | attrs: ${attrs}")
@@ -192,7 +195,12 @@ class ForumTagLib {
     }
 
     /**
-     *
+     * Constructs the row for replying to a topic, including the text area.
+     * @attr newPost true if it's a new topic
+     * @attr user the user object posting the new message
+     * @attr topic the topic record if editing or replying to an existing topic
+     * @attr forumMessage required if editing a forum message
+     * @attr isEdit true if editing a forum message
      */
     def topicReplyBox = {attrs, body ->
         def user = attrs.user as User

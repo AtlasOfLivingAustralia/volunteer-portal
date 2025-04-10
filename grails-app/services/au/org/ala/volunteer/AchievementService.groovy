@@ -444,7 +444,9 @@ class AchievementService implements EventPublisher {
     }
 
     /**
-     *
+     * Retrieves a list of enabled achievements. Also returns a count of how many have achieved each with a percentage
+     * @param user An optional user record to check if this user has a certain achievement.
+     * @return a Map containing the achievements and counts.
      */
     def getAchievementsWithCounts(User user = null) {
         DSLContext context = jooqContextFactory()

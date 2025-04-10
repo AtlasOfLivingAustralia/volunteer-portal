@@ -17,13 +17,6 @@
 <cl:headerContent title="${forumMessage.topic.title}" selectedNavItem="forum" hideTitle="${true}">
 %{-- Breadcrumps and title --}%
     <vpf:forumNavItems topic="${forumMessage.topic}"/>
-%{--    <div class="forum-post-page-header__status-and-nav">--}%
-%{--        <g:set var="topicTypeName" value="${forumMessage.topic.topicType.name()}" />--}%
-%{--        <div class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</div>--}%
-%{--        <g:if test="${forumMessage.topic.isAnswered}">--}%
-%{--            <div class="pill pill--bg-answered">Answered</div>--}%
-%{--        </g:if>--}%
-%{--    </div>--}%
 </cl:headerContent>
 
 <main>

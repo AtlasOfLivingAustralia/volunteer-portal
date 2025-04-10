@@ -33,8 +33,6 @@ import static org.jooq.impl.DSL.when
 import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.field
 
-
-
 @Transactional
 class TaskService {
 
@@ -1401,6 +1399,13 @@ ORDER BY record_idx, name;
         result
     }
 
+    /**
+     * Constructs a jooq query to select tasks that are saved by the user.
+     * @param context the DSLContext object
+     * @param user the user to query
+     * @param project the proejct to query for saved tasks.
+     * @return the constructed query
+     */
     def getSavedTaskQuery(DSLContext context, User user, Project project) {
         def statusColumn = getTaskStatus()
 
@@ -1439,6 +1444,10 @@ ORDER BY record_idx, name;
         return taskQuery
     }
 
+    /**
+     * Returns a map containing task statuses for use in a query.
+     * @return a Map of task statuses
+     */
     Map getTaskStatus() {
         final validatedStatus = i18nService.message(code: 'status.validated', default: 'Validated')
         final invalidatedStatus = i18nService.message(code: 'status.invalidated', default: 'In progress')

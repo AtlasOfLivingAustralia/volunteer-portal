@@ -151,6 +151,10 @@ class BootStrap {
         log.info("Tutorial migration completed; ${totalMigrated} files migrated.")
     }
 
+    /**
+     * Finds projects that might be associated with a tutorial. Only uses tutorials already created from the previous
+     * migration process.
+     */
     @Transactional
     private void findProjectsForTutorials() {
         log.info("Find tutorial project links")
@@ -189,6 +193,9 @@ class BootStrap {
 
     }
 
+    /**
+     * Renames tutorial files to a given structure.
+     */
     @Transactional
     private void renameTutorials() {
         log.info("Rename Tutorials")

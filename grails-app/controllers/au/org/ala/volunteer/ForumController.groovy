@@ -46,6 +46,9 @@ class ForumController {
         [topicList: forumTopics.topicList, topicCount: forumTopics.topicCount, project: project, projectFilterList: projectFilterList]
     }
 
+    /**
+     * @deprecated
+     */
     def ajaxRecentTopicsList() {
         def results = forumService.getFeaturedTopics(params)
         [featuredTopics: results.topics, totalCount: results.totalCount]
@@ -195,40 +198,12 @@ class ForumController {
         ForumTopic topic = null
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
-//            if (task) {
-//                if (userService.isForumModerator(task.project)) {
-//                    parameters.locked = params.locked == 'on'
-//                    parameters.sticky = params.sticky == 'on'
-//                    if (params.priotity) {
-//                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-//                    }
-//                    parameters.featured = params.featured == 'on'
-//                }
-//            }
             topic = forumService.createForumTopic(task, parameters)
         } else if (params.projectId) {
             def project = Project.get(params.int("projectId"))
-//            if (project) {
-//                if (userService.isForumModerator(project)) {
-//                    parameters.locked = params.locked == 'on'
-//                    parameters.sticky = params.sticky == 'on'
-//                    if (params.priotity) {
-//                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-//                    }
-//                    parameters.featured = params.featured == 'on'
-//                }
-//            }
             topic = forumService. createForumTopic(project, parameters)
         } else {
             // new general discussion topic
-//            if (userService.isForumModerator(null)) {
-//                parameters.locked = params.locked == 'on'
-//                parameters.sticky = params.sticky == 'on'
-//                if (params.priotity) {
-//                    parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-//                }
-//                parameters.featured = params.featured == 'on'
-//            }
             topic = forumService.createForumTopic(parameters)
         }
 
@@ -236,7 +211,6 @@ class ForumController {
             forumService.watchTopic(topic.creator, topic)
         }
 
-        //redirect(action: 'redirectTopicParent', id: topic.id)
         if (session[SESSION_KEY_PROJECT_ID]) {
             redirect(controller: 'forum', action: 'index', params: [projectId: session[SESSION_KEY_PROJECT_ID]])
         } else {
@@ -388,7 +362,6 @@ class ForumController {
         }
 
         if (!errors) {
-            //message.save(flush: true, failOnError: true)
             message.text = text
             message.save(flush: true, failOnError: true)
             flash.message = "Message was successfully updated."
@@ -424,6 +397,9 @@ class ForumController {
         }
     }
 
+    /**
+     * Saves a new topic message as Answered
+     */
     def saveNewTopicMessageAnswered() {
         def topic = ForumTopic.get(params.topicId as long)
 
@@ -447,6 +423,9 @@ class ForumController {
         }
     }
 
+    /**
+     * Saves a new topic message
+     */
     def saveNewTopicMessage() {
         def topic = ForumTopic.get(params.topicId as long)
 
@@ -470,10 +449,8 @@ class ForumController {
     }
 
     /**
-     *
-     * @param topic
-     * @param topicValues
-     * @return
+     * Saves a topic message.
+     * @param topic the topic to save to.
      */
     private def saveTopicMessage(ForumTopic topic) {
         def topicValues = getTopicParameters(topic) as Map
@@ -506,6 +483,7 @@ class ForumController {
         return topicValues
     }
 
+//    Deprecated/Replaced
 //    def saveNewTopicMessage() {
 //        def topic = ForumTopic.get(params.topicId as long)
 //        def msgParams = [:]
@@ -591,6 +569,9 @@ class ForumController {
         redirect(action: 'redirectTopicParent', id: topic.id)
     }
 
+    /**
+     * @deprecated
+     */
     def ajaxGeneralTopicsList() {
         def results = forumService.getGeneralDiscussionTopics(false, params)
         [topics:results.topics, totalCount: results.totalCount]
@@ -613,6 +594,9 @@ class ForumController {
         redirect(controller:'forum', action: 'addForumTopic', params: [taskId: task.id])
     }
 
+    /**
+     * @deprecated
+     */
     def ajaxProjectTaskTopicList() {
         def projectInstance = Project.get(params.int("projectId"))
         def topics = projectInstance ? forumService.getTaskTopicsForProject(projectInstance, params) : []
@@ -652,6 +636,9 @@ class ForumController {
         render(results as JSON)
     }
 
+    /**
+     * @deprecated
+     */
     def ajaxProjectForumsList() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = params.sort ?: 'completed'
@@ -671,6 +658,9 @@ class ForumController {
         [projectSummaryList: projectSummaryList, forumStats: forumStats]
     }
 
+    /**
+     * @deprecated
+     */
     def ajaxWatchedTopicsList() {
 
         def user = userService.currentUser

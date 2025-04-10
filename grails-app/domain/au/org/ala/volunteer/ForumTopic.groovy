@@ -5,9 +5,17 @@ class ForumTopic {
     Date dateCreated
     User creator
     String title
+    /**
+     * @deprecated
+     */
     Boolean sticky
+    /**
+     * @deprecated
+     */
     Boolean locked
-    // DEPRECATED
+    /**
+     * @deprecated
+     */
     ForumTopicPriority priority = ForumTopicPriority.Normal
     ForumTopicType topicType = ForumTopicType.Discussion
     Boolean isAnswered

@@ -584,6 +584,9 @@ class ProjectController {
         }
     }
 
+    /**
+     * Updates the list of tutorials associated within a project.
+     */
     def updateTutorialsInProject() {
         def project = Project.get(params.long("id"))
         if (!projectService.isAdminForProject(project)) {

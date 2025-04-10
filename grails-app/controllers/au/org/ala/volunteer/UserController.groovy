@@ -329,6 +329,10 @@ class UserController {
         respond(result)
     }
 
+    /**
+     * Displays the User notebook.
+     * @param user the user to display
+     */
     def show(User user) {
         def currentUser = userService.currentUserId
         def filter = params.filter as String
@@ -373,55 +377,8 @@ class UserController {
     }
 
     /**
-     * User notebook
-     * @param user
-     * @return
+     * Displays a list of achievements for the user.
      */
-    def showOld(User user) {
-        def currentUser = userService.currentUserId
-
-        if (!user) {
-            flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
-            render(view: '/notPermitted')
-            return
-        }
-
-        // TODO Refactor this into a Service
-        def project = null
-        if (params.projectId) {
-            project = Project.get(params.long('projectId'))
-        }
-
-        int totalTranscribedTasks
-        if (project) {
-            totalTranscribedTasks = taskService.countUserTranscriptionsForProject(user.getUserId(), project)
-        } else {
-            totalTranscribedTasks = user.transcribedCount
-        }
-
-        def achievements = user.achievementAwards
-        def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
-        int selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
-
-
-        Map myModel = [
-                userInstance         : user,
-                currentUser          : currentUser,
-                project              : project,
-                totalTranscribedTasks: totalTranscribedTasks,
-                achievements         : achievements,
-                validatedCount       : taskService.countValidUserTranscriptionsForProject(user.getUserId(), project),
-                score                : score,
-                selectedTab          : selectedTab,
-                isValidator          : userService.isValidator(project),
-                isAdmin              : userService.isAdmin()
-        ]
-
-        render(view: 'showOld', model: userService.appendNotebookFunctionalityToModel(myModel))
-
-    }
-
     def achievements() {
         def currentUser = userService.currentUser
 

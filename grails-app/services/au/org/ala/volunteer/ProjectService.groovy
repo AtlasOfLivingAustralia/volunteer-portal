@@ -1293,17 +1293,15 @@ class ProjectService implements EventPublisher {
         }
     }
 
+    /**
+     * Retrieves a list of projects and the number of forum topics associated with that project.
+     * @return a list of Maps containing the project, institution and topic count.
+     */
     def getProjectsWithTopicCounts() {
         log.debug("Retrieving list of projects grouped into institutions including forum topic counts")
         DSLContext create = jooqContextFactory()
 
-//        def subQuery = create.select(PROJECT.ID.as("id"), jCount(FORUM_TOPIC.ID).as("topic_count"))
-//            .from(TASK)
-//            .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
-//            .leftOuterJoin(FORUM_TOPIC).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
-//            .groupBy(PROJECT.ID).asTable("sq")
         def subQuery = create.select(
-//                coalesce(FORUM_TOPIC.PROJECT_ID, TASK.PROJECT_ID).as("project_id"),
                 jWhen(FORUM_TOPIC.PROJECT_ID.isNotNull(), FORUM_TOPIC.PROJECT_ID)
                         .otherwise(TASK.PROJECT_ID).as("id"),
                 jCount(FORUM_TOPIC.ID).as("topic_count"))
