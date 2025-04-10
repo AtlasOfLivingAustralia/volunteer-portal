@@ -9,7 +9,7 @@ tinymce.init({
   menubar: false,
   toolbar: [
     'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | fontsizeselect ',
-    'styleselect | undo redo | link unlink anchor hr charmap | paste'
+    'styleselect | undo redo | unlink anchor hr charmap | paste'
   ],
   statusbar: false,
   target_list: [
