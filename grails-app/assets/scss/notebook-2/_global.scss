@@ -75,6 +75,11 @@ p + p {
   background-color: variables-and-mixins.$blue;
 }
 
+.pill--bg-blue-unselected, .pill--bg-in-progress-unselected, .pill--bg-discussion-unselected {
+  color: white;
+  background-color: mix(variables-and-mixins.$blue, #fff, 55%);
+}
+
 .pill--bg-green, .pill--bg-validated, .pill--bg-answered {
   color: black;
   background-color: variables-and-mixins.$green;
@@ -84,9 +89,20 @@ p + p {
   background-color: variables-and-mixins.$orange;
 }
 
+.pill--bg-orange-unselected, .pill--bg-saved-unselected, .pill--bg-question-unselected {
+  background-color: mix(variables-and-mixins.$orange, #fff, 55%);
+}
+
 .pill--bg-purple, .pill--bg-transcribed, .pill--bg-announcement {
   color: white;
   background-color: variables-and-mixins.$purple;
+}
+
+.pill--bg-purple-unselected,
+.pill--bg-transcribed-unselected,
+.pill--bg-announcement-unselected {
+  color: white;
+  background-color: mix(variables-and-mixins.$purple, #fff, 55%);
 }
 
 .pill--bg-new-post {

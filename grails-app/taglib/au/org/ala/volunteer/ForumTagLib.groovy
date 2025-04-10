@@ -282,9 +282,9 @@ class ForumTagLib {
                                    mkp.yield(message(code: 'forum.newpost.topictype.label', default: 'Mark as:'))
                                }
                             }
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link \"><span class=\"pill pill--bg-question pill--bg-selected\" data-topic-type=\"${ForumTopicType.Question.ordinal()}\" title=\"Question Topics\">Question</span></a>")
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-announcement\" data-topic-type=\"${ForumTopicType.Announcement.ordinal()}\" title=\"Announcement Topics\">Announcement</span></a>")
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-discussion\" data-topic-type=\"${ForumTopicType.Discussion.ordinal()}\" title=\"Discussion Topics\">Discussion</span></a>")
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link \"><span class=\"pill pill--bg-question pill--bg-selected\" data-topic-type=\"question\" data-topic-type-id=\"${ForumTopicType.Question.ordinal()}\" title=\"Question Topics\">Question</span></a>")
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-announcement-unselected\" data-topic-type=\"announcement\" data-topic-type-id=\"${ForumTopicType.Announcement.ordinal()}\" title=\"Announcement Topics\">Announcement</span></a>")
+                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-discussion-unselected\" data-topic-type=\"discussion\" data-topic-type-id=\"${ForumTopicType.Discussion.ordinal()}\" title=\"Discussion Topics\">Discussion</span></a>")
                         }
                     }
 

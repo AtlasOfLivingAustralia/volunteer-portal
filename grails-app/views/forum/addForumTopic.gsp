@@ -93,16 +93,26 @@
         });
 
         $('.filter-topic-link').click(function() {
-            let selectedPill = $(this).find('span');
-            let parentDiv = $(this).closest('.forum-post-buttons--new-post-type');
-            let oldSelectedPill = $(parentDiv).find('.pill--bg-selected');
-            let oldSelectedType = $(oldSelectedPill).attr('data-topic-type');
-            let selectedType = $(selectedPill).attr('data-topic-type');
+            const selectedPill = $(this).find('span');
+            const parentDiv = $(this).closest('.forum-post-buttons--new-post-type');
+            const oldSelectedPill = $(parentDiv).find('.pill--bg-selected');
 
-            if (oldSelectedType !== selectedType) {
-                $('#form-data-topictype').val(selectedType);
-                $(oldSelectedPill).removeClass('pill--bg-selected');
-                $(selectedPill).addClass('pill--bg-selected');
+            const oldTypeId = $(oldSelectedPill).data('topic-type-id');
+            const oldType = $(oldSelectedPill).data('topic-type');
+            const newTypeId = $(selectedPill).data('topic-type-id');
+            const newType = $(selectedPill).data('topic-type');
+
+            if (oldTypeId !== newTypeId) {
+                $('#form-data-topictype').val(newTypeId);
+
+                $(oldSelectedPill)
+                    .removeClass('pill--bg-selected pill--bg-' + oldType)
+                    //.removeClass('pill--bg-' + oldType)
+                    .addClass('pill--bg-' + oldType + '-unselected');
+
+                $(selectedPill)
+                    .addClass('pill--bg-selected')
+                    .removeClass('pill--bg-' + newType + '-unselected');
             }
         });
 
