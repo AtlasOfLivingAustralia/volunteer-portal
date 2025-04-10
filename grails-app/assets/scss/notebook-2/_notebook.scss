@@ -115,8 +115,9 @@
     }
   }
 
-  .forum-pagination-nav {
-    margin-left: auto;
+  .task-history-nav__list {
+    font-size: variables-and-mixins.$text-lg;
+    display: flex;
   }
 
   .task-history-nav {
@@ -124,6 +125,17 @@
       display: flex;
     }
   }
+
+.task-history-pagination-nav {
+  padding: 5px;
+  font-size: variables-and-mixins.$text-sm;
+  margin-left: auto;
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    width: 100%; /* Full width on small screens */
+    margin-top: variables-and-mixins.$space-4;
+  }
+}
 
   .task-history-nav-col {
     display: flex;

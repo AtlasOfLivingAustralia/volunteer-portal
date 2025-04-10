@@ -40,6 +40,7 @@
 </cl:headerContent>
 
 <main>
+    %{--  Info Cards  --}%
     <section class="achievement-list-section">
         <dl class="achievement-list">
             <div class="achievement-list__card">
@@ -61,6 +62,7 @@
         </dl>
     </section>
 
+    %{--  Achievement Badges  --}%
     <section class="badge-list-section ">
         <header class="badge-list-header">
             <h2>Badges</h2>
@@ -81,15 +83,14 @@
         </ul>
     </section>
 
-%{--    <section class="task-list-nav-section">--}%
+    %{--  Nav  --}%
     <section class="task-list-nav-section">
         <h2>Task history</h2>
         <p>${totalMatchingTasks} tasks found.</p>
         <nav class="task-history-nav">
-%{--            <div class="task-history-nav-col task-history-nav-col__filter">--}%
             <div class="filter-nav filter-nav--mt-3">
                 <div class="filter-nav__label">Filter by:</div>
-                <ul class="forum-nav__list">
+                <ul class="task-history-nav__list">
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All</span></g:link></li>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed by you">Transcribed</span></g:link></li>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated by you">Validated</span></g:link></li>
@@ -97,29 +98,13 @@
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks you have saved for later">Saved</span></g:link></li>
                 </ul>
             </div>
-
-%{--            <div class="task-history-nav-col task-history-nav-col__pagination">--}%
-            <div class="forum-pagination-nav">
+            <div class="task-history-pagination-nav">
                 <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
             </div>
-
-%{--            <div class="task-history-nav-col task-history-nav-col__mode">--}%
-%{--                <ol class="pagination-list">--}%
-%{--                    <li class="pagination-list__item pagination-list__item--highlight">--}%
-%{--                        <a href="">--}%
-%{--                            <i class="glyphicon glyphicon-th-large "></i>--}%
-%{--                        </a>--}%
-%{--                    </li>--}%
-%{--                    <li class="pagination-list__item">--}%
-%{--                        <a href="">--}%
-%{--                            <i class="glyphicon glyphicon-th-list "></i>--}%
-%{--                        </a>--}%
-%{--                    </li>--}%
-%{--                </ol>--}%
-%{--            </div>--}%
         </nav>
     </section>
 
+    %{--  Task History  --}%
     <section>
         <table class="task-history-table">
             <thead>
@@ -127,11 +112,11 @@
                 <th class="td--2/12">${message(code: 'task.label', default: 'Task')}</th>
                 <g:sortableColumn property="id" class="td--1/12"
                                   title="${message(code: 'task.id.label', default: 'Task ID')}" params="${[filter: params.filter]}"/>
-                <g:sortableColumn property="projectName" class="td--4/12"
+                <g:sortableColumn property="projectName" class="td--5/12"
                                   title="${message(code: 'project.name.label', default: 'Expedition')}" params="${[filter: params.filter]}"/>
                 <g:sortableColumn property="dateTranscribed" class="td--2/12"
                                   title="${message(code: 'task.dateFullyTranscribed.label', default: 'Transcribed')}" params="${[filter: params.filter]}"/>
-                <g:sortableColumn property="status" class="td--2/12"
+                <g:sortableColumn property="status" class="td--1/12"
                                   title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>
                 <th class="td--1/12">${message(code: 'notebook.tasklist.tableAction.label', default: 'Action')}</th>
             </tr>

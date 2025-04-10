@@ -359,8 +359,6 @@ class UserController {
         sw.stop()
         log.debug("User.show()#taskList ${sw.toString()}")
 
-        log.info("ViewList: ${taskList}")
-
         Map myModel = [
                 userInstance         : user,
                 currentUser          : currentUser,
