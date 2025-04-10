@@ -74,8 +74,8 @@ class ForumService {
 
         // Search query WITH clause, selects all topics that the search query appears
         def searchWhereFilter = []
-        searchWhereFilter.add(FORUM_TOPIC.TITLE.like("%${searchQuery}%".toString()))
-        searchWhereFilter.add(FORUM_MESSAGE.TEXT.like("%${searchQuery}%".toString()))
+        searchWhereFilter.add(FORUM_TOPIC.TITLE.likeIgnoreCase("%${searchQuery}%".toString().toLowerCase()))
+        searchWhereFilter.add(FORUM_MESSAGE.TEXT.likeIgnoreCase("%${searchQuery}%".toString().toLowerCase()))
         def searchQueryClause = selectDistinct(FORUM_TOPIC.ID)
             .from(FORUM_TOPIC)
             .join(FORUM_MESSAGE).on(FORUM_MESSAGE.TOPIC_ID.eq(FORUM_TOPIC.ID))
