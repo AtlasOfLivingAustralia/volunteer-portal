@@ -28,6 +28,8 @@ class Institution implements Serializable {
     Date dateCreated
     Date lastUpdated
 
+    static hasMany = [tutorials: Tutorial]
+
     static constraints = {
         contactName blank: false, nullable: false
         contactEmail email: true, blank: false, nullable: false

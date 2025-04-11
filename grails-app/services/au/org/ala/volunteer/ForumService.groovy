@@ -5,145 +5,232 @@ import grails.gorm.transactions.Transactional
 import groovy.time.TimeDuration
 import groovy.util.logging.Slf4j
 import org.hibernate.Hibernate
-import org.hibernate.criterion.CriteriaSpecification
+import org.jooq.DSLContext
+import org.jooq.SortOrder
+
+import static org.jooq.impl.DSL.concat
+import static org.jooq.impl.DSL.select
+import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.Task.TASK
+import static au.org.ala.volunteer.jooq.tables.ForumTopic.FORUM_TOPIC
+import static au.org.ala.volunteer.jooq.tables.ForumMessage.FORUM_MESSAGE
+import static au.org.ala.volunteer.jooq.tables.VpUser.VP_USER
+import static au.org.ala.volunteer.jooq.tables.UserForumWatchList.USER_FORUM_WATCH_LIST
+import static au.org.ala.volunteer.jooq.tables.UserForumWatchListForumTopic.USER_FORUM_WATCH_LIST_FORUM_TOPIC
+import static org.jooq.impl.DSL.count as jCount
+import static org.jooq.impl.DSL.name
+import static org.jooq.impl.DSL.field
+import static org.jooq.impl.DSL.selectDistinct
+import static org.jooq.impl.DSL.table
+import static org.jooq.impl.DSL.coalesce
+import static org.jooq.impl.DSL.inline
+import static org.jooq.impl.DSL.when
+import static org.jooq.impl.DSL.or as jOr
 
 @Transactional
 @Slf4j
 class ForumService {
 
-    def grailsApplication
     def userService
     def settingsService
     def forumNotifierService
-    def dataSource
+    Closure<DSLContext> jooqContext
 
-    def getProjectForumTopics(Project project, boolean includeDeleted = false, Map params = null) {
-        def max = params.max ?: 10
-        def offset = params.offset ?: 0
-        def sort = params.sort ?: "lastReplyDate"
-        def leOrder = params.order ?: "desc"
+    /**
+     * Retrieves all forum topics for given filter criteria.
+     * @param project a selected project filter
+     * @param user the current user (for watched topics)
+     * @param searchQuery a search term query filter
+     * @param filter the forum topic type filter (Question, discussion, announcement) see {@link ForumTopicType}
+     * @param watched flag to retrieve only watched topics
+     * @param offset pagination offset
+     * @param max max records to select
+     * @param sort the sort column
+     * @param order the order of the sort.
+     * @return a list of forum topics
+     */
+    def getForumTopics(Project project, User user, String searchQuery, String filter, boolean watched, Integer offset, Integer max, String sort, String order) {
+        log.debug("Retrieving topics for display. Params: [Project: ${project?.id}, User: ${user?.displayName}, searchQuery: ${searchQuery}, filter: ${filter}]")
+        log.debug("Query params: [offset: ${offset}, max: ${max}, sort: ${sort}, order: ${order}]")
+        DSLContext create = jooqContext()
 
-        if (sort == "replies") {
-            def hql = """
-                SELECT distinct topic
-                FROM ProjectForumTopic topic
-                WHERE project_id = :projectId
-                ORDER BY sticky desc, priority desc, size(topic.messages) ${leOrder}
-            """
-            def topics = ForumTopic.executeQuery(hql, [projectId: project.id], [max: max, offset: offset])
+        final String FILTER_QUESTION = 'question'
+        final String FILTER_ANSWERED = 'answered'
+        final String FILTER_ANNOUNCEMENT = 'announcement'
+        final String FILTER_DISCUSSION = 'discussion'
 
-            return [topics: topics, totalCount: ForumTopic.count() ]
+        if (!offset) offset = 0
+        max = Math.max(Math.min(max ?: 0, 100), 1)
+
+        // Project WITH clause, selects all tasks for a project
+        def projectTaskClause = select(TASK.ID, PROJECT.NAME.as("task_project_name"))
+            .from(TASK)
+            .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
+            .where(TASK.PROJECT_ID.eq(project?.id))
+        def projectTaskClauseWith = name("project_tasks").as(projectTaskClause)
+
+        // Search query WITH clause, selects all topics that the search query appears
+        def searchWhereFilter = []
+        searchWhereFilter.add(FORUM_TOPIC.TITLE.likeIgnoreCase("%${searchQuery}%".toString().toLowerCase()))
+        searchWhereFilter.add(FORUM_MESSAGE.TEXT.likeIgnoreCase("%${searchQuery}%".toString().toLowerCase()))
+        def searchQueryClause = selectDistinct(FORUM_TOPIC.ID)
+            .from(FORUM_TOPIC)
+            .join(FORUM_MESSAGE).on(FORUM_MESSAGE.TOPIC_ID.eq(FORUM_TOPIC.ID))
+            .where(jOr(searchWhereFilter))
+        def searchQueryClauseWith = name("topic_search").as(searchQueryClause)
+
+        // Reply count WITH clause, selects all topics and their reply counts
+        def replyCountClause = select(FORUM_TOPIC.ID, jCount(FORUM_MESSAGE.ID).as("replies"))
+            .from(FORUM_TOPIC)
+            .join(FORUM_MESSAGE).on(FORUM_MESSAGE.TOPIC_ID.eq(FORUM_TOPIC.ID) & FORUM_MESSAGE.REPLY_TO_ID.isNotNull())
+            .groupBy(FORUM_TOPIC.ID)
+        def replyCountClauseWith = name("topic_replies").as(replyCountClause)
+
+        // Watched WITH clause
+        def watchedForumTopicClause = selectDistinct(USER_FORUM_WATCH_LIST_FORUM_TOPIC.FORUM_TOPIC_ID)
+            .from(USER_FORUM_WATCH_LIST)
+            .join(USER_FORUM_WATCH_LIST_FORUM_TOPIC).on(USER_FORUM_WATCH_LIST_FORUM_TOPIC.USER_FORUM_WATCH_LIST_TOPICS_ID.eq(USER_FORUM_WATCH_LIST.ID))
+            .where(USER_FORUM_WATCH_LIST.USER_ID.eq(user.id))
+        def watchedForumTopicClauseWith = name("watched_topics").as(watchedForumTopicClause)
+
+        def withClauses = []
+        withClauses.add(replyCountClauseWith)
+        withClauses.add(watchedForumTopicClauseWith)
+
+        def whereClauses = []
+        whereClauses.add(FORUM_TOPIC.DELETED.isNull() | FORUM_TOPIC.DELETED.eq(false))
+
+        // If project filter is selected, add the WHERE clauses linking the Project WITH clause
+        if (project) {
+            withClauses.add(projectTaskClauseWith)
+            def projectWhereClause = []
+            projectWhereClause.add(FORUM_TOPIC.TASK_ID.in(
+                select(
+                    field(name("project_tasks", "id")))
+                .from(table(name("project_tasks")))))
+            projectWhereClause.add(FORUM_TOPIC.PROJECT_ID.eq(project.id))
+            whereClauses.add(jOr(projectWhereClause))
         }
 
-        // All other sort types (other than replies)
-        def select = """
-            SELECT DISTINCT topic
-            FROM ProjectForumTopic topic
-            WHERE project_id = :projectId
-        """
-
-        def includeDeletedClause = ""
-        if (includeDeleted) {
-            includeDeletedClause = " AND deleted = true "
-        } else {
-            includeDeletedClause = """
-                AND (deleted IS NULL OR deleted = false) 
-            """
+        // If a search query has been answered, filter topics based on search query appearing in title or message
+        if (searchQuery) {
+            withClauses.add(searchQueryClauseWith)
+            whereClauses.add(FORUM_TOPIC.ID.in(
+                    select(field(name("topic_search", "id")))
+                    .from(table(name("topic_search")))))
         }
 
-        def sortClause = """
-            ORDER BY sticky DESC, priority DESC, ${sort} ${leOrder}
-        """
+        // If viewing only watched topics, filter on watched WITH Clause
+        if (watched) {
+            whereClauses.add(field(name("watched_topics", "forum_topic_id")).isNotNull())
+        }
 
-        select += (includeDeletedClause + sortClause)
+        // If the topic type filter is selected, filter on topic type
+        switch(filter) {
+            case FILTER_QUESTION:
+                whereClauses.add(FORUM_TOPIC.TOPIC_TYPE.eq(ForumTopicType.Question.ordinal()) & FORUM_TOPIC.IS_ANSWERED.eq(false))
+                break
+            case FILTER_ANSWERED:
+                whereClauses.add(FORUM_TOPIC.TOPIC_TYPE.eq(ForumTopicType.Question.ordinal()) & FORUM_TOPIC.IS_ANSWERED.eq(true))
+                break
+            case FILTER_ANNOUNCEMENT:
+                whereClauses.add(FORUM_TOPIC.TOPIC_TYPE.eq(ForumTopicType.Announcement.ordinal()))
+                break
+            case FILTER_DISCUSSION:
+                whereClauses.add(FORUM_TOPIC.TOPIC_TYPE.eq(ForumTopicType.Discussion.ordinal()))
+                break
+        }
 
-        def results = ForumTopic.executeQuery(select, [projectId: project.id], [max: max, offset: offset])
+        def validSorts = [
+                'topic': 'title',
+                'expedition': 'project_name',
+                'type': 'topic_type',
+                //'postedBy': 'creator_id',
+                'postedBy': 'creator_name',
+                'posted': 'date_created',
+                'lastReply': 'last_reply_date',
+                'views': 'views',
+                'replies': 'replies'
+        ].withDefault { 'last_reply_date' }
+        def sortColumn = validSorts[sort]
+        if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
 
-        def totalCount = ForumTopic.createCriteria().get {
-            projections {
-                countDistinct 'id'
+        // Main query
+        def topicQuery = create.with(withClauses)
+            .select(FORUM_TOPIC.ID,
+                FORUM_TOPIC.TITLE.as("title"),
+                FORUM_TOPIC.TOPIC_TYPE.as("topic_type"),
+                FORUM_TOPIC.CREATOR_ID.as("creator_id"),
+                concat(VP_USER.FIRST_NAME, inline(" "), VP_USER.LAST_NAME).as("creator_name"),
+                FORUM_TOPIC.DATE_CREATED.as("date_created"),
+                FORUM_TOPIC.LAST_REPLY_DATE.as("last_reply_date"),
+                FORUM_TOPIC.IS_ANSWERED.as("is_answered"),
+                FORUM_TOPIC.VIEWS.as("views"),
+                coalesce(field(name("topic_replies", "replies")), 0).as("replies"),
+                PROJECT.NAME.as("project_name"),
+                PROJECT.ID.as("project_id"),
+                FORUM_TOPIC.TASK_ID.as("task_id"),
+                when(field(name("watched_topics", "forum_topic_id")).isNull(), false)
+                .otherwise(true).as("is_watched"))
+            .from(FORUM_TOPIC)
+            .join(VP_USER).on(VP_USER.ID.eq(FORUM_TOPIC.CREATOR_ID))
+            .leftOuterJoin(table(name("topic_replies"))).on(field(name("topic_replies", "id")).eq(FORUM_TOPIC.ID))
+            .leftOuterJoin(PROJECT).on(PROJECT.ID.eq(FORUM_TOPIC.PROJECT_ID))
+            .leftOuterJoin(table(name("watched_topics"))).on(field(name("watched_topics", "forum_topic_id")).eq(FORUM_TOPIC.ID))
+            .where(whereClauses)
+            .orderBy(FORUM_TOPIC.LAST_REPLY_DATE.desc())
+
+        def forumQuery = select(topicQuery.fields())
+            .from(topicQuery)
+            .orderBy(topicQuery.field(sortColumn).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC))
+
+        def totalCount = create.fetchCount(forumQuery)
+
+        def result = [:]
+        result.topicCount = totalCount
+
+        forumQuery = forumQuery
+            .offset(offset)
+            .limit(max)
+
+        result.topicList = create.fetch(forumQuery).collect {row ->
+            def projectName = row.project_name
+            def projectId = row.project_id
+            if (!projectName && row.task_id) {
+                log.debug("Getting project name for task ID ${row.task_id}")
+                def task = Task.get(row.task_id as long)
+                log.debug("task: ${task}")
+                projectName = task.project.name
+                projectId = task.project.id
+                log.debug("project name: ${projectName} from project ${task.project}")
             }
-            and {
-                eq("project", project)
-                if (includeDeleted) {
-                    eq("deleted", true)
-                } else {
-                    or {
-                        isNull("deleted")
-                        eq("deleted", false)
-                    }
-                }
-            }
-        } as Integer
 
-        return [topics: results, totalCount: totalCount ]
+            [
+                id: row.id,
+                title: row.title,
+                topicType: ForumTopicType.getInstance(row.topic_type),
+                style: ForumTopicType.getInstance(row.topic_type).name().toLowerCase(),
+                creator: User.get(row.creator_id as long),
+                dateCreated: row.date_created,
+                lastReply: row.last_reply_date,
+                isAnswered: row.is_answered,
+                views: row.views,
+                replies: row.replies,
+                projectName: projectName,
+                projectId: projectId,
+                isWatched: row.is_watched
+            ]
+        }
+
+        result
     }
 
-    def getGeneralDiscussionTopics(boolean includeDeleted = false, Map params = null) {
-        def max = params?.max ?: 15
-        def offset = params?.offset ?: 0
-        def sort = params?.sort ?: "lastReplyDate"
-        if (sort == "creator") sort = "creator.displayName"
-        def leOrder = params?.order ?: "desc"
-
-        def deleteClause = ""
-        if (!includeDeleted) {
-            deleteClause = "WHERE (deleted IS NULL OR deleted = false) "
-        }
-
-        def topicQuery = """
-            SELECT topic
-            FROM SiteForumTopic topic
-            :deleteClause
-        """
-        topicQuery = topicQuery.replace(":deleteClause", deleteClause)
-
-        def countQuery = """
-            SELECT COUNT(DISTINCT topic.id) as topicCount
-            FROM SiteForumTopic topic
-            :deleteClause
-        """
-        countQuery = countQuery.replace(":deleteClause", deleteClause)
-
-        def sortClause = "ORDER BY sticky DESC, priority DESC, "
-        if (sort == 'replies') {
-            sortClause = sortClause + "size(topic.messages) " + leOrder
-        } else {
-            sortClause = sortClause + sort + " " + leOrder
-        }
-
-        def topics = ForumTopic.executeQuery(topicQuery + sortClause, [max: max, offset: offset]) as List<ForumTopic>
-        def totalCount = ForumTopic.executeQuery(countQuery)?.first()
-
-        return [topics: topics, totalCount: totalCount]
-    }
-
-    def getTaskTopicsForProject(Project projectInstance, Map params = null) {
-        def topics = [:]
-
-        def topicIdList = TaskForumTopic.createCriteria().list(max: params?.max ?: 10, offset: params?.offset ?: 0) {
-            projections {
-                distinct 'id'
-            }
-            task {
-                eq("project", projectInstance)
-            }
-        }
-
-        def totalCount = TaskForumTopic.createCriteria().get {
-            projections {
-                countDistinct 'id'
-            }
-            task {
-                eq("project", projectInstance)
-            }
-        } as Integer
-
-        topics.topics = TaskForumTopic.getAll(topicIdList)
-        topics.totalCount = totalCount
-        topics
-    }
-
+    /**
+     * Retrieves all messages for a given topic.
+     * @param topic the topic to retrieve messages for
+     * @param params pagination and sorting parameters
+     * @return a list of forum messages
+     */
     PagedResultList getTopicMessages(ForumTopic topic, Map params = null) {
 
         def c = ForumMessage.createCriteria()
@@ -162,7 +249,12 @@ class ForumService {
         return results as PagedResultList
     }
 
-    public ForumMessage getFirstMessageForTopic(ForumTopic topic) {
+    /**
+     * Retrieves the first message for a given topic.
+     * @param topic the topic to retrieve the first message for
+     * @return the first message for the topic
+     */
+    ForumMessage getFirstMessageForTopic(ForumTopic topic) {
         def c = ForumMessage.createCriteria()
         def result = c {
             eq('topic', topic)
@@ -171,7 +263,13 @@ class ForumService {
         return result ? result.first() : null
     }
 
-    public boolean isUserWatchingTopic(User user, ForumTopic topic) {
+    /**
+     * Checks if a user is watching a given topic.
+     * @param user the user to check
+     * @param topic the topic to check
+     * @return true if the user is watching the topic, false otherwise
+     */
+    boolean isUserWatchingTopic(User user, ForumTopic topic) {
         def userWatchList = UserForumWatchList.findByUser(user)
         if (userWatchList && userWatchList.topics) {
             def existing = userWatchList.topics.find {
@@ -182,7 +280,12 @@ class ForumService {
         return false
     }
 
-    public void watchTopic(User user, ForumTopic topic) {
+    /**
+     * Watches a given topic for a user.
+     * @param user the user to watch the topic for
+     * @param topic the topic to watch
+     */
+    void watchTopic(User user, ForumTopic topic) {
         if (user && topic) {
             def userWatchList = UserForumWatchList.findByUser(user)
             if (!userWatchList) {
@@ -195,14 +298,25 @@ class ForumService {
         }
     }
 
-    public void unwatchTopic(User user, ForumTopic topic) {
+    /**
+     * Unwatches a given topic for a user.
+     * @param user the user to unwatch the topic for
+     * @param topic the topic to unwatch
+     */
+    void unwatchTopic(User user, ForumTopic topic) {
         def userWatchList = UserForumWatchList.findByUser(user)
         if (userWatchList && userWatchList.topics.contains(topic)) {
             userWatchList.topics.remove(topic)
         }
     }
 
-    public void watchProject(User user, Project projectInstance, boolean watch) {
+    /**
+     * Watches a given project for a user.
+     * @param user the user to watch the project for
+     * @param projectInstance the project to watch
+     * @param watch true to watch, false to unwatch
+     */
+    void watchProject(User user, Project projectInstance, boolean watch) {
         def watchList = ProjectForumWatchList.findByProject(projectInstance)
         if (!watchList) {
             watchList = new ProjectForumWatchList(project: projectInstance)
@@ -222,7 +336,12 @@ class ForumService {
         watchList.save()
     }
 
-    public void scheduleTopicNotification(ForumTopic topic, ForumMessage lastMessage) {
+    /**
+     * Schedules a notification for a given topic and message.
+     * @param topic the topic to schedule the notification for
+     * @param lastMessage the last message in the topic
+     */
+    void scheduleTopicNotification(ForumTopic topic, ForumMessage lastMessage) {
 
         // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications
         // won't be generated if the forum is deactivated
@@ -242,7 +361,12 @@ class ForumService {
         }
     }
 
-    public void scheduleNewTopicNotification(ForumTopic topic, ForumMessage firstMessage) {
+    /**
+     * Schedules a notification for a new topic and message.
+     * @param topic the topic to schedule the notification for
+     * @param firstMessage the first message in the topic
+     */
+    void scheduleNewTopicNotification(ForumTopic topic, ForumMessage firstMessage) {
         // Only schedule notifications if the forum is enabled. This should be unnecessary as notifications
         // won't be generated if the forum is deactivated
         if (FrontPage.instance().enableForum) {
@@ -261,84 +385,12 @@ class ForumService {
         }
     }
 
-    def searchForums(String query, boolean searchTitlesOnly, Map params = null) {
-
-        def q = "%" + query.toLowerCase() + "%"
-
-        def searchQuery = """
-            SELECT message
-            FROM ForumMessage message
-            WHERE lower(text) LIKE :q
-            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
-            ORDER BY date asc
-        """
-
-        def results = ForumMessage.executeQuery(searchQuery, [q: q], [max: params?.max, offset: params?.offset])
-
-        def searchCountQuery = """
-            SELECT count(DISTINCT message.id) as messageCount
-            FROM ForumMessage message
-            WHERE lower(text) LIKE :q
-            OR (lower(topic.title) LIKE :q AND replyTo IS NULL)
-        """
-
-        def totalCount = ForumMessage.executeQuery(searchCountQuery, [q: q])?.first()
-
-        return [results: results, totalCount: totalCount]
-    }
-
-    PagedResultList getMessagesForUser(User user, Map params = null) {
-        def topics = []
-        if (params.projectId) {
-            topics = ProjectForumTopic.where {
-                project.id == params.projectId
-            }.list()*.id
-        }
-        if (params.projectId && !topics) return null
-        def c = ForumMessage.createCriteria()
-        def results = c.list(max:params?.max, offset: params?.offset) {
-            if (topics) {
-                topic {
-                    'in'('id', topics)
-                }
-            }
-            eq("user", user)
-            order('date', 'desc')
-            order("topic")
-
-        }
-
-        return results as PagedResultList
-    }
-
-    def getFeaturedTopics(Map params = null) {
-
-        int max = params?.max as Integer ?: 15
-        int offset = params?.offset as Integer ?: 0
-        String sort = params?.sort ?: 'lastReplyDate'
-        if (sort == 'creator') sort = 'creator.displayName'
-        String leOrder = params?.order ?: 'desc'
-
-        if (sort == 'replies') {
-            def hql = """
-                SELECT topic
-                FROM ForumTopic topic
-                ORDER BY featured asc, size(topic.messages) 
-            """
-            def topics = ForumTopic.executeQuery(hql + leOrder, [max: max, offset: offset])
-            return [topics: topics, totalCount: topics.size()]
-        } else {
-            def hql = """
-                SELECT topic
-                FROM ForumTopic topic
-                WHERE lastReplyDate IS NOT NULL
-                ORDER BY featured asc,  
-            """
-            def topics = ForumTopic.executeQuery(hql + sort + ' ' + leOrder, [max: max, offset: offset])
-            return [topics: topics, totalCount: topics.size()]
-        }
-    }
-
+    /**
+     * Checks if a message is editable by the user.
+     * @param message the message to check
+     * @param user the user to check
+     * @return true if the message is editable, false otherwise
+     */
     def isMessageEditable(ForumMessage message, User user) {
 
         if (!message || !user) {
@@ -373,8 +425,13 @@ class ForumService {
         return result
     }
 
+    /**
+     * Returns the time left for a user to edit a message.
+     * @param message the message to check
+     * @param user the user to check
+     * @return the time left to edit the message, or null if not applicable
+     */
     def messageEditTimeLeft(ForumMessage message, User user) {
-
         if (!message || !user) {
             return null
         }
@@ -391,9 +448,12 @@ class ForumService {
             }
         }
         return result
-
     }
 
+    /**
+     * Deletes a forum topic and all associated messages.
+     * @param topic the topic to delete
+     */
     def deleteTopic(ForumTopic topic) {
         if (!topic) {
             return false
@@ -426,6 +486,10 @@ class ForumService {
         topic.delete(flush: true, failOnError: true)
     }
 
+    /**
+     * Deletes a project forum watchlist for a given project.
+     * @param project the project to delete the watchlist for
+     */
     def deleteProjectForumWatchlist(Project project) {
         def pfwl = ProjectForumWatchList.findByProject(project)
 
@@ -442,6 +506,10 @@ class ForumService {
         }
     }
 
+    /**
+     * Deletes a forum message and reassigns any replies to the original post.
+     * @param message the message to delete
+     */
     def deleteMessage(ForumMessage message) {
         // Clear any pending notification messages that may reference this message
         def notifications = ForumTopicNotificationMessage.findAllByMessage(message)
@@ -478,22 +546,12 @@ class ForumService {
         replies
     }
 
-    def countTaskTopics(Project projectInstance) {
-        def tasks = Task.findAllByProject(projectInstance)
-        def c = TaskForumTopic.createCriteria()
-
-        if (tasks) {
-            def results = c.get {
-                projections {
-                    count("id")
-                }
-                inList('task', tasks)
-            }
-            return results
-        }
-        return null
-    }
-
+    /**
+     * Returns the most recent posts for a given user.
+     * @param user the user to query on
+     * @param count the number of posts to return
+     * @return a list of the most recent posts for the user
+     */
     def getRecentPostsForUser(User user, int count = 5) {
 
         def c = ForumMessage.createCriteria()
@@ -509,34 +567,61 @@ class ForumService {
 
     }
 
+    /**
+     * Creates a new forum topic for a task.
+     * @param task the task to create the topic for
+     * @param parameters the parameters of the topic.
+     * @return the newly created forum topic
+     */
     def createForumTopic(Task task, Map parameters) {
         return createForumTopicOfAnyType(task, null, parameters)
     }
 
+    /**
+     * Creates a new forum topic for a project.
+     * @param project the project to create the topic for
+     * @param parameters the parameters of the topic.
+     * @return the newly created forum topic
+     */
     def createForumTopic(Project project, Map parameters) {
         return createForumTopicOfAnyType(null, project, parameters)
     }
 
+    /**
+     * Creates a new forum topic for a site.
+     * @param parameters the parameters of the topic.
+     * @return the newly created forum topic
+     */
     def createForumTopic(Map parameters) {
         return createForumTopicOfAnyType(null, null, parameters)
     }
 
+    /**
+     * Creates a new forum topic of any type (task, project, or site).
+     * @param task the task to create the topic for
+     * @param project the project to create the topic for
+     * @param parameters the parameters of the topic.
+     * @return the newly created forum topic
+     */
     private def createForumTopicOfAnyType(Task task, Project project, Map parameters) {
         ForumTopic topic = null
         if (task && !project) {
             // Task forum topic
             topic = new TaskForumTopic(task: task, title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         } else if (!task && project) {
             // Project forum topic
             topic = new ProjectForumTopic(project: project, title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         } else {
             // Site forum topic
             topic = new SiteForumTopic(title: parameters.title, creator: userService.currentUser,
                     dateCreated: new Date(), priority: parameters.priority as ForumTopicPriority,
+                    topicType: parameters.topicType as ForumTopicType,
                     locked: parameters.locked, sticky: parameters.sticky, featured: parameters.featured)
         }
 
@@ -561,6 +646,13 @@ class ForumService {
         if (!topic) return
         ForumMessage message = new ForumMessage(topic: topic, user: parameters.user as User,
                 replyTo: parameters.replyTo as ForumMessage, date: new Date(), text: parameters.text)
+
+        if (parameters.isAnswered) {
+            message.isAnswer = true
+            topic.isAnswered = true
+            topic.save(failOnError: true)
+        }
+
         message.save(flush:true, failOnError: true)
 
         parameters.watchTopic == 'on' ? watchTopic(parameters.user as User, topic) : unwatchTopic(parameters.user as User, topic)

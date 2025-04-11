@@ -25,6 +25,7 @@ class VolunteerTagLib {
     def adminService
     def templateService
     def projectService
+    def tutorialService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -618,7 +619,7 @@ class VolunteerTagLib {
                 mb.mkp.yieldUnescaped(bodyContent)
             } else {
                 mb.div(class:"row") {
-                    div(class:"col-sm-10") {
+                    div(class:"col-sm-12") {
                         if (heading) {
                             mb.h1(class:'bvp-heading') {
                                 mkp.yield(attrs.title)
@@ -681,7 +682,10 @@ class VolunteerTagLib {
 
     def taskThumbnail = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        def task = attrs.task as Task
+        def task
+        if (attrs.taskId) task = Task.get(attrs.taskId as long)
+        else if (attrs.task) task = attrs.task as Task
+
         def fixedHeight = attrs.fixedHeight
         def withHidden = attrs.withHidden
 
@@ -1313,4 +1317,20 @@ function notify() {
         out << output
     }
 
+    /**
+     * Builds a link to a given tutorial.
+     * @attr tutorial the tutorial to link to
+     * @hideLinkIcon flag to determine when to show an external link icon.
+     */
+    def tutorialLink = { attrs, body ->
+        Tutorial tutorial = attrs.tutorial as Tutorial
+        def hideLinkIcon = Boolean.parseBoolean(attrs.hideLinkIcon as String)
+        def mb = new MarkupBuilder(out)
+        mb.a([href: tutorialService.getTutorialUrl(tutorial), target: "_blank"]) {
+            if (!hideLinkIcon) {
+                mkp.yieldUnescaped("&nbsp;<span class='fa fa-external-link'></span>&nbsp;")
+            }
+            mkp.yieldUnescaped(body())
+        }
+    }
 }

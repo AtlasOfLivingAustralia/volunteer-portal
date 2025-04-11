@@ -18,7 +18,7 @@ class User implements AsyncEntity<User> {
 
     static final String HASH_SUFFIX = "cuxnzuqkqasqkdatlanipquugmabvofh"
 
-    static hasMany = [labels: Label, userRoles: UserRole, achievementAwards: AchievementAward, reports: ReportRequest]
+    static hasMany = [labels: Label, userRoles: UserRole, achievementAwards: AchievementAward, reports: ReportRequest, forumTopics: ForumTopic]
 
     static mapping = {
         table 'vp_user'

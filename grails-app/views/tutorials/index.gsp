@@ -1,40 +1,49 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE html>
+
 <html>
 <head>
-    <title><cl:pageTitle title="Tutorials" /></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
-</head>
+    <g:set var="entityName" value="${message(code: 'user.label')}"/>
+    <title><cl:pageTitle title="Tutorials"/></title>
 
-<body class="tutorial">
+    <asset:stylesheet src="notebook-reset.css"/>
+    <asset:stylesheet src="tutorials-2.scss"/>
+</head>
+<body>
 
 <cl:headerContent title="${message(code: 'default.tutorials.label', default: 'Tutorials')}" selectedNavItem="tutorials">
-    <cl:ifAdmin>
-        </div>
-        <div class="col-sm-2">
-            <a class="btn btn-primary" href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Manage</a>
-    </cl:ifAdmin>
+
 </cl:headerContent>
 
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <g:each in="${tutorials.keySet().sort()}" var="group">
-                        <g:if test="${tutorials[group]}">
-                            <h3>${group == '-' ? 'Generic Tutorials' : group}</h3>
-                            <div class="list-group">
-                                <g:each in="${tutorials[group]?.sort({ it.title })}" var="tute">
-                                    <a class="list-group-item" href="${tute.url}">${tute.title}</a>
-                                </g:each>
-                            </div>
-                        </g:if>
-                    </g:each>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<main>
+    <section class="tutorial-groups-section">
+        <ul class="tutorial-library-list">
+            <li class="tutorial-library-list-item tutorial-library-list-item--bg-digivol-orange">
+                <a href="${createLink(controller: 'tutorials', action: 'groupList', params: [admin: true])}" class="tutorial-library-list-item__inner">
+                        <asset:image src="digivol-logo-email.png" class="tutorial-library-list-item__logo" alt="DigiVol Administration Tutorials"/>
+                    <div>
+                        <h2 class="tutorial-library-list-item__heading">DigiVol Administration</h2>
+                        <p class="tutorial-library-list-item__tutorial-count">${tutorialAdminCount} tutorials</p>
+                    </div>
+                </a>
+            </li>
+            <g:each in="${tutorialGroups}" var="institution">
+            <li class="tutorial-library-list-item">
+                <a href="${createLink(controller: 'tutorials', action: 'groupList', params: [institution: institution.id])}" class="tutorial-library-list-item__inner">
+                    <img class="tutorial-library-list-item__logo" src="<cl:institutionLogoUrl id="${institution.id}"/>" alt="${institution.name}"/>
+                    <div>
+                        <h2 class="tutorial-library-list-item__heading">${institution.name}</h2>
+                        <p class="tutorial-library-list-item__tutorial-count">
+                            ${institution.tutorials.size()} tutorial<g:if test="${institution.tutorials.size() > 1}">s</g:if>
+                        </p>
+                    </div>
+                </a>
+            </li>
+            </g:each>
+        </ul>
+    </section>
+</main>
+
 </body>
 </html>

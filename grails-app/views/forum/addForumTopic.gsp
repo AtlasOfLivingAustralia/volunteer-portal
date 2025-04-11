@@ -1,116 +1,123 @@
+<%@ page import="au.org.ala.volunteer.ForumTopicType" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><g:message code="default.application.name"/> - Atlas of Living Australia</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
-    <asset:stylesheet src="forum.css"/>
+
+    <title><cl:pageTitle title="Add Forum Message"/></title>
+
+    <asset:stylesheet src="notebook-reset.css"/>
+    <asset:stylesheet src="forum-2.scss"/>
     <asset:stylesheet src="image-viewer"/>
-    <g:if test="${taskInstance}">
-    <asset:script type="text/javascript">
-        $(document).ready(function () {
-            $("#btnViewTask").click(function(e) {
-                e.preventDefault();
-                window.location = "${createLink(controller: 'task', action: 'show', id: taskInstance.id)}";
-            });
-        });
-    </asset:script>
-    </g:if>
 
 </head>
 
-<body class="forum">
+<body>
+<g:if test="${taskInstance}">
+    <g:set var="topicTitle" value="${taskInstance?.externalIdentifier ?: (catalogNumber ?: taskInstance.id)}"/>
+</g:if>
+<g:else>
+    <g:set var="topicTitle" value="${message(code: 'forum.newpost.label', default: 'New forum message')}"/>
+</g:else>
 
-<cl:headerContent title="${message(code: 'forum.newprojecttopic.label', default: 'New Topic')}" selectedNavItem="forum">
-    <vpf:forumNavItems projectInstance="${projectInstance}" taskInstance="${taskInstance}"
+<cl:headerContent title="New forum message" selectedNavItem="forum" hideTitle="${true}">
+%{-- Breadcrumps and title --}%
+    <vpf:forumNavItems title="${topicTitle}" projectInstance="${projectInstance}" taskInstance="${taskInstance}"
                        lastLabel="true"/>
 </cl:headerContent>
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <g:form controller="forum" action="insertForumTopic" class="form-horizontal">
-                        <g:hiddenField name="taskId" value="${taskInstance?.id}"/>
-                        <g:hiddenField name="projectId" value="${projectInstance?.id}"/>
 
-                        <g:if test="${taskInstance}">
-                            <g:set var="topicTitle" value="${taskInstance.externalIdentifier ?: (catalogNumber ?: taskInstance.id)}"/>
-                            <g:hiddenField name="title" value="${topicTitle}"/>
-                            <h1>New forum topic for task ${topicTitle}</h1>
-                            <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
-                            <div class="form-group">
-                                <label for="text" class="col-md-3 control-label">Message:</label>
-                                <div class="col-md-6">
-                                    <g:textArea name="text" rows="6" class="form-control" value="${params.text}"/>
-                                </div>
-                            </div>
-                        </g:if>
-                        <g:else>
-                            <div class="form-group">
-                                <label for="title" class="col-md-3 control-label"><g:message code="forum.newProjectTopicTitle.label" default="New topic title"/></label>
-                                <div class="col-md-4">
-                                    <g:textField id="title" name="title" class="form-control" value="${params.title}"/>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="text" class="col-md-3 control-label"><g:message code="forum.newProjectTopicMessage.label" default="New topic message"/></label>
-                                <div class="col-md-6">
-                                    <g:textArea name="text" rows="6" class="form-control" value="${params.text}"/>
-                                </div>
-                            </div>
-                        </g:else>
+<main>
+    <section class="topic-view-section">
 
-                        <br/>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
-                                <label for="watchTopic">
-                                    <g:checkBox name="watchTopic" checked="checked"/>
-                                    Watch this topic
-                                </label>
-                            </div>
-                        </div>
+        <g:if test="${taskInstance}">
+            <g:render template="taskSummary" model="${[taskInstance: taskInstance]}"/>
+        </g:if>
 
-                        <vpf:ifModerator>
-                            <h3><g:message code="forum.moderatorOptions.label" default="Moderator Options:"/></h3>
+        <ol>
+            <g:form controller="forum" action="insertForumTopic" class="form-horizontal forum-post__form">
+                <g:hiddenField name="taskId" value="${taskInstance?.id}"/>
+                <g:hiddenField name="projectId" value="${projectInstance?.id}"/>
+                <g:hiddenField name="topicType" id="form-data-topictype" value="${ForumTopicType.Question.ordinal()}" />
+                <g:hiddenField name="watched" id="form-data-watched" value="false"/>
 
-                            <div class="form-group">
-                                <label for="priority" class="col-md-3 control-label"><g:message code="forum.priority.label" default="Priority"/></label>
-                                <div class="col-md-4">
-                                    <g:select class="form-control" from="${au.org.ala.volunteer.ForumTopicPriority.values()}" name="priority"/>
+                <g:if test="${taskInstance}">
+                    <g:hiddenField name="title" value="${topicTitle}"/>
+                </g:if>
+                <g:else>
+                    <li class="forum-post__list-item hr-spacer">
+                        <article>
+                            <div class="forum-post__header forum-post__header-title">
+                                <div class="filter-nav__label">
+                                    <label for="title" class="forum-post__title_label"><g:message code="forum.newProjectTopicTitle.label" default="New topic title"/></label>
                                 </div>
+                                <g:textField id="title" name="title" class="form-control" value="${params.title}"/>
                             </div>
+                        </article>
+                    </li>
+                </g:else>
 
-                            <div class="form-group">
-                                <div class="col-md-offset-3 col-md-9">
-                                    <label for="sticky">
-                                        <g:checkBox name="sticky" checked="${params.sticky}"/>
-                                        <g:message code="forum.sticky.label" default="Sticky"/>
-                                    </label>
-                                </div>
-                                <div class="col-md-offset-3 col-md-9">
-                                    <label for="locked">
-                                        <g:checkBox name="locked" checked="${params.locked}"/>
-                                        <g:message code="forum.locked.label" default="Locked"/>
-                                    </label>
-                                </div>
-                                <div class="col-md-offset-3 col-md-9">
-                                    <label for="featured">
-                                        <g:checkBox name="featured" checked="${params.featured}"/>
-                                        <g:message code="forum.featured.label" default="Featured topic"/> (<span>will be displayed on the Forum entry page if ticked</span>)
-                                    </label>
-                                </div>
-                            </div>
-                        </vpf:ifModerator>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-primary" type="submit">Save</button>
-                            </div>
-                        </div>
-                    </g:form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <vpf:topicReplyBox newPost="true" user="${userInstance}" />
+            </g:form>
+
+%{--            <g:if test="${params.messageText}">--}%
+%{--                <vpf:messagePreview user="${userInstance}" isEdit="true" messageText="${params.messageText}" />--}%
+%{--            </g:if>--}%
+        </ol>
+    </section>
+</main>
+
+<asset:script type="text/javascript">
+    $(document).ready(function() {
+        $('.toggleWatch').click(function() {
+            let iconSpan = $(this).find('span');
+            let watched = $(this).attr("data-watched") === "true";
+            console.log("Watched: " + watched);
+
+            // Toggle watched flag
+            watched = !watched;
+            console.log("Toggle watched: " + watched);
+            $('#form-data-watched').val(watched);
+            $(this).attr('data-watched', watched);
+
+            if (watched) {
+                $(iconSpan).removeClass('fa-star-o').removeClass('forum-post-not-watched')
+                    .addClass('fa-star')
+                    .attr('title', "${message(code: 'forumTopic.watched.stopwatching', default: 'Click to unwatch')}");
+            } else {
+                $(iconSpan).removeClass('fa-star')
+                    .addClass('fa-star-o').addClass('forum-post-not-watched')
+                    .attr('title', "${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}");
+            }
+        });
+
+        $('.filter-topic-link').click(function() {
+            const selectedPill = $(this).find('span');
+            const parentDiv = $(this).closest('.forum-post-buttons--new-post-type');
+            const oldSelectedPill = $(parentDiv).find('.pill--bg-selected');
+
+            const oldTypeId = $(oldSelectedPill).data('topic-type-id');
+            const oldType = $(oldSelectedPill).data('topic-type');
+            const newTypeId = $(selectedPill).data('topic-type-id');
+            const newType = $(selectedPill).data('topic-type');
+
+            if (oldTypeId !== newTypeId) {
+                $('#form-data-topictype').val(newTypeId);
+
+                $(oldSelectedPill)
+                    .removeClass('pill--bg-selected pill--bg-' + oldType)
+                    //.removeClass('pill--bg-' + oldType)
+                    .addClass('pill--bg-' + oldType + '-unselected');
+
+                $(selectedPill)
+                    .addClass('pill--bg-selected')
+                    .removeClass('pill--bg-' + newType + '-unselected');
+            }
+        });
+
+    });
+</asset:script>
+
 </body>
 </html>

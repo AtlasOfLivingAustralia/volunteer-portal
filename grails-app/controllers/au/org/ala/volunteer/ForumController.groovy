@@ -12,48 +12,49 @@ class ForumController {
     def fieldService
     def markdownService
 
+    public static final String SESSION_KEY_PROJECT_ID = "forum_project_id"
+
+    /**
+     * Displays the forum index page.
+     * @return a map with the topic list, topic count, project, and project filter list.
+     */
     def index() {
-    }
+        def currentUser = userService.currentUser
+        def filter = params.filter as String
+        def searchQuery = params.q as String
+        def watched = params.boolean("watched") == true
 
-    def ajaxRecentTopicsList() {
-        def results = forumService.getFeaturedTopics(params)
-        [featuredTopics: results.topics, totalCount: results.totalCount]
-    }
-
-    def projectForum() {
-
-        def projectId = params.int("projectId")
-
-        if (!params.max) {
-            params.max = 10
+        if (!currentUser) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
+            render(view: '/notPermitted')
+            return
         }
 
-        if (projectId) {
-            def projectInstance = Project.get(projectId)
-            if (projectInstance) {
-                def cleanedParams = params - [max: params.max, offset: params.offset]
-                def topics = forumService.getProjectForumTopics(projectInstance, false, params.int('selectedTab') == 1 ? cleanedParams : params)
-
-                def userInstance = userService.currentUser
-                def isWatching = false
-
-                if (userInstance) {
-                    def projectWatchList = ProjectForumWatchList.findByProject(projectInstance)
-                    if (projectWatchList) {
-                        isWatching = projectWatchList.users.any { it != null && it.id == userInstance.id }
-                    }
-                }
-
-                return [projectInstance: projectInstance, topics: topics, isWatching: isWatching]
-            }
+        def project = null
+        if (params.projectId) {
+            project = Project.get(params.long('projectId'))
+            session[SESSION_KEY_PROJECT_ID] = project.id
+        } else {
+            session.removeAttribute(SESSION_KEY_PROJECT_ID)
         }
 
-        flash.message = "Project with id ${params.projectId} could not be found!"
-        redirect(controller: 'forum', action:'index')
+        def forumTopics = forumService.getForumTopics(project, currentUser, searchQuery, filter, watched,
+                params.int('offset', 0),
+                params.int('max', 30),
+                params.sort as String,
+                params.order as String)
+
+        def projectFilterList = projectService.getProjectsWithTopicCounts()
+
+        [topicList: forumTopics.topicList, topicCount: forumTopics.topicCount, project: project, projectFilterList: projectFilterList]
     }
 
+    /**
+     * Prepares the view for adding a new forum topic.
+     * @return a map with the project instance, task instance, catalog number, and user instance.
+     */
     def addForumTopic() {
-
         // A new forum topic can belong to either a project, a task (and therefore by association, also a project),
         // or neither, in which case it is a general discussion topic.
         // The same view collects the new topic data regardless, and depending on if a task or project is submitted,
@@ -69,9 +70,13 @@ class ForumController {
             catalogNumber = fieldService.getFieldForTask(taskInstance, "catalogNumber")?.value
         }
 
-        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber]
+        return [projectInstance: projectInstance, taskInstance: taskInstance, catalogNumber: catalogNumber, userInstance: userService.currentUser]
     }
 
+    /**
+     * Prepares the view for editing a topic.
+     * @return a map with the topic, task instance, and project instance.
+     */
     def editTopic() {
         def topic = ForumTopic.get(params.int("topicId"))
 
@@ -103,8 +108,11 @@ class ForumController {
         [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
     }
 
-    public redirectTopicParent() {
-
+    /**
+     * Redirects to the parent of the topic.
+     * @return redirect to the parent topic.
+     */
+    def redirectTopicParent() {
         def topic = ForumTopic.get(params.int("id"))
 
         if (topic) {
@@ -115,26 +123,19 @@ class ForumController {
                 def taskInstance = (topic as TaskForumTopic).task
                 redirect(controller: 'forum', action: 'projectForum', params: [projectId: taskInstance.project.id])
             } else {
-                redirect(controller: 'forum', action: 'index', params:[selectedTab: 1])
+                redirect(controller: 'forum', action: 'index')
             }
         } else {
             redirect(controller: 'forum', action: 'index')
         }
     }
 
-    def editProjectTopic() {
-        def topic = ProjectForumTopic.get(params.int("topicId"))
-        if (!topic || !userService.isForumModerator(topic.project)) {
-            flash.message = "You do not have sufficient privileges to edit this topic"
-            redirect controller:'forum', action: 'projectForum', params:[projectId: topic?.project?.id]
-            return
-        }
-        [topic: topic, user: userService.currentUser]
-    }
-
+    /**
+     * Inserts a new forum topic.
+     */
     def insertForumTopic() {
-
-        def parameters = [title: params.title, text: params.text]
+        log.debug("Forum params: ${params}")
+        def parameters = [title: params.title, text: params.messageText]
         def messages = []
 
         if (!parameters.title) {
@@ -146,7 +147,10 @@ class ForumController {
         }
 
         if (messages) {
+            log.debug("Error messages: ${messages}")
             flash.message = formatMessages(messages)
+            params.remove('action')
+            params.remove('_action_insertForumTopic')
             redirect(action: 'addForumTopic', params: params)
             return
         }
@@ -154,57 +158,39 @@ class ForumController {
         parameters.locked = false
         parameters.sticky = false
         parameters.priority = ForumTopicPriority.Normal
+        parameters.topicType = ForumTopicType.getInstance(params.int('topicType'))
         parameters.featured = false
+        log.debug("topicType: ${parameters.topicType}")
 
         ForumTopic topic = null
         if (params.taskId) {
             def task = Task.get(params.int("taskId"))
-            if (task) {
-                if (userService.isForumModerator(task.project)) {
-                    parameters.locked = params.locked == 'on'
-                    parameters.sticky = params.sticky == 'on'
-                    if (params.priotity) {
-                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                    }
-                    parameters.featured = params.featured == 'on'
-                }
-            }
             topic = forumService.createForumTopic(task, parameters)
         } else if (params.projectId) {
             def project = Project.get(params.int("projectId"))
-            if (project) {
-                if (userService.isForumModerator(project)) {
-                    parameters.locked = params.locked == 'on'
-                    parameters.sticky = params.sticky == 'on'
-                    if (params.priotity) {
-                        parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                    }
-                    parameters.featured = params.featured == 'on'
-                }
-            }
             topic = forumService. createForumTopic(project, parameters)
         } else {
             // new general discussion topic
-            if (userService.isForumModerator(null)) {
-                parameters.locked = params.locked == 'on'
-                parameters.sticky = params.sticky == 'on'
-                if (params.priotity) {
-                    parameters.priority = Enum.valueOf(ForumTopicPriority.class, params.priority as String)
-                }
-                parameters.featured = params.featured == 'on'
-            }
             topic = forumService.createForumTopic(parameters)
         }
 
-        if (params.watchTopic == 'on') {
+        if (params.watched == 'true' || params.watchTopic == 'on') {
             forumService.watchTopic(topic.creator, topic)
         }
 
-        redirect(action: 'redirectTopicParent', id: topic.id)
+        if (session[SESSION_KEY_PROJECT_ID]) {
+            redirect(controller: 'forum', action: 'index', params: [projectId: session[SESSION_KEY_PROJECT_ID]])
+        } else {
+            redirect(controller: 'forum', action: 'index')
+        }
     }
 
+    /**
+     * Checks if the user is a moderator of the topic.
+     * @param topic the topic to check.
+     * @return true if the user is a moderator, false otherwise.
+     */
     private boolean checkModerator(ForumTopic topic = null) {
-
         def project = null
         if (topic?.instanceOf(ProjectForumTopic)) {
             project = (topic as ProjectForumTopic)?.project
@@ -221,6 +207,9 @@ class ForumController {
         return true
     }
 
+    /**
+     * Updates a topic.
+     */
     @Transactional
     def updateTopic() {
 
@@ -245,6 +234,12 @@ class ForumController {
         redirect(action: 'redirectTopicParent', id: topic?.id)
     }
 
+    /**
+     * Formats a list of messages into a string.
+     * @param messages the list of messages to format.
+     * @param title the title to use for the message.
+     * @return a formatted string with the messages.
+     */
     private String formatMessages(List messages, String title = "The following errors have occurred:") {
         def sb = new StringBuilder("${title}<ul>")
         messages.each {
@@ -254,8 +249,11 @@ class ForumController {
         return sb.toString()
     }
 
+    /**
+     * Prepares the view for a forum topic.
+     */
     def viewForumTopic() {
-        def topic = ForumTopic.get(params.id as long)
+        def topic = ForumTopic.get((params.id ?: params.topicId) as long)
         if (topic) {
             forumService.incrementTopicView(topic)
         } else {
@@ -265,70 +263,44 @@ class ForumController {
             return
         }
 
-        Project projectInstance = null
-        Task taskInstance = null
-        if (topic.instanceOf(ProjectForumTopic)) {
-            projectInstance = (topic as ProjectForumTopic).project
-        } else if (topic.instanceOf(TaskForumTopic)) {
-            taskInstance = (topic as TaskForumTopic).task
-        }
+        def topicValues = getTopicParameters(topic)
 
-        def userInstance = userService.currentUser
-        def isWatching = forumService.isUserWatchingTopic(userInstance, topic)
-
-        [topic: topic, userInstance: userInstance, projectInstance: projectInstance, taskInstance: taskInstance, isWatched: isWatching]
+        [topic: topic, userInstance: topicValues.user, projectInstance: topicValues.projectInstance,
+         taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatching, replyTo: topicValues.replyTo]
     }
 
-    def postMessage() {
-        def topic = ForumTopic.get(params.int("topicId"))
-        if (topic) {
-            ForumMessage replyTo = null
-            if (params.replyTo) {
-               replyTo = ForumMessage.get(params.int("replyTo"))
-            } else {
-               replyTo = forumService.getFirstMessageForTopic(topic)
-            }
-
-            Project projectInstance = null
-            Task taskInstance = null
-            if (topic.instanceOf(ProjectForumTopic)) {
-                projectInstance = (topic as ProjectForumTopic).project
-            } else if (topic.instanceOf(TaskForumTopic)) {
-                taskInstance = (topic as TaskForumTopic).task
-            }
-
-            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-
-            [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched, taskInstance: taskInstance, projectInstance: projectInstance]
-        } else {
-            redirect(controller:'forum', action: 'index')
-        }
-
-    }
-
+    /**
+     * Prepares the edit message view.
+     */
     def editMessage() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
 
-        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, messageText: params.messageText ?: message.text]
+        def topicValues = getTopicParameters(message.topic)
+
+        [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, taskInstance: topicValues.taskInstance,
+            projectInstance: topicValues.projectInstance, messageText: params.messageText ?: message.text]
     }
 
+    /**
+     * Previews a message.
+     */
     def previewMessage() {
-        def topic = ForumTopic.get(params.topicId)
+        def topic = ForumTopic.get(params.long("topicId"))
         if (topic) {
-            ForumMessage replyTo = null
-            if (params.replyTo) {
-                replyTo = ForumMessage.get(params.int("replyTo"))
-            } else {
-                replyTo = forumService.getFirstMessageForTopic(topic)
-            }
-            def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
-            render view:'postMessage',
-                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser, isWatched: isWatched],
+            def topicValues = getTopicParameters(topic)
+
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance,
+                            isWatching: topicValues.isWatched],
                     params: [messageText: markdownService.sanitizeMarkdown(params.messageText)]
         }
     }
 
+    /**
+     * Previews a message edit.
+     */
     def previewMessageEdit() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
@@ -338,6 +310,9 @@ class ForumController {
                                            messageText: markdownService.sanitizeMarkdown(params.messageText)]
     }
 
+    /**
+     * Updates a topic message.
+     */
     @Transactional
     def updateTopicMessage() {
 
@@ -368,7 +343,6 @@ class ForumController {
         }
 
         if (!errors) {
-            //message.save(flush: true, failOnError: true)
             message.text = text
             message.save(flush: true, failOnError: true)
             flash.message = "Message was successfully updated."
@@ -381,9 +355,11 @@ class ForumController {
                                            userInstance: userService.currentUser,
                                            isWatched: (params.watchTopic == 'on'),
                                            messageText: params.messageText]
-        //redirect(action:'viewForumTopic', id: message?.topic?.id)
     }
 
+    /**
+     * Deletes a topic message.
+     */
     def deleteTopicMessage() {
         def message = ForumMessage.get(params.int("messageId"))
         def topicId = message?.topic?.id
@@ -404,47 +380,124 @@ class ForumController {
         }
     }
 
-    def saveNewTopicMessage() {
+    /**
+     * Saves a new topic message as Answered
+     */
+    def saveNewTopicMessageAnswered() {
         def topic = ForumTopic.get(params.topicId as long)
-//        def user = userService.currentUser
-        def msgParams = [:]
-        //ForumMessage replyTo = null
-        msgParams.user = userService.currentUser
-        msgParams.watchTopic = params.watchTopic
 
-        if (params.replyTo) {
-            msgParams.replyTo = ForumMessage.get(params.int("replyTo"))
-            if (!msgParams.replyTo) msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
+        if (!topic) {
+            flash.message = "No topic found. No access"
+            redirect (controller: 'forum', action: 'index')
+            return
         }
-//
-//        if (msgParams.replyTo == null) {
-//            msgParams.replyTo = forumService.getFirstMessageForTopic(topic)
-//        }
 
-        def errors = []
-        if (topic && params.messageText && msgParams.user) {
+        params.isAnswered = true
 
-            def text = params.messageText as String
-            def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
-            msgParams.text = markdownService.sanitizeMarkdown(text)
-
-            if (text.length() > maxSize) {
-                errors << "The message text is too long. It needs to be less than ${maxSize} characters"
-            }
-
-            if (!errors) {
-                forumService.addForumMessage(topic, msgParams)
-                redirect(action: 'viewForumTopic', id: topic?.id)
-                return
-            }
+        def topicValues = saveTopicMessage(topic)
+        if (topicValues.errors?.size() > 0) {
+            flash.message = formatMessages(errors)
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
+                    params: [messageText: params.messageText]
         } else {
-            errors << "Message text must not be empty"
+            redirect(action: 'viewForumTopic', id: topic?.id)
         }
-
-        flash.message = formatMessages(errors)
-        render view:'postMessage', model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser], params: [messageText: params.messageText]
     }
 
+    /**
+     * Saves a new topic message
+     */
+    def saveNewTopicMessage() {
+        def topic = ForumTopic.get(params.topicId as long)
+
+        if (!topic) {
+            flash.message = "No topic found. No access"
+            redirect (controller: 'forum', action: 'index')
+            return
+        }
+
+        def topicValues = saveTopicMessage(topic)
+
+        if (topicValues.errors?.size() > 0) {
+            flash.message = formatMessages(errors)
+            render view:'viewForumTopic',
+                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                            projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
+                    params: [messageText: params.messageText]
+        } else {
+            redirect(action: 'viewForumTopic', id: topic?.id)
+        }
+    }
+
+    /**
+     * Saves a topic message.
+     * @param topic the topic to save to.
+     */
+    private def saveTopicMessage(ForumTopic topic) {
+        def topicValues = getTopicParameters(topic) as Map
+        def msgParams = [:]
+        msgParams.user = topicValues.user
+        msgParams.watchTopic = params.watchTopic
+        msgParams.replyTo = topicValues.replyTo
+
+        if ((params.isAnswered && Boolean.valueOf(params.isAnswered as String)) || topicValues.isAnswered) {
+            msgParams.isAnswered = true
+            topicValues.isAnswered = true
+        }
+
+        if (!params.messageText) {
+            topicValues.errors << "Message text must not be empty"
+            return topicValues
+        }
+
+        def text = params.messageText as String
+        def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
+
+        if (text.length() > maxSize) {
+            topicValues.errors << "The message text is too long. It needs to be less than ${maxSize} characters"
+            return topicValues
+        }
+
+        msgParams.text = markdownService.sanitizeMarkdown(text)
+        forumService.addForumMessage(topic, msgParams)
+
+        return topicValues
+    }
+
+    /**
+     * Helper method to get parameters for view topic views that are commonly used.
+     * @param topic the topic being viewed.
+     * @return a Map of parameters: Project, Task, isWatched (boolean), replyTo (ForumMessage) and User.
+     */
+    private def getTopicParameters(ForumTopic topic) {
+        Project projectInstance = null
+        Task taskInstance = null
+
+        def topicInstance = ForumTopic.get(topic.id)
+
+        if (topicInstance.instanceOf(ProjectForumTopic)) {
+            projectInstance = (topicInstance as ProjectForumTopic).project
+        } else if (topicInstance.instanceOf(TaskForumTopic)) {
+            taskInstance = (topicInstance as TaskForumTopic).task
+        }
+
+        def isWatched = forumService.isUserWatchingTopic(userService.currentUser, topic)
+
+        ForumMessage replyTo = null
+        if (params.replyTo) {
+            replyTo = ForumMessage.get(params.int("replyTo"))
+        } else {
+            replyTo = forumService.getFirstMessageForTopic(topic)
+        }
+
+        [projectInstance: projectInstance, taskInstance: taskInstance, user: userService.currentUser, replyTo: replyTo, isWatched: isWatched]
+    }
+
+    /**
+     * Deletes a topic.
+     */
     def deleteTopic() {
         def topic = ForumTopic.get(params.int("topicId"))
         if (!topic || !checkModerator(topic)) {
@@ -453,11 +506,6 @@ class ForumController {
 
         forumService.deleteTopic(topic)
         redirect(action: 'redirectTopicParent', id: topic.id)
-    }
-
-    def ajaxGeneralTopicsList() {
-        def results = forumService.getGeneralDiscussionTopics(false, params)
-        [topics:results.topics, totalCount: results.totalCount]
     }
 
     def taskTopic() {
@@ -477,32 +525,14 @@ class ForumController {
         redirect(controller:'forum', action: 'addForumTopic', params: [taskId: task.id])
     }
 
-    def ajaxProjectTaskTopicList() {
-        def projectInstance = Project.get(params.int("projectId"))
-        def topics = projectInstance ? forumService.getTaskTopicsForProject(projectInstance, params) : []
-
-        [projectInstance: projectInstance, topics: topics]
-    }
-
-    def searchForums() {
-        def query = params.query as String
-        if (!query) {
-            flash.message ="You must supply a search criteria"
-            redirect(controller: 'forum', action: 'index')
-            return
-        }
-
-        def searchParams = [offset: params.offset ?: 0, max: params.max ?: 10]
-
-        def results = forumService.searchForums(query, false, searchParams)
-
-        [query: query, results: results]
-    }
-
+    /**
+     * Watch or unwatch a topic.
+     * @return JSON object with success and message.
+     */
     def ajaxWatchTopic() {
         def topic = ForumTopic.get(params.int("topicId"))
         def watch = params.boolean("watch")
-        def results =[success: 'false']
+        def results = [success: 'false']
         if (topic) {
             def userInstance = userService.currentUser
             if (watch) {
@@ -516,99 +546,12 @@ class ForumController {
         render(results as JSON)
     }
 
-    def ajaxProjectForumsList() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = params.sort ?: 'completed'
-
-        ProjectSummaryList projectSummaryList = projectService.getProjectSummaryList(params, false)
-
-        def forumStats = [:]
-
-        projectSummaryList.projectRenderList.each {
-            def stat = [:]
-            stat.projectTopicCount = ProjectForumTopic.countByProject(it.project)
-            stat.taskTopicCount = forumService.countTaskTopics(it.project)
-
-            forumStats[it.project] = stat
-        }
-
-        [projectSummaryList: projectSummaryList, forumStats: forumStats]
-    }
-
-    def ajaxWatchedTopicsList() {
-
-        def user = userService.currentUser
-        UserForumWatchList watchList = UserForumWatchList.findByUser(user)
-        def idList = watchList?.topics?.collect { it.id }
-
-        def sort = params.sort
-        if (!sort) {
-            sort = 'id'
-        }
-
-        def order = params.order
-        if (!order) {
-            'desc'
-        }
-
-        if (sort && !ForumTopic.declaredFields.find { it.name == sort }) {
-            sort = 'title'
-            order = 'asc'
-        }
-
-        def topics = []
-        if (idList) {
-            def query = """
-                SELECT DISTINCT topic
-                FROM ForumTopic topic
-                WHERE id in (:idList)
-            """
-
-            if (sort != 'id') {
-                query = query.toString() + " order by " + sort + " " + order
-            }
-            topics = ForumTopic.executeQuery(query, [idList: idList])
-        }
-
-        if (sort == 'id') {
-            // we are actually supposed to sort by number of replies. Number of replies is actually a calculated field (the number
-            // of messages - 1, so can't sort in the criteria, so do it manually...
-            topics.sort { topic ->
-                 topic.messages?.size()
-            }
-
-            if (order == 'desc') {
-                topics = topics.reverse()
-            }
-        }
-
-        [topics: topics]
-    }
-
-    def userComments() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        def id = params.int("id")
-        def userInstance = User.get(id)
-        def messages = forumService.getMessagesForUser(userInstance, params)
-        def totalCount = messages?.totalCount ?: 0
-        def xformMessages = messages?.groupBy { it.topic }?.collect {
-            def topic = it.key
-            def tms = it.value
-            [ topicTask: (topic instanceof TaskForumTopic) ? topic.task : null, // the default json renderer doesn't put the task or project fields in the output but I don't really care about fixing this properly right now.
-              topicProject: (topic instanceof ProjectForumTopic) ? topic.project : (topic instanceof TaskForumTopic) ? topic.task.project : null,
-              topic: topic,
-              messages: tms.collect {[
-                      message: it,
-                      userProps: userService.detailsForUserId(it.user?.userId),
-                      isUserForumModerator: userService.isUserForumModerator(it.user, it.topic instanceof ProjectForumTopic ? it.topic.project : null ) as Boolean
-                  ]}
-            ]
-        } ?: []
-        render([totalCount: totalCount, messages: xformMessages] as JSON)
-    }
-
+    /**
+     * Returns a list of markdown help items.
+     * @return a list of items with the following properties:
+     * - effect: the effect of the markdown
+     */
     def markdownHelp() {
-
         def items = []
         items << [effect: 'Italics/Emphasis', description:'Surround text with either _ or *', code:'_text to italicise__ or *text to italicise*']
         items << [effect: 'Bold/Heavy Emphasis', description:'Surround text with either __ or **', code:'__text to embolden__ or **text to embolden**']
@@ -617,22 +560,26 @@ class ForumController {
         items << [effect: 'Line break or empty line', description:'End a line with two spaces', code:'line1\n  \nline2']
         items << [effect: 'Links/External URLS', description:'Links to other documents can be included using the following syntax<br/>[link text here](link address here)', code:'[Google!](http://google.com)']
         items << [effect: 'Horizontal rules', description:'Horizontal rules are created by placing three or more hyphens, asterisks, or underscores on a line by themselves', code:'***']
-        def listDemo = """
-&nbsp;&nbsp;* Item 1
-&nbsp;&nbsp;* Item 2
-&nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.1
-&nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.2
-        """
+        def listDemo = """\
+            &nbsp;&nbsp;* Item 1
+            &nbsp;&nbsp;* Item 2
+            &nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.1
+            &nbsp;&nbsp;&nbsp;&nbsp;* Subitem 2.2
+        """.stripIndent()
         items << [effect: 'Lists', description:'Lists can be formed with two leading spaces and an "*". Subitems are indented from the parents by an additional two spaces.', code:listDemo]
-        def blockQuoteDemo = """
-> this is some quoted text
-> > this has been quoted twice
-"""
+        def blockQuoteDemo = """\
+            > this is some quoted text
+            > > this has been quoted twice
+        """.stripIndent()
         items << [effect: 'Block quotes', description:'Block quotes are produced when lines and paragraphs are preceded by "&gt;"', code:blockQuoteDemo]
 
         [items: items]
     }
 
+    /**
+     * Watch or unwatch a project.
+     * @return JSON object with success and message.
+     */
     def ajaxWatchProject() {
         def projectInstance = Project.get(params.int("projectId"))
         def results = [success: false, message:'']
