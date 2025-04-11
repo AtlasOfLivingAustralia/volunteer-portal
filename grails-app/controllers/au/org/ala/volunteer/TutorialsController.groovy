@@ -32,9 +32,8 @@ class TutorialsController {
      */
     def groupList() {
         def institution = Institution.get(params.long('institution'))
-        def admin = (params.admin && (params.admin == 'true' || params.admin == true))
+        def admin = params.boolean("admin") == true
         log.debug("groupList: admin ${admin}")
-        log.debug("groupList: admintest ${(params.admin && (params.admin == 'true' || params.admin == true))}")
         if (!institution && !admin) {
             flash.message = "Cannot find Institution with that ID"
             redirect (action: 'index')
@@ -75,7 +74,8 @@ class TutorialsController {
         }
 
         def projectMatchList = []
-        if (params.migrate == "true" || params.migrate == true) {
+        def migrate = params.boolean("migrate") == true
+        if (migrate) {
             log.debug("Migrate flag is true, getting projects for migration")
             projectMatchList = tutorialService.findProjectsForMigration(tutorial)
         }
@@ -330,8 +330,8 @@ class TutorialsController {
             return
         }
 
-        def migrate = (params.migrate && (params.migrate == 'true' || params.migrate == true))
-        def admin = (params.admin && (params.admin == 'true' || params.admin == true))
+        def migrate = params.boolean("migrate") == true
+        def admin = params.boolean("admin") == true
 
         def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) :
                 userService.getAdminInstitutionList())

@@ -7,13 +7,13 @@
 
 <body>
 
-<content tag="pageTitle">Tutorial Links</content>
+<content tag="pageTitle">Tutorial Information</content>
 
 <content tag="adminButtonBar">
 </content>
 <div style="margin-bottom: 3em;">
     <h4>Introduction</h4>
-    <p>Use this content area to give your volunteers helpful information on how to transcribe the expedition tasks. Provide
+    <p>Use this optional content area to give your volunteers helpful information on how to transcribe the expedition tasks. Provide
     some introductory information to your expedition and then select the applicable tutorials from below.</p>
 
     <p>You can add new tutorials

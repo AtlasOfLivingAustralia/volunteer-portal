@@ -68,13 +68,16 @@
                 <div class="cta-primary">
                     <g:if test="${percentComplete < 100}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
-                        <g:if test="${projectInstance.tutorialLinks}">
-                            <a href="${(projectInstance.tutorialLinks ? '#tutorial' : createLink(controller: 'tutorials', action: 'index'))}" class="btn btn-lg btn-hollow ${oldClass} tutorial">View tutorial</a>
+                        <g:if test="${projectInstance.tutorialLinks || projectInstance.tutorials.size() > 0}">
+                            <a href="#tutorial" class="btn btn-lg btn-hollow ${oldClass} tutorial">Tutorial Information</a>
                             <div id="tutorialContent" class="hidden">
+                                <g:if test="${projectInstance.tutorialLinks}">
                                 <h4>Expedition Tutorial Information</h4>
                                 <div id="tutorial-intro">
                                 ${raw(projectInstance.tutorialLinks)}
                                 </div>
+                                </g:if>
+                                <g:if test="${projectInstance.tutorials.size() > 0}">
                                 <h4 style="padding-top: 1rem;">Expedition Tutorial List</h4>
                                 <div id="tutorialList">
                                     <table class="table table-striped">
@@ -85,11 +88,15 @@
                                         </g:each>
                                     </table>
                                 </div>
+                                </g:if>
+                                <g:else>
+                                    <h4>Expedition Tutorial List</h4>
+                                    <div id="tutorial-intro">
+                                        <p>No tutorial information available</p>
+                                    </div>
+                                </g:else>
                             </div>
                         </g:if>
-                        <g:else>
-                            <a href="${createLink(controller: 'tutorials', action: 'index')}" class="btn btn-lg btn-hollow ${oldClass}  tutorial">View tutorial</a>
-                        </g:else>
                     </g:if>
                     <g:else>
                         <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>

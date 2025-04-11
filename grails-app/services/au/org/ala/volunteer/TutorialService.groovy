@@ -5,7 +5,6 @@ import groovy.sql.Sql
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
-import java.util.regex.Pattern
 
 class TutorialService {
 
@@ -160,49 +159,6 @@ class TutorialService {
         } as List<Tutorial>
 
         adminTutorials
-    }
-
-    /**
-     * Get Tutorial groups from the file directory.
-     * @deprecated
-     */
-    def getTutorialGroupsOld() {
-        def dir = new File(tutorialDirectory)
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        def files = dir.listFiles()
-        def tutorials = [:]
-
-        def regex = Pattern.compile("^(.*)_(.*)\$")
-        files.each {
-            def url = grailsApplication.config.getProperty('server.url', String) +
-                    grailsApplication.config.getProperty('images.urlPrefix', String) + "tutorials/" + it.name
-            def group = "-" // no group
-            def title = it.name
-            def matcher = regex.matcher(it.name)
-            if (matcher.matches()) {
-                group = matcher.group(1)
-                title = matcher.group(2)
-            }
-
-            // If there's no file extension, make sure we don't throw an exception.
-            int fileExtnSep = title.lastIndexOf('.')
-            if (fileExtnSep > 0) title = title.subSequence(0, fileExtnSep)
-
-            if (!tutorials[group]) {
-                tutorials[group] = []
-            }
-
-            tutorials[group] << [file: it, name: it.name, url: url, title:title]
-        }
-
-        if (!tutorials.containsKey('-')) {
-            tutorials['-'] = []
-        }
-
-        return tutorials
     }
 
     /**

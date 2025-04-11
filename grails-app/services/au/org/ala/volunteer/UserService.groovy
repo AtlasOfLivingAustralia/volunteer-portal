@@ -809,14 +809,17 @@ class UserService {
         }
 
         if (updates) {
-//            def dbIds = User.saveAll(updates)
             updates*.save()
             def dbIds = updates*.id
             log.debug("Updated ids ${dbIds}")
         }
     }
 
-    // Retrieves all the data required for the notebook functionality
+    /**
+     * Retrieves all the data required for the notebook functionality
+     * @param model the model to append the data to
+     * @return the model with the data appended
+     */
     Map appendNotebookFunctionalityToModel(Map model) {
         Stopwatch sw = Stopwatch.createStarted()
         final query = freemarkerService.runTemplate(UserController.ALA_HARVESTABLE, [userId: model.userInstance.userId])
@@ -829,13 +832,6 @@ class UserService {
         sw.stop()
         log.debug("notebookMainFragment.speciesList2 ${sw.toString()}")
         log.debug("specieslist2: ${speciesList2}")
-
-        //sw.reset().start()
-        //def fieldObservationQuery = freemarkerService.runTemplate(UserController.FIELD_OBSERVATIONS, [userId: model.userInstance.userId])
-        //def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-
-        //sw.stop()
-        //log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
 
         sw.reset().start()
         def c = Transcription.createCriteria()
@@ -854,17 +850,6 @@ class UserService {
 
         sw.reset().start()
 
-        //final matchAllQuery = UserController.MATCH_ALL
-
-        //def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, fullTextIndexService.hitsCount)
-        //def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-        /*
-        def userPercent = "0"
-        if (totalCount > 0) {
-            userPercent = String.format('%.2f', (userCount / totalCount) * 100)
-        }
-         */
-
         def userRank = WebUtils.formatNumberWithCommas(leaderBoardService.getUserRank(model.userInstance.userId as String))
         def totalUsers = WebUtils.formatNumberWithCommas(User.countByTranscribedCountGreaterThanOrValidatedCountGreaterThan(0, 0))
 
@@ -874,9 +859,7 @@ class UserService {
         return model << [
                 totalSpeciesCount: totalSpeciesCount,
                 speciesList: speciesList2,
-                //fieldObservationCount: fieldObservationCount,
                 expeditionCount: expeditions ? expeditions[0] : 0,
-                //userPercent: userPercent,
                 userRank: userRank,
                 totalUsers: totalUsers
         ]
