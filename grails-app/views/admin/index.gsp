@@ -108,9 +108,9 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-admin btn-primary bs3"
-                                   href="${createLink(controller: 'admin', action: 'tutorialManagement')}">Tutorial Files</a>
+                                   href="${createLink(controller: 'tutorials', action: 'manage')}">Manage Tutorials</a>
                             </td>
-                            <td>Manage tutorial files</td>
+                            <td>Manage tutorials for Expeditions</td>
                         </tr>
                     <cl:ifSiteAdmin>
                         <tr>

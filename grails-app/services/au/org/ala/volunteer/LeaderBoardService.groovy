@@ -1,10 +1,23 @@
 package au.org.ala.volunteer
 
-import grails.gorm.transactions.NotTransactional
 import groovy.sql.Sql
+import org.jooq.DSLContext
+import org.springframework.beans.factory.annotation.Autowired
+import static au.org.ala.volunteer.jooq.tables.VpUser.VP_USER
+import static org.jooq.impl.DSL.and as jAnd
+import static org.jooq.impl.DSL.select
+import static org.jooq.impl.DSL.rank
+import static org.jooq.impl.DSL.orderBy
+import static org.jooq.impl.DSL.table
+import static org.jooq.impl.DSL.name
+import static org.jooq.impl.DSL.field
+
 import javax.sql.DataSource
 
 class LeaderBoardService {
+
+    @Autowired
+    Closure<DSLContext> jooqContextFactory
 
     final static EMPTY_LEADERBOARD_WINNER = [userId: 0, name:'', email:'', score:0]
 
@@ -260,38 +273,10 @@ class LeaderBoardService {
                 ${projectJoin}
                 where ${filter} 
                 ${groupByClause} """.stripIndent()
-//${ineligibleUserClause}
+
             sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
                 map[row[0]] = row[1]
             }
-
-            /*results = Transcription.withCriteria {
-                ge("dateFully${activityType}", startDate)
-                lt("dateFully${activityType}", endDate + 1)
-
-                if (ineligibleUserIds) {
-                    not {
-                        inList "fully${activityType}By", ineligibleUserIds
-                    }
-                }
-
-                if (institutionList) {
-                    project {
-                        'in' 'institution', institutionList
-                    }
-                }
-
-                if (projectsInLabels) {
-                    project {
-                        'in' 'id', projectsInLabels
-                    }
-                }
-                projections {
-                    groupProperty("fully${activityType}By")
-                    count("fully${activityType}By", 'count')
-                }
-            }
-             */
 
         } else {
             def institutionJoin = ""
@@ -312,45 +297,12 @@ class LeaderBoardService {
                 ${projectJoin}
                 where ${filter} 
                 ${groupByClause} """.stripIndent()
-//${ineligibleUserClause}
+
             sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
                 map[row[0]] = row[1]
             }
 
-            /*
-            results = Task.withCriteria {
-                ge("dateFully${activityType}", startDate)
-                lt("dateFully${activityType}", endDate + 1)
-
-                if (ineligibleUserIds) {
-                    not {
-                        inList "fully${activityType}By", ineligibleUserIds
-                    }
-                }
-
-                if (institutionList) {
-                    project {
-                        'in' 'institution', institutionList
-                    }
-                }
-
-                if (projectsInLabels) {
-                    project {
-                        'in' 'id', projectsInLabels
-                    }
-                }
-
-                projections {
-                    groupProperty("fully${activityType}By")
-                    count("fully${activityType}By", 'count')
-                }
-            }
-             */
         }
-        //def map = [:]
-//        results.each { row ->
-//            map[row[0]] = row[1]
-//        }
 
         sql.close()
 
@@ -419,7 +371,6 @@ class LeaderBoardService {
             ineligibleUserClause = " where fully_${activityType}_by not in (${exceptUsers.join(",").tr(/"/, /'/)})"
         }
 
-        // def results
         if (ActivityType.Transcribed == activityType) {
             def projectJoin = ""
             if (projectsInLabels) {
@@ -431,30 +382,11 @@ class LeaderBoardService {
                 from transcription
                 ${projectJoin}
                 ${groupByClause} """.stripIndent()
-//${ineligibleUserClause}
+
             sql.eachRow(query) { row ->
                 map[row[0]] = row[1]
             }
 
-            /*
-            results = Transcription.withCriteria {
-                if (projectsInLabels) {
-                    project {
-                        'in' 'id', projectsInLabels
-                    }
-                }
-
-                if (exceptUsers) {
-                    not {
-                        inList "fully${activityType}By", exceptUsers
-                    }
-                }
-                projections {
-                    groupProperty("fully${activityType}By")
-                    count("fully${activityType}By", 'count')
-                }
-            }
-             */
         } else {
             def projectJoin = ""
             if (projectsInLabels) {
@@ -466,39 +398,51 @@ class LeaderBoardService {
                 from task
                 ${projectJoin}
                 ${groupByClause} """.stripIndent()
-//${ineligibleUserClause}
+
             sql.eachRow(query) { row ->
                 map[row[0]] = row[1]
             }
 
-            /*
-            results = Task.withCriteria {
-                if (projectsInLabels) {
-                    project {
-                        'in' 'id', projectsInLabels
-                    }
-                }
-
-                if (exceptUsers) {
-                    not {
-                        inList "fully${activityType}By", exceptUsers
-                    }
-                }
-                projections {
-                    groupProperty("fully${activityType}By")
-                    count("fully${activityType}By", 'count')
-                }
-            }
-             */
         }
-
-//        def map = [:]
-//        results.each { row ->
-//            map[row[0]] = row[1]
-//        }
 
         sql.close()
 
         return map
+    }
+
+    /**
+     * Calculates a users rank on contribution score. Ignores users with no contribution.
+     * @param userId the user to rank
+     * @return the users rank.
+     */
+    def getUserRank(String userId) {
+        def conditions = []
+        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
+
+        if (ineligibleUsers.size() > 0) {
+            log.debug("Adding user clause")
+            conditions.add(VP_USER.USER_ID.notIn(ineligibleUsers))
+        }
+
+        conditions.add((VP_USER.TRANSCRIBED_COUNT + VP_USER.VALIDATED_COUNT).greaterOrEqual(0))
+
+        DSLContext context = jooqContextFactory()
+        def rankRow = context.with("ranks")
+                .as(select(VP_USER.ID,
+                        VP_USER.USER_ID.as("ref_user_id"),
+                        VP_USER.LAST_NAME,
+                        VP_USER.FIRST_NAME,
+                        (VP_USER.TRANSCRIBED_COUNT + VP_USER.VALIDATED_COUNT).as("score"),
+                        rank().over(orderBy((VP_USER.TRANSCRIBED_COUNT + VP_USER.VALIDATED_COUNT).desc())).as("rank")
+                ).from(VP_USER)
+                .where(jAnd(conditions)))
+            .select()
+            .from(table(name("ranks")))
+            .where(field(name("ranks", "ref_user_id")).eq(userId))
+            .fetchOne()
+
+        def rank = rankRow.value6() as int
+
+        return rank
     }
 }

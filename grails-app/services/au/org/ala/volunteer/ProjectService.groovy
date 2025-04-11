@@ -41,6 +41,8 @@ import static org.apache.commons.compress.archivers.zip.Zip64Mode.AsNeeded
 import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE
 //import static org.jooq.impl.DSL.*
 import static org.jooq.impl.DSL.not
+import static org.jooq.impl.DSL.field
+import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.condition
 import static org.jooq.impl.DSL.coalesce
 import static org.jooq.impl.DSL.select
@@ -1289,5 +1291,68 @@ class ProjectService implements EventPublisher {
             log.debug("doesTemplateSupportMultiTranscriptions: no template, returning false")
             return false
         }
+    }
+
+    /**
+     * Retrieves a list of projects and the number of forum topics associated with that project.
+     * @return a list of Maps containing the project, institution and topic count.
+     */
+    def getProjectsWithTopicCounts() {
+        log.debug("Retrieving list of projects grouped into institutions including forum topic counts")
+        DSLContext create = jooqContextFactory()
+
+        def subQuery = create.select(
+                jWhen(FORUM_TOPIC.PROJECT_ID.isNotNull(), FORUM_TOPIC.PROJECT_ID)
+                        .otherwise(TASK.PROJECT_ID).as("id"),
+                jCount(FORUM_TOPIC.ID).as("topic_count"))
+            .from(FORUM_TOPIC)
+            .leftJoin(TASK).on(FORUM_TOPIC.TASK_ID.eq(TASK.ID))
+            .groupBy(jWhen(FORUM_TOPIC.PROJECT_ID.isNotNull(), FORUM_TOPIC.PROJECT_ID)
+                    .otherwise(TASK.PROJECT_ID))
+            .asTable("sq")
+
+        def query = create.select(PROJECT.ID.as("id"),
+            INSTITUTION.NAME.as("institution_name"),
+            PROJECT.NAME.as("project_name"),
+            coalesce(field(name("sq", "topic_count")), 0).as("topic_count"))
+        .from(PROJECT)
+        .leftJoin(subQuery).on(PROJECT.ID.eq(subQuery.field("id")))
+        .join(INSTITUTION).on(INSTITUTION.ID.eq(PROJECT.INSTITUTION_ID))
+        .orderBy(INSTITUTION.NAME.asc(), PROJECT.ID.asc())
+
+        def result = query.fetch().collect { row ->
+            [
+                    projectId: row.id,
+                    projectName: row.project_name,
+                    institutionName: row.institution_name,
+                    topicCount: row.topic_count
+            ]
+        }
+
+        result
+    }
+
+    /**
+     * Synchronises the list of tutorials related to a project.
+     * @param project the project to be updated
+     * @param tutorialList the list of tutorials to synchronise
+     */
+    def syncProjectTutorials(Project project, List<Tutorial> tutorialList) {
+        log.debug("=> syncProjectTutorials: ${tutorialList}")
+        if (!project || tutorialList == null) return
+        def currentTutorials = project.tutorials as Set
+        def updatedTutorialSet = tutorialList as Set
+
+        (updatedTutorialSet - currentTutorials).each { tutorialToAdd ->
+            log.debug("==> Adding tutorial: ${tutorialToAdd}")
+            project.addToTutorials(tutorialToAdd)
+        }
+
+        (currentTutorials - updatedTutorialSet).each { tutorialToRemove ->
+            log.debug("==> Removing tutorial: ${tutorialToRemove}")
+            project.removeFromTutorials(tutorialToRemove)
+        }
+
+        project.save(flush: true, failOnError: true)
     }
 }

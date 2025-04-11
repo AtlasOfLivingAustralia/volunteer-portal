@@ -15,6 +15,8 @@
 
 package au.org.ala.volunteer
 
+import java.text.DecimalFormat
+
 class WebUtils {
 
     /**
@@ -178,5 +180,38 @@ class WebUtils {
                         { StringBuilder s, int value -> s.appendCodePoint(value) },
                         { StringBuilder s1, StringBuilder s2 -> s1.append(s2) })
                 .toString()
+    }
+
+    /**
+     * Returns a number as a formatted string with commas (for big numbers, e.g. over 1,000 to 1,000,000) with optional
+     * decimal places.
+     * @param number the number to format
+     * @param decimalPlaces the optional number of decimal places to format to.
+     * @return the formated number.
+     */
+    static String formatNumberWithCommas(long number, int decimalPlaces = 0) {
+        final String format = "#,###"
+        String decimalSuffix = ""
+        if (decimalPlaces > 0) {
+            decimalSuffix = "."
+            for (int i = 0; i < decimalPlaces; i++) {
+                decimalSuffix += "0"
+            }
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("${format}${decimalSuffix}".toString())
+        return decimalFormat.format(number)
+    }
+
+    static String getAchievementPopularity(def percentage) {
+        double percentDouble = 0.0
+        if (percentage instanceof String) percentDouble = Double.parseDouble(percentage)
+        else percentDouble = (double) percentage
+
+        if (percentDouble <= 5.0) return "Legendary"
+        else if (percentDouble > 5.0 && percentDouble <= 10.0) return "Ultra rare"
+        else if (percentDouble > 10.0 && percentDouble <= 24.9) return "Rare"
+        else if (percentDouble >= 25.0 && percentDouble <= 49.9) return "Uncommon"
+        else if (percentDouble >= 50.0 && percentDouble <= 89.9) return "Common"
+        else return "Very common"
     }
 }

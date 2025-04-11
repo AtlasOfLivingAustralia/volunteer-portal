@@ -4,6 +4,7 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import com.vladsch.flexmark.util.ast.Node
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.data.MutableDataSet
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -31,7 +32,8 @@ class MarkdownService {
      * @return the sanitized HTML generated from the supplied markdown.
      */
     def renderMarkdown(String markdown) {
-        Parser parser = Parser.builder().build();
+        MutableDataSet options = new MutableDataSet()
+        Parser parser = Parser.builder(options).build();
         Node document = parser.parse(markdown ?: "")
         HtmlRenderer renderer = HtmlRenderer.builder().build()
         def md = sanitizerService.sanitize(renderer.render(document))

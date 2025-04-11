@@ -212,7 +212,7 @@
         data-ng-if="contributors.length === 0">
         <li>
             <div class="media-body">
-                <p>No topics yet. <a href="${createLink(controller: 'forum', action: 'projectForum', params: [projectId: projectId])}"><g:message code="start.discussion.label" /></a></p>
+                <p>No topics yet. <a href="${createLink(controller: 'forum', action: 'index', params: [projectId: projectId])}"><g:message code="start.discussion.label" /></a></p>
             </div>
         </li>
     </ul>

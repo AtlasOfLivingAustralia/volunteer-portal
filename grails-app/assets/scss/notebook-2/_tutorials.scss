@@ -1,0 +1,103 @@
+@use "variables-and-mixins";
+
+main {
+  background-color: white;
+
+  section {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    padding-top: 1rem;
+    padding-bottom: 1%;
+  }
+}
+
+.tutorial-groups-section {
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    width: 1140px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.tutorial-groups-heading {
+  padding-top: 1rem;
+}
+
+.tutorial-library-list {
+  @include variables-and-mixins.page-grid;
+  row-gap: variables-and-mixins.$space-3;
+  margin-top: variables-and-mixins.$space-6;
+}
+
+.tutorial-library-list-item {
+  grid-column: span 2;
+  height: 200px;
+  padding: variables-and-mixins.$space-4;
+  border: solid variables-and-mixins.$light-grey 1px;
+  border-radius: 10px;
+  transition: background-color 0.5s ease, color 0.5s ease;
+
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    grid-column: span 2;
+  }
+
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    grid-column: span 3;
+  }
+
+  &:hover {
+    color: white;
+    background-color: variables-and-mixins.$digivol-orange;
+
+    a {
+      color: white;
+    }
+  }
+}
+
+.tutorial-library-list-item--bg-digivol-orange {
+  color: white;
+  background-color: variables-and-mixins.$digivol-orange;
+}
+
+.tutorial-library-list-item__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  text-decoration: none;
+}
+
+.tutorial-library-list-item__heading {
+  font-size: variables-and-mixins.$text-lg;
+
+  @media screen and (min-width: variables-and-mixins.$screen-lg) {
+    font-size: variables-and-mixins.$text-2xl;
+  }
+}
+
+.tutorial-library-list-item__logo {
+  max-width: 50%;
+  max-height: 50%;
+  object-fit: contain;
+}
+
+.tutorial-library-list-item__tutorial-count {
+  font-size: variables-and-mixins.$text-sm;
+}
+
+// Institution Group List
+
+.tutorial-library-group-list__list-item {
+  padding: variables-and-mixins.$space-4;
+  border-bottom: solid variables-and-mixins.$light-grey 2px;
+
+  & + .forum-post__list-item {
+    margin-top: variables-and-mixins.$space-4;
+  }
+}
+
+.tutorial-library-group-list__list-item-text {
+  font-size: variables-and-mixins.$text-xl;
+}

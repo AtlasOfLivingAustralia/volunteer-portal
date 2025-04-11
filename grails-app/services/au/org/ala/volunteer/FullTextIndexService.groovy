@@ -316,6 +316,10 @@ class FullTextIndexService {
         { SearchResponse searchResponse -> searchResponse.hits.totalHits() >= count }
     }
 
+    Closure<Long> searchResponseTotalHits() {
+        { SearchResponse searchResponse -> searchResponse.hits.totalHits() }
+    }
+
     Closure<Boolean> aggregationHitsGreaterThanOrEqual(long count, AggregationType type) {
         def closure;
         switch (type) {

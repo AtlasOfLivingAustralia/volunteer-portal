@@ -20,6 +20,8 @@ class InstitutionService {
     static final String NOTIFICATION_APPLICATION = "New Institution Application"
     static final String NOTIFICATION_APPLICATION_APPROVED = "New Institution Approved"
 
+    private static final Set<String> IGNORED_WORDS = ['of', 'and', 'the', '&']
+
     def emailNotification(String message, String title = NOTIFICATION_DEFAULT, String recipient = null) {
         // Send email to grailsApplication.config.notifications.default.address
         log.debug("Sending institution notification")
@@ -478,4 +480,24 @@ class InstitutionService {
         Task.executeQuery("select count(*) from Task where fullyValidatedBy is not null and project.institution = :institution", [institution: institution])?.get(0)
     }
 
+    /**
+     * Generates an acronym from a string title.
+     * @param title the title to generate an acronym from
+     * @return the generated acronym
+     */
+    def generateAcronym(String title) {
+        if (!title) return ""
+
+        // Remove all numbers and text inside parentheses
+        title = title.replaceAll(/\d+/, '').replaceAll(/\([^)]*\)/, '')
+        List<String> words = title.split(/[\s-]+/) // Split by spaces and hyphens
+
+        List<String> acronymParts = words.findAll {
+            !(it.toLowerCase() in IGNORED_WORDS)
+        }.collect {
+            it[0].toUpperCase()
+        }
+
+        return acronymParts.join('')
+    }
 }

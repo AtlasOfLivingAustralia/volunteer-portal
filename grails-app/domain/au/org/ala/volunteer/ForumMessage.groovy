@@ -8,6 +8,7 @@ class ForumMessage {
     String text
     Boolean deleted
     ForumMessage replyTo
+    Boolean isAnswer
 
     static belongsTo = [topic: ForumTopic]
 
@@ -18,6 +19,7 @@ class ForumMessage {
         deleted nullable: true
         text nullable: true, maxSize: 16384
         replyTo nullable: true
+        isAnswer nullable: true
     }
 
     static mapping = {

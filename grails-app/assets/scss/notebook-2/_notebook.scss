@@ -1,0 +1,297 @@
+@use "variables-and-mixins";
+
+  main {
+    background-color: white;
+
+    section {
+      max-width: $screen-xl;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: white;
+      padding-top: 1%;
+      padding-bottom: 1%;
+    }
+  }
+
+  .notebook-user-name {
+    margin-bottom: variables-and-mixins.$space-6;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .achievement-list-section {
+    @include variables-and-mixins.page-grid;
+  }
+
+  .achievement-list {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: span 6;
+    max-width: variables-and-mixins.$screen-xl;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media screen and (min-width: variables-and-mixins.$screen-lg) {
+      grid-column: span 12;
+    }
+  }
+
+  .achievement-list__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    grid-column: span 3;
+    margin-bottom: variables-and-mixins.$space-3;
+    padding: variables-and-mixins.$space-6;
+    color: white;
+    border-radius: 15px;
+    background-color: variables-and-mixins.$digivol-orange;
+
+    @media screen and (min-width: variables-and-mixins.$screen-lg) {
+      min-height: 190px;
+      font-size: variables-and-mixins.$text-2xl;
+    }
+  }
+
+  .achievement-list__definition {
+    font-size: variables-and-mixins.$text-5xl;
+  }
+
+  .achievement-list__leaderboard-total {
+    font-size: variables-and-mixins.$text-lg;
+  }
+
+  // Badges
+
+  .badge-list-section {
+    //margin-bottom: variables-and-mixins.$space-6;
+  }
+
+  .badge-list-header {
+    @media screen and (min-width: variables-and-mixins.$screen-md) {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .badges-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: variables-and-mixins.$space-3;
+  }
+
+  .badges-list__item {
+    display: block;
+    width: calc(1 / 5 * 100%);
+    padding-right: variables-and-mixins.$space-2;
+    margin-bottom: variables-and-mixins.$space-3;
+    font-size: variables-and-mixins.$text-xs;
+    line-height: 1.2;
+
+    @media screen and (min-width: variables-and-mixins.$screen-lg) {
+      width: calc(1 / 12 * 100%);
+    }
+  }
+
+  .badges-list__badge {
+    display: block;
+    width: 42px;
+    height: 47px;
+    margin-bottom: variables-and-mixins.$space-1;
+  }
+
+  /////////////////////////////////
+  // Task history
+  /////////////////////////////////
+
+  .task-list-nav-section {
+
+
+    p {
+      font-size: variables-and-mixins.$text-sm;
+    }
+  }
+
+  .task-history-nav__list {
+    font-size: variables-and-mixins.$text-lg;
+    display: flex;
+  }
+
+  .task-history-nav {
+    @media screen and (min-width: variables-and-mixins.$screen-lg) {
+      display: flex;
+    }
+  }
+
+.task-history-pagination-nav {
+  padding: 5px;
+  font-size: variables-and-mixins.$text-sm;
+  margin-left: auto;
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    width: 100%; /* Full width on small screens */
+    margin-top: variables-and-mixins.$space-4;
+  }
+}
+
+  .task-history-nav-col {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    grid-column: span 6;
+  }
+
+  .task-history-table {
+    margin-top: variables-and-mixins.$space-6;
+
+    td, th {
+      font-size: variables-and-mixins.$text-xl;
+    }
+  }
+
+  // Mobile table
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    .task-history-table {
+      tr {
+        @include variables-and-mixins.page-grid;
+      }
+
+      td,
+      th {
+        grid-column: 1 / span 6;
+
+        &[data-key="task"] {
+          grid-column: 1 / span 3;
+          margin-bottom: variables-and-mixins.$space-2;
+        }
+
+        &[data-key="id"]:before {
+          content: "ID: ";
+        }
+
+        &[data-key="expedition"]:before {
+          content: "Expedition: ";
+        }
+
+        &[data-key="transcribed"]:before {
+          content: "Transcribed: ";
+        }
+
+        &[data-key="status"] {
+          grid-column: 4 / span 3;
+          grid-row: 1;
+          justify-self: end;
+        }
+
+        &[data-key="action"]:before {
+          content: "Action: ";
+        }
+      }
+    }
+  }
+
+  /////////////////////////////////
+  // Badge list
+  /////////////////////////////////
+
+  .badge-list-heading {
+    margin-bottom: variables-and-mixins.$space-3;
+  }
+
+  .badge-list-table {
+    border-collapse: collapse;
+    font-size: variables-and-mixins.$text-lg;
+
+    thead {
+      font-size: variables-and-mixins.$text-sm;
+    }
+
+    tr {
+      border-bottom: solid black 1px;
+    }
+
+    th,
+    td {
+      border: none;
+    }
+  }
+
+  .badge-list-table__badge {
+    display: inline-block;
+    width: 20%;
+    margin-right: variables-and-mixins.$space-3;
+  }
+
+  .badge-list-table-badge-cell {
+    display: flex;
+    align-items: center;
+  }
+
+  .badge-list-table__rarity-description {
+    display: block;
+    font-size: variables-and-mixins.$text-sm;
+
+    // Hide on mobile
+    @media screen and (max-width: variables-and-mixins.$screen-md) {
+      display: none;
+    }
+  }
+
+  // Mobile table
+
+  @media screen and (max-width: variables-and-mixins.$screen-md) {
+    .badge-list-table {
+      font-size: variables-and-mixins.$text-lg;
+
+      tr {
+        position: relative;
+        padding: variables-and-mixins.$space-3 0;
+        border: none;
+        border-bottom: solid black 1px;
+        border-radius: 0;
+      }
+    }
+
+    .badge-list-table__cell-head {
+      width: calc(4 / 6 * 100%);
+    }
+
+    .badge-list-table__badge {
+      width: calc(1 / 6 * 100%);
+    }
+
+    td {
+      &[data-key="status"] {
+        position: absolute;
+        right: 7px;
+      }
+
+      &[data-key="percentage-achieved"] {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+
+        &:before {
+          content: "Percentage of volunteers achieved: ";
+          font-size: variables-and-mixins.$text-sm;
+          text-align: left;
+        }
+      }
+
+      &[data-key="tasks-remaining"] {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+
+        &:before {
+          content: "Tasks remaining till achievement:";
+          font-size: variables-and-mixins.$text-sm;
+          text-align: left;
+        }
+      }
+    }
+  }
