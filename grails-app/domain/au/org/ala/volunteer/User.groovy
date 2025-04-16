@@ -75,7 +75,7 @@ class User implements AsyncEntity<User> {
     }
 
     public String toString() {
-        "User (id: $id, userId: ${userId}, displayName: ${displayName})"
+        "User (id: $id, userId: ${userId}, displayName: ${displayName}, transcribedCount: ${transcribedCount})"
     }
 
     /**

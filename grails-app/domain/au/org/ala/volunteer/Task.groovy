@@ -129,7 +129,8 @@ class Task implements Serializable, AsyncEntity<Task> {
             task = this
             project = this.@project
         }
-        transcriptions.add(transcription)
+        //transcriptions.add(transcription)
+        addToTranscriptions(transcription)
 
         transcription
     }
