@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-<!--    <logger name="au.org.ala.volunteer" level="DEBUG" />-->
+    <logger name="au.org.ala.volunteer" level="DEBUG" />
 <!--    <logger name="org.flywaydb" level="TRACE" />-->
 
     <root level="debug">

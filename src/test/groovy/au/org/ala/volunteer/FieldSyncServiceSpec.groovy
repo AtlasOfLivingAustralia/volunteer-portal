@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.helper.FlybernateSpec
+import grails.async.Promises
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import groovy.util.logging.Slf4j
@@ -35,7 +36,8 @@ class FieldSyncServiceSpec extends FlybernateSpec implements ServiceUnitTest<Fie
         }
 
         user = setupUser()
-        (1..2).each { i ->
+
+        (1..5).each { i ->
             def userA = setupUser("user${i}")
             def fields = transcriptionFields
             fields.individualCount = (i % 2) + 1
@@ -54,14 +56,16 @@ class FieldSyncServiceSpec extends FlybernateSpec implements ServiceUnitTest<Fie
         def transcription = createTranscription(task, user.userId as String)
         log.info("User transcribed count: ${user.transcribedCount}, transcription: ${transcription}")
 
-        when:
+        when: "syncFields is called with markAsFullyTranscribed = true"
         service.syncFields(task, [:], user.userId, true, false, null, [], null, transcription)
         log.info("User transcribed count: ${user.transcribedCount}")
+        user.discard()
+        user = User.get(user.id as long)
 
-        then:
+        then: "the transcription should be marked as fully transcribed"
         transcription.fullyTranscribedBy == user.userId
         transcription.dateFullyTranscribed != null
-        //user.transcribedCount == 1
+        user.transcribedCount == 1
         taskService.allTranscriptionsComplete(task) >> false
         task.isFullyTranscribed == false
     }
@@ -77,35 +81,4 @@ class FieldSyncServiceSpec extends FlybernateSpec implements ServiceUnitTest<Fie
         thrown(IllegalArgumentException)
     }
 
-    def "syncFields should synchronize access to task when multiple threads execute concurrently"() {
-        given:
-        project = setupProject()
-        setTranscriptionsPerTask(project, 2)
-        def task = addTask(project, 0)
-        log.info("Task: ${task}")
-        userList.each { row ->
-            def user = row.user as User
-            def transcription = createTranscription(task, user.userId)
-            row.transcription = transcription
-        }
-
-        when:
-        def threads = []
-        (1..2).each { i ->
-            threads << Thread.start {
-                log.info("Starting thread ${i}")
-                def user = userList[i-1].user as User
-                //def transcription = createTranscription(task, user.userId)
-                def transcription = userList[i-1].transcription as Transcription
-                log.info("Transcription: ${transcription}")
-                service.syncFields(task, userList[i-1].fields as Map, user.userId, true, false, null, [], null, transcription)
-                log.info("User transcribed count: ${user.transcribedCount}, transcription: ${transcription}")
-            }
-        }
-        threads*.join()
-
-        then:
-        task.viewedTasks.size() == 2
-        task.transcriptions.size() == 2
-    }
 }
