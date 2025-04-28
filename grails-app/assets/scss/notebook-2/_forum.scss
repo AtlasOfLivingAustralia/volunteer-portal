@@ -131,8 +131,13 @@ main {
 }
 
 .forum-post-watched {
-  padding-top: 0.8rem;
+
   font-size: variables-and-mixins.$text-3xl;
+  cursor: pointer;
+
+  .toggleWatch {
+    padding-top: 0.8rem;
+  }
 }
 
 .forum-table-topic-not-watched, .forum-post-not-watched {

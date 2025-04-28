@@ -13,13 +13,22 @@
 </head>
 <body>
 
-<cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
+<cl:headerContent title="${listPageTitle}" selectedNavItem="forum">
+    <g:if test="${params.projectId}">
+        <%
+            pageScope.crumbs = [
+                    [link: createLink(controller: 'forum', action: 'index'), label: message(code: 'default.forum.label', default: 'DigiVol Forum')]
+            ]
+        %>
+    </g:if>
 
     <nav class="forum-nav">
         <ul class="forum-nav__list">
             <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum posts</g:link></li>
             <li class="forum-nav__list-item">|</li>
             <li class="forum-nav__list-item"><g:link controller="forum" action="index" params="[watched: 'true']">My watched topics</g:link></li>
+            <li class="forum-nav__list-item">|</li>
+            <li class="forum-nav__list-item"><g:link controller="forum" action="expeditions">My watched expeditions</g:link></li>
         </ul>
     </nav>
 
@@ -37,24 +46,19 @@
                     <ul>
                         <g:set var="queryString" value="${params}" />
                         <li class="filter-nav__list-item">
-                        <a href="#" data-topic-type="all" class="filter-topic-link"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All types</span></a>
-%{--                            <g:link controller="forum" action="index"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All</span></g:link>--}%
+                            <a href="#" data-topic-type="all" class="filter-topic-link"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All types</span></a>
                         </li>
                         <li class="filter-nav__list-item">
                             <a href="#" data-topic-type="question" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('question')) ? "black" : "question"}" title="Question Topics">Question</span></a>
-%{--                            <g:link controller="forum" action="index" params="${[filter: 'question']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('question')) ? "black" : "question"}" title="Question Topics">Question</span></g:link>--}%
                         </li>
                         <li class="filter-nav__list-item">
                             <a href="#" data-topic-type="answered" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('answered')) ? "black" : "answered"}" title="Answered Topics">Answered</span></a>
-%{--                            <g:link controller="forum" action="index" params="${[filter: 'answered']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('answered')) ? "black" : "answered"}" title="Answered Topics">Answered</span></g:link>--}%
                         </li>
                         <li class="filter-nav__list-item">
                             <a href="#" data-topic-type="announcement" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('announcement')) ? "black" : "announcement"}" title="Announcement Topics">Announcement</span></a>
-%{--                            <g:link controller="forum" action="index" params="${[filter: 'announcement']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('announcement')) ? "black" : "announcement"}" title="Announcement Topics">Announcement</span></g:link>--}%
                         </li>
                         <li class="filter-nav__list-item">
                             <a href="#" data-topic-type="discussion" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('discussion')) ? "black" : "discussion"}" title="Discussion Topics">Discussion</span></a>
-%{--                            <g:link controller="forum" action="index" params="${[filter: 'discussion']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('discussion')) ? "black" : "discussion"}" title="Discussion Topics">Discussion</span></g:link>--}%
                         </li>
                     </ul>
                 </div>
@@ -97,6 +101,16 @@
             </g:else>
                 <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
             </a>
+            <g:if test="${params.projectId}">
+                <div data-project-id="${params.projectId}" data-project-watched="${watchingProjectForum ? 'true' : 'false'}" class="forum-post-buttons--justify-left toggleExpeditionWatch">
+                    <g:if test="${watchingProjectForum}">
+                        <span class="fa fa-star forum-post-watched forum-post-watched" title="${message(code: 'forumTopic.expedition.watched.stopwatching', default: 'Click to stop watching')}"></span>
+                    </g:if>
+                    <g:else>
+                        <span class="fa fa-star-o forum-post-watched forum-post-not-watched" title="${message(code: 'forumTopic.expedition.watched.watch', default: 'Click to watch')}"></span>
+                    </g:else>
+                </div>
+            </g:if>
         </a>
         </div>
         <p class="forum-topic-count">
@@ -107,7 +121,6 @@
             <tr>
                 <g:sortableColumn property="topic" class="td--5/12"
                                   title="${message(code: 'forumTopic.label', default: 'Topic')}" params="${params}"/>
-%{--                <th class="td--2/12">Expedition</th>--}%
                 <g:sortableColumn property="type" class="td--1/12"
                                   title="${message(code: 'forumTopic.type.label', default: 'Type')}" params="${params}"/>
                 <g:sortableColumn property="postedBy" class="td--1/12"
@@ -132,7 +145,6 @@
                     <span class="forum-table-topic-project">from: <g:link controller="forum" action="index" params="${[projectId: topic.projectId]}">${(topic.projectName ? topic.projectName : '-')}</g:link></span>
                 </g:if>
                 </th>
-%{--                <td class="forum-posts-table__expedition"><span class="fa forum-table-info fa-info-circle" title="${(topic.projectName ? topic.projectName : '-')}"></span></td>--}%
                 <td class="forum-posts-table__status">
                     <g:set var="topicTypeStyle" value="${topic.style}" />
                     <g:if test="${topic.topicType == ForumTopicType.Question && topic.isAnswered}">
@@ -142,7 +154,7 @@
                         <div class="pill pill--bg-${topicTypeStyle}">${topic.topicType.name()}</div>
                     </g:else>
                 </td>
-                <td class="td--order-3">${topic.creator.displayName}</td>
+                <td class="td--order-3 text-nowrap">${topic.creator.displayName}</td>
                 <td class="td--order-4 lg:td--text-right"><g:formatDate date="${topic.dateCreated}"
                                                                         format="${au.org.ala.volunteer.DateConstants.DATE_TIME_FORMAT}"/></td>
                 <td class="td--order-5 lg:td--text-right">
@@ -273,6 +285,31 @@
                         $(iconSpan).removeClass('fa-star')
                             .addClass('fa-star-o').addClass('forum-table-topic-not-watched')
                             .attr('title', "${message(code: 'forumTopic.watched.watch', default: 'Click to watch')}");
+                    }
+                });
+            }
+        });
+
+        $('.toggleExpeditionWatch').click(function() {
+            let iconSpan = $(this).find('span');
+            let div = $(this);
+            let watched = $(this).attr("data-project-watched") === "true";
+            let projectId = $(this).attr("data-project-id");
+
+            if (projectId) {
+                // Toggle watched flag
+                watched = !watched;
+
+                $.ajax("${createLink(controller: 'forum', action:'ajaxWatchProject')}?watch="+ watched +"&projectId=" + projectId).done(function (results) {
+                    $(div).attr('data-project-watched', watched);
+                    if (watched) {
+                        $(iconSpan).removeClass('fa-star-o').removeClass('forum-post-not-watched')
+                            .addClass('fa-star')
+                            .attr('title', "${message(code: 'forumTopic.expedition.watched.stopwatching', default: 'Click to unwatch')}");
+                    } else {
+                        $(iconSpan).removeClass('fa-star')
+                            .addClass('fa-star-o').addClass('forum-post-not-watched')
+                            .attr('title', "${message(code: 'forumTopic.expedition.watched.watch', default: 'Click to watch')}");
                     }
                 });
             }

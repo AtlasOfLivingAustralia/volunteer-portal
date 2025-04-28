@@ -50,8 +50,8 @@ class ForumService {
      * @return a list of forum topics
      */
     def getForumTopics(Project project, User user, String searchQuery, String filter, boolean watched, Integer offset, Integer max, String sort, String order) {
-        log.debug("Retrieving topics for display. Params: [Project: ${project?.id}, User: ${user?.displayName}, searchQuery: ${searchQuery}, filter: ${filter}]")
-        log.debug("Query params: [offset: ${offset}, max: ${max}, sort: ${sort}, order: ${order}]")
+//        log.debug("Retrieving topics for display. Params: [Project: ${project?.id}, User: ${user?.displayName}, searchQuery: ${searchQuery}, filter: ${filter}]")
+//        log.debug("Query params: [offset: ${offset}, max: ${max}, sort: ${sort}, order: ${order}]")
         DSLContext create = jooqContext()
 
         final String FILTER_QUESTION = 'question'
@@ -197,12 +197,12 @@ class ForumService {
             def projectName = row.project_name
             def projectId = row.project_id
             if (!projectName && row.task_id) {
-                log.debug("Getting project name for task ID ${row.task_id}")
+//                log.debug("Getting project name for task ID ${row.task_id}")
                 def task = Task.get(row.task_id as long)
-                log.debug("task: ${task}")
+//                log.debug("task: ${task}")
                 projectName = task.project.name
                 projectId = task.project.id
-                log.debug("project name: ${projectName} from project ${task.project}")
+//                log.debug("project name: ${projectName} from project ${task.project}")
             }
 
             [
@@ -274,6 +274,23 @@ class ForumService {
         if (userWatchList && userWatchList.topics) {
             def existing = userWatchList.topics.find {
                 it.id == topic.id
+            }
+            return existing != null
+        }
+        return false
+    }
+
+    /**
+     * Checks if a user is watching a given project.
+     * @param user the user to check
+     * @param project the project to check
+     * @return true if the user is watching the project, false otherwise
+     */
+    boolean isUserWatchingProject(User user, Project project) {
+        def watchList = ProjectForumWatchList.findByProject(project)
+        if (watchList && watchList.users) {
+            def existing = watchList.users.find {
+                it.id == user.id
             }
             return existing != null
         }
@@ -674,4 +691,37 @@ class ForumService {
             """
         ForumTopic.executeUpdate(hql, [id: topic.id])
     }
+
+    /**
+     * Retrieves a list of all projects that the user is watching.
+     * @param user the user to query on
+     * @return a list of projects that the user is watching, including the last topic for each project
+     */
+    def getForumProjectWatchList(User user) {
+        def watchedForums = []
+        def c = ProjectForumWatchList.createCriteria()
+        def results = c.list() {
+            users {
+                eq('userId', user.userId)
+            }
+        }
+        results.each { pfwl ->
+            def row = [:]
+            row.project = pfwl.project
+            // Get last post for project
+            def lastPost = ForumMessage.createCriteria().get {
+                topic {
+                    eq('project', pfwl.project)
+                }
+                order('date', 'desc')
+                maxResults(1)
+            }
+            row.lastTopic = lastPost?.topic
+            row.lastMessage = lastPost
+            watchedForums.add(row)
+        }
+        watchedForums = watchedForums.sort { it.project.name }
+        return watchedForums
+    }
+
 }

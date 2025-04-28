@@ -362,6 +362,10 @@ td {
 
 // Text align
 
+.text-nowrap {
+  text-wrap: nowrap;
+}
+
 .td--text-right {
   text-align: right;
 }

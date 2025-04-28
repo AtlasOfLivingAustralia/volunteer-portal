@@ -215,9 +215,11 @@ class TutorialsController {
             redirect(action: 'manage', params: [migrate: true])
         } else {
             def filterParams = [:]
-            filterParams.putAll(session[SESSION_KEY_TUTORIAL_FILTER] as Map)
+            if (session.hasProperty(SESSION_KEY_TUTORIAL_FILTER)) {
+                filterParams.putAll(session[SESSION_KEY_TUTORIAL_FILTER] as Map)
+            }
 
-            redirect(action: 'manage', params: session[SESSION_KEY_TUTORIAL_FILTER])
+            redirect(action: 'manage', params: filterParams)
         }
     }
 

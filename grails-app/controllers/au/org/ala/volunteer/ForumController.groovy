@@ -23,6 +23,7 @@ class ForumController {
         def filter = params.filter as String
         def searchQuery = params.q as String
         def watched = params.boolean("watched") == true
+        String pageTitle = message(code: 'default.forum.label', default: 'DigiVol Forum')
 
         if (!currentUser) {
             flash.message = message(code: 'default.not.found.message',
@@ -34,6 +35,7 @@ class ForumController {
         def project = null
         if (params.projectId) {
             project = Project.get(params.long('projectId'))
+            pageTitle = message(code: 'default.forum.expedition.label', default: 'Project Forum')
             session[SESSION_KEY_PROJECT_ID] = project.id
         } else {
             session.removeAttribute(SESSION_KEY_PROJECT_ID)
@@ -47,7 +49,27 @@ class ForumController {
 
         def projectFilterList = projectService.getProjectsWithTopicCounts()
 
-        [topicList: forumTopics.topicList, topicCount: forumTopics.topicCount, project: project, projectFilterList: projectFilterList]
+        def watchingProjectForum = false
+        if (project) {
+            watchingProjectForum = forumService.isUserWatchingProject(currentUser, project)
+            log.debug("Watching project forum: ${watchingProjectForum}")
+        }
+
+        [topicList: forumTopics.topicList, topicCount: forumTopics.topicCount, project: project,
+            projectFilterList: projectFilterList, watchingProjectForum: watchingProjectForum, listPageTitle: pageTitle]
+    }
+
+    def expeditions() {
+        def currentUser = userService.currentUser
+        if (!currentUser) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
+            render(view: '/notPermitted')
+            return
+        }
+
+        def forumProjectsWatched = forumService.getForumProjectWatchList(currentUser)
+        [forumProjectWatched: forumProjectsWatched]
     }
 
     /**
