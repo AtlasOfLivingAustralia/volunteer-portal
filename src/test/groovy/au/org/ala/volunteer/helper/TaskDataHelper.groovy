@@ -50,6 +50,12 @@ class TaskDataHelper {
         p
     }
 
+    static void setTranscriptionsPerTask(Project project, int transcriptionsPerTask) {
+        project.transcriptionsPerTask = transcriptionsPerTask
+        project.thresholdMatchingTranscriptions = transcriptionsPerTask - 1
+        project.save(flush: true, failOnError: true)
+    }
+
     static Task addTask(Project projectInstance, int index) {
         Task task = new Task().tap {
             project = projectInstance
@@ -64,6 +70,18 @@ class TaskDataHelper {
 
     static List<Task> setupTasks(Project project, int numberOfTasks) {
         (0..<numberOfTasks).collect { i -> addTask(project, i) }
+    }
+
+    static Transcription createTranscription(Task task, String userId) {
+        log.debug("Creating Transcription for task: ${task}")
+        view(task, userId)
+        Transcription transcription = task.findUserTranscription(userId)
+        if (!transcription) {
+            transcription = task.addTranscription()
+            task.save(failOnError:true)
+        }
+        transcription.save(failOnError:true, flush:true)
+        transcription
     }
 
     static void transcribe(Task task, String userId, Map <Integer, Map<String, String>> fields = null) {
@@ -131,21 +149,31 @@ class TaskDataHelper {
             lastView = lastViewValue
             skipped = false
         }
+        log.info("viewedTask: ${viewedTask}")
         taskInstance.viewedTasks.add(viewedTask)
         viewedTask.save(failOnError:true, flush:true)
         taskInstance.save(failOnError:true, flush:true)
     }
 
-    static User setupUser() {
-//        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
+    static User setupUser(String _firstName = 'Test', String _lastName = 'User') {
         User user = new User().tap {
-            firstName = 'Example'
-            lastName = 'Test'
+            firstName = _firstName
+            lastName = _lastName
             userId = UUID.randomUUID().toString()
-            email = 'test@example.org'
+            email = "${firstName.toLowerCase()}@example.org"
             created = new Date()
         }
         return user.save(flush: true, failOnError: true)
+
+//        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
+//        User user = new User().tap {
+//            firstName = 'Example'
+//            lastName = 'Test'
+//            userId = UUID.randomUUID().toString()
+//            email = 'test@example.org'
+//            created = new Date()
+//        }
+//        return user.save(flush: true, failOnError: true)
     }
 
     static ProjectForumTopic setupProjectForum(Project projectInstance, User userInstance, int messages) {

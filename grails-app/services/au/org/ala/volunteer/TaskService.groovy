@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage
 import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 import static au.org.ala.volunteer.jooq.tables.Field.FIELD
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
@@ -1806,9 +1807,37 @@ ORDER BY record_idx, name;
         if (supportsMultiTx) {
             int requiredTranscriptionCount = task.project.requiredNumberOfTranscriptions
             int transcriptionCount = (int) (task.transcriptions?.count { it.fullyTranscribedBy } ?: 0)
+            log.debug("Transcription count: ${transcriptionCount}, required transcription count: ${requiredTranscriptionCount}")
+            log.debug("transcriptionCount >= requiredTranscriptionCount: ${transcriptionCount >= requiredTranscriptionCount}")
             return transcriptionCount >= requiredTranscriptionCount
         } else {
             return true
+        }
+    }
+
+    /**
+     * This method is called by the Quartz scheduler to process finished tasks.
+     * It checks if all transcriptions are complete and updates the task status accordingly.
+     */
+    def processFinishedTasks() {
+        def timeBufferInMinutes = 15
+        def timeBuffer = Date.from(LocalDateTime.now().minusMinutes(timeBufferInMinutes).atZone(ZoneId.systemDefault()).toInstant())
+        def updatedTaskIds = Transcription.createCriteria().list {
+            gt('dateFullyTranscribed', timeBuffer)
+            projections {
+                distinct('task.id')
+            }
+        }
+
+        log.debug("Processing finished tasks, found [${updatedTaskIds.size()}] tasks with recently updated transcriptions")
+        updatedTaskIds.each { id ->
+            log.debug("Processing task id: ${id}")
+            def task = Task.get(id as long)
+            if (task && !task.isFullyTranscribed && allTranscriptionsComplete(task)) {
+                log.debug("Task ${task.id} set to fully transcribed")
+                task.isFullyTranscribed = true
+                task.save(failOnError: true, flush: true)
+            }
         }
     }
 }

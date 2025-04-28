@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import au.org.ala.volunteer.helper.FlybernateSpec
+import grails.gorm.DetachedCriteria
 import grails.testing.services.ServiceUnitTest
 import groovy.util.logging.Slf4j
 import static au.org.ala.volunteer.helper.TaskDataHelper.*
@@ -8,28 +9,21 @@ import static au.org.ala.volunteer.helper.TaskDataHelper.*
 @Slf4j
 class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskService> {
 
-    def dataSource
-
-    /**
-     * This is to build up some data in the test database for the purposes of running SQL queries.
-     * It needs to be deleted at some point.
-     */
-//    Map getConfiguration() {
-//        Collections.singletonMap(Settings.SETTING_DB_CREATE, "update")
-//    }
-
     boolean isRollback() { return false }
 
+    ProjectService projectService
     String userId = '1234'
     Project p
 
     def setup() {
         p = setupProject()
         service.dataSource = hibernateDatastore.dataSource
-    }
 
-    def teardown() {
-        //p.delete(flush:true)
+        projectService = Mock(ProjectService)
+        service.projectService = projectService
+        projectService.doesTemplateSupportMultiTranscriptions(_) >> { Project project ->
+            return true
+        }
     }
 
     def "regardless of the number of transcriptions per task, the same user shouldn't be assigned a task they've already transcribed"(int transcriptionsPerTask) {
@@ -282,4 +276,89 @@ class TaskServiceSpec extends FlybernateSpec implements ServiceUnitTest<TaskServ
 
    }
 */
+
+    def "processFinishedTasks should mark tasks as fully transcribed if all transcriptions are complete"() {
+        setup:
+        int transcriptionsPerTask = 5
+        p.transcriptionsPerTask = transcriptionsPerTask
+        int numberOfTasks = 10
+        setupTasks(p, numberOfTasks)
+        Task.findAllByProject(p).each { Task task ->
+            List users = ['u1', 'u2', 'u3', 'u4', 'u5']
+            users.each { String user ->
+                transcribe(task, user)
+            }
+        }
+        def taskList = Task.list()
+        def lastTask = taskList.last()
+        // One task wasn't marked as fully transcribed (race condition)
+        lastTask.isFullyTranscribed = false
+        lastTask.save(flush: true, failOnError: true)
+
+        when: "processFinishedTasks job is called"
+        service.processFinishedTasks()
+
+        then: "all tasks should be marked as fully transcribed"
+        Task.findAllByProject(p).each { Task task ->
+            assert task.isFullyTranscribed == true
+        }
+    }
+
+    def "processFinishedTasks should not mark tasks as fully transcribed if already fully transcribed"() {
+        given:
+        def task = Mock(Task) {
+            getId() >> 1L
+            isFullyTranscribed >> true
+        }
+        def transcription = Mock(Transcription) {
+            getDateFullyTranscribed() >> new Date()
+            getTask() >> task
+        }
+        Transcription.createCriteria() >> Mock(DetachedCriteria) {
+            list(_) >> [transcription]
+        }
+
+        when: "processFinishedTasks job is called"
+        service.processFinishedTasks()
+
+        then: "Nothing should be modified"
+        0 * task.setFullyTranscribed(_)
+        0 * task.save(_)
+    }
+
+    def "processFinishedTasks should not mark tasks as fully transcribed if transcriptions are incomplete"() {
+        given:
+        def task = Mock(Task) {
+            getId() >> 1L
+            isFullyTranscribed >> false
+        }
+        def transcription = Mock(Transcription) {
+            getDateFullyTranscribed() >> new Date()
+            getTask() >> task
+        }
+        Transcription.createCriteria() >> Mock(DetachedCriteria) {
+            list(_) >> [transcription]
+        }
+        service.metaClass.allTranscriptionsComplete = { Task t -> false }
+
+        when: "processFinishedTasks job is called"
+        service.processFinishedTasks()
+
+        then: "task should not be marked as fully transcribed"
+        0 * task.setFullyTranscribed(_)
+        0 * task.save(_)
+    }
+
+    def "processFinishedTasks should handle empty transcription list gracefully"() {
+        given:
+        Transcription.createCriteria() >> Mock(DetachedCriteria) {
+            list(_) >> []
+        }
+
+        when: "processFinishedTasks job is called"
+        service.processFinishedTasks()
+
+        then: "no exception should be thrown"
+        noExceptionThrown()
+    }
 }

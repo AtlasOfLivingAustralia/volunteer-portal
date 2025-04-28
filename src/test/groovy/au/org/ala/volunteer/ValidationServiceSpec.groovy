@@ -268,4 +268,30 @@ class ValidationServiceSpec extends Specification implements ServiceUnitTest<Val
         !task.numberOfMatchingTranscriptions
         !task.fullyValidatedBy
     }
+
+    def "fieldSyncService.syncFields should handle concurrent execution safely"() {
+        setup:
+        def sharedResource = []
+        fieldSyncService = Mock(FieldSyncService) {
+            syncFields(_, _, _, _, _, _) >> { Task task, Map fields, String user, boolean markAsFullyTranscribed, boolean markAsFullyValidated, boolean isValid ->
+                synchronized (sharedResource) {
+                    sharedResource << user
+                    Thread.sleep(100) // Simulate some processing
+                }
+            }
+        }
+        service.fieldSyncService = fieldSyncService
+
+        when:
+        def threads = (1..5).collect { i ->
+            Thread.start {
+                service.fieldSyncService.syncFields(task, [:], "user$i", false, true, true)
+            }
+        }
+        threads*.join()
+
+        then:
+        sharedResource.size() == 5
+        sharedResource.containsAll(["user1", "user2", "user3", "user4", "user5"])
+    }
 }

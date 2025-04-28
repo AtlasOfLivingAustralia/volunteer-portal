@@ -274,18 +274,18 @@ class FieldSyncService {
 
         def now = Calendar.instance.time;
 
-        //set the transcribed by
+        log.debug("Saving mark as fully transcribed for task ${task.id} by user ${transcriberUserId}")
+        // Set the transcribed by
         if (markAsFullyTranscribed) {
             if (!transcription) {
                 throw new IllegalArgumentException("A Transcription is required if markAsFullyTranscribed is true")
             }
             // Only set it if it hasn't already been set. The rules are the first person to save gets the transcription
             if (!transcription.fullyTranscribedBy) {
+                log.debug("Setting transcription ${transcription.id} as fully transcribed by user ${transcriberUserId}")
                 transcription.fullyTranscribedBy = transcriberUserId
                 transcription.fullyTranscribedIpAddress = userIp
                 def user = User.findByUserId(transcriberUserId)
-//                user?.transcribedCount++
-//                user?.save(flush: true)
                 incrementTranscriptionCount(user.id)
             }
             if (!transcription.dateFullyTranscribed) {
@@ -295,7 +295,6 @@ class FieldSyncService {
                 transcription.transcribedUUID = UUID.randomUUID()
             }
 
-            //if (task.allTranscriptionsComplete()) {
             if (taskService.allTranscriptionsComplete(task)) {
                 task.isFullyTranscribed = true
             }
@@ -303,11 +302,8 @@ class FieldSyncService {
 
         if (markAsFullyValidated) {
             // Again, only update the validated user and date if it hasn't already been set.
-
             if (!task.fullyValidatedBy) {
                 def user = User.findByUserId(transcriberUserId)
-//                user?.validatedCount++
-//                user?.save(flush: true)
                 incrementValidationCount(user.id)
             }
             taskService.validate(task, transcriberUserId, isValid, now)
@@ -322,8 +318,6 @@ class FieldSyncService {
 
         task.save(flush: true, failOnError: true)
 
-        // Should be dealt with by GORM event
-        //DomainUpdateService.scheduleTaskIndex(task)
     }
 
     int maxIndexFor(fieldName, Map fieldValues, sortedIndexes) {
@@ -366,12 +360,15 @@ class FieldSyncService {
      * @param userId the user's ID.
      */
     def incrementTranscriptionCount(long userId) {
+        log.debug("incrementTranscriptionCount called with userId: ${userId}")
+        log.debug("User: ${User.findById(userId)}")
         DSLContext context = jooqContextFactory()
 
         context.update(VP_USER)
                 .set(VP_USER.TRANSCRIBED_COUNT, VP_USER.TRANSCRIBED_COUNT.plus(1))
                 .where(VP_USER.ID.eq(userId))
                 .execute()
+        log.debug("User after update: ${User.findById(userId)}")
     }
 
     /**
