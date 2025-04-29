@@ -52,7 +52,7 @@
                 <g:each in="${tutorialList}" var="tutorial">
                     <tr>
                         <td><g:checkBox name="tutorials" value="${tutorial.id}" checked="${projectInstance.tutorials.contains(tutorial)}"/></td>
-                        <td>${tutorial.name}</td>
+                        <td>${tutorial.name} <cl:tutorialLink tutorial="${tutorial}" /></td>
                     </tr>
                 </g:each>
             </table>

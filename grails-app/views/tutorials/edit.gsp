@@ -14,8 +14,8 @@
             border-radius: 4px !important;
         }
 
-        .tutorial-file-row {
-            padding-top: 0.6rem;
+        .tutorial-text-row {
+            padding-top: 0.7rem;
             padding-bottom: 1rem;
         }
 
@@ -93,10 +93,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="tutorialFile">Tutorial File</label>
+                            <label class="control-label col-md-3" for="tutorialFileLink">Tutorial File</label>
 
-                            <div class="col-md-6 tutorial-file-row">
-%{--                                <a href="${tutorialUrl}" target="_blank"><span class="fa fa-file"></span>&nbsp;${tutorial?.filename}</a>--}%
+                            <div class="col-md-6 tutorial-text-row">
                                 <cl:tutorialLink tutorial="${tutorial}"><span class="fa fa-file"></span>&nbsp;${tutorial?.filename}</cl:tutorialLink>
                             </div>
                         </div>
@@ -110,6 +109,25 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="control-label col-md-3" for="fileInfo">Tutorial Created</label>
+                            <div class="col-md-6 tutorial-text-row">
+                                <g:formatDate date="${tutorial?.dateCreated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.createdBy?.displayName}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3" for="fileInfo">Tutorial Last Updated</label>
+                            <div class="col-md-6 tutorial-text-row">
+                                <g:if test="${tutorial?.lastUpdated}">
+                                <g:formatDate date="${tutorial?.lastUpdated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.updatedBy ? tutorial?.updatedBy?.displayName : 'System (migration)'}
+                                </g:if>
+                                <g:else>
+                                    -
+                                </g:else>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="col-md-offset-3 col-md-9 tutorial-button-row">
                                 <g:if test="${!migrate}">
                                 <g:submitButton name="edit" class="save btn btn-primary tutorial-upload"
@@ -119,6 +137,7 @@
                         </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-12">
                     <h4>Expeditions</h4>

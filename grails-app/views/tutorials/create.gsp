@@ -11,6 +11,16 @@
         .file-input-wrapper {
             border-radius: 4px !important;
         }
+
+        .btn, .custom-search-input {
+            border-radius: 4px !important;
+        }
+
+        .submit-button-row {
+            padding-top: 0.5rem;
+        }
+
+
     </style>
 </head>
 
@@ -84,7 +94,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group submit-button-row">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="create" class="save btn btn-primary tutorial-upload"
                                                 value="${message(code: 'default.button.create.label', default: 'Save')}"/>
