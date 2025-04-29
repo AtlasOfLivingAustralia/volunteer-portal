@@ -286,18 +286,18 @@ class ForumTagLib {
 
                     div(class: 'forum-post-buttons') {
                         if (newPost) {
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_insertForumTopic', value: message(code: 'forum.newpost.save', default: 'Save message'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_insertForumTopic', value: message(code: 'forum.newpost.save', default: 'Save topic'))
                         } else if (isEdit) {
                             mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessageEdit', value: message(code: 'forum.reply.preview', default: 'Preview'))
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_updateTopicMessage', value: message(code: 'forum.reply.comment', default: 'Comment'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_updateTopicMessage', value: message(code: 'forum.reply.comment', default: 'Update'))
                         } else {
                             mb.input(type: 'submit', class: 'forum-post-button', name: '_action_previewMessage', value: message(code: 'forum.reply.preview', default: 'Preview'))
-                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.reply.comment', default: 'Comment'))
+                            mb.input(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessage', value: message(code: 'forum.reply.comment', default: 'Reply'))
                         }
 
-                        if (!newPost) {
+                        if (!newPost && !isEdit) {
                             if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
-                                String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Comment and mark as ')}"
+                                String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Reply and mark as ')}"
                                 buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
                                 mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
                                     mkp.yieldUnescaped(buttonLabel)

@@ -47,8 +47,28 @@
 
         <ol>
             <g:form id="messageForm" controller="forum" class="forum-post__form">
-                <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
-                <vpf:topicReplyBox topic="${forumMessage.topic}" forumMessage="${forumMessage}" isEdit="true" user="${userInstance}" />
+            <g:hiddenField name="messageId" value="${forumMessage?.id}"/>
+            <g:if test="${!taskInstance && isEditingTopic}">
+
+            <g:hiddenField name="topicId" value="${forumMessage?.topic?.id}"/>
+            <g:hiddenField name="isEditingTopic" value="${isEditingTopic}"/>
+
+            <li class="forum-post__list-item hr-spacer">
+                <article>
+                    <div class="forum-post__header forum-post__header-title">
+                        <div class="filter-nav__label">
+                            <label for="title" class="forum-post__title_label"><g:message code="forum.topic.edit.title.label" default="Topic title"/></label>
+                        </div>
+                        <g:textField id="title" name="title" class="form-control" value="${(params.title ? params.title : forumMessage?.topic?.title)}"/>
+                    </div>
+                </article>
+            </li>
+
+            </g:if>
+
+
+
+            <vpf:topicReplyBox topic="${forumMessage.topic}" forumMessage="${forumMessage}" isEdit="true" user="${userInstance}" />
             </g:form>
 
             <g:if test="${params.messageText}">

@@ -301,9 +301,11 @@ class ForumController {
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
 
         def topicValues = getTopicParameters(message.topic)
+        def isEditingTopic = !message.replyTo
+        log.debug("Editing topic: ${isEditingTopic}")
 
         [forumMessage: message, isWatched: isWatched, userInstance: userService.currentUser, taskInstance: topicValues.taskInstance,
-            projectInstance: topicValues.projectInstance, messageText: params.messageText ?: message.text]
+            projectInstance: topicValues.projectInstance, messageText: params.messageText ?: message.text, isEditingTopic: isEditingTopic]
     }
 
     /**
@@ -328,10 +330,13 @@ class ForumController {
     def previewMessageEdit() {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
-        render view:'editMessage', model: [forumMessage: message,
-                                           isWatched: isWatched,
-                                           userInstance: userService.currentUser,
-                                           messageText: markdownService.sanitizeMarkdown(params.messageText)]
+        def title = message?.topic?.title
+        if (params.title) {
+            title = params.title
+        }
+        render view:'editMessage',
+               model: [forumMessage: message, isWatched: isWatched, isEditingTopic: params.isEditingTopic,
+                    title: title, userInstance: userService.currentUser, messageText: markdownService.sanitizeMarkdown(params.messageText)]
     }
 
     /**
@@ -364,6 +369,12 @@ class ForumController {
             }
         } else {
             errors << "Message text must not be empty"
+        }
+
+        if (params.title) {
+            def topic = message.topic
+            topic.title = params.title
+            topic.save(flush: true, failOnError: true)
         }
 
         if (!errors) {
