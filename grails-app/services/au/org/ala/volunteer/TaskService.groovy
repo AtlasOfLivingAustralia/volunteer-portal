@@ -1345,6 +1345,7 @@ ORDER BY record_idx, name;
                             field(name("user_transcription", "fully_transcribed_by")),
                             field(name("user_transcription", "fully_validated_by")),
                             field(name("user_transcription", "is_valid")),
+                            PROJECT.ID.as("project_project_id"),
                             PROJECT.NAME.as("project_name"),
                             field(name("user_transcription", "is_fully_transcribed")),
                             when(field(name("user_transcription", "fully_validated_by")).eq(user.userId), field(name("user_transcription", "date_fully_validated")))
@@ -1388,6 +1389,7 @@ ORDER BY record_idx, name;
                     fullyTranscribedBy: row.fully_transcribed_by,
                     fullyValidatedBy: row.fully_validated_by,
                     isValid: row.is_valid,
+                    projectId: row.project_project_id,
                     projectName: row.project_name,
                     isFullyTranscribed: row.is_fully_transcribed,
                     dateTranscribed: row.date_transcribed,
@@ -1421,6 +1423,7 @@ ORDER BY record_idx, name;
                 TASK.FULLY_VALIDATED_BY,
                 TASK.IS_FULLY_TRANSCRIBED,
                 TASK.IS_VALID,
+                PROJECT.ID.as("project_project_id"),
                 PROJECT.NAME.as("project_name"),
                 when(TASK.FULLY_VALIDATED_BY.eq(user.userId), TASK.DATE_FULLY_VALIDATED)
                     .when(TRANSCRIPTION.DATE_FULLY_TRANSCRIBED.isNotNull(), TRANSCRIPTION.DATE_FULLY_TRANSCRIBED)

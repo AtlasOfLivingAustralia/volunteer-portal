@@ -66,7 +66,7 @@
     <section class="badge-list-section ">
         <header class="badge-list-header">
             <h2>Badges</h2>
-            <p><g:link controller="user" action="achievements">View all available badges</g:link></p>
+            <p><g:link controller="user" action="achievements">View all available badges and your progress</g:link></p>
         </header>
         <ul class="badges-list">
             <g:each in="${achievements}" var="ach" status="i">
@@ -91,11 +91,17 @@
             <div class="filter-nav filter-nav--mt-3">
                 <div class="filter-nav__label">Filter by:</div>
                 <ul class="task-history-nav__list">
+                    <g:if test="${userInstance.userId == currentUser}">
+                        <g:set var="perspective" value="by you"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="perspective" value="by ${userInstance.displayName}"/>
+                    </g:else>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed by you">Transcribed</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated by you">Validated</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated ${perspective}">Validated</span></g:link></li>
                     <li class="filter-nav__list-item">|</li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks you have saved for later">Saved</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks saved for later ${perspective}">Saved</span></g:link></li>
                 </ul>
             </div>
             <div class="task-history-pagination-nav">
@@ -122,13 +128,22 @@
             </tr>
             </thead>
             <tbody>
+            <g:if test="${viewTaskList.size() == 0}">
+                <tr>
+                    <td colspan="5" class="task-history-table__no-results">
+                        <p>No tasks found.</p>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+            </g:if>
+            <g:else>
             <g:each in="${viewTaskList}" var="row">
             <tr>
                 <th class="task-history-table__thumbnail" data-key="task">
                     <cl:taskThumbnail taskId="${row.task_id}"/>
                 </th>
                 <td data-key="id"><g:link controller="task" action="showDetails" id="${row.task_id}">${row.task_id}</g:link></td>
-                <td data-key="expedition">${row.projectName}</td>
+                <td data-key="expedition"><a href="${createLink(controller: 'project', action: 'index', id: row.projectId)}">${row.projectName}</a></td>
                 <td data-key="transcribed">
                     <g:formatDate date="${row.dateTranscribed}"
                                   format="${DateConstants.DATE_TIME_FORMAT}"/>
@@ -186,6 +201,7 @@
                 </td>
             </tr>
             </g:each>
+            </g:else>
             </tbody>
         </table>
 
