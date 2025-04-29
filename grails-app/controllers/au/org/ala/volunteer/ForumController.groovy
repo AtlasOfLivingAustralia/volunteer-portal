@@ -37,6 +37,8 @@ class ForumController {
             project = Project.get(params.long('projectId'))
             pageTitle = message(code: 'default.forum.expedition.label', default: 'Project Forum')
             session[SESSION_KEY_PROJECT_ID] = project.id
+        } else if (params.watched) {
+            pageTitle = message(code: 'forum.watched.label', default: 'Watched Topics')
         } else {
             session.removeAttribute(SESSION_KEY_PROJECT_ID)
         }

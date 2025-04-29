@@ -337,19 +337,11 @@ class ForumTagLib {
         }
 
         pageScope.crumbs = []
+        pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index'), label: message(code: "default.forum.label", default: "Forum")]
         if (projectInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'project', action: 'index', id: projectInstance.id), label: projectInstance.featuredLabel]
             pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
-        }
-
-        if (taskInstance) {
+        } else if (taskInstance) {
             pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index', params: [projectId: taskInstance.project.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
-            pageScope.crumbs << [link: createLink(controller: 'task', action: 'show', id: taskInstance.id), label: "Task - " + taskInstance.externalIdentifier]
-        }
-
-        if (!projectInstance && !taskInstance) {
-            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index'), label: message(code: "default.forum.label", default: "Forum")]
-//            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index',params:[selectedTab: 1]), label: message(code: "default.generaldiscussion.label", default: "General Discussion")]
         }
 
         if (attrs.lastLabel) {

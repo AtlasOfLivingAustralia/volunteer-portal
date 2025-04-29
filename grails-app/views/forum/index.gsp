@@ -14,7 +14,7 @@
 <body>
 
 <cl:headerContent title="${listPageTitle}" selectedNavItem="forum">
-    <g:if test="${params.projectId}">
+    <g:if test="${params.projectId || params.watched}">
         <%
             pageScope.crumbs = [
                     [link: createLink(controller: 'forum', action: 'index'), label: message(code: 'default.forum.label', default: 'DigiVol Forum')]
@@ -26,8 +26,10 @@
         <ul class="forum-nav__list">
             <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum posts</g:link></li>
             <li class="forum-nav__list-item">|</li>
+            <g:if test="${!params.watched}">
             <li class="forum-nav__list-item"><g:link controller="forum" action="index" params="[watched: 'true']">My watched topics</g:link></li>
             <li class="forum-nav__list-item">|</li>
+            </g:if>
             <li class="forum-nav__list-item"><g:link controller="forum" action="expeditions">My watched expeditions</g:link></li>
         </ul>
     </nav>
@@ -137,6 +139,13 @@
             </tr>
             </thead>
             <tbody>
+            <g:if test="${topicCount == 0}">
+                <tr>
+                    <td colspan="7" class="forum-table-topic--no-topic">No topics found</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </g:if>
+            <g:else>
             <g:each in="${topicList}" var="topic">
             <tr>
                 <th class="td--order-1 forum-table-topic"><g:link controller="forum" action="viewForumTopic" params="${[id: topic.id]}">${topic.title}</g:link>
@@ -182,7 +191,7 @@
                 </td>
             </tr>
             </g:each>
-
+            </g:else>
             </tbody>
         </table>
     </section>
@@ -190,7 +199,7 @@
     <section class="forum-nav-section">
 
         <div class="forum-nav-row">
-
+            <g:if test="${topicCount > 10}">
             <nav class="forum-filter-nav filter-nav--mt-6">
                 <div class="forum-nav-header">
                 <g:if test="${params.projectId}" >
@@ -203,6 +212,7 @@
                 </a>
                 </div>
             </nav>
+            </g:if>
 
             <div class="forum-pagination-nav">
                 <div class="forum-nav-header forum-nav-pagination">

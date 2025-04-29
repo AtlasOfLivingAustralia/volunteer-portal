@@ -13,15 +13,17 @@
 </head>
 <body>
 
-<cl:headerContent title="${message(code: 'default.forum.label', default: 'DigiVol Forum')}" selectedNavItem="forum">
-
+<cl:headerContent title="${message(code: 'forum.watched.expeditions.label')}" selectedNavItem="forum">
+    <%
+        pageScope.crumbs = [
+                [link: createLink(controller: 'forum', action: 'index'), label: message(code: 'default.forum.label', default: 'DigiVol Forum')]
+        ]
+    %>
     <nav class="forum-nav">
         <ul class="forum-nav__list">
             <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum posts</g:link></li>
             <li class="forum-nav__list-item">|</li>
             <li class="forum-nav__list-item"><g:link controller="forum" action="index" params="[watched: 'true']">My watched topics</g:link></li>
-            <li class="forum-nav__list-item">|</li>
-            <li class="forum-nav__list-item"><g:link controller="forum" action="expeditions">My watched expeditions</g:link></li>
         </ul>
     </nav>
 
@@ -37,7 +39,7 @@
         <p class="forum-topic-count">
             ${forumProjectWatched?.size()} expeditions found.
         </p>
-        <table class="forum-posts-table">
+        <table class="forum-expeditions-table">
             <thead>
             <tr>
                 <th class="td--5/12">${message(code: 'forumTopic.expedition.label', default: 'Expedition')}</th>
@@ -86,7 +88,6 @@
                         -
                     </g:else>
                 </td>
-
                 <td class="forum-table-watched td--order-5 lg:td--text-right">
                     <div data-project-id="${projectRow.project.id}" data-watched="true" class="toggleWatch">
                         <span class="fa fa-star forum-table-topic-watched" title="${message(code: 'forumTopic.expedition.watched.stopwatching', default: 'Click to stop watching')}"></span>

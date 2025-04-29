@@ -109,7 +109,7 @@ main {
   font-size: variables-and-mixins.$text-lg;
 }
 
-.forum-posts-table {
+.forum-posts-table, .forum-expeditions-table {
   margin-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-lg;
 }
@@ -171,7 +171,7 @@ main {
 // Mobile table
 
 @media screen and (max-width: variables-and-mixins.$screen-md) {
-  .forum-posts-table {
+  .forum-posts-table, .forum-expeditions-table {
     tbody {
       th {
         margin-bottom: variables-and-mixins.$space-2;
@@ -186,33 +186,56 @@ main {
         position: relative;
         display: flex;
         flex-direction: column;
+      }
+    }
+  }
 
-        // Mobile cell labels
-        td {
-          &:nth-of-type(2):before {
-            content: "Posted by: ";
-          }
+  .forum-posts-table {
+    // Mobile cell labels
+    td {
+      &:nth-of-type(2):before {
+        content: "Posted by: ";
+      }
 
-          &:nth-of-type(3):before {
-            content: "Posted on: ";
-          }
+      &:nth-of-type(3):before {
+        content: "Posted on: ";
+      }
 
-          &:nth-of-type(4):before {
-            content: "Last reply: ";
-          }
+      &:nth-of-type(4):before {
+        content: "Last reply: ";
+      }
 
-          &:nth-of-type(5):before {
-            content: "Views: ";
-          }
+      &:nth-of-type(5):before {
+        content: "Views: ";
+      }
 
-          &:nth-of-type(6):before {
-            content: "Replies: ";
-          }
+      &:nth-of-type(6):before {
+        content: "Replies: ";
+      }
 
-          &:nth-of-type(7):before {
-            content: "Watched: ";
-          }
-        }
+      &:nth-of-type(7):before {
+        content: "Watched: ";
+      }
+    }
+  }
+
+  .forum-expeditions-table {
+    // Mobile cell labels
+    td {
+      &:nth-of-type(1):before {
+        content: "Last topic Activity: ";
+      }
+
+      &:nth-of-type(3):before {
+        content: "Posted by: ";
+      }
+
+      &:nth-of-type(4):before {
+        content: "Last reply: ";
+      }
+
+      &:nth-of-type(5):before {
+        content: "Watched: ";
       }
     }
   }

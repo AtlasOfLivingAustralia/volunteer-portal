@@ -698,6 +698,7 @@ class ForumService {
      * @return a list of projects that the user is watching, including the last topic for each project
      */
     def getForumProjectWatchList(User user) {
+        DSLContext create = jooqContext()
         def watchedForums = []
         def c = ProjectForumWatchList.createCriteria()
         def results = c.list() {
@@ -709,15 +710,27 @@ class ForumService {
             def row = [:]
             row.project = pfwl.project
             // Get last post for project
-            def lastPost = ForumMessage.createCriteria().get {
-                topic {
-                    eq('project', pfwl.project)
+            def lastPostOrClause = [FORUM_TOPIC.PROJECT_ID.eq(pfwl.project.id as long),
+                TASK.PROJECT_ID.eq(pfwl.project.id as long)]
+
+            def lastPostQuery = create.select(FORUM_MESSAGE.ID)
+                .from(FORUM_MESSAGE)
+                .join(FORUM_TOPIC).on(FORUM_TOPIC.ID.eq(FORUM_MESSAGE.TOPIC_ID))
+                .leftOuterJoin(TASK).on(TASK.ID.eq(FORUM_TOPIC.TASK_ID))
+                .where(jOr(lastPostOrClause))
+                .orderBy(FORUM_MESSAGE.DATE.desc())
+                .limit(1)
+
+            def lastPost
+            def lastPostResults = create.fetchOne(lastPostQuery)
+            if (lastPostResults) {
+                lastPost = ForumMessage.get(lastPostResults.id as long)
+                if (lastPost) {
+                    row.lastTopic = lastPost?.topic
+                    row.lastMessage = lastPost
                 }
-                order('date', 'desc')
-                maxResults(1)
             }
-            row.lastTopic = lastPost?.topic
-            row.lastMessage = lastPost
+
             watchedForums.add(row)
         }
         watchedForums = watchedForums.sort { it.project.name }
