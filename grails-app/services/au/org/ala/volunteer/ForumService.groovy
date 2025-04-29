@@ -152,7 +152,10 @@ class ForumService {
                 'views': 'views',
                 'replies': 'replies'
         ].withDefault { 'last_reply_date' }
-        def sortColumn = validSorts[sort]
+        def sortColumn = [validSorts[sort]]
+        if (sort?.equalsIgnoreCase('type')) {
+            sortColumn.add('is_answered')
+        }
         if (!'asc'.equalsIgnoreCase(order)) order = 'desc'
 
         // Main query
@@ -182,7 +185,8 @@ class ForumService {
 
         def forumQuery = select(topicQuery.fields())
             .from(topicQuery)
-            .orderBy(topicQuery.field(sortColumn).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC))
+            .orderBy(sortColumn.collect { topicQuery.field(it).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC) })
+
 
         def totalCount = create.fetchCount(forumQuery)
 
