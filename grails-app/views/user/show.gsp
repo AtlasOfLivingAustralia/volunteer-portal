@@ -57,7 +57,12 @@
             </div>
             <div class="achievement-list__card">
                 <dt>Leaderboard position</dt>
-                <dd class="achievement-list__definition">${userRank} <span class="achievement-list__leaderboard-total">/ ${totalUsers}</span></dd>
+                <g:if test="${userRank == "0"}">
+                    <dd class="achievement-list__leaderboard-total">Not ranked</dd>
+                </g:if>
+                <g:else>
+                    <dd class="achievement-list__definition">${userRank} <span class="achievement-list__leaderboard-total">/ ${totalUsers}</span></dd>
+                </g:else>
             </div>
         </dl>
     </section>

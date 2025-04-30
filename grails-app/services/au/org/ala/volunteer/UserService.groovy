@@ -850,7 +850,8 @@ class UserService {
 
         sw.reset().start()
 
-        def userRank = WebUtils.formatNumberWithCommas(leaderBoardService.getUserRank(model.userInstance.userId as String))
+        def rank = leaderBoardService.getUserRank(model.userInstance.userId as String)
+        def userRank = WebUtils.formatNumberWithCommas(rank)
         def totalUsers = WebUtils.formatNumberWithCommas(User.countByTranscribedCountGreaterThanOrValidatedCountGreaterThan(0, 0))
 
         sw.stop()

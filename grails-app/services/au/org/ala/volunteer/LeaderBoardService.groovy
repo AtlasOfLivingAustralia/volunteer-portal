@@ -441,8 +441,11 @@ class LeaderBoardService {
             .where(field(name("ranks", "ref_user_id")).eq(userId))
             .fetchOne()
 
-        def rank = rankRow.value6() as int
-
-        return rank
+        if (rankRow) {
+            def rank = rankRow.value6() as int
+            return rank
+        } else {
+            return 0
+        }
     }
 }
