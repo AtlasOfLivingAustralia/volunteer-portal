@@ -77,11 +77,11 @@
                                 ${raw(projectInstance.tutorialLinks)}
                                 </div>
                                 </g:if>
-                                <g:if test="${projectInstance.tutorials.size() > 0}">
+                                <g:if test="${tutorialList}">
                                 <h4 style="padding-top: 1rem;">Expedition Tutorial List</h4>
                                 <div id="tutorialList">
                                     <table class="table table-striped">
-                                        <g:each in="${projectInstance.tutorials}" var="tutorial">
+                                        <g:each in="${tutorialList}" var="tutorial">
                                         <tr>
                                             <td><cl:tutorialLink tutorial="${tutorial}">${tutorial.name}</cl:tutorialLink></td>
                                         </tr>

@@ -48,10 +48,12 @@ class ProjectController {
         def showTutorial = (params.showTutorial == "true")
 
         // If the tutorial has been requested but the field is empty, redirect to tutorial index.
-        if (showTutorial && Strings.isNullOrEmpty(projectInstance.tutorialLinks)) {
+        if (showTutorial && projectInstance.tutorials.size() == 0) {
             redirect(controller: "tutorials", action: "index")
             return
         }
+
+        def tutorialList = projectInstance.tutorials.find { it.isActive }
 
         String currentUserId = null
 
@@ -129,7 +131,8 @@ class ProjectController {
                     percentComplete : percentComplete,
                     projectSummary  : projectSummary,
                     transcriberCount: userIds.size(),
-                    showTutorial    : showTutorial
+                    showTutorial    : showTutorial,
+                    tutorialList    : tutorialList
             ])
         }
     }
@@ -578,7 +581,7 @@ class ProjectController {
                      args: [message(code: 'project.label', default: 'Project'), params.long('id')]) as String
             redirect(action: "list")
         } else {
-            def tutorialList = Tutorial.findAllByInstitution(project.institution, [sort: 'name', order: 'asc'])
+            def tutorialList = Tutorial.findAllByInstitutionAndIsActive(project.institution, true, [sort: 'name', order: 'asc'])
 
             return [projectInstance: project, templates: Template.list(), projectTypes: ProjectType.list(), tutorialList: tutorialList]
         }
