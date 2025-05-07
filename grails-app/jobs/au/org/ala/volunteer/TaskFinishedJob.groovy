@@ -18,7 +18,7 @@ class TaskFinishedJob {
 
     def execute() {
         try {
-            log.info("Processing finished tasks...")
+            log.debug("Processing finished tasks...")
             taskService.processFinishedTasks()
         } catch (Exception ex) {
             log.error("Error processing finished tasks", ex)
