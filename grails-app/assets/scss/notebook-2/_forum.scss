@@ -112,6 +112,7 @@ main {
 .forum-posts-table, .forum-expeditions-table {
   margin-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-lg;
+  width: 100%;
 }
 
 .forum-table-topic {
