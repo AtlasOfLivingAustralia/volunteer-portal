@@ -15,9 +15,9 @@ class ForumNotifierService {
     def emailService
     def messageSource
 
-    List<User> getModeratorsForTopic(ForumTopic topic) {
+    def getModeratorsForTopic(ForumTopic topic) {
         log.debug("Getting moderators for forum topic")
-        List<User> results = []
+        def results = []
 
         Project project = null
 
@@ -26,21 +26,23 @@ class ForumNotifierService {
         } else if (topic?.instanceOf(TaskForumTopic)) {
             project = (topic as TaskForumTopic).task?.project
         }
-        results = userService.getUsersWithRole("forum_moderator", project)
+        results = userService.getUsersWithRole("forum_moderator", project).collect {
+            [user: it, type: 'moderator']
+        }
 
         if (project) {
             // Include institution admins for the project's institution
             def institutionAdmins = userService.getInstitutionAdminsForProject(project)
             institutionAdmins.each {
                 log.debug("Adding institution admin: ${it.displayName}")
-                results << it
+                results << [user: it, type: 'moderator']
             }
 
             // And people watching the forum
             def watchList = getUsersInterestedInProject(project)
             watchList?.each { user ->
                 if (!results.contains(user)) {
-                    results << user
+                    results << [user: user, type: 'projectWatcher']
                 }
             }
         }
@@ -48,7 +50,7 @@ class ForumNotifierService {
         return results
     }
 
-    List<User> getUsersInterestedInProject(Project project) {
+    def getUsersInterestedInProject(Project project) {
         def list = new ArrayList<User>()
         ProjectForumWatchList watchList = ProjectForumWatchList.findByProject(project)
         if (watchList) {
@@ -68,18 +70,18 @@ class ForumNotifierService {
             }
         }
 
-        List<User> interestedUsers = []
+        def interestedUsers = []
 
         watchLists.each { watchList ->
             if (!interestedUsers.contains(watchList.user)) {
-                interestedUsers << watchList.user
+                interestedUsers << [user: watchList.user, type: 'watcher']
             }
         }
         // Now the forum moderators and admins...
         def mods = getModeratorsForTopic(topic)
         mods.each { mod ->
             if (!interestedUsers.contains(mod)) {
-                interestedUsers << mod
+                interestedUsers << [user: mod, type: 'moderator']
             }
         }
 
@@ -90,7 +92,7 @@ class ForumNotifierService {
             if (list) {
                 list.each { user ->
                     if (!interestedUsers.contains(user)) {
-                        interestedUsers << user
+                        interestedUsers << [user: user, type: 'projectWatcher']
                     }
                 }
             }
@@ -105,10 +107,23 @@ class ForumNotifierService {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getUsersInterestedInTopic(topic)
                 log.info("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { userService.detailsForUserId(it.userId).email })
-                def message = groovyPageRenderer.render(view: '/forum/topicNotificationMessage', model: [messages: lastMessage])
+                String template = '/forum/topicNotificationMessage'
+                def modMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'moderator'])
+                def watcherMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'watcher'])
+                def projectWatcherMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'projectWatcher'])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                interestedUsers.each { user ->
-                    emailService.sendMail(userService.detailsForUserId(user.userId).email, "${appName} Forum notification", message)
+                interestedUsers.each { userRow ->
+                    if (userRow.type == 'moderator') {
+                        log.debug("Sending moderator notification to ${userRow.user.userId}")
+                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", modMessage)
+                    } else if (userRow.type == 'watcher') {
+                        log.debug("Sending watcher notification to ${userRow.user.userId}")
+                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", watcherMessage)
+                    } else if (userRow.type == 'projectWatcher') {
+                        log.debug("Sending project watcher notification to ${userRow.user.userId}")
+                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", projectWatcherMessage)
+                    }
+                    //emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", message)
                 }
             }
         } catch (Throwable ex) {
@@ -121,10 +136,16 @@ class ForumNotifierService {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getModeratorsForTopic(topic)
                 log.info("Sending notifications to moderators for new topic ${topic.id}: " + userService.getEmailAddressesForIds(interestedUsers*.userId))
-                def message = groovyPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage])
+                String template = '/forum/newTopicNotificationMessage'
+                def message = groovyPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage, type: 'projectWatcher'])
+                def moderatorMessage = groovyPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage, type: 'moderator'])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
-                interestedUsers.each { user ->
-                    emailService.sendMail(userService.detailsForUserId(user.userId).email, "${appName} Forum new topic notification", message)
+                interestedUsers.each { userRow ->
+                    if (userRow.type == 'projectWatcher') {
+                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", message)
+                    } else if (userRow.type == 'moderator') {
+                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", moderatorMessage)
+                    }
                 }
             }
         } catch (Throwable ex) {

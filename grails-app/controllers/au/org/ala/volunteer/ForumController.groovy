@@ -192,7 +192,7 @@ class ForumController {
             topic = forumService.createForumTopic(task, parameters)
         } else if (params.projectId) {
             def project = Project.get(params.int("projectId"))
-            topic = forumService. createForumTopic(project, parameters)
+            topic = forumService.createForumTopic(project, parameters)
         } else {
             // new general discussion topic
             topic = forumService.createForumTopic(parameters)
