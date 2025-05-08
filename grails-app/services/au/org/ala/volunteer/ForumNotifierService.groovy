@@ -81,7 +81,7 @@ class ForumNotifierService {
         def mods = getModeratorsForTopic(topic)
         mods.each { mod ->
             if (!interestedUsers.contains(mod)) {
-                interestedUsers << [user: mod, type: 'moderator']
+                interestedUsers << mod
             }
         }
 
