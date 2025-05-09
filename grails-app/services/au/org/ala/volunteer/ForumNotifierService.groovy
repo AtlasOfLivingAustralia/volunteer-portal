@@ -41,7 +41,8 @@ class ForumNotifierService {
             // And people watching the forum
             def watchList = getUsersInterestedInProject(project)
             watchList?.each { user ->
-                if (!results.contains(user)) {
+                def foundUser = results.find { it.user.userId == user.userId }
+                if (!foundUser) {
                     results << [user: user, type: 'projectWatcher']
                 }
             }
@@ -91,7 +92,8 @@ class ForumNotifierService {
 
             if (list) {
                 list.each { user ->
-                    if (!interestedUsers.contains(user)) {
+                    def foundUser = interestedUsers.find { it.user.userId == user.userId }
+                    if (!foundUser) {
                         interestedUsers << [user: user, type: 'projectWatcher']
                     }
                 }
@@ -106,24 +108,24 @@ class ForumNotifierService {
         try {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getUsersInterestedInTopic(topic)
-                log.info("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { userService.detailsForUserId(it.userId).email })
+                log.info("Sending notifications to users watching topic ${topic.id}: " + interestedUsers.collect { userService.detailsForUserId(it.user.userId).email })
                 String template = '/forum/topicNotificationMessage'
                 def modMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'moderator'])
                 def watcherMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'watcher'])
                 def projectWatcherMessage = groovyPageRenderer.render(view: template, model: [messages: lastMessage, type: 'projectWatcher'])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { userRow ->
-                    if (userRow.type == 'moderator') {
-                        log.debug("Sending moderator notification to ${userRow.user.userId}")
-                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", modMessage)
-                    } else if (userRow.type == 'watcher') {
-                        log.debug("Sending watcher notification to ${userRow.user.userId}")
-                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", watcherMessage)
-                    } else if (userRow.type == 'projectWatcher') {
-                        log.debug("Sending project watcher notification to ${userRow.user.userId}")
-                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", projectWatcherMessage)
+                    if (lastMessage.user.userId != userRow.user.userId) {
+                        if (userRow.type == 'moderator') {
+                            emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", modMessage)
+                        } else if (userRow.type == 'watcher') {
+                            emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", watcherMessage)
+                        } else if (userRow.type == 'projectWatcher') {
+                            emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", projectWatcherMessage)
+                        }
+                    } else {
+                        log.debug("Skipping notification to ${userRow.user.userId} as they are the author of the message")
                     }
-                    //emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum notification", message)
                 }
             }
         } catch (Throwable ex) {
@@ -135,16 +137,21 @@ class ForumNotifierService {
         try {
             if (FrontPage.instance().enableForum && settingsService.getSetting(SettingDefinition.ForumNotificationsEnabled)) {
                 def interestedUsers = getModeratorsForTopic(topic)
-                log.info("Sending notifications to moderators for new topic ${topic.id}: " + userService.getEmailAddressesForIds(interestedUsers*.userId))
+                log.info("Sending notifications to moderators for new topic ${topic.id}: " + userService.getEmailAddressesForIds(interestedUsers*.user.userId))
                 String template = '/forum/newTopicNotificationMessage'
-                def message = groovyPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage, type: 'projectWatcher'])
-                def moderatorMessage = groovyPageRenderer.render(view: '/forum/newTopicNotificationMessage', model: [messages: firstMessage, type: 'moderator'])
+                def message = groovyPageRenderer.render(view: template, model: [messages: firstMessage, type: 'projectWatcher'])
+                def moderatorMessage = groovyPageRenderer.render(view: template, model: [messages: firstMessage, type: 'moderator'])
                 def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
                 interestedUsers.each { userRow ->
-                    if (userRow.type == 'projectWatcher') {
-                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", message)
-                    } else if (userRow.type == 'moderator') {
-                        emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", moderatorMessage)
+                    if (firstMessage.user.userId != userRow.user.userId) {
+                        log.debug("Sending notification to ${userRow.user.userId} (${userService.detailsForUserId(userRow.user.userId).email})")
+                        if (userRow.type == 'projectWatcher') {
+                            emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", message)
+                        } else if (userRow.type == 'moderator') {
+                            emailService.sendMail(userService.detailsForUserId(userRow.user.userId).email, "${appName} Forum new topic notification", moderatorMessage)
+                        }
+                    } else {
+                        log.debug("Skipping notification to ${userRow.user.userId} as they are the author of the message")
                     }
                 }
             }

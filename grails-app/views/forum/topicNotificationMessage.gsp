@@ -17,17 +17,17 @@ New messages have been added to one or more of the forum topics that you are cur
 </g:each>
 
 <g:if test="${type == 'moderator'}">
-You are receiving this email because you are a forum moderator. If you do not wish to receive any more of these messages,
-please contact the <g:message code="default.application.name"/> team.
+You are receiving this email because you are a forum moderator.
+If you do not wish to receive any more of these messages, please contact the <g:message code="default.application.name"/> team.
 </g:if>
 <g:if test="${type == 'watcher'}">
-You are receiving this email because you are watching this forum topic. If you do not wish to receive any more of these messages,
-you can unwatch this and other topics by going to the link below:
+You are receiving this email because you are watching this forum topic.
+If you do not wish to receive any more of these messages, you can unwatch this and other topics by going to the link below:
 [ ${createLink(controller: 'forum', action: 'index', absolute: true, params: [watched: true])} ]
 </g:if>
 <g:if test="${type == 'projectWatcher'}">
-You are receiving this email because you are watching the project forum this topic was posted to. If you do not wish to receive any more of these messages,
-you can unwatch this and other project forums by going to the link below:
+You are receiving this email because you are watching the project forum this topic was posted to.
+If you do not wish to receive any more of these messages, you can unwatch this and other project forums by going to the link below:
 [ ${createLink(controller: 'forum', action: 'expeditions', absolute: true)} ]
 </g:if>
 
