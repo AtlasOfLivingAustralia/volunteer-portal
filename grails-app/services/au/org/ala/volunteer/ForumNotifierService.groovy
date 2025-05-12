@@ -65,26 +65,33 @@ class ForumNotifierService {
     def getUsersInterestedInTopic(ForumTopic topic) {
         def c = UserForumWatchList.createCriteria()
 
+        // TODO This returns a row for every message in the topic for each user watching.
+        // Rewrite in JOOQ.
         def watchLists = c {
             topics {
                 eq('id', topic.id)
             }
         }
+        log.debug("Watch lists for topic ${topic.id}: " + watchLists)
 
         def interestedUsers = []
-
         watchLists.each { watchList ->
-            if (!interestedUsers.contains(watchList.user)) {
+            def foundUser = interestedUsers.find { it.user.userId == watchList.user.userId }
+            if (!foundUser) {
                 interestedUsers << [user: watchList.user, type: 'watcher']
             }
         }
+        log.debug("Interested users for topic ${topic.id}: " + interestedUsers.collect { it.user.displayName })
+
         // Now the forum moderators and admins...
         def mods = getModeratorsForTopic(topic)
         mods.each { mod ->
-            if (!interestedUsers.contains(mod)) {
+            def foundUser = interestedUsers.find { it.user.userId == mod.user.userId }
+            if (!foundUser) {
                 interestedUsers << mod
             }
         }
+        log.debug("Interested users for topic ${topic.id} after moderators: " + interestedUsers.collect { it.user.displayName })
 
         if (topic.instanceOf(ProjectForumTopic)) {
             ProjectForumTopic projectTopic = topic as ProjectForumTopic
@@ -98,8 +105,8 @@ class ForumNotifierService {
                     }
                 }
             }
-
         }
+        log.debug("Interested users for topic ${topic.id} after project watchers: " + interestedUsers.collect { it.user.displayName })
 
         return interestedUsers
     }
