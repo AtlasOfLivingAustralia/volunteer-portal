@@ -17,6 +17,9 @@ public class SettingDefinition<T> {
     public static def WelcomeEmailTranscribedText = new SettingDefinition<String>('welcome.email.transcribed', "Welcome to DigiVol!", "The welcome email content for when the user has transcribed their first task.")
     public static def ReportCleanupEnabled = new SettingDefinition("report.cleanup.enabled", true, "Enable the cleanup job to delete old reports.")
     public static def ReportCleanupAge = new SettingDefinition("report.cleanup.ageToDelete", 5, "The age of reports in weeks to delete in the cleanup job")
+    public static def TaskLockTimeout = new SettingDefinition("task.lock.timeout", 90, "The timeout value for a task before it expires and becomes available for someone else (in minutes).")
+    public static def TaskBackgroundSaveTimer = new SettingDefinition("task.background.save", 15, "The time between background save calls on a task in minutes.")
+
 
 //    public static def NotificationEmailServerName = new SettingDefinition("notifications.emailServer.name", "localhost", "The name or address of the SMTP server to user to send out notifications")
 //    public static def NotificationEmailServerPort = new SettingDefinition("notifications.emailServer.port", 25, "The port that the SMTP server is listening on")

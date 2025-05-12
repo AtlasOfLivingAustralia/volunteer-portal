@@ -7,14 +7,17 @@
 
 <body>
 
-<content tag="pageTitle">Tutorial Links</content>
+<content tag="pageTitle">Tutorial Information</content>
 
 <content tag="adminButtonBar">
 </content>
 <div style="margin-bottom: 3em;">
-    Use this content area to give your volunteers helpful information on how to transcribe the expedition tasks. This
-    might include Tutorial files you can upload. To link to a tutorial file, use the link button to create a link to the
-    file, which can be found in the Tutorial admin.
+    <h4>Introduction</h4>
+    <p>Use this optional content area to give your volunteers helpful information on how to transcribe the expedition tasks. Provide
+    some introductory information to your expedition and then select the applicable tutorials from below.</p>
+
+    <p>You can add new tutorials
+    <g:link controller="tutorials" action="manage" params="${[institutionFilter: projectInstance.institution.id]}">here</g:link>.</p>
 </div>
 <g:form method="post" class="form-horizontal">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
@@ -31,10 +34,36 @@
     <div class="form-group">
         <div class="col-md-12">
             <g:actionSubmit class="save btn btn-primary" action="updateTutorialLinksSettings"
-                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                            value="${message(code: 'project.update.tutorial.info', default: 'Update Information')}"/>
         </div>
     </div>
+</g:form>
 
+<div style="padding-top: 1rem; margin-bottom: 3em;">
+    <h4>Tutorials</h4>
+    <p>Select the tutorials you wish to link to this expedition.</p>
+</div>
+
+<g:form method="post">
+    <g:hiddenField name="id" value="${projectInstance?.id}"/>
+    <div class="form-group">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <g:each in="${tutorialList}" var="tutorial">
+                    <tr>
+                        <td><g:checkBox name="tutorials" value="${tutorial.id}" checked="${projectInstance.tutorials.contains(tutorial)}"/></td>
+                        <td>${tutorial.name} <cl:tutorialLink tutorial="${tutorial}" /></td>
+                    </tr>
+                </g:each>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-12">
+            <g:actionSubmit class="save btn btn-primary" action="updateTutorialsInProject"
+                            value="${message(code: 'project.update.tutorial.links', default: 'Update Tutorials')}"/>
+        </div>
+    </div>
 </g:form>
 
 </body>

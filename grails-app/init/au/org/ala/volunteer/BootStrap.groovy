@@ -6,15 +6,16 @@ import com.google.common.io.Resources
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
-import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 import org.hibernate.FlushMode
-import org.springframework.core.io.Resource
-import org.springframework.web.context.support.ServletContextResource
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
 
 @Slf4j
 class BootStrap {
@@ -27,6 +28,8 @@ class BootStrap {
     def authService
     def fullTextIndexService
     def sanitizerService
+    def tutorialService
+    def institutionService
 
     def init = { servletContext ->
 
@@ -48,6 +51,11 @@ class BootStrap {
 
         prepareDefaultLabels()
 
+        // For DigiVol 6.2.0 - Remove in following release.
+        migrateTutorials()
+        findProjectsForTutorials()
+        renameTutorials()
+
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
@@ -61,6 +69,157 @@ class BootStrap {
 
         fullTextIndexService.ping()
 
+    }
+
+    /**
+     * Migrates filesystem list of tutorials into new DB table for release 6.2.0
+     * Disable this in next release.
+     */
+    @Transactional
+    private void migrateTutorials() {
+        log.info("Initialising tutorial migration...")
+
+        def tutorials = tutorialService.listTutorials()
+        log.info("Found ${tutorials.size() ?: 0} files.")
+        int totalMigrated = 0
+        tutorials.each { tutorialFile ->
+            log.debug("=> Tutorial: ${tutorialFile}")
+            def tutorialChk = Tutorial.findByFilename(tutorialFile.name as String)
+
+            // If no file already saved, create a new record.
+            if (!tutorialChk) {
+                log.debug("=> No db entry yet")
+                def title = tutorialFile.name
+                int fileExtnSep = title.lastIndexOf('.')
+                if (fileExtnSep > 0) title = title.subSequence(0, fileExtnSep)
+                Tutorial tutorial = new Tutorial(filename: tutorialFile.name, name: title, isActive: true)
+                def createdBy = null
+
+                // Find any projects using this tutorial
+                // - Get the institution
+                // - Get the user who either created the project or institution (if any)
+
+                def escapedTutorialFilename = (tutorialFile.name as String).replace(" ", "%20")
+                def projectList = Project.findAllByTutorialLinksLikeOrTutorialLinksLike("%${tutorialFile.name}%",
+                        "%${escapedTutorialFilename}%", [sort: 'dateCreated', order: 'desc'])
+                if (projectList) {
+                    def institution = projectList.first()?.institution
+                    if (institution) {
+                        tutorial.institution = institution
+                        createdBy = institution.createdBy
+                        log.debug("=> Tutorial institution: ${institution}")
+                    }
+
+                    if (!createdBy) {
+                        def project = projectList.find {
+                            it.createdBy != null
+                        }
+
+                        createdBy = project ? project.createdBy : null
+                    }
+
+                    // Associate tutorial with project if possible.
+                    projectList.each { Project project ->
+                        if (!tutorial.projects) tutorial.projects = []
+                        tutorial.addToProjects(project)
+                        log.debug("=> Tutorial Project: ${project}")
+                    }
+                }
+
+                log.debug("=> Tutorial createdBy: ${createdBy}")
+                tutorial.createdBy = createdBy ? createdBy : null
+
+                // Get the file's creation date.
+                Path path = (tutorialFile.file as File).toPath()
+                log.debug("Path: ${path}")
+                BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes)
+                log.debug("attrs.creationTime(): ${attrs.creationTime().toMillis()}")
+                if (attrs) {
+                    def createdDate = new Date(attrs.creationTime().toMillis())
+                    tutorial.dateCreated = createdDate
+                } else {
+                    tutorial.dateCreated = new Date()
+                }
+                log.debug("=> Tutorial dateCreated: ${tutorial.dateCreated} ")
+
+                tutorial.save(flush: true, failOnError: true)
+                totalMigrated++
+                log.debug("# Tutorial created: ${tutorial}")
+            }
+        }
+
+        log.info("Tutorial migration completed; ${totalMigrated} files migrated.")
+    }
+
+    /**
+     * Finds projects that might be associated with a tutorial. Only uses tutorials already created from the previous
+     * migration process.
+     */
+    @Transactional
+    private void findProjectsForTutorials() {
+        log.info("Find tutorial project links")
+        // Do a search of project.tutorialLinks column for references to files and match that way.
+
+        def params = [sort: 'id', order: 'asc', max: 1000]
+        def tl = tutorialService.getTutorialsForManagement([], "", params, false, true)
+        def tlList = tl.tutorialList as List<Tutorial>
+        tlList.each { tutorial ->
+            def projectMatchList = tutorialService.findProjectsForMigration(tutorial)
+            if (projectMatchList.size() > 0) {
+                def matchedProjectRows = projectMatchList.findAll {
+                    it.matchPercentage == 100
+                }
+                matchedProjectRows.each { matchedProjectRow ->
+                    def matchedProject = matchedProjectRow.project as Project
+                    log.debug("=> Found project: ${matchedProject}")
+
+                    def institution = matchedProject.institution
+                    if (institution) {
+                        tutorial.institution = institution
+                        tutorial.createdBy = institution.createdBy
+                        log.debug("=> Tutorial institution: ${institution}")
+                    }
+
+                    if (!tutorial.createdBy) {
+                        tutorial.createdBy = matchedProject ? matchedProject.createdBy : null
+                    }
+
+                    tutorial.addToProjects(matchedProject)
+                }
+            }
+
+            tutorial.save(flush: true, failOnError: true)
+        }
+
+    }
+
+    /**
+     * Renames tutorial files to a given structure.
+     */
+    @Transactional
+    private void renameTutorials() {
+        log.info("Rename Tutorials")
+
+        def tutorialList = Tutorial.findAllByInstitutionIsNotNull()
+        tutorialList.each {tutorial ->
+            // Rename file to new structure
+            // <institution_acronym>_<tutorial_id>_tutorial_<timestamp>.pdf
+            if (tutorial.filename.equalsIgnoreCase("${tutorial.name}.pdf")) {
+                def newFileName = new StringBuilder()
+
+                def acronym = institutionService.generateAcronym(tutorial.institution.name)
+                newFileName.append("${acronym.toLowerCase()}_")
+                        .append("${tutorial.id}_")
+                        .append("tutorial_")
+
+                        .append("${new Date().getTime()}")
+                        .append(".pdf")
+
+                tutorialService.renameTutorial(tutorial.filename, newFileName.toString())
+                tutorial.filename = newFileName
+                tutorial.save(flush: true, failOnError: true)
+            }
+        }
     }
 
     /**

@@ -37,6 +37,10 @@ class FileUploadService {
         def imagesDir = new File(imagesHome, directory)
         if (!imagesDir.exists() && !imagesDir.mkdirs()) throw new IOException("Couldn't create $imagesHome/$directory")
 
+        if (mpf.name.length() > 255) {
+            throw new IOException("Filename exceeds 255 characters.")
+        }
+
         uploadFile(imagesDir, mpf)
     }
 

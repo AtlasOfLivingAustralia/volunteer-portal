@@ -3,6 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="digivol-projectSettings"/>
+    <cl:googleMapsScript callback="onGmapsReady"/>
 </head>
 
 <body class="continer">
@@ -77,13 +78,8 @@
     </div>
 </g:form>
 
-<script type='text/javascript' src='https://www.google.com/jsapi'></script>
-
 <asset:script type='text/javascript'>
 
-    google.load("maps", "3.23", {other_params: ""});
-
-    var map, infowindow;
     var mapListenerActive = true;
 
     $(document).ready(function () {
@@ -106,65 +102,65 @@
             bvp.submitWithWebflowEvent($(this));
         });
 
-        loadMap();
+        let map;
+
+        async function initMap() {
+            const position = { lat: ${initLatitude}, lng: ${initLongitude} };
+            // Request needed libraries.
+            //@ts-ignore
+            const { Map } = await google.maps.importLibrary("maps");
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+            map = new Map(document.getElementById("recordsMap"), {
+                scaleControl: false,
+                zoom: ${initZoom},
+                center: position,
+                mapId: "EXP_MAP",
+                minZoom: 1,
+                streetViewControl: false,
+                scrollwheel: true,
+                mapTypeControl: false,
+                navigationControl: true,
+                navigationControlOptions: {
+                    style: google.maps.NavigationControlStyle.SMALL // DEFAULT
+                },
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            google.maps.event.addListener(map, 'zoom_changed', function () {
+                if (mapListenerActive) {
+                    updateFieldsFromMap();
+                }
+            });
+
+            google.maps.event.addListener(map, 'center_changed', function () {
+                if (mapListenerActive) {
+                    updateFieldsFromMap();
+                }
+            });
+        }
+
+        initMap();
         updateMapDisplay();
+
+        function updateFieldsFromMap() {
+            var zoomLevel = map.getZoom();
+
+            $("#mapZoomLevel").val(zoomLevel);
+
+            var center = map.getCenter();
+            $("#mapLatitude").val(center.lat());
+            $("#mapLongitude").val(center.lng());
+        }
+
+        function updateMapDisplay() {
+            if ($("#showMap").attr("checked")) {
+                $("#mapPositionControls").css("opacity", "1");
+            } else {
+                $("#mapPositionControls").css("opacity", "0.2");
+            }
+        }
     });
-
-    function loadMap() {
-
-        var mapElement = $("#recordsMap");
-
-        if (!mapElement) {
-            return;
-        }
-
-        var myOptions = {
-            scaleControl: false,
-            center: new google.maps.LatLng(${initLatitude}, ${initLongitude}),
-            zoom: ${initZoom},
-            minZoom: 1,
-            streetViewControl: false,
-            scrollwheel: true,
-            mapTypeControl: false,
-            navigationControl: true,
-            navigationControlOptions: {
-                style: google.maps.NavigationControlStyle.SMALL // DEFAULT
-            },
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-        map = new google.maps.Map(document.getElementById("recordsMap"), myOptions);
-
-        google.maps.event.addListener(map, 'zoom_changed', function () {
-            if (mapListenerActive) {
-                updateFieldsFromMap();
-            }
-        });
-
-        google.maps.event.addListener(map, 'center_changed', function () {
-            if (mapListenerActive) {
-                updateFieldsFromMap();
-            }
-        });
-    }
-
-    function updateFieldsFromMap() {
-        var zoomLevel = map.getZoom();
-
-        $("#mapZoomLevel").val(zoomLevel);
-
-        var center = map.getCenter();
-        $("#mapLatitude").val(center.lat());
-        $("#mapLongitude").val(center.lng());
-    }
-
-    function updateMapDisplay() {
-        if ($("#showMap").attr("checked")) {
-            $("#mapPositionControls").css("opacity", "1");
-        } else {
-            $("#mapPositionControls").css("opacity", "0.2");
-        }
-    }
 
 </asset:script>
 </body>

@@ -8,6 +8,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
 
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 import static org.springframework.http.HttpStatus.NO_CONTENT
@@ -22,6 +23,8 @@ class UserController {
     def authService
     def fullTextIndexService
     def freemarkerService
+    def fieldService
+    def achievementService
 
     static final ALA_HARVESTABLE = '''{
   "constant_score": {
@@ -327,56 +330,65 @@ class UserController {
     }
 
     /**
-     * User notebook
-     * @param user
-     * @return
+     * Displays the User notebook.
+     * @param user the user to display
      */
     def show(User user) {
         def currentUser = userService.currentUserId
+        def filter = params.filter as String
 
         if (!user) {
-            // flash.message = "Missing user id, or user not found!"
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'user.label', default: 'User'), params.id]) as String
             render(view: '/notPermitted')
             return
         }
 
-        // TODO Refactor this into a Service
         def project = null
         if (params.projectId) {
             project = Project.get(params.long('projectId'))
         }
 
-        int totalTranscribedTasks
-        if (project) {
-            totalTranscribedTasks = taskService.countUserTranscriptionsForProject(user.getUserId(), project)
-        } else {
-            totalTranscribedTasks = user.transcribedCount
-        }
-
         def achievements = user.achievementAwards
-        def score = userService.getUserScore(user)
-        int selectedTab = (params.int("selectedTab") == null) ? 1 : params.int("selectedTab")
+        def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
 
-        if (!user) {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'user.label', default: 'User'), params.id]) as String
+        Stopwatch sw = Stopwatch.createStarted()
+        def taskList = taskService.getNotebookTaskList(filter, user, project,
+                params.int('offset', 0), params.int('max', 10),
+                params.sort as String, params.order as String)
+        sw.stop()
+        log.debug("User.show()#taskList ${sw.toString()}")
+
+        Map myModel = [
+                userInstance         : user,
+                currentUser          : currentUser,
+                project              : project,
+                achievements         : achievements,
+                score                : score,
+                viewTaskList         : taskList.viewList,
+                totalMatchingTasks   : taskList.totalMatchingTasks,
+                isValidator          : userService.isValidator(project),
+                isAdmin              : userService.isAdmin()
+        ]
+
+        render(view: 'show', model: userService.appendNotebookFunctionalityToModel(myModel))
+    }
+
+    /**
+     * Displays a list of achievements for the user.
+     */
+    def achievements() {
+        def currentUser = userService.currentUser
+
+        if (!currentUser) {
+            // flash.message = "Missing user id, or user not found!"
             render(view: '/notPermitted')
-        } else {
-            Map myModel = [
-                    userInstance         : user,
-                    currentUser          : currentUser,
-                    project              : project,
-                    totalTranscribedTasks: totalTranscribedTasks,
-                    achievements         : achievements,
-                    validatedCount       : taskService.countValidUserTranscriptionsForProject(user.getUserId(), project),
-                    score                : score,
-                    selectedTab          : selectedTab,
-                    isValidator          : userService.isValidator(project),
-                    isAdmin              : userService.isAdmin()
-            ]
-
-            userService.appendNotebookFunctionalityToModel(myModel)
+            return
         }
+
+        def achievementList = achievementService.getAchievementsWithCounts(currentUser)
+
+        render view: 'achievements', model: [currentUser: currentUser, achievementList: achievementList]
     }
 
     def edit() {
@@ -662,34 +674,9 @@ class UserController {
             def pt = field.findAll { value ->
                 value['name'] == 'decimalLongitude' || value['name'] == 'decimalLatitude'
             }.collectEntries { value ->
-                def dVal = value['value'] as String
-                log.debug("ajaxGetPoints| dVal: ${dVal}")
-
-                def matcher = regex.matcher(dVal)
-                if (matcher.find()) {
-                    log.debug("ajaxGetPoints| Group count: ${matcher.groupCount()}")
-                    for (int i = 0; i <= matcher.groupCount(); i++) {
-                        log.debug("match[${i}]: ${matcher.group(i)}")
-                    }
-                    try {
-                        BigDecimal minutes = (getBigDecimalFromString(matcher.group(6).toString()) / new BigDecimal(60))
-                        BigDecimal seconds = (getBigDecimalFromString(matcher.group(9).toString()) / new BigDecimal(3600))
-                        BigDecimal degrees = getBigDecimalFromString(matcher.group(3).toString())
-                        log.debug("Conversion: degrees: [${degrees}], minutes: [${minutes}], seconds: [${seconds}]")
-                        degrees += (minutes + seconds)
-
-                        // Check direction and assign negative if necessary
-                        if (matcher.group(10).equalsIgnoreCase("S") ||
-                                matcher.group(10).equalsIgnoreCase("W")) {
-                            degrees = -degrees
-                        }
-
-                        dVal = degrees.toString()
-                        log.debug("dVal: ${dVal}")
-                    } catch (Exception e) {
-                        log.error("Error attempting to convert degrees, minutes and seconds to a decimal value ${dVal}, skipping.", e)
-                    }
-                }
+                //def dVal = value['value'] as String
+                def dVal = fieldService.convertLocationToDecimal(value['value'] as String)
+                log.debug("ajaxGetPoints| dVal: ${value['value']}")
 
                 if (value['name'] == 'decimalLongitude') {
                     [lng: dVal]

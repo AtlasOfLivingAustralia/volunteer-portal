@@ -7,15 +7,23 @@ One or more new topics have been created within the <g:message code="default.app
 <g:each in="${messages}" var="message" status="messageNo">
 
     Message: ${messageNo + 1}
-    Topic: ${message.topic.title} [ ${createLink(controller: 'forum', action: 'viewForumTopic', id: message.topic.id, absolute: true)} ]
-  On ${formatDate(date: message.date, format: DateConstants.DATE_TIME_FORMAT)}, ${message.user.displayName} wrote:
+    Topic: ${message.topic.title}
+    URL: [ ${createLink(controller: 'forum', action: 'viewForumTopic', id: message.topic.id, absolute: true)} ]
+
+    On ${formatDate(date: message.date, format: DateConstants.DATE_TIME_FORMAT)}, ${message.user.displayName} wrote:
 
     ${message.text}
 
 </g:each>
 
-You are receiving this email because you are a forum moderator. If you do not wish to receive any more of these messages please contact
-the <g:message code="default.application.name"/> team.
+<g:if test="${type == 'moderator'}">
+You are receiving this email because you are a forum moderator. If you do not wish to receive any more of these messages please contact the <g:message code="default.application.name"/> team.
+</g:if>
+<g:if test="${type == 'projectWatcher'}">
+You are receiving this email because you are watching the project forum this topic was posted to.
+If you do not wish to receive any more of these messages, you can unwatch this and other project forums by going to the link below:
+[ ${createLink(controller: 'forum', action: 'expeditions', absolute: true)} ]
+</g:if>
 
 
 

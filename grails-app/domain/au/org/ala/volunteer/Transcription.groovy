@@ -58,4 +58,9 @@ class Transcription implements Serializable, AsyncEntity<Transcription> {
         GormEventDebouncer.debounceDeleteTask(this.task.id)
         GormEventDebouncer.debounceTask(this.task.id)
     }
+
+    @Override
+    String toString() {
+        "Transcription(id=${id}, fullyTranscribedBy=${fullyTranscribedBy}, dateFullyTranscribed=${dateFullyTranscribed}, fullyValidatedBy=${fullyValidatedBy}, dateFullyValidated=${dateFullyValidated}, transcribedUUID=${transcribedUUID}, validatedUUID=${validatedUUID})"
+    }
 }

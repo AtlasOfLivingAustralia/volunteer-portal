@@ -27,7 +27,7 @@ class Task implements Serializable, AsyncEntity<Task> {
     Boolean isFullyTranscribed = false
 
     static belongsTo = [project: Project]
-    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, transcriptions: Transcription]
+    static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, transcriptions: Transcription, forumTopics: TaskForumTopic]
 
     static mapping = {
         cache true
@@ -129,7 +129,8 @@ class Task implements Serializable, AsyncEntity<Task> {
             task = this
             project = this.@project
         }
-        transcriptions.add(transcription)
+        //transcriptions.add(transcription)
+        addToTranscriptions(transcription)
 
         transcription
     }

@@ -51,7 +51,7 @@
                     <ul>
                         <li id="viewTask"><button class="btn btn-primary" role="button" autofocus tabindex="1">Transcribe another task</button></li>
                         <li id="goBack"><button class="btn btn-link" tabindex="2">Return to the saved task</button></li>
-                        <li id="projectHome"><button class="btn btn-link" tabindex="3">Go to project landing page</button></li>
+                        <li id="projectHome"><button class="btn btn-link" tabindex="3">Go to expedition landing page</button></li>
                         <li id="viewStats"><button class="btn btn-link" tabindex="3">View My Stats</button></li>
                     </ul>
                 </div>

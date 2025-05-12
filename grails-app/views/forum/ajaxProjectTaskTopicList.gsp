@@ -1,2 +1,0 @@
-<vpf:taskTopicsTable topics="${topics}"/>
-

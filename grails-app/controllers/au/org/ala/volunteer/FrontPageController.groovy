@@ -37,12 +37,24 @@ class FrontPageController implements EventPublisher {
             frontPage.newsBody = params["newsBody"]
             frontPage.newsCreated = params["newsCreated"]
 
+            if (params["systemMessage"].toString().length() > 255) {
+                flash.message = message(code: 'frontPage.systemMessage.too.large', default: 'Unable to save system message.') as String
+                redirect(action: "edit", params: params)
+                return
+            }
+
             final systemMessageUpdated = frontPage.systemMessage != params["systemMessage"]
             frontPage.systemMessage = params["systemMessage"]
 
             frontPage.showAchievements = params['showAchievements'] == 'on'
             frontPage.enableTaskComments = params['enableTaskComments'] == 'on'
             frontPage.enableForum = params['enableForum'] == 'on'
+
+            if (params["heroImageAttribution"].toString().length() > 255) {
+                flash.message = message(code: 'frontPage.heroImageAttribution.too.large', default: 'Unable to save system message.') as String
+                redirect(action: "edit", params: params)
+                return
+            }
 
             frontPage.heroImageAttribution = params['heroImageAttribution']
 
@@ -88,12 +100,17 @@ class FrontPageController implements EventPublisher {
                 frontPage.save()
 
             } else if (params.containsKey('save-hero')) {
-                def heroImage = fileUploadService.uploadImage('hero', request.getFile('heroImage'))
+                try {
+                    def heroImage = fileUploadService.uploadImage('hero', request.getFile('heroImage'))
+                    def frontPage = FrontPage.instance()
 
-                def frontPage = FrontPage.instance()
-
-                frontPage.heroImage = heroImage.name
-                frontPage.save()
+                    frontPage.heroImage = heroImage.name
+                    frontPage.save()
+                } catch(Exception e) {
+                    flash.message = message(code: 'frontPage.heroImage.error',
+                                            args: [e.getMessage()]) as String
+                    redirect(action: 'edit')
+                }
             }
             redirect(action: 'edit')
         } else {

@@ -26,7 +26,7 @@
                     <div id="fieldDataSection" class="section">
                         <h4>Upload a csv data file for field values</h4>
                         <g:if test="${hasDataFile}">
-                            A data file has been uploaded for this project.
+                            A data file has been uploaded for this expedition.
                             <a class="button"
                                href="${createLink(action: 'clearTaskDataFile', params: [projectId: projectInstance.id])}">Clear data file</a>
                             &nbsp;

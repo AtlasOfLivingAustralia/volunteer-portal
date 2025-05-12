@@ -5,6 +5,7 @@
 <%@ page import="au.org.ala.volunteer.field.*" %>
 <%@ page import="au.org.ala.volunteer.FieldCategory" %>
 <%@ page import="au.org.ala.volunteer.DarwinCoreField" %>
+<%@ page import="au.org.ala.volunteer.SettingDefinition" %>
 <%@ page contentType="text/html; UTF-8" %>
 <html>
 <head>
@@ -734,7 +735,8 @@
     $(document).ready(function() {
     <g:if test="${!isReadonly}">
         // prompt user to save if page has been open for too long
-        var taskLockTimeout = 90 * 60; // 90 mins in Seconds
+        var taskLockTimeoutValue = <g:advSetting definition="${SettingDefinition.TaskLockTimeout}" defaultValue="${SettingDefinition.TaskLockTimeout.defaultValue}" />;
+        var taskLockTimeout = taskLockTimeoutValue * 60;
         setPageTimeoutTimer();
 
         function setPageTimeoutTimer() {
@@ -968,7 +970,8 @@
     }
 
     $(document).ready(function() {
-        var bgSaveTimer = 15 * 60; // 15 minutes in seconds
+        var bgSaveInterval = <g:advSetting definition="${SettingDefinition.TaskBackgroundSaveTimer}" defaultValue="${SettingDefinition.TaskBackgroundSaveTimer.defaultValue}" />;
+        var bgSaveTimer = bgSaveInterval * 60;
         var timerInitial = 0;
 
     <g:if test="${!validator}">
