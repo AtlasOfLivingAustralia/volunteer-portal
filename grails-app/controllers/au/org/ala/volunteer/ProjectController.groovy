@@ -53,7 +53,7 @@ class ProjectController {
             return
         }
 
-        def tutorialList = projectInstance.tutorials.find { it.isActive }
+        def tutorialList = projectInstance.tutorials.findAll { it.isActive }
 
         String currentUserId = null
 
