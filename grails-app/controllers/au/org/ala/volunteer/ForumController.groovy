@@ -11,6 +11,7 @@ class ForumController {
     def projectService
     def fieldService
     def markdownService
+    def newsItemService
 
     public static final String SESSION_KEY_PROJECT_ID = "forum_project_id"
 
@@ -162,6 +163,14 @@ class ForumController {
         def parameters = [title: params.title, text: params.messageText]
         def messages = []
 
+        // Check if a topic has already been made for a news item (if present). Redirect to it if so.
+        if (params.newsItemId && newsItemService.hasNewsItemHaveTopic(params.long("newsItemId"))) {
+            flash.message = "This news item already has a linked forum topic. Your topic was not created."
+            NewsItem newsItem = NewsItem.get(params.long("newsItemId"))
+            redirect(controller: 'forum', action: 'viewForumTopic', id: newsItem?.topic?.id)
+            return
+        }
+
         if (!parameters.title) {
             messages << "You must enter a title for your forum topic"
         }
@@ -200,6 +209,11 @@ class ForumController {
 
         if (params.watched == 'true' || params.watchTopic == 'on') {
             forumService.watchTopic(topic.creator, topic)
+        }
+
+        // Link the news item to the topic if a news item ID is provided
+        if (params.newsItemId) {
+            newsItemService.linkForumTopicToNewsItem(topic, params.long("newsItemId"))
         }
 
         if (session[SESSION_KEY_PROJECT_ID]) {

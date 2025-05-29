@@ -90,6 +90,12 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-admin btn-primary bs3"
+                                   href="${createLink(controller: 'newsItem', action: 'manage')}">Manage News Items</a>
+                            </td>
+                            <td>Manage News Items</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-admin btn-primary bs3"
                                    href="${createLink(controller: 'landingPageAdmin', action: 'index')}">Configure Landing Page</a>
                             </td>
                             <td>Configure the appearance of a landing page</td>
