@@ -1,5 +1,5 @@
 sudo: false
-dist: focal
+dist: jammy
 language: groovy
 jdk:
   - openjdk11
