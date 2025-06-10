@@ -35,15 +35,16 @@
         <g:if test="${featuredNewsItems && !params.q}">
             <g:each in="${featuredNewsItems}" var="featuredNewsItem">
             <div class="featured-news-list__card">
-                <dt><a href="#">${featuredNewsItem.title}</a></dt>
+                <dt><g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">${featuredNewsItem.title}</g:link></dt>
                 <dd class="featured-news-list__news-excerpt">
-                    <a href="#">
-                        <p>${featuredNewsItem.content.substring(0, 100).replaceAll("<[^>]*>", "")}...</p>
+                    <g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">
+                        <g:set var="sanitisedContent" value="${featuredNewsItem.content.replaceAll("<[^>]*>", "")}"/>
+                        <p>${sanitisedContent.length() > 100 ? sanitisedContent.substring(0, 100) : sanitisedContent}...</p>
                         <span class="featured-news-list__author-label">
                             ${featuredNewsItem.createdBy.displayName}<br />
                             <g:formatDate date="${featuredNewsItem.dateCreated}" format="${DateConstants.DATE_FORMAT_SHORT}" />
                         </span>
-                    </a>
+                    </g:link>
                 </dd>
             </div>
             </g:each>

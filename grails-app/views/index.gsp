@@ -20,6 +20,12 @@
             });
         });
     </asset:script>
+    <style>
+        .news-image {
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
 </head>
 <body>
 <div class="a-feature home"
@@ -95,8 +101,14 @@
 
         <div class="row">
             <div class="col-md-12">
-                <h3>${newsItem.title}</h3>
-                <div id="parent">
+                <h3><g:link controller="newsItem" action="show" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+                <div id="news-parent">
+                    <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+                        <g:link controller="newsItem" action="show" id="${newsItem.id}">
+                            <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive news-image"
+                                 alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                        </g:link>
+                    </cl:ifNewsItemHasThumb>
                     ${raw(newsItem.content)}
                 </div>
                 <div class="index-news-nav">

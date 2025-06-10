@@ -8,6 +8,13 @@
 
         <asset:stylesheet src="notebook-reset.css"/>
         <asset:stylesheet src="news.scss"/>
+        <style>
+        <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+            .newsItem__item {
+                min-height: 200px;
+            }
+        </cl:ifNewsItemHasThumb>
+        </style>
     </head>
     <body>
     <cl:headerContent title="${newsItem?.title}" selectedNavItem="bvp" hideTitle="${true}">
@@ -28,6 +35,9 @@
                             <time class="news-item__date-time"><g:formatDate date="${newsItem?.dateCreated}" format="${DateConstants.DATE_FORMAT_SHORT}" /></time>
                         </div>
                         <div class="news-item__text">
+                            <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive news-image" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                            </cl:ifNewsItemHasThumb>
                             ${raw(newsItem?.content)}
                         </div>
                         <div class="news-item__footer">
@@ -58,7 +68,9 @@
                             <dt><g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">${featuredNewsItem.title}</g:link></dt>
                             <dd class="featured-news-list__news-excerpt">
                                 <g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">
-                                    <p>${featuredNewsItem.content.substring(0, 100).replaceAll("<[^>]*>", "")}...</p>
+                                    <g:set var="sanitisedContent" value="${featuredNewsItem.content.replaceAll("<[^>]*>", "")}"/>
+
+                                    <p>${sanitisedContent.length() > 100 ? sanitisedContent.substring(0, 100) : sanitisedContent}...</p>
                                     <span class="featured-news-list__author-label">
                                         ${featuredNewsItem.createdBy.displayName}<br />
                                         <g:formatDate date="${featuredNewsItem.dateCreated}" format="${DateConstants.DATE_FORMAT_SHORT}" />
@@ -71,5 +83,18 @@
             </dl>
         </section>
     </main>
+<asset:script type="text/javascript">
+jQuery(function($) {
+
+    $('.news-image').on('click', function(e) {
+        e.preventDefault();
+
+        bvp.showModal({
+            url:"${createLink(action: 'viewNewsItemImageFragment', id: newsItem?.id)}"
+        });
+    });
+
+});
+</asset:script>
     </body>
 </html>

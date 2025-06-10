@@ -221,3 +221,20 @@ h2.heading {
   margin-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-xl;
 }
+
+.news-image {
+  float: right;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.news-image-enlarged {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.modal-dialog {
+  @media screen and (min-width: variables-and-mixins.$screen-md) {
+    width: 900px;
+  }
+}

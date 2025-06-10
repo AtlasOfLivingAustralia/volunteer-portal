@@ -19,6 +19,17 @@
     .datepicker table tr td.disabled {
         color: #ddd !important;
     }
+
+    .news-image-row {
+        display: flex;
+        align-items: center;
+    }
+
+    .news-image-remove-btn {
+        align-self: flex-start;
+        margin-left: 0.5rem;
+        margin-top: 7px;
+    }
     </style>
 
     <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
@@ -51,7 +62,7 @@
                     <p>Modify the following details for your News Item. </p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="update" id="${newsItem?.id}" class="form-horizontal">
+                    <g:form action="update" id="${newsItem?.id}" class="form-horizontal" enctype="multipart/form-data">
                         <div class="form-group">
                             <label class="control-label col-md-3" for="title">Title*</label>
                             <div class="col-md-6">
@@ -86,6 +97,27 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+                            <label class="control-label col-md-3" for="newsItemThumb">Image Thumbnail</label>
+                            <div class="col-md-6 news-image-row">
+
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive control-label" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                                <button role="button" class="btn btn-danger btn-xs news-image-remove-btn"
+                                        data-href="${createLink(controller: "newsItem", action: "clearImage", id: newsItem.id)}"
+                                        title="Clear Image"><i class="fa fa-trash"></i></button>
+                            </div>
+                            </cl:ifNewsItemHasThumb>
+
+                            <cl:ifNewsItemHasNoImage newsItemId="${newsItem.id}">
+                            <label class="control-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
+
+                            <div class="col-md-6">
+                                <input type="file" class="form-control" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>
+                            </div>
+                            </cl:ifNewsItemHasNoImage>
+                        </div>
+
                         <div class="form-group submit-button-row">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="create" class="save btn btn-primary"
@@ -111,6 +143,20 @@
             startDate: "${defaultStartDate}",
             endDate: "${defaultEndDate}"
         });
+
+    <cl:ifNewsItemHasNoImage newsItemId="${newsItem.id}">
+        $('input[type=file]').bootstrapFileInput();
+    </cl:ifNewsItemHasNoImage>
+
+    <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+        $('.news-image-remove-btn').click(function(e) {
+            e.preventDefault();
+            var href = $(this).data('href');
+            if (confirm("Are you sure you want to remove this image? This action will not save any changes to news item content.")) {
+                window.location.href = href;
+            }
+        });
+    </cl:ifNewsItemHasThumb>
      });
 </asset:script>
 </body>

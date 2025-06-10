@@ -51,7 +51,7 @@
                     <p>Fill out the following details for your News Item. </p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save" class="form-horizontal" enctype="multipart/form-data">
 
                         <div class="form-group">
                             <label class="control-label col-md-3" for="title">Title*</label>
@@ -86,6 +86,14 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="control-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
+
+                            <div class="col-md-6">
+                                <input type="file" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>
+                            </div>
+                        </div>
+
                         <div class="form-group submit-button-row">
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="create" class="save btn btn-primary"
@@ -100,9 +108,12 @@
 </div>
 <asset:script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" asset-defer=""/>
 <asset:javascript src="tinymce-simple" asset-defer="" />
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
-    $(document).ready(function() {
-        $('.datepicker').datepicker({
+$(document).ready(function() {
+    $('input[type=file]').bootstrapFileInput();
+
+    $('.datepicker').datepicker({
         format: "dd/mm/yyyy",
         autoclose: true,
         todayBtn: true,
@@ -111,10 +122,7 @@
         startDate: "${defaultStartDate}",
         endDate: "${defaultEndDate}"
     });
-
-    });
-
-
+});
 </asset:script>
 </body>
 </html>

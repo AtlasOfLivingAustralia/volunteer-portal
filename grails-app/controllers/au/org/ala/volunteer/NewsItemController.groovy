@@ -1,7 +1,8 @@
 package au.org.ala.volunteer
 
 import grails.gorm.transactions.Transactional
-import grails.validation.ValidationException
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import java.time.LocalDate
 import java.time.ZoneId
@@ -58,28 +59,28 @@ class NewsItemController {
 
     @Transactional
     def toggleNewsItemStatus(NewsItem newsItem) {
-        log.info("Toggling status for news item: ${newsItem?.id}, current status: ${newsItem?.isActive}")
+        log.debug("Toggling status for news item: ${newsItem?.id}, current status: ${newsItem?.isActive}")
         if (!newsItem) {
             render status: 404
             return
         }
         if (!userService.isSiteAdmin()) {
-            log.info("No permission to toggle news item status, user is not a site admin.")
+            log.debug("No permission to toggle news item status, user is not a site admin.")
             response.sendError(SC_FORBIDDEN, "You don't have permission")
             return
         }
-        log.info("verifyId: ${params.verifyId}, newsItem.id: ${newsItem.id}, params.verifyId as long == newsItem.id: ${params.verifyId as long == newsItem.id}")
-        log.info("verify check: ${!params.verifyId} || ${params.verifyId as long != newsItem.id}")
+        log.debug("verifyId: ${params.verifyId}, newsItem.id: ${newsItem.id}, params.verifyId as long == newsItem.id: ${params.verifyId as long == newsItem.id}")
+        log.debug("verify check: ${!params.verifyId} || ${params.verifyId as long != newsItem.id}")
         if (params.verifyId == null || params.verifyId as long != newsItem.id) {
-            log.info("Verification ID does not match news item ID, user does not have permission to toggle status.")
+            log.debug("Verification ID does not match news item ID, user does not have permission to toggle status.")
             flash.message = "You do not have permission to view this page"
             render(view: '/notPermitted')
             return
         }
 
-        log.info("Toggling status for news item: ${newsItem.id}, current status: ${newsItem.isActive}")
+        log.debug("Toggling status for news item: ${newsItem.id}, current status: ${newsItem.isActive}")
         newsItem.isActive = (!newsItem.isActive)
-        log.info("New status for news item: ${newsItem.isActive}")
+        log.debug("New status for news item: ${newsItem.isActive}")
         newsItem.save(flush: true, failOnError: true)
         flash.message = "The news item's status has been set to ${newsItem.isActive ? 'active' : 'inactive'}."
         redirect(uri: request?.getHeader("referer") ?: createLink(controller: 'newsItem', action: 'manage'))
@@ -92,8 +93,8 @@ class NewsItemController {
             return
         }
         def datePickerRanges = getDatePickerRanges()
-        log.info("End date: ${datePickerRanges.endDate}")
-        log.info("Start date: ${datePickerRanges.startDate}")
+        log.debug("End date: ${datePickerRanges.endDate}")
+        log.debug("Start date: ${datePickerRanges.startDate}")
         render view: 'create', model: [defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
     }
 
@@ -109,7 +110,7 @@ class NewsItemController {
 
     @Transactional
     def save() {
-        log.info("Saving news item with params: ${params}")
+        log.debug("Saving news item with params: ${params}")
         if (!userService.isSiteAdmin()) {
             log.warn("User is not a site admin, cannot save news item.")
             flash.message = "You do not have permission to view this page"
@@ -122,19 +123,40 @@ class NewsItemController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
             newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            log.info("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
         }
 
         newsItem.createdBy = userService.getCurrentUser()
         newsItem.dateCreated = new Date()
 
         if (!newsItem.validate()) {
-            log.info("NewsItem has errors: ${newsItem.errors}")
+            log.debug("NewsItem has errors: ${newsItem.errors}")
             render view: 'create', model: [newsItem: newsItem]
             return
         }
 
         newsItem.save(flush: true, failOnError: true)
+
+        // optional thumbnail upload handling
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('newsItemThumb')
+            if (f != null && f.size > 0) {
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "Image must be one of: ${allowedMimeTypes}"
+                } else {
+                    // Upload image
+                    def result = newsItemService.uploadImage(newsItem.id, f)
+                    if (!result) {
+                        flash.message = "Error uploading image"
+                        redirect(action: 'create', params: params)
+                        return
+                    } else {
+                        log.debug("Image uploaded successfully: ${result}")
+                    }
+                }
+            }
+        }
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItem.title])
         redirect(action: 'manage')
@@ -150,6 +172,27 @@ class NewsItemController {
         render view: 'edit', model: [newsItem: NewsItem.get(id), defaultEndDate: datePickerRanges.endDateStr, defaultStartDate: datePickerRanges.startDateStr]
     }
 
+    def clearImage(NewsItem newsItem) {
+        if (!userService.isSiteAdmin()) {
+            flash.message = "You do not have permission to view this page"
+            render(view: '/notPermitted')
+            return
+        }
+
+        if (newsItem) {
+            // Clear the image associated with the news item
+            def result = newsItemService.deleteImage(newsItem.id)
+            if (!result) {
+                flash.message = "Error removing image for news item with ID ${newsItem.id}"
+            } else {
+                log.debug("Image removed successfully for news item with ID ${newsItem.id}")
+                flash.message = "Image removed successfully."
+            }
+        }
+
+        redirect(action: 'edit', id: newsItem.id)
+    }
+
     @Transactional
     def update(NewsItem newsItem) {
         if (!userService.isSiteAdmin()) {
@@ -157,23 +200,49 @@ class NewsItemController {
             render(view: '/notPermitted')
             return
         }
-        log.info("Updating news item with params: ${params}")
+        log.debug("Updating news item with params: ${params}")
 
         if (params.dateExpiresPicker) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
             newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            log.info("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
         }
 
         if (!newsItem.validate()) {
-            log.info("NewsItem has errors: ${newsItem.errors}")
+            log.debug("NewsItem has errors: ${newsItem.errors}")
             render view: 'edit', model: [newsItem: newsItem]
             return
         }
 
-        log.info("Attempting to update news item: ${newsItem.id}, title: ${newsItem.title}")
+        log.debug("Attempting to update news item: ${newsItem.id}, title: ${newsItem.title}")
         newsItem.save(flush: true)
+
+        // optional thumbnail upload handling
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('newsItemThumb')
+            if (f != null && f.size > 0) {
+                log.debug("Processing uploaded file: ${f.originalFilename}, size: ${f.size}, content type: ${f.contentType}")
+                def allowedMimeTypes = ['image/jpeg', 'image/png']
+                if (!allowedMimeTypes.contains(f.getContentType())) {
+                    flash.message = "Image must be one of: ${allowedMimeTypes}"
+                } else if (newsItemService.getImageUrl(newsItem.id) != null) {
+                    flash.message = "Image already exists, please clear it before uploading a new one."
+                } else {
+                    // Upload image
+                    def result = newsItemService.uploadImage(newsItem.id, f)
+                    if (!result) {
+                        flash.message = "Error uploading image"
+                        redirect(action: 'create', params: params)
+                        return
+                    } else {
+                        log.debug("Image uploaded successfully: ${result}")
+                    }
+                }
+            } else {
+                log.debug("No file uploaded or file is empty.")
+            }
+        }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'newsItem.label', default: 'NewsItem'), newsItem.title])
         redirect(action: 'manage')
@@ -203,4 +272,7 @@ class NewsItemController {
         redirect(action: 'manage')
     }
 
+    def viewNewsItemImageFragment(NewsItem newsItem) {
+        [newsItem: newsItem]
+    }
 }
