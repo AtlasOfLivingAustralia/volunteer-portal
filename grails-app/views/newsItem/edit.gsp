@@ -132,6 +132,7 @@
 </div>
 <asset:script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" asset-defer=""/>
 <asset:javascript src="tinymce-simple" asset-defer="" />
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
     $(document).ready(function() {
         $('.datepicker').datepicker({

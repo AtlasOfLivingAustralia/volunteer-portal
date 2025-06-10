@@ -90,7 +90,7 @@
                             <label class="control-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
 
                             <div class="col-md-6">
-                                <input type="file" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>
+                                <input type="file" class="form-control" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>
                             </div>
                         </div>
 

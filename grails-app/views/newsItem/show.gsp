@@ -57,31 +57,31 @@
             </ol>
         </section>
 
+        <g:if test="${featuredNewsItems}">
         <section class="other-news-section">
             <h2 class="heading">Other news</h2>
         </section>
         <section class="featured-news-section">
             <dl class="featured-news-list">
-                <g:if test="${featuredNewsItems}">
-                    <g:each in="${featuredNewsItems}" var="featuredNewsItem">
-                        <div class="featured-news-list__card news-item-other__card">
-                            <dt><g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">${featuredNewsItem.title}</g:link></dt>
-                            <dd class="featured-news-list__news-excerpt">
-                                <g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">
-                                    <g:set var="sanitisedContent" value="${featuredNewsItem.content.replaceAll("<[^>]*>", "")}"/>
+            <g:each in="${featuredNewsItems}" var="featuredNewsItem">
+                <div class="featured-news-list__card news-item-other__card">
+                    <dt><g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">${featuredNewsItem.title}</g:link></dt>
+                    <dd class="featured-news-list__news-excerpt">
+                        <g:link controller="newsItem" action="show" params="${[id: featuredNewsItem.id]}">
+                            <g:set var="sanitisedContent" value="${featuredNewsItem.content.replaceAll("<[^>]*>", "")}"/>
 
-                                    <p>${sanitisedContent.length() > 100 ? sanitisedContent.substring(0, 100) : sanitisedContent}...</p>
-                                    <span class="featured-news-list__author-label">
-                                        ${featuredNewsItem.createdBy.displayName}<br />
-                                        <g:formatDate date="${featuredNewsItem.dateCreated}" format="${DateConstants.DATE_FORMAT_SHORT}" />
-                                    </span>
-                                </g:link>
-                            </dd>
-                        </div>
-                    </g:each>
-                </g:if>
+                            <p>${sanitisedContent.length() > 100 ? sanitisedContent.substring(0, 100) : sanitisedContent}...</p>
+                            <span class="featured-news-list__author-label">
+                                ${featuredNewsItem.createdBy.displayName}<br />
+                                <g:formatDate date="${featuredNewsItem.dateCreated}" format="${DateConstants.DATE_FORMAT_SHORT}" />
+                            </span>
+                        </g:link>
+                    </dd>
+                </div>
+            </g:each>
             </dl>
         </section>
+        </g:if>
     </main>
 <asset:script type="text/javascript">
 jQuery(function($) {
