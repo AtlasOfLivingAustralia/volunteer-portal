@@ -51,4 +51,22 @@ class NewsItem {
                 .append("topic", topic?.title)
                 .toString();
     }
+
+    /**
+     * Truncate the content of the news item to a specified length.
+     * @param length The maximum length of the content to return.
+     * @param truncate The method of truncation, either 'words' or 'characters'.
+     * @return Truncated content, either by words or characters.
+     */
+    String truncateContent(int length, String truncate = 'words') {
+        if (content) {
+            if (truncate == 'words') {
+                def words = content.split(/\s+/)
+                return words.length > length ? words.take(length).join(' ') + '... [linktag]' : content
+            } else {
+                return content.length() > length ? content.substring(0, length) + '... [linktag]' : content
+            }
+        }
+        return ''
+    }
 }

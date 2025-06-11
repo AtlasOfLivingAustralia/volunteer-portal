@@ -25,6 +25,10 @@
             float: right;
             margin-left: 20px;
         }
+
+        .news-item-more {
+            margin-top: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +113,8 @@
                                  alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
                         </g:link>
                     </cl:ifNewsItemHasThumb>
-                    ${raw(newsItem.content)}
+                    <g:set var="newsItemUrl" value="${createLink(controller: 'newsItem', action: 'show', id: newsItem.id)}"/>
+                    ${raw(newsItem.truncateContent(200).replace('[linktag]', "<br /><a href='${newsItemUrl}' class='btn btn-hollow grey btn-sm news-item-more'>Read more...</a>"))}
                 </div>
                 <div class="index-news-nav">
                     <div class="index-news__archive-link">

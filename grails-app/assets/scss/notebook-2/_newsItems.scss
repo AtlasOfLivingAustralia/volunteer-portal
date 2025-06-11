@@ -220,6 +220,10 @@ h2.heading {
   justify-content: right;
   margin-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-xl;
+
+  a {
+    color: #2B779A;
+  }
 }
 
 .news-image {
