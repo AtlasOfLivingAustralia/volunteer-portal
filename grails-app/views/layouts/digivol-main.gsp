@@ -182,8 +182,9 @@
                     <span class="footer-brand"><asset:image src="logoDigivolInverted.png"/></span>
 
                     <div class="social-icons pull-right">
-                        <a href="https://www.facebook.com/AMDigiVol/" class="btn-lg"><i class="fa fa-facebook fa-lg"></i></a>
-                        <a href="https://twitter.com/AMDigiVol" class="btn-lg"><i class="fa fa-twitter fa-lg"></i></a>
+                        <g:link controller="newsItem" action="index" class="btn-lg" target="_blank" title="DigiVol News"><i class="fa fa-newspaper-o fa-lg"></i></g:link>
+                        <a href="https://www.facebook.com/AMDigiVol/" class="btn-lg" target="_blank" title="DigiVol on Facebook"><i class="fa fa-facebook fa-lg"></i></a>
+                        <a href="https://twitter.com/AMDigiVol" class="btn-lg" target="_blank" title="DigiVol on Twitter/X"><i class="fa fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
             </div>
@@ -202,6 +203,7 @@
                         <li><g:link controller="about" fragment="what-is-digivol">What is DigiVol</g:link></li>
                         <li><g:link controller="about" fragment="why-capture-this-data">Why capture this data</g:link></li>
                         <li><g:link controller="about" fragment="submit-an-expedition">Submit an expedition</g:link></li>
+                        <li><g:link controller="newsItem" action="index">DigiVol News</g:link></li>
                         <li><g:link controller="about" fragment="useful-references">Useful references</g:link></li>
                     </ul>
                 </div>

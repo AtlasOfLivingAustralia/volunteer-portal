@@ -6,6 +6,7 @@ class IndexController {
 
     def projectService
     def volunteerStatsService
+    def newsItemService
 
     def index() {
         log.debug("Index Controller, Index action")
@@ -31,7 +32,11 @@ class IndexController {
             potdSummary = projectService.makeSummaryListFromProjectList([projectToDisplay], null, null, null, null, null, null, null, null, false).projectRenderList?.get(0)
         }
 
-        render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary] )
+        // Check if there's news today:
+        def newsItem = newsItemService.getCurrentNewsItem()
+        log.debug("Found news item: ${newsItem}")
+
+        render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary, newsItem: newsItem] )
     }
 
     def leaderBoardFragment() {

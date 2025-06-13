@@ -26,6 +26,7 @@ class VolunteerTagLib {
     def templateService
     def projectService
     def tutorialService
+    def newsItemService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -856,6 +857,22 @@ class VolunteerTagLib {
     def ifInstitutionHasLogo = { attrs, body ->
         def institutionInstance = attrs.institution as Institution
         if (institutionService.hasLogoImage(institutionInstance)) {
+            out << body()
+        }
+    }
+
+    def newsItemThumbUrl = { attrs, body ->
+        out << newsItemService.getImageUrl(attrs.newsItemId as long)
+    }
+
+    def ifNewsItemHasThumb = { attrs, body ->
+        if (newsItemService.getImageUrl(attrs.newsItemId as long) != null) {
+            out << body()
+        }
+    }
+
+    def ifNewsItemHasNoImage = { attrs, body ->
+        if (newsItemService.getImageUrl(attrs.newsItemId as long) == null) {
             out << body()
         }
     }

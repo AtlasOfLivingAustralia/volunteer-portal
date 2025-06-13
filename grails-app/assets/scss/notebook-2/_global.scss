@@ -129,6 +129,13 @@ p + p {
   padding-bottom: variables-and-mixins.$space-2;
 }
 
+.pill--reset {
+  border: solid 1px variables-and-mixins.$button-grey;
+  font-size: variables-and-mixins.$text-lg;
+  color: black;
+  background-color: #ffffff;
+}
+
 // Filter navigation
 
 .filter-nav {
