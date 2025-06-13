@@ -19,7 +19,7 @@
     <g:set var="topicTitle" value="${taskInstance?.externalIdentifier ?: (catalogNumber ?: taskInstance.id)}"/>
 </g:if>
 <g:else>
-    <g:set var="topicTitle" value="${message(code: 'forum.newpost.label', default: 'New forum message')}"/>
+    <g:set var="topicTitle" value="${message(code: 'forum.newpost.label', default: 'New forum topic')}"/>
 </g:else>
 
 <cl:headerContent title="New forum message" selectedNavItem="forum" hideTitle="${true}">

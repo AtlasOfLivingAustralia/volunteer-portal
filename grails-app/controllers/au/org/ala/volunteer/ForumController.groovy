@@ -352,7 +352,8 @@ class ForumController {
         def errors = []
         if ((message && !StringUtils.isEmpty(text)) && currentUser) {
             if (!forumService.isMessageEditable(message, currentUser)) {
-                throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+                //throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+                errors << "You do not have sufficient privileges to edit this message. Please contact DigiVol admin if you think this is an error."
             }
 
             def maxSize = ForumMessage.constrainedProperties['text']?.maxSize ?: Integer.MAX_VALUE
@@ -401,7 +402,10 @@ class ForumController {
         def currentUser = userService.currentUser
         if (message && currentUser) {
             if (!forumService.isMessageEditable(message, currentUser)) {
-                throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+                //throw new RuntimeException("You do not have sufficient privileges to edit this message!")
+                flash.message = "You do not have sufficient privileges to delete this message. Please contact DigiVol admin if you think this is an error."
+                redirect(action: 'viewForumTopic', id: topicId)
+                return
             }
             forumService.deleteMessage(message)
         }
@@ -431,9 +435,9 @@ class ForumController {
 
         def topicValues = saveTopicMessage(topic)
         if (topicValues.errors?.size() > 0) {
-            flash.message = formatMessages(errors)
+            flash.message = formatMessages(topicValues.errors as List)
             render view:'viewForumTopic',
-                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                    model: [topic: topic, userInstance: userService.currentUser,
                             projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
                     params: [messageText: params.messageText]
         } else {
@@ -456,9 +460,9 @@ class ForumController {
         def topicValues = saveTopicMessage(topic)
 
         if (topicValues.errors?.size() > 0) {
-            flash.message = formatMessages(errors)
+            flash.message = formatMessages(topicValues.errors as List)
             render view:'viewForumTopic',
-                    model: [topic: topic, replyTo: replyTo, userInstance: userService.currentUser,
+                    model: [topic: topic, userInstance: userService.currentUser,
                             projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance, isWatched: topicValues.isWatched],
                     params: [messageText: params.messageText]
         } else {
@@ -482,6 +486,7 @@ class ForumController {
             topicValues.isAnswered = true
         }
 
+        topicValues.errors = []
         if (!params.messageText) {
             topicValues.errors << "Message text must not be empty"
             return topicValues
