@@ -20,6 +20,16 @@
             });
         });
     </asset:script>
+    <style>
+        .news-image {
+            float: right;
+            margin-left: 20px;
+        }
+
+        .news-item-more {
+            margin-top: 0.8rem;
+        }
+    </style>
 </head>
 <body>
 <div class="a-feature home"
@@ -87,6 +97,47 @@
 
     </div>
 </section>
+
+<g:if test="${newsItem}">
+<section id="latest-news-item">
+    <div class="container">
+        <h2 class="heading"><g:message code="index.news.heading" /></h2>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h3><g:link controller="newsItem" action="show" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+                <div id="news-parent">
+                    <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+                        <g:link controller="newsItem" action="show" id="${newsItem.id}">
+                            <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive news-image"
+                                 alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                        </g:link>
+                    </cl:ifNewsItemHasThumb>
+                    <g:set var="newsItemUrl" value="${createLink(controller: 'newsItem', action: 'show', id: newsItem.id)}"/>
+                    ${raw(newsItem.truncateContent(200).replace('[linktag]', "<br /><a href='${newsItemUrl}' class='btn btn-hollow grey btn-sm news-item-more'>Read more...</a>"))}
+                </div>
+                <div class="index-news-nav">
+                    <div class="index-news__archive-link">
+                        <g:link controller="newsItem" action="index">View other DigiVol news</g:link>
+                    </div>
+                    <div class="index-news__discuss-link">
+                        <g:if test="${newsItem.topic}">
+                            <g:link controller="forum" action="viewForumTopic" id="${newsItem.topic.id}">
+                                <g:message code="index.news.topic.linkLabel" />
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="forum" action="addForumTopic" params='[title: "${newsItem.title}", linkToNewsItem: newsItem.id]'>
+                                <g:message code="index.news.topic.linkLabel" />
+                            </g:link>
+                        </g:else>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</g:if>
 
 <section id="expedition-feature">
     <div class="container">

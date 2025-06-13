@@ -41,6 +41,9 @@
                 <g:hiddenField name="projectId" value="${projectInstance?.id}"/>
                 <g:hiddenField name="topicType" id="form-data-topictype" value="${ForumTopicType.Question.ordinal()}" />
                 <g:hiddenField name="watched" id="form-data-watched" value="false"/>
+                <g:if test="${params.linkToNewsItem}">
+                    <g:hiddenField name="newsItemId" value="${params.linkToNewsItem}"/>
+                </g:if>
 
                 <g:if test="${taskInstance}">
                     <g:hiddenField name="title" value="${topicTitle}"/>
