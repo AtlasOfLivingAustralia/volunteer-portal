@@ -106,7 +106,7 @@ class ForumTagLib {
                         h2(class: 'forum-post__heading') {
                             if (isPreview) {
                                 if (isEdit) {
-                                    def postUserProps = userService.detailsForUserId(forumMessage.user.userId as String)
+                                    def postUserProps = userService.detailsForUserId(forumMessage?.user?.userId as String)
                                     mkp.yield(postUserProps.displayName + " - PREVIEW")
                                 } else {
                                     mkp.yield(userProps.displayName + " - PREVIEW")
@@ -120,22 +120,22 @@ class ForumTagLib {
                         time(class: 'forum-post__date-time') {
                             if (isPreview) {
                                 if (isEdit) {
-                                    mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
+                                    mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
                                 } else {
                                     mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
                                 }
                             } else {
-                                mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
+                                mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
                             }
                         }
                     }
 
-                    if (isEdit && !forumMessage.replyTo) {
+                    if (isEdit && !forumMessage?.replyTo) {
                         mkp.yieldUnescaped("<div data-topic-id='${topicId}' class='forum-post__text message-text'>")
                     } else {
                         mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
                     }
-                    String processedMarkdown = messageText.replace("\n", "  \n")
+                    String processedMarkdown = messageText?.replace("\n", "  \n")
                     mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
                     mkp.yieldUnescaped("</div>")
                     log.debug("authorIsModerator: ${authorIsModerator}")
@@ -145,7 +145,7 @@ class ForumTagLib {
                         def timeLeft = forumService.messageEditTimeLeft(forumMessage as ForumMessage, userService.currentUser)
                         log.debug("timeleft to edit: ${timeLeft}")
 
-                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage.id}'>")
+                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage?.id}'>")
 
                         if (canEdit) {
                             log.debug("Can edit post")

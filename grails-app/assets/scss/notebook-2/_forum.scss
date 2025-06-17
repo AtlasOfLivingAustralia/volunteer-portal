@@ -365,6 +365,17 @@ blockquote {
   justify-content: flex-start;
 }
 
+.toggleExpeditionWatch {
+  display: flex;
+  padding-left: 1rem;
+}
+
+.forum--watch-label {
+  padding-top: 0.4rem;
+  padding-left: 0.5rem;
+  font-size: variables-and-mixins.$text-lg;
+}
+
 .forum-post-buttons--new-post-type {
   display: flex;
   flex: 1;
