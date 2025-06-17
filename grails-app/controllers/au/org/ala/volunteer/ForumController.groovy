@@ -386,7 +386,7 @@ class ForumController {
             errors << "Message text must not be empty"
         }
 
-        if (params.title) {
+        if (params.title && !errors) {
             def topic = message.topic
             topic.title = params.title
             topic.save(flush: true, failOnError: true)
