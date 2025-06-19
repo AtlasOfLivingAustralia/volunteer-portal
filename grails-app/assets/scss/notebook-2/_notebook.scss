@@ -62,10 +62,15 @@
 
   .achievement-list__definition {
     font-size: variables-and-mixins.$text-5xl;
+    line-height: 1.0;
   }
 
-  .achievement-list__leaderboard-total {
+  .achievement-list__leaderboard-total, .achievement-list__leaderboard-breakdown {
     font-size: variables-and-mixins.$text-lg;
+  }
+
+  .achievement-list__leaderboard-breakdown {
+    opacity: 0.6;
   }
 
   // Badges

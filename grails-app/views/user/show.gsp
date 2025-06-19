@@ -36,7 +36,7 @@
         </span>
         ${cl.displayNameForUserId(id: userInstance.userId)}
         <cl:ifSiteAdmin>
-        <span class="notebook-user-name__admin-link">
+         <span class="notebook-user-name__admin-link">
             <cl:externalLinkIcon href="${createLink(controller: "user", action: "edit", id: userInstance.id)}" title="Administrator: Edit User"/>
         </span>
         </cl:ifSiteAdmin>
@@ -50,7 +50,10 @@
         <dl class="achievement-list">
             <div class="achievement-list__card">
                 <dt>Total Contribution</dt>
-                <dd class="achievement-list__definition">${score} <span class="achievement-list__leaderboard-total">tasks</span></dd>
+                <dd class="achievement-list__definition">
+                    <span class="achievement-list__leaderboard-breakdown">Transcribed: ${transcribedScore} / Validted: ${validatedScore}</span><br />
+                    ${score} <span class="achievement-list__leaderboard-total">tasks</span>
+                </dd>
             </div>
             <div class="achievement-list__card">
                 <dt>Expeditions contributed to</dt>
@@ -204,64 +207,23 @@
                             <i class="fa fa-pencil-square-o task-action-icon" title="Transcribe"></i>
                         </a>
                     </g:if>
-
-
-                    <!-- Already Validated. Allow view or continue validation -->
-%{--                    <g:if test="${row.fullyValidatedBy}">--}%
-%{--                        <g:if test="${row.isValid}">--}%
-%{--                            <!-- show task -->--}%
-%{--                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">--}%
-%{--                                <i class="fa fa-eye task-action-icon" title="View task"></i>--}%
-%{--                            </a>--}%
-%{--                        </g:if>--}%
-%{--                        <g:else>--}%
-%{--                            <g:if test="${row.fullyValidatedBy == currentUser}">--}%
-%{--                                <!-- validate task -->--}%
-%{--                                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">--}%
-%{--                                    <i class="fa fa-check-square-o task-action-icon" title="Continue Validation"></i>--}%
-%{--                                </a>--}%
-%{--                            </g:if>--}%
-%{--                            <g:else>--}%
-%{--                                <!-- show task -->--}%
-%{--                                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">--}%
-%{--                                    <i class="fa fa-eye task-action-icon" title="View task"></i>--}%
-%{--                                </a>--}%
-%{--                            </g:else>--}%
-%{--                        </g:else>--}%
-%{--                    </g:if>--}%
-%{--                    <g:elseif test="${row.isFullyTranscribed}">--}%
-%{--                        <!-- Task has been transcribed but not validated -->--}%
-%{--                        <g:if test="${isValidator}">--}%
-%{--                            <!-- validate task -->--}%
-%{--                            <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">--}%
-%{--                                <i class="fa fa-check-square-o task-action-icon" title="Validate"></i>--}%
-%{--                            </a>--}%
-%{--                        </g:if>--}%
-%{--                        <g:else>--}%
-%{--                            <!-- show task -->--}%
-%{--                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">--}%
-%{--                                <i class="fa fa-eye task-action-icon" title="View task"></i>--}%
-%{--                            </a>--}%
-%{--                        </g:else>--}%
-%{--                    </g:elseif>--}%
-%{--                    <g:else>--}%
-%{--                        <!-- Task has not been completely transcribed yet -->--}%
-%{--                        <!-- transcribe task -->--}%
-%{--                        <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: row.task_id)}">--}%
-%{--                            <i class="fa fa-pencil-square-o task-action-icon" title="Transcribe"></i>--}%
-%{--                        </a>--}%
-%{--                    </g:else>--}%
-
                 </td>
             </tr>
             </g:each>
             </g:else>
             </tbody>
         </table>
-
-
     </section>
 
+    <g:if test="${totalMatchingTasks > 10}">
+    <section class="task-list-nav-section">
+        <nav class="task-history-nav">
+            <div class="task-history-pagination-nav">
+                <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
+            </div>
+        </nav>
+    </section>
+    </g:if>
 </main>
 
 

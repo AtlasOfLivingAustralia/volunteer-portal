@@ -351,6 +351,8 @@ class UserController {
 
         def achievements = user.achievementAwards
         def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
+        def transcribedScore = WebUtils.formatNumberWithCommas(user.transcribedCount ?: 0)
+        def validatedScore = WebUtils.formatNumberWithCommas(user.validatedCount ?: 0)
 
         Stopwatch sw = Stopwatch.createStarted()
         def taskList = taskService.getNotebookTaskList(filter, user, project,
@@ -372,6 +374,8 @@ class UserController {
                 project              : project,
                 achievements         : achievements,
                 score                : score,
+                transcribedScore     : transcribedScore,
+                validatedScore       : validatedScore,
                 viewTaskList         : taskList.viewList,
                 totalMatchingTasks   : taskList.totalMatchingTasks,
                 isValidator          : userService.isValidator(project),
