@@ -21,6 +21,10 @@
     }
   }
 
+  .notebook-user-name__admin-link {
+    display: inline-block;
+  }
+
   .achievement-list-section {
     @include variables-and-mixins.page-grid;
   }
@@ -58,10 +62,15 @@
 
   .achievement-list__definition {
     font-size: variables-and-mixins.$text-5xl;
+    line-height: 1.0;
   }
 
-  .achievement-list__leaderboard-total {
+  .achievement-list__leaderboard-total, .achievement-list__leaderboard-breakdown {
     font-size: variables-and-mixins.$text-lg;
+  }
+
+  .achievement-list__leaderboard-breakdown {
+    opacity: 0.6;
   }
 
   // Badges
@@ -108,8 +117,6 @@
   /////////////////////////////////
 
   .task-list-nav-section {
-
-
     p {
       font-size: variables-and-mixins.$text-sm;
     }
@@ -124,6 +131,10 @@
     @media screen and (min-width: variables-and-mixins.$screen-lg) {
       display: flex;
     }
+  }
+
+  .task-history-nav__filter-label {
+    margin-top: variables-and-mixins.$space-1;
   }
 
 .task-history-pagination-nav {
@@ -151,6 +162,10 @@
     td, th {
       font-size: variables-and-mixins.$text-xl;
     }
+  }
+
+  .task-history__action-buttons {
+    white-space: nowrap;
   }
 
   // Mobile table

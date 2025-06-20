@@ -351,6 +351,8 @@ class UserController {
 
         def achievements = user.achievementAwards
         def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
+        def transcribedScore = WebUtils.formatNumberWithCommas(user.transcribedCount ?: 0)
+        def validatedScore = WebUtils.formatNumberWithCommas(user.validatedCount ?: 0)
 
         Stopwatch sw = Stopwatch.createStarted()
         def taskList = taskService.getNotebookTaskList(filter, user, project,
@@ -359,12 +361,21 @@ class UserController {
         sw.stop()
         log.debug("User.show()#taskList ${sw.toString()}")
 
+        // Find out if the user is a validator for any of the projects/institutions of the tasks in the list
+        taskList.viewList.each { Map row ->
+            def taskProject = Project.get(row.projectId as long)
+            row['isValidator'] = userService.isValidatorForProjectId(row.projectId as long, taskProject.institution.id)
+            log.debug("User.show()#taskList.isValidator: ${row['isValidator']} for project ${taskProject.name} (${taskProject.id})")
+        }
+
         Map myModel = [
                 userInstance         : user,
                 currentUser          : currentUser,
                 project              : project,
                 achievements         : achievements,
                 score                : score,
+                transcribedScore     : transcribedScore,
+                validatedScore       : validatedScore,
                 viewTaskList         : taskList.viewList,
                 totalMatchingTasks   : taskList.totalMatchingTasks,
                 isValidator          : userService.isValidator(project),
