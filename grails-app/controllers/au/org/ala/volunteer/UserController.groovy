@@ -361,13 +361,6 @@ class UserController {
         sw.stop()
         log.debug("User.show()#taskList ${sw.toString()}")
 
-
-//        taskList.viewList.each { Map row ->
-//            def taskProject = Project.get(row.projectId as long)
-//            row['isValidator'] = userService.isValidatorForProjectId(row.projectId as long, taskProject.institution.id)
-//            log.debug("User.show()#taskList.isValidator: ${row['isValidator']} for project ${taskProject.name} (${taskProject.id})")
-//        }
-
         Map myModel = [
                 userInstance         : user,
                 currentUser          : currentUser,
