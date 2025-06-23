@@ -51,7 +51,7 @@
             <div class="achievement-list__card">
                 <dt>Total Contribution</dt>
                 <dd class="achievement-list__definition">
-                    <span class="achievement-list__leaderboard-breakdown">Transcribed: ${transcribedScore} / Validted: ${validatedScore}</span><br />
+                    <span class="achievement-list__leaderboard-breakdown">Transcribed: ${transcribedScore} / Validated: ${validatedScore}</span><br />
                     ${score} <span class="achievement-list__leaderboard-total">tasks</span>
                 </dd>
             </div>
