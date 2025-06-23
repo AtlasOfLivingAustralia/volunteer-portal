@@ -1383,6 +1383,11 @@ ORDER BY record_idx, name;
 
         sw.reset().start()
         result.viewList = create.fetch(query).collect {row ->
+            // Find out if the user is a validator for any of the projects/institutions of the tasks in the list
+            def taskProject = Project.get(row.project_project_id as long)
+            def isValidatorForTaskProject = userService.isValidatorForProjectId(row.project_project_id as long, taskProject.institution.id)
+            log.debug("TaskService.getNotebookTaskList()#taskList.isValidator: ${isValidatorForTaskProject} for project ${taskProject.name} (${taskProject.id})")
+
             [
                     id: row.transcription_id,
                     task_id: row.task_id,
@@ -1393,7 +1398,8 @@ ORDER BY record_idx, name;
                     projectName: row.project_name,
                     isFullyTranscribed: row.is_fully_transcribed,
                     dateTranscribed: row.date_transcribed,
-                    status: row.status
+                    status: row.status,
+                    isValidator: isValidatorForTaskProject
             ]
         }
         sw.stop()

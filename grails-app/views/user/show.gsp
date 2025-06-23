@@ -35,6 +35,11 @@
             </g:else>
         </span>
         ${cl.displayNameForUserId(id: userInstance.userId)}
+        <cl:ifSiteAdmin>
+         <span class="notebook-user-name__admin-link">
+            <cl:externalLinkIcon href="${createLink(controller: "user", action: "edit", id: userInstance.id)}" title="Administrator: Edit User"/>
+        </span>
+        </cl:ifSiteAdmin>
     </h1>
 
 </cl:headerContent>
@@ -45,7 +50,10 @@
         <dl class="achievement-list">
             <div class="achievement-list__card">
                 <dt>Total Contribution</dt>
-                <dd class="achievement-list__definition">${score} <span class="achievement-list__leaderboard-total">tasks</span></dd>
+                <dd class="achievement-list__definition">
+                    <span class="achievement-list__leaderboard-breakdown">Transcribed: ${transcribedScore} / Validted: ${validatedScore}</span><br />
+                    ${score} <span class="achievement-list__leaderboard-total">tasks</span>
+                </dd>
             </div>
             <div class="achievement-list__card">
                 <dt>Expeditions contributed to</dt>
@@ -94,19 +102,21 @@
         <p>${totalMatchingTasks} tasks found.</p>
         <nav class="task-history-nav">
             <div class="filter-nav filter-nav--mt-3">
-                <div class="filter-nav__label">Filter by:</div>
+                <div class="filter-nav__label task-history-nav__filter-label">Filter by:</div>
                 <ul class="task-history-nav__list">
                     <g:if test="${userInstance.userId == currentUser}">
-                        <g:set var="perspective" value="by you"/>
+                        <g:set var="perspective" value="by me"/>
                     </g:if>
                     <g:else>
                         <g:set var="perspective" value="by ${userInstance.displayName}"/>
                     </g:else>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated ${perspective}">Validated</span></g:link></li>
-                    <li class="filter-nav__list-item">|</li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks saved for later ${perspective}">Saved</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All tasks</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed ${perspective}</span></g:link></li>
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated ${perspective}">Validated ${perspective}</span></g:link></li>
+%{--                    <li class="filter-nav__list-item">|</li>--}%
+                    <g:if test="${userInstance.userId == currentUser}">
+                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks saved for later ${perspective}">Saved for later</span></g:link></li>
+                    </g:if>
                 </ul>
             </div>
             <div class="task-history-pagination-nav">
@@ -127,7 +137,7 @@
                                   title="${message(code: 'project.name.label', default: 'Expedition')}" params="${[filter: params.filter]}"/>
                 <g:sortableColumn property="dateTranscribed" class="td--2/12"
                                   title="${message(code: 'task.dateFullyTranscribed.label', default: 'Transcribed')}" params="${[filter: params.filter]}"/>
-                <g:sortableColumn property="status" class="td--1/12"
+                <g:sortableColumn property="status" class="td--2/12"
                                   title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>
                 <th class="td--1/12">${message(code: 'notebook.tasklist.tableAction.label', default: 'Action')}</th>
             </tr>
@@ -154,65 +164,66 @@
                                   format="${DateConstants.DATE_TIME_FORMAT}"/>
                 </td>
                 <td data-key="status">
-                    <span class="pill pill--bg-${row.status.replace(" ", "-").toLowerCase()}">${row.status}</span>
-                </td>
-                <td data-key="action">
-                <!-- Already Validated. Allow view or continue validation -->
-                    <g:if test="${row.fullyValidatedBy}">
-                        <g:if test="${row.isValid}">
-                            <!-- show task -->
-                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
-                                <i class="fa fa-eye task-action-icon" title="View task"></i>
-                            </a>
-                        </g:if>
-                        <g:else>
-                            <g:if test="${row.fullyValidatedBy == currentUser}">
-                                <!-- validate task -->
-                                <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
-                                    <i class="fa fa-check-square-o task-action-icon" title="Continue Validation"></i>
-                                </a>
-                            </g:if>
-                            <g:else>
-                                <!-- show task -->
-                                <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
-                                    <i class="fa fa-eye task-action-icon" title="View task"></i>
-                                </a>
-                            </g:else>
-                        </g:else>
+                    <g:set var="statusPerspective" value="" />
+                    <g:if test="${currentUser == row.fullyTranscribedBy && row.status == message(code: 'status.transcribed')}">
+                        <g:set var="statusPerspective" value=" by me" />
                     </g:if>
-                    <g:elseif test="${row.isFullyTranscribed}">
-                        <!-- Task has been transcribed but not validated -->
-                        <g:if test="${isValidator}">
-                            <!-- validate task -->
-                            <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
-                                <i class="fa fa-check-square-o task-action-icon" title="Validate"></i>
-                            </a>
+                    <g:if test="${currentUser == row.fullyValidatedBy && row.status == message(code: 'status.validated')}">
+                        <g:set var="statusPerspective" value=" by me" />
+                    </g:if>
+                    <span class="pill pill--bg-${row.status.replace(" ", "-").toLowerCase()}">${row.status}${statusPerspective}</span>
+                </td>
+                <td data-key="action" class="task-history__action-buttons">
+%{--                    // If task is fully transcribed and (the user is the transcriber or the user is a validator)--}%
+%{--                    // display show task button--}%
+                    <g:if test="${row.isFullyTranscribed && (row.fullyTranscribedBy == currentUser || row.isValidator)}">
+                        <!-- show task -->
+                        <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
+                            <i class="fa fa-eye task-action-icon" title="View task"></i>
+                        </a>
+                    </g:if>
+
+%{--                    // If task is fully transcribed and the user is a validator--}%
+%{--                    // display validate button--}%
+                    <g:if test="${row.isFullyTranscribed && row.isValidator}">
+%{--                    // If task status is validated, label = review--}%
+%{--                    // else label = validate--}%
+                        <g:if test="${row.status == message(code: 'status.validated')}">
+                            <g:set var="validateButtonLabel" value="Review" />
                         </g:if>
                         <g:else>
-                            <!-- show task -->
-                            <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
-                                <i class="fa fa-eye task-action-icon" title="View task"></i>
-                            </a>
+                            <g:set var="validateButtonLabel" value="Validate" />
                         </g:else>
-                    </g:elseif>
-                    <g:else>
-                        <!-- Task has not been completely transcribed yet -->
-                        <!-- transcribe task -->
+                        <!-- validate task -->
+                        <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
+                            <i class="fa fa-check-square-o task-action-icon" title="${validateButtonLabel}"></i>
+                        </a>
+                    </g:if>
+
+%{--                    // If task is not fully transcribed--}%
+%{--                    // display transcribe button--}%
+                    <g:if test="${!row.isFullyTranscribed}">
                         <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: row.task_id)}">
                             <i class="fa fa-pencil-square-o task-action-icon" title="Transcribe"></i>
                         </a>
-                    </g:else>
-
+                    </g:if>
                 </td>
             </tr>
             </g:each>
             </g:else>
             </tbody>
         </table>
-
-
     </section>
 
+    <g:if test="${totalMatchingTasks > 10}">
+    <section class="task-list-nav-section">
+        <nav class="task-history-nav">
+            <div class="task-history-pagination-nav">
+                <g:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
+            </div>
+        </nav>
+    </section>
+    </g:if>
 </main>
 
 
