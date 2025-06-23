@@ -218,6 +218,9 @@ class TutorialsController {
             if (session.hasProperty(SESSION_KEY_TUTORIAL_FILTER)) {
                 filterParams.putAll(session[SESSION_KEY_TUTORIAL_FILTER] as Map)
             }
+            if (params.boolean("admin") == true) {
+                filterParams.put("admin", true)
+            }
 
             redirect(action: 'manage', params: filterParams)
         }
@@ -332,6 +335,9 @@ class TutorialsController {
             return
         }
 
+        if (params.boolean("reset") == true) {
+            clearSessionFilter()
+        }
         def migrate = params.boolean("migrate") == true
         def admin = params.boolean("admin") == true
 
@@ -352,21 +358,33 @@ class TutorialsController {
         }
 
         def institutionFilter = []
-        Institution institution = (params.institutionFilter ? Institution.get(params.long('institutionFilter')) : null)
+        def institutionId = params.long('institutionFilter') ?: getSessionFilter("institutionFilter")
+        Institution institution = institutionId ? Institution.get(institutionId as long) : null
+
         if (institution) {
             institutionFilter.add(institution)
-            updateSessionFilter([institutionFilter: params.institutionFilter])
+            params.institutionFilter = institutionId
+            updateSessionFilter([institutionFilter: institutionId])
         } else {
             institutionFilter = institutionList
             removeSessionFilter("institutionFilter")
         }
 
-        def statusFilter = (params.statusFilter ?: null)
-        if (params.statusFilter) updateSessionFilter([statusFilter: params.statusFilter])
-        else removeSessionFilter("statusFilter")
+        def statusFilter = params.statusFilter ?: getSessionFilter("statusFilter")
+        if (statusFilter) {
+            params.statusFilter = statusFilter
+            updateSessionFilter([statusFilter: statusFilter])
+        } else {
+            removeSessionFilter("statusFilter")
+        }
 
-        if (params.q) updateSessionFilter([q: params.q])
-        else removeSessionFilter("q")
+        if (params.q) {
+            updateSessionFilter([q: params.q])
+        } else if (getSessionFilter("q")) {
+            params.q = getSessionFilter("q")
+        } else {
+            removeSessionFilter("q")
+        }
 
         def tl = tutorialService.getTutorialsForManagement(institutionFilter, statusFilter, params, admin, migrate)
         def tutorialList = tl.tutorialList
@@ -388,6 +406,12 @@ class TutorialsController {
             session[SESSION_KEY_TUTORIAL_FILTER] = [:]
         }
         (session[SESSION_KEY_TUTORIAL_FILTER] as Map).putAll(map)
+    }
+
+    private def getSessionFilter(String key) {
+        if (!session[SESSION_KEY_TUTORIAL_FILTER]) return null
+
+        return session[SESSION_KEY_TUTORIAL_FILTER][key]
     }
 
     /**
