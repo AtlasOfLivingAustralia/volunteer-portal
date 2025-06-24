@@ -37,7 +37,7 @@
             Add Tutorial
         </a>
         <cl:ifSiteAdmin>
-        <g:if test="${params.migrate}">
+        <g:if test="${params.admin}">
         <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage")}">
             Back to Tutorials
         </a>
@@ -45,9 +45,6 @@
         <g:else>
         <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['admin': true])}">
             Admin Tutorials
-        </a>
-        <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['migrate': true])}">
-            Migrate Tutorials
         </a>
         </g:else>
         </cl:ifSiteAdmin>
