@@ -392,6 +392,7 @@ class UserService {
         try {
             log.debug("[hasCasRole]: User: ${user}, Role: ${role}")
             serviceResults = authService.getUserDetailsById([user.userId], true)
+            log.debug("Service results: ${serviceResults}")
             def userFromService = serviceResults?.users?.get(user.userId)
             def userRoles = user.userRoles
             log.debug("userRoles: ${userRoles}")
@@ -970,5 +971,60 @@ class UserService {
         // Update user object to record email sent.
         user.welcomeEmailSent = new Date()
         user.save(flush: true, failOnError: true)
+    }
+
+    /**
+     * Returns a list of roles for the user, sorted by role type.
+     * The order is: Site Admin, Institution Admin, Validator, Forum Moderator.
+     * @param user the user to get the roles for.
+     * @return a list of maps containing role information.
+     */
+    def getRoleInfoForUser(User user) {
+        if (!user) return []
+
+        def rolesList = []
+
+        // Site Admin
+        // This currently does not work
+        if (hasCasRole(user, CASRoles.ROLE_ADMIN)) {
+            rolesList << [role: 'Site Admin', scope: null]
+        }
+
+        // Institution Admin
+        def institutionAdminRole = Role.findByNameIlike(BVPRole.INSTITUTION_ADMIN)
+        user.userRoles.findAll { it.role.id == institutionAdminRole.id }.each { ur ->
+            rolesList << [
+                    role: 'Institution Admin',
+                    scope: ur.institution?.name
+            ]
+        }
+
+        // Validator
+        def validatorRole = Role.findByNameIlike(BVPRole.VALIDATOR)
+        user.userRoles.findAll { it.role.id == validatorRole.id }.each { ur ->
+            def scope = ur.project ?
+                    "${ur.project.name} (Project in ${ur.project.institution?.name})" :
+                    ur.institution?.name ?: 'Site-wide'
+            rolesList << [
+                    role: 'Validator',
+                    scope: scope
+            ]
+        }
+
+        // Forum Moderator
+        def forumModRole = Role.findByNameIlike(BVPRole.FORUM_MODERATOR)
+        user.userRoles.findAll { it.role.id == forumModRole.id }.each { ur ->
+            def scope = ur.project ?
+                    "${ur.project.name} (Project in ${ur.project.institution?.name})" :
+                    ur.institution?.name ?: 'Site-wide'
+            rolesList << [
+                    role: 'Forum Moderator',
+                    scope: scope
+            ]
+        }
+
+        // Sort by desired order
+        def roleOrder = ['Site Admin', 'Institution Admin', 'Validator', 'Forum Moderator']
+        rolesList.sort { a, b -> roleOrder.indexOf(a.role) <=> roleOrder.indexOf(b.role) }
     }
 }
