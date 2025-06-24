@@ -1350,4 +1350,10 @@ function notify() {
             mkp.yieldUnescaped(body())
         }
     }
+
+    def externalLinkIcon = { attrs, body ->
+        out << "<a href=\"${attrs.href}\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"${attrs.title ?: 'External link'}\">"
+        out << "<img src='${resource(dir: 'images', file: 'external_link.svg')}' alt='Open in new window' />"
+        out << "</a>"
+    }
 }
