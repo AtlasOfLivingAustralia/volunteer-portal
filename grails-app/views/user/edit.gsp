@@ -125,7 +125,12 @@
                                                 <g:each var="roleInfo" in="${roles}">
                                                     <tr>
                                                         <td>${roleInfo.role}</td>
-                                                        <td>${roleInfo.scope ?: '<g:message code="user.role.sitewide.label" default="Site-wide"/>'}</td>
+                                                        <td>
+                                                            ${roleInfo.scope}
+                                                            <g:if test="${!roleInfo.scope}">
+                                                                <g:message code="user.role.site-wide.label" default="Site-wide"/>
+                                                            </g:if>
+                                                        </td>
                                                     </tr>
                                                 </g:each>
                                                 <g:if test="${roles.isEmpty()}">
