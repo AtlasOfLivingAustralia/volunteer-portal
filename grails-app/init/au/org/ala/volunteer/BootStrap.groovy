@@ -51,11 +51,6 @@ class BootStrap {
 
         prepareDefaultLabels()
 
-        // For DigiVol 6.2.0 - Remove in following release.
-        //migrateTutorials()
-        //findProjectsForTutorials()
-        //renameTutorials()
-
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
