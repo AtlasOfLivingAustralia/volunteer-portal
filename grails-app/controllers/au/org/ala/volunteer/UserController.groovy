@@ -410,7 +410,7 @@ class UserController {
             return
         }
 
-        def roles = UserRole.findAllByUser(user)
+        def roles = userService.getRoleInfoForUser(user)
         def category = LabelCategory.findByName('user')
         def userLabelList = Label.findAllByCategory(category)
 
