@@ -985,7 +985,6 @@ class UserService {
         def rolesList = []
 
         // Site Admin
-        // This currently does not work
         if (hasCasRole(user, CASRoles.ROLE_ADMIN)) {
             rolesList << [role: 'Site Admin', scope: null]
         }
