@@ -18,9 +18,10 @@ class NewsItemService {
     /**
      * Returns a list of NewsItem objects based on the provided parameters.
      * @param params Grails parameters for pagination and sorting.
+     * @param listAll If true, returns all news items regardless of their active status; if false, only returns active news items.
      * @return List of NewsItem objects.
      */
-    def list(Map params) {
+    def list(Map params, Boolean listAll = false) {
         if (!params.sort) {
             params.sort = 'dateCreated'
             params.order = 'desc'
@@ -38,6 +39,7 @@ class NewsItemService {
                     ilike('content', "%${params.q}%")
                 }
             }
+            if (!listAll) eq('isActive', true) // Ensure only active news items are returned
             order(params.sort, params.order)
         }
 
@@ -63,10 +65,11 @@ class NewsItemService {
     /**
      * Returns a list of featured news items.
      * @param maxResults the maximum number of featured news items to return. Default is 3.
-     * @return
+     * @return List of featured NewsItem objects.
      */
     def getFeaturedNewsItems(int maxResults = 3) {
         def featuredNewsItems = NewsItem.createCriteria().list(max: maxResults) {
+            eq('isActive', true)
             order('dateCreated', 'desc')
         }
 
@@ -109,10 +112,20 @@ class NewsItemService {
         return false
     }
 
+    /**
+     * Returns the file path for storing images related to a NewsItem.
+     * @param newsItemId The ID of the NewsItem.
+     * @return The file path as a String.
+     */
     private String getImagePath(long newsItemId) {
         return "${grailsApplication.config.getProperty('images.home', String)}/newsItem/${newsItemId}/"
     }
 
+    /**
+     * Finds the first image file in the specified directory that matches the NEWS_ITEM_IMAGE_PREFIX.
+     * @param filePath The path to the directory where images are stored.
+     * @return The name of the first image file found, or null if no image is found.
+     */
     def findImage(String filePath) {
         Path dir = Paths.get(filePath)
         try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "${NEWS_ITEM_IMAGE_PREFIX}*.jpg")) {
@@ -120,11 +133,17 @@ class NewsItemService {
                 log.debug("Found image: ${entry.toString()}")
                 return entry.fileName.toString() // Return the first image found
             }
-        } catch (IOException e) {
-            log.error("Error reading directory: ${filePath}", e)
+        } catch (IOException ignored) {
+            // Don't log an error if the directory does not exist, just return null
+            return null
         }
     }
 
+    /**
+     * Returns the URL for the thumbnail image of a NewsItem.
+     * @param newsItemId The ID of the NewsItem.
+     * @return The URL of the thumbnail image, or null if no image is found.
+     */
     def getImageUrl(long newsItemId) {
         def imagePath = getImagePath(newsItemId)
         def thumbnailPath = findImage(imagePath)
@@ -132,10 +151,16 @@ class NewsItemService {
         if (thumbnailPath) {
             return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}newsItem/${newsItemId}/${thumbnailPath}"
         } else {
-            return null // or return a default image URL
+            return null
         }
     }
 
+    /**
+     * Uploads an image for a NewsItem.
+     * @param newsItemId The ID of the NewsItem.
+     * @param file The MultipartFile containing the image to upload.
+     * @return true if the upload was successful, false otherwise.
+     */
     def uploadImage(long newsItemId, MultipartFile file) {
         def filePath = getImagePath(newsItemId)
         filePath = filePath + "${NEWS_ITEM_IMAGE_PREFIX}${new Date().getTime()}.jpg"
@@ -153,6 +178,11 @@ class NewsItemService {
         return false
     }
 
+    /**
+     * Deletes the image associated with a NewsItem.
+     * @param newsItemId The ID of the NewsItem whose image is to be deleted.
+     * @return true if the image was successfully deleted, false otherwise.
+     */
     def deleteImage(long newsItemId) {
         def filePath = getImagePath(newsItemId)
         def thumbnailPath = findImage(filePath)

@@ -52,7 +52,7 @@ class NewsItemController {
         }
         def statusFilterList = [[key: "active", value: "Active"],
                                 [key: "inactive", value: "Inactive"]]
-        def newsItemList = newsItemService.list(params)
+        def newsItemList = newsItemService.list(params, true)
 
         render view: 'manage', model:[newsItemList: newsItemList, newsItemCount: newsItemList.size(), statusFilterList: statusFilterList]
     }
