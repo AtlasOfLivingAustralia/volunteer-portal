@@ -125,6 +125,7 @@
   .task-history-nav__list {
     font-size: variables-and-mixins.$text-lg;
     display: flex;
+    margin-top: variables-and-mixins.$space-1;
   }
 
   .task-history-nav {
@@ -134,7 +135,7 @@
   }
 
   .task-history-nav__filter-label {
-    margin-top: variables-and-mixins.$space-1;
+    //margin-top: variables-and-mixins.$space-1;
   }
 
 .task-history-pagination-nav {

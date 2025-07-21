@@ -36,7 +36,7 @@ class SortableTagLib {
      * @attr params A map containing URL query parameters
      * @attr class CSS class name
      */
-    Closure sortableColumn = { attrs ->
+    Closure sortableColumn = { attrs, body ->
         def writer = out
         if (!attrs.property) {
             throwTagError("Tag [sortableColumn] is missing required attribute [property]")
@@ -114,6 +114,7 @@ class SortableTagLib {
         writer << link(linkAttrs) {
             title
         }
+        writer << body()
         writer << "</$tag>"
     }
 }
