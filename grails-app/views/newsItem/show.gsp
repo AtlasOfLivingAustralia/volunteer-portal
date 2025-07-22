@@ -8,13 +8,6 @@
 
         <asset:stylesheet src="notebook-reset.css"/>
         <asset:stylesheet src="news.scss"/>
-        <style>
-        <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
-            .newsItem__item {
-                min-height: 200px;
-            }
-        </cl:ifNewsItemHasThumb>
-        </style>
     </head>
     <body>
     <cl:headerContent title="${newsItem?.title}" selectedNavItem="bvp" hideTitle="${true}">
@@ -28,7 +21,7 @@
     <main>
         <section class="news-item-section">
             <ol>
-                <li class="newsItem__item">
+                <li class="newsItem__item clearfix">
                     <article>
                         <div class="news-item__header">
                             <h2 class="news-item__heading">${newsItem?.createdBy?.displayName}</h2>
