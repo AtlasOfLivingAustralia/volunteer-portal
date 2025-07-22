@@ -24,6 +24,7 @@
         .news-image {
             float: right;
             margin-left: 20px;
+            border-radius: 3px;
         }
 
         .news-item-more {
