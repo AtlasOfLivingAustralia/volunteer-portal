@@ -503,6 +503,13 @@ class ForumService {
             it.delete(flush: true, failOnError: true)
         }
 
+        // Finally remove any news item links
+        def newsItem = NewsItem.findByTopic(topic)
+        if (newsItem) {
+            newsItem.topic = null
+            newsItem.save(flush: true, failOnError: true)
+        }
+
         // finally delete the topic
         topic.delete(flush: true, failOnError: true)
     }

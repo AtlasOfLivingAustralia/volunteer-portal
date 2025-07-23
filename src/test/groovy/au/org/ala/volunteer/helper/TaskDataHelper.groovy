@@ -5,6 +5,7 @@ import au.org.ala.volunteer.ForumMessage
 import au.org.ala.volunteer.ForumTopic
 import au.org.ala.volunteer.FrontPage
 import au.org.ala.volunteer.Institution
+import au.org.ala.volunteer.NewsItem
 import au.org.ala.volunteer.Project
 import au.org.ala.volunteer.ProjectForumTopic
 import au.org.ala.volunteer.ProjectType
@@ -14,7 +15,6 @@ import au.org.ala.volunteer.Transcription
 import au.org.ala.volunteer.User
 import au.org.ala.volunteer.ViewedTask
 import groovy.util.logging.Slf4j
-
 
 /**
  * Helper class for creating Projects, Tasks, Transcriptions, ViewedTasks in the database to assist setting up
@@ -164,16 +164,6 @@ class TaskDataHelper {
             created = new Date()
         }
         return user.save(flush: true, failOnError: true)
-
-//        User user = new User(firstName: 'Example', lastName: 'Test', userId: UUID.randomUUID().toString(), email: 'test@example.org', created: new Date())
-//        User user = new User().tap {
-//            firstName = 'Example'
-//            lastName = 'Test'
-//            userId = UUID.randomUUID().toString()
-//            email = 'test@example.org'
-//            created = new Date()
-//        }
-//        return user.save(flush: true, failOnError: true)
     }
 
     static ProjectForumTopic setupProjectForum(Project projectInstance, User userInstance, int messages) {
@@ -196,6 +186,17 @@ class TaskDataHelper {
         } }.toSet()
     }
 
+    static ForumTopic setupForumTopic(String _title) {
+        ForumTopic forumTopic = new ForumTopic().tap {
+            title = _title
+            creator = setupUser("Forum User")
+        }
+        forumTopic.messages = setupForumMessages(forumTopic, 1) // Create one message by the creator
+        forumTopic.save(flush: true, failOnError: true)
+
+        forumTopic
+    }
+
     static FrontPage setupFrontPage() {
         FrontPage frontPage = new FrontPage().tap {
             featured
@@ -205,7 +206,22 @@ class TaskDataHelper {
             systemMessage = ""
             showAchievements = true
             enableTaskComments = true
-
         }
+
+        frontPage
+    }
+
+    static NewsItem setupNewsItem(String _title, String _content) {
+        NewsItem newsItem = new NewsItem().tap {
+            title = _title
+            content = _content
+            isActive = true
+            dateCreated = new Date()
+            createdBy = setupUser("News Admin")
+            dateExpires = new Date() + 7 // Expires in 7 days
+        }
+        newsItem.save(flush: true, failOnError: true)
+
+        newsItem
     }
 }

@@ -21,7 +21,7 @@
     %>
     <nav class="forum-nav">
         <ul class="forum-nav__list">
-            <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum posts</g:link></li>
+            <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum topics</g:link></li>
             <li class="forum-nav__list-item">|</li>
             <li class="forum-nav__list-item"><g:link controller="forum" action="index" params="[watched: 'true']">My watched topics</g:link></li>
         </ul>
@@ -33,7 +33,7 @@
     <section class="forum-table-section">
         <div class="forum-nav-header">
             <a href="${createLink(controller: 'forum', action: 'addForumTopic')}">
-                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
+                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Topic')}</span>
             </a>
         </div>
         <p class="forum-topic-count">

@@ -36,6 +36,7 @@ $digivol-orange: #d5502a;
 $light-grey: #d9d9d9;
 $medium-grey: #a8a8a8;
 $dark-grey: #595959;
+$button-grey: #cccccc;
 
 // Screen size
 
@@ -67,5 +68,16 @@ $screen-xl: 1024px;
   @media screen and (min-width: $screen-lg) {
     grid-template-columns: repeat(12, 1fr);
     column-gap: $space-5;
+  }
+}
+
+@mixin page-grid-sm() {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: $space-3;
+
+  @media screen and (min-width: $screen-lg) {
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: $space-8;
   }
 }

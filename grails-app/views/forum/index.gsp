@@ -24,7 +24,7 @@
 
     <nav class="forum-nav">
         <ul class="forum-nav__list">
-            <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum posts</g:link></li>
+            <li class="forum-nav__list-item"><g:link controller="forum" action="index">All forum topics</g:link></li>
             <li class="forum-nav__list-item">|</li>
             <g:if test="${!params.watched}">
             <li class="forum-nav__list-item"><g:link controller="forum" action="index" params="[watched: 'true']">My watched topics</g:link></li>
@@ -101,16 +101,17 @@
             <g:else>
             <a href="${createLink(controller: 'forum', action: 'addForumTopic')}">
             </g:else>
-                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
+                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Topic')}</span>
             </a>
             <g:if test="${params.projectId}">
                 <div data-project-id="${params.projectId}" data-project-watched="${watchingProjectForum ? 'true' : 'false'}" class="forum-post-buttons--justify-left toggleExpeditionWatch">
                     <g:if test="${watchingProjectForum}">
-                        <span class="fa fa-star forum-post-watched forum-post-watched" title="${message(code: 'forumTopic.expedition.watched.stopwatching', default: 'Click to stop watching')}"></span>
+                        <span class="fa fa-star forum-post--watch-icon forum-post-watched" title="${message(code: 'forumTopic.expedition.watched.stopwatching', default: 'Click to stop watching')}"></span>
                     </g:if>
                     <g:else>
-                        <span class="fa fa-star-o forum-post-watched forum-post-not-watched" title="${message(code: 'forumTopic.expedition.watched.watch', default: 'Click to watch')}"></span>
+                        <span class="fa fa-star-o forum-post--watch-icon forum-post-watched forum-post-not-watched" title="${message(code: 'forumTopic.expedition.watched.watch', default: 'Click to watch')}"></span>
                     </g:else>
+                    <span class="forum--watch-label">Watch this expedition forum</span>
                 </div>
             </g:if>
         </a>
@@ -208,7 +209,7 @@
                 <g:else>
                     <a href="${createLink(controller: 'forum', action: 'addForumTopic')}">
                 </g:else>
-                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Post')}</span>
+                <span class="pill pill--bg-new-post">${message(code: 'forum.newpost.create.label', default: 'Create New Topic')}</span>
                 </a>
                 </div>
             </nav>
@@ -301,7 +302,7 @@
         });
 
         $('.toggleExpeditionWatch').click(function() {
-            let iconSpan = $(this).find('span');
+            let iconSpan = $(this).find('.forum-post--watch-icon');
             let div = $(this);
             let watched = $(this).attr("data-project-watched") === "true";
             let projectId = $(this).attr("data-project-id");

@@ -106,7 +106,7 @@ class ForumTagLib {
                         h2(class: 'forum-post__heading') {
                             if (isPreview) {
                                 if (isEdit) {
-                                    def postUserProps = userService.detailsForUserId(forumMessage.user.userId as String)
+                                    def postUserProps = userService.detailsForUserId(forumMessage?.user?.userId as String)
                                     mkp.yield(postUserProps.displayName + " - PREVIEW")
                                 } else {
                                     mkp.yield(userProps.displayName + " - PREVIEW")
@@ -120,22 +120,22 @@ class ForumTagLib {
                         time(class: 'forum-post__date-time') {
                             if (isPreview) {
                                 if (isEdit) {
-                                    mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
+                                    mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
                                 } else {
                                     mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
                                 }
                             } else {
-                                mkp.yieldUnescaped(formatDate(date: forumMessage.date, format: DateConstants.DATE_FORUM_POST))
+                                mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
                             }
                         }
                     }
 
-                    if (isEdit && !forumMessage.replyTo) {
+                    if (isEdit && !forumMessage?.replyTo) {
                         mkp.yieldUnescaped("<div data-topic-id='${topicId}' class='forum-post__text message-text'>")
                     } else {
                         mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
                     }
-                    String processedMarkdown = messageText.replace("\n", "  \n")
+                    String processedMarkdown = messageText?.replace("\n", "  \n")
                     mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
                     mkp.yieldUnescaped("</div>")
                     log.debug("authorIsModerator: ${authorIsModerator}")
@@ -145,7 +145,7 @@ class ForumTagLib {
                         def timeLeft = forumService.messageEditTimeLeft(forumMessage as ForumMessage, userService.currentUser)
                         log.debug("timeleft to edit: ${timeLeft}")
 
-                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage.id}'>")
+                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage?.id}'>")
 
                         if (canEdit) {
                             log.debug("Can edit post")
@@ -372,10 +372,7 @@ class ForumTagLib {
                 }
                 a(href: link, target: "_blank", title: title) {
                     span(class: 'forum-post-page-header__external-link') {
-                        mkp.yieldUnescaped("<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">")
-                        mkp.yieldUnescaped("<path d=\"M25.8031 0H17.15C16.4562 0 15.8939 0.562293 15.8939 1.25611C15.8939 1.94992 16.4562 2.51222 17.15 2.51222H22.9102L10.5832 14.8392C10.0924 15.3297 10.0924 16.1252 10.5832 16.6157C10.8284 16.8609 11.15 16.9837 11.4713 16.9837C11.7925 16.9837 12.1141 16.8609 12.3594 16.6157L24.547 4.42775V9.9089C24.547 10.6027 25.1093 11.165 25.8031 11.165C26.4969 11.165 27.0592 10.6027 27.0592 9.9089V1.25611C27.0592 0.562293 26.4969 0 25.8031 0Z\" fill=\"#020202\" />")
-                        mkp.yieldUnescaped("<path d=\"M21.4582 12.6504C20.7644 12.6504 20.2021 13.2127 20.2021 13.9065V23.8166C20.2021 24.2706 19.8187 24.654 19.3647 24.654H3.34962C2.89563 24.654 2.51222 24.2706 2.51222 23.8166V7.80153C2.51222 7.34753 2.89563 6.96412 3.34962 6.96412H13.2947C13.9885 6.96412 14.5508 6.40183 14.5508 5.70801C14.5508 5.0142 13.9885 4.4519 13.2947 4.4519H3.34962C1.50256 4.4519 0 5.95447 0 7.80153V23.8166C0 25.6637 1.50256 27.1662 3.34962 27.1662H19.3647C21.2118 27.1662 22.7143 25.6637 22.7143 23.8166V13.9065C22.7143 13.213 22.152 12.6504 21.4582 12.6504Z\" fill=\"#020202\" />")
-                        mkp.yieldUnescaped("</svg>")
+                        mkp.yieldUnescaped("<img src='${resource(dir: 'images', file: 'external_link.svg')}' alt='Open in new window' />")
                     }
                 }
             }

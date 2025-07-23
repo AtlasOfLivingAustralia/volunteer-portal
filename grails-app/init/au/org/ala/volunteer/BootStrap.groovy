@@ -51,11 +51,6 @@ class BootStrap {
 
         prepareDefaultLabels()
 
-        // For DigiVol 6.2.0 - Remove in following release.
-        migrateTutorials()
-        findProjectsForTutorials()
-        renameTutorials()
-
         // add system user
         if (!User.findByUserId('system')) {
             User u = new User(userId: 'system', email: ' support@ala.org.au', firstName: 'System', lastName: 'User')
@@ -74,6 +69,7 @@ class BootStrap {
     /**
      * Migrates filesystem list of tutorials into new DB table for release 6.2.0
      * Disable this in next release.
+     * @deprecated This is only for release 6.2.0 and is deprecated from 6.2.2 onwards.
      */
     @Transactional
     private void migrateTutorials() {
@@ -154,6 +150,7 @@ class BootStrap {
     /**
      * Finds projects that might be associated with a tutorial. Only uses tutorials already created from the previous
      * migration process.
+     * @deprecated This is only for release 6.2.0 and is deprecated from 6.2.2 onwards.
      */
     @Transactional
     private void findProjectsForTutorials() {
@@ -195,6 +192,7 @@ class BootStrap {
 
     /**
      * Renames tutorial files to a given structure.
+     * @deprecated This is only for release 6.2.0 and is deprecated from 6.2.2 onwards.
      */
     @Transactional
     private void renameTutorials() {

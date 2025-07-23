@@ -26,6 +26,7 @@ class VolunteerTagLib {
     def templateService
     def projectService
     def tutorialService
+    def newsItemService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -860,6 +861,22 @@ class VolunteerTagLib {
         }
     }
 
+    def newsItemThumbUrl = { attrs, body ->
+        out << newsItemService.getImageUrl(attrs.newsItemId as long)
+    }
+
+    def ifNewsItemHasThumb = { attrs, body ->
+        if (newsItemService.getImageUrl(attrs.newsItemId as long) != null) {
+            out << body()
+        }
+    }
+
+    def ifNewsItemHasNoImage = { attrs, body ->
+        if (newsItemService.getImageUrl(attrs.newsItemId as long) == null) {
+            out << body()
+        }
+    }
+
     /**
      *
      */
@@ -1332,5 +1349,11 @@ function notify() {
             }
             mkp.yieldUnescaped(body())
         }
+    }
+
+    def externalLinkIcon = { attrs, body ->
+        out << "<a href=\"${attrs.href}\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"${attrs.title ?: 'External link'}\">"
+        out << "<img src='${resource(dir: 'images', file: 'external_link.svg')}' alt='Open in new window' />"
+        out << "</a>"
     }
 }

@@ -37,7 +37,7 @@
             Add Tutorial
         </a>
         <cl:ifSiteAdmin>
-        <g:if test="${params.migrate}">
+        <g:if test="${params.admin}">
         <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage")}">
             Back to Tutorials
         </a>
@@ -45,9 +45,6 @@
         <g:else>
         <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['admin': true])}">
             Admin Tutorials
-        </a>
-        <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['migrate': true])}">
-            Migrate Tutorials
         </a>
         </g:else>
         </cl:ifSiteAdmin>
@@ -124,7 +121,7 @@
 
                 <div class="col-md-2">
                     <a class="btn btn-default bs3"
-                       href="${createLink(controller: 'tutorials', action: 'manage')}">Reset</a>
+                       href="${createLink(controller: 'tutorials', action: 'manage', params: [reset: true])}">Reset</a>
                 </div>
 
             </div>
@@ -187,7 +184,13 @@
                                     </g:else>
 
                                 <!-- Edit -->
-                                    <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${[migrate: params.migrate ?: false]}">
+                                    <g:set var="editParams" value="[migrate: params.migrate ?: false]"/>
+                                    <cl:ifSiteAdmin>
+                                        <g:if test="${params.admin}">
+                                            <g:set var="editParams" value="[admin: true, migrate: params.migrate ?: false]"/>
+                                        </g:if>
+                                    </cl:ifSiteAdmin>
+                                    <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">
                                         <span class="btn btn-xs btn-default edit-tutorial">
                                             <i class="fa fa-pencil"></i>
                                         </span>

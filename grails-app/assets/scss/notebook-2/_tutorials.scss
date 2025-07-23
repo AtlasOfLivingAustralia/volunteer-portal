@@ -93,7 +93,7 @@ main {
   padding: variables-and-mixins.$space-4;
   border-bottom: solid variables-and-mixins.$light-grey 2px;
 
-  & + .forum-post__list-item {
+  & + .tutorial-library-group-list__list-item {
     margin-top: variables-and-mixins.$space-4;
   }
 }

@@ -218,6 +218,9 @@ class TutorialsController {
             if (session.hasProperty(SESSION_KEY_TUTORIAL_FILTER)) {
                 filterParams.putAll(session[SESSION_KEY_TUTORIAL_FILTER] as Map)
             }
+            if (params.boolean("admin") == true) {
+                filterParams.put("admin", true)
+            }
 
             redirect(action: 'manage', params: filterParams)
         }
@@ -332,6 +335,9 @@ class TutorialsController {
             return
         }
 
+        if (params.boolean("reset") == true) {
+            clearSessionFilter()
+        }
         def migrate = params.boolean("migrate") == true
         def admin = params.boolean("admin") == true
 
@@ -351,22 +357,13 @@ class TutorialsController {
             else params.sortFields = ['projects', 'isActive', 'id']
         }
 
-        def institutionFilter = []
-        Institution institution = (params.institutionFilter ? Institution.get(params.long('institutionFilter')) : null)
-        if (institution) {
-            institutionFilter.add(institution)
-            updateSessionFilter([institutionFilter: params.institutionFilter])
-        } else {
-            institutionFilter = institutionList
-            removeSessionFilter("institutionFilter")
+        def institutionFilter = getFilterValue("institutionFilter") { id ->
+            id ? [Institution.get(id as long)] : []
         }
 
-        def statusFilter = (params.statusFilter ?: null)
-        if (params.statusFilter) updateSessionFilter([statusFilter: params.statusFilter])
-        else removeSessionFilter("statusFilter")
+        def statusFilter = getFilterValue("statusFilter")
 
-        if (params.q) updateSessionFilter([q: params.q])
-        else removeSessionFilter("q")
+        params.q = getFilterValue("q") ?: params.q
 
         def tl = tutorialService.getTutorialsForManagement(institutionFilter, statusFilter, params, admin, migrate)
         def tutorialList = tl.tutorialList
@@ -380,6 +377,28 @@ class TutorialsController {
     }
 
     /**
+     * Returns the value of a filter from the params or session.
+     * If the value is in params, it updates the session filter.
+     * If the value is in session, it returns that value and updates params.
+     * If neither, it removes the key from the session filter and returns null.
+     * @param key the key to look for in params or session
+     * @param fetchEntity a closure to fetch an entity based on the value (optional)
+     * @return the value of the filter or null if not found
+     */
+    private def getFilterValue(String key, Closure fetchEntity = null) {
+        if (params[key] != null) {
+            updateSessionFilter([(key): params[key]])
+            return fetchEntity ? fetchEntity(params[key]) : params[key]
+        } else if (getSessionFilter(key)) {
+            params[key] = getSessionFilter(key)
+            return fetchEntity ? fetchEntity(params[key]) : params[key]
+        } else {
+            removeSessionFilter(key)
+            return null
+        }
+    }
+
+    /**
      * Updates the session filter with the provided map
      * @param map the values to add to the session
      */
@@ -388,6 +407,12 @@ class TutorialsController {
             session[SESSION_KEY_TUTORIAL_FILTER] = [:]
         }
         (session[SESSION_KEY_TUTORIAL_FILTER] as Map).putAll(map)
+    }
+
+    private def getSessionFilter(String key) {
+        if (!session[SESSION_KEY_TUTORIAL_FILTER]) return null
+
+        return session[SESSION_KEY_TUTORIAL_FILTER][key]
     }
 
     /**

@@ -8,6 +8,12 @@
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <asset:stylesheet src="bootstrap-select.css" />
     <asset:javascript src="bootstrap-select.js" asset-defer="" />
+
+    <style>
+        .roles-table {
+            font-size: 1rem;
+        }
+</style>
 </head>
 
 <body class="admin">
@@ -107,13 +113,34 @@
                                 </label>
 
                                 <div class="col-md-6">
-                                    <ul id="roles" class="form-control-static">
-                                        <g:each var="role" in="${roles}">
-                                            <li>${role.role.name}
-                                            (${role.project == null ? '<All Projects>' : role.project.featuredLabel})
-                                            </li>
-                                        </g:each>
-                                    </ul>
+                                    <div class="table-responsive roles-table">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th><g:message code="user.role.name.label" default="Role Name"/></th>
+                                                    <th><g:message code="user.role.scope.label" default="Institution/Project"/></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <g:each var="roleInfo" in="${roles}">
+                                                    <tr>
+                                                        <td>${roleInfo.role}</td>
+                                                        <td>
+                                                            ${roleInfo.scope}
+                                                            <g:if test="${!roleInfo.scope}">
+                                                                <g:message code="user.role.site-wide.label" default="Site-wide"/>
+                                                            </g:if>
+                                                        </td>
+                                                    </tr>
+                                                </g:each>
+                                                <g:if test="${roles.isEmpty()}">
+                                                    <tr>
+                                                        <td colspan="2"><g:message code="user.roles.none.label" default="No roles assigned"/></td>
+                                                    </tr>
+                                                </g:if>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
