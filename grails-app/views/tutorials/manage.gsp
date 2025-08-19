@@ -286,7 +286,7 @@
             let url = "${createLink(controller: 'tutorials', action: 'toggleTutorialStatus')}/" + tutorialId;
             const paramString = getQueryStringParams();
             if (paramString) url += "?" + paramString;
-             console.log("url: " + url);
+             // console.log("url: " + url);
 
             $('<form/>', { action: url, method: 'POST' }).append(
                 $('<input>', {type: 'hidden', id: 'verifyId', name: 'verifyId', value: tutorialId})

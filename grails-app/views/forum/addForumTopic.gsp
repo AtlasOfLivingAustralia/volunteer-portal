@@ -76,11 +76,11 @@
         $('.toggleWatch').click(function() {
             let iconSpan = $(this).find('span');
             let watched = $(this).attr("data-watched") === "true";
-            console.log("Watched: " + watched);
+            // console.log("Watched: " + watched);
 
             // Toggle watched flag
             watched = !watched;
-            console.log("Toggle watched: " + watched);
+            // console.log("Toggle watched: " + watched);
             $('#form-data-watched').val(watched);
             $(this).attr('data-watched', watched);
 

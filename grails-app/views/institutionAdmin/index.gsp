@@ -225,14 +225,14 @@
         });
 
         function doSearch() {
-            console.log(window.location.search);
+            // console.log(window.location.search);
             const params = new URLSearchParams(window.location.search);
             let statusFilter = params.get('statusFilter');
             let q = params.get('q');
 
             statusFilter = $('.statusFilter').val();
             q = encodeURIComponent($('#searchbox').val());
-            console.log(q);
+            // console.log(q);
 
             let hasParams = false;
             let url = "${createLink(controller: 'institutionAdmin', action: 'index')}?";
@@ -248,7 +248,7 @@
                 url += "q=" + q;
             }
 
-            console.log(url);
+            // console.log(url);
             window.location = url;
         }
     });

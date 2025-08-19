@@ -341,7 +341,7 @@ jQuery(function($) {
         let url = "${createLink(controller: 'project', action: 'toggleProjectInactivity')}/" + projectId;
         const paramString = getQueryStringParams();
         if (paramString) url += "?" + paramString;
-         console.log("url: " + url);
+         // console.log("url: " + url);
 
         $('<form/>', { action: url, method: 'POST' }).append(
             $('<input>', {type: 'hidden', id: 'verifyId', name: 'verifyId', value: projectId})

@@ -211,7 +211,7 @@
 
         $(".btnDeleteTemplate").click(function(e) {
             e.preventDefault();
-            console.log("deleting template");
+            // console.log("deleting template");
             var templateId = $(this).parents("[templateId]").attr("templateId");
             var templateName = $(this).parents("[templateName]").attr("templateName");
             var linkCount = $(this).data('link-count');
@@ -270,7 +270,7 @@
         });
 
         function doSearch() {
-            console.log(window.location.search);
+            // console.log(window.location.search);
             const params = new URLSearchParams(window.location.search);
             let institutionId = params.get('institution');
             let viewName = params.get('viewName');
@@ -292,7 +292,6 @@
             q = encodeURIComponent($('#searchbox').val());
             viewName = $('#viewName').val();
             status = $('#status').val();
-            console.log();
 
             let hasParams = false;
             let url = "${createLink(controller: 'template', action: 'list')}?";
@@ -318,7 +317,7 @@
                 url = addParam(url, 'order', order, hasParams);
             }
 
-            console.log(url);
+            // console.log(url);
             window.location = url;
         }
     });
