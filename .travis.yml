@@ -15,6 +15,9 @@ services:
 addons:
   postgresql: "15"
   apt:
+    sources:
+      - sourceline: "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main"
+      - key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     packages:
     - postgresql-15
     - postgresql-client-15
