@@ -304,7 +304,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
         reader.onload = function(e) {
             // Render thumbnail.
             var categories = JSON.parse(e.target.result);
-            console.log(categories);
+            // console.log(categories);
 
             // TODO sanity check
             if (!Array.isArray(categories)) {
