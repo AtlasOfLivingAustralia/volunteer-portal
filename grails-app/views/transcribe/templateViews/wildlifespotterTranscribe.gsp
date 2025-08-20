@@ -226,7 +226,7 @@
                 <tr style="border-top: 0;">
                     <th class="col-md-8" style="border-top: 0;">Species Name</th>
                 <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesWithCount}">
-                    <th class="col-md-2" style="border-top: 0;">Animal Count</th>
+                    <th class="col-md-2" style="border-top: 0;" colspan="2">Animal Count</th>
                 </g:if>
                     <th class="col-md-2" style="border-top: 0;">Actions</th>
                 </tr>
@@ -256,6 +256,16 @@
                                    class="form-control numAnimals"
                                    tabindex="-1"/>
                         </span>
+                    </td>
+                    <td class="col-md-1" style="border-top: 0;">
+                        <button type="button" class="btn btn-default btn-xs animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <span class="sr-only">Increase count by 1</span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-xs animalCount animalCountMinus" title="Decrease count by 1" tabindex="-1">
+                            <i class="fa fa-minus" aria-hidden="true"></i>
+                            <span class="sr-only">Decrease count by 1</span>
+                        </button>
                     </td>
                     </g:if>
                     <td class="col-md-2" style="border-top: 0;">

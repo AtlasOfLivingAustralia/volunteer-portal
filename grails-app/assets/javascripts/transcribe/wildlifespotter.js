@@ -138,7 +138,6 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       var $this = $(this);
       var idx = $this.closest('[data-item-index]').data('item-index');
       var count = $this.val();
-      // console.log("value change: " + count);
       selectedIndicies[idx].count = parseInt(count);
       generateFormFields();
     });
@@ -155,6 +154,20 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       $('[data-item-index="'+idx+'"] .saveCommentButton').show();
       $('[data-item-index="'+idx+'"] .editCommentButton').hide();
       selectedIndicies[idx].editorOpen = true;
+    });
+
+    $('#ct-container').on('click', '.animalCountPlus', function(e) {
+      const idx = $(this).closest('[data-item-index]').data('item-index');
+      const $numAnimals = $(`[data-item-index="${idx}"] .numAnimals`);
+      const currentCount = parseInt($numAnimals.val()) || 0;
+      $numAnimals.val(currentCount + 1).trigger('change');
+    });
+
+    $('#ct-container').on('click', '.animalCountMinus', function(e) {
+      const idx = $(this).closest('[data-item-index]').data('item-index');
+      const $numAnimals = $(`[data-item-index="${idx}"] .numAnimals`);
+      const currentCount = parseInt($numAnimals.val()) || 0;
+      if (currentCount > 0) $numAnimals.val(currentCount - 1).trigger('change');
     });
 
     $("#ct-container").on('keydown', '.numAnimals', function(e) {
