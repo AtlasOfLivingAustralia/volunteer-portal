@@ -66,7 +66,7 @@
             const recipientType = "${institutionMessageInstance?.getRecipientType() ?: InstitutionMessage.RECIPIENT_TYPE_USER}";
         </g:else>
 
-            console.log("Init recipient");
+            // console.log("Init recipient");
             getRecipientData(recipientType);
             $('#recipient').selectpicker();
         }
@@ -78,7 +78,7 @@
         initForm();
 
         $('.recipient-type').change(function() {
-            console.log("recipient type change");
+            // console.log("recipient type change");
             $('#recipient').prop('disabled', false);
             getRecipientData(this.value);
         });
@@ -140,7 +140,7 @@
                     selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : "0"}";
                 }
 
-                console.log("Selected Value: " + selectedValues);
+                // console.log("Selected Value: " + selectedValues);
                 $.each(data, function(idx, p) {
                     selectList += "<option value='" + p.id + "'>" + p.name + "</option>";
                 });

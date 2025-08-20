@@ -243,8 +243,8 @@ $(function($) {
 
     labelAutocomplete("#user-searchbox", url, '#ajax-filter-spinner', function(item) {
         $('#filter-userId').val(item.id);
-        console.log(item.id);
-        console.log($('#filter-userId').val());
+        // console.log(item.id);
+        // console.log($('#filter-userId').val());
         return null;
     }, 'displayName');
 
@@ -256,7 +256,7 @@ $(function($) {
         roleUser = $.trim($("span", roleUser).remove().end().html());
         const roleName = $(this).closest('tr').find('.role-name').html().trim();
         let roleLevelName = $(this).closest('tr').find('.role-level-name').find('a').html();
-        console.log("ID: " + id);
+        // console.log("ID: " + id);
 
         if (id) {
             let confirmMsg = 'Are you sure you wish to delete the '+ roleLevel +' '+ roleName +' role for ' +
@@ -272,7 +272,7 @@ $(function($) {
                     } else {
                         url += "?userRoleId=" + id;
                     }
-                    console.log("url: " + url);
+                    // console.log("url: " + url);
                     window.location = url;
                 }
             });
@@ -308,13 +308,12 @@ $(function($) {
         let userId = params.get('userid');
         let q = params.get('q');
 
-        console.log($('#filter-userId').val());
+        // console.log($('#filter-userId').val());
 
         institutionId = $('#institution').val();
         q = encodeURIComponent($('#searchbox').val());
         userId = $('#filter-userId').val();
-        console.log();
-        console.log(userId);
+        // console.log(userId);
 
         let hasParams = false;
         let url = "${createLink(controller: 'admin', action: 'manageUserRoles')}?";

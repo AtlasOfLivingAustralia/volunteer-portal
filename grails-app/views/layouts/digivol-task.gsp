@@ -810,7 +810,7 @@
 
         $("#btnDontValidate").click(function(e) {
             e.preventDefault();
-            console.log("Saving validation progress");
+            // console.log("Saving validation progress");
             submitFormWithAction("${raw(createLink(controller: 'validate', action: 'dontValidate', params: [failoverTaskId: taskInstance.id, mode: params.mode ?: '']))}");
         });
 
@@ -999,7 +999,7 @@
                 console.log("Background save failed: " + data.message);
             } else {
                 console.log("Background save failed for some unknown reason");
-                console.log(data);
+                // console.log(data);
             }
         });
     </g:if>

@@ -57,7 +57,7 @@
         if (i > 0) {
             countdownTimerId = window.setTimeout(countDownByOne, countdownInterval);
         } else {
-            console.log("Time to kick out");
+            // console.log("Time to kick out");
             defaultSaveAction();
         }
     }
@@ -76,11 +76,11 @@
 
     function defaultSaveAction() {
         <g:if test="${isValidator}">
-        console.log("Kicking out (validator)...");
+        // console.log("Kicking out (validator)...");
         $("#btnDontValidate").click();
         </g:if>
         <g:else>
-        console.log("Kicking out...");
+        // console.log("Kicking out...");
         $("#btnSavePartial").click();
         </g:else>
     }

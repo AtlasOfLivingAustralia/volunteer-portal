@@ -165,7 +165,7 @@
         const noSelection = '<option value>- Select a Template -</option>';
         let currentCategory = "";
         $.each(data, function(idx, t) {
-            console.log(t);
+            // console.log(t);
             if (currentCategory !== t.category) {
                 if (templateList.length > 0) templateList += '</optGroup>';
                 templateList += "<optgroup label='" + getTemplateCategory(t.category) + "'>";

@@ -73,7 +73,7 @@ function digivolStats(config) {
 
             //console.log("Disable contributors: " + config.disableContribution);
             if (config.disableContribution === false) {
-                console.log("Getting contributors");
+                // console.log("Getting contributors");
                 var c = $http.get(config.contributorsUrl, {
                     params: {
                         institutionId: config.institutionId,
@@ -92,7 +92,7 @@ function digivolStats(config) {
                     });
             } else if (config.disableForumActivity === false) {
                 // Can't do contribution and forum activity together (forum activity is included in contribution)
-                console.log("Getting forum activity");
+                // console.log("Getting forum activity");
                 var f = $http.get(config.forumActivityUrl, {
                     params: {
                         institutionId: config.institutionId,
