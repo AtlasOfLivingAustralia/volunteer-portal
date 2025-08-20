@@ -1,5 +1,5 @@
-sudo: false
-dist: focal
+os: linux
+dist: jammy
 language: groovy
 jdk:
   - openjdk11
@@ -15,6 +15,9 @@ services:
 addons:
   postgresql: "15"
   apt:
+    sources:
+      - sourceline: "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main"
+      - key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     packages:
     - postgresql-15
     - postgresql-client-15
@@ -35,6 +38,11 @@ before_install:
   - cp travis/travis.properties local.properties
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
   - export GRAILS_ENV=test
+  - ./gradlew --no-daemon -version
+  # import nexus cert
+  - echo | openssl s_client -showcerts -servername nexus.ala.org.au -connect nexus.ala.org.au:443 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > nexus.crt
+  #- sudo keytool -import -alias ala-nexus -keystore /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts -storepass changeit -noprompt -file nexus.crt
+  - sudo keytool -import -alias ala-nexus -keystore /usr/local/lib/jvm/openjdk11/lib/security/cacerts -storepass changeit -noprompt -file nexus.crt
 install:
   - travis_wait 30 ./gradlew assemble
 after_success:
