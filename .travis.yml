@@ -39,6 +39,8 @@ before_install:
   - echo "org.gradle.jvmargs=-Xmx3072m" >> ~/.gradle/gradle.properties
   - export GRAILS_ENV=test
   # import nexus cert
+  - which java
+  - java -version
   - echo | openssl s_client -showcerts -servername nexus.ala.org.au -connect nexus.ala.org.au:443 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > nexus.crt
   #- sudo keytool -import -alias ala-nexus -keystore /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts -storepass changeit -noprompt -file nexus.crt
   - sudo keytool -import -alias ala-nexus -keystore /usr/lib/jvm/temurin-11-jdk-amd64/lib/security/cacerts -storepass changeit -noprompt -file nexus.crt
