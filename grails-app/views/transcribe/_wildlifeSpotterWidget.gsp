@@ -29,8 +29,9 @@
                 %{--</g:if>--}%
             <div class="bvpBadgeMain cycler">
                 <g:each in="${piItem.images}" var="key" status="j">
+                    <!-- ${piItem.hash} | ${piItem.vernacularName} -->
                     <cl:sizedImage class="ct-thumbnail-image ws-thumbnail-image${j == 0 ? ' active' : ' '}"
-                         prefix="wildlifespotter" name="${key.hash}" width="150" height="150" format="jpg"
+                         prefix="wildlifespotter" name="${key.hash}" width="150" height="150" format="${key.ext ?: 'jpg'}"
                          alt="${piItem.vernacularName}" />
                 </g:each>
             </div>

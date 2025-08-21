@@ -824,7 +824,13 @@ class VolunteerTagLib {
         def height = attrs.remove('height')
         def format = attrs.remove('format') ?: 'jpg'
         def template = attrs.remove('template')?.toBoolean()
-        String url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
+
+        String url
+        if (name) {
+            url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
+        } else {
+            url = resource(file:'/ws-placeholder-150.png')
+        }
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 
