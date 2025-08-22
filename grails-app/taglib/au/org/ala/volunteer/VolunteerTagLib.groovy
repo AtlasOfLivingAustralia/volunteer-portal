@@ -829,6 +829,7 @@ class VolunteerTagLib {
         if (name) {
             url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
         } else {
+            log.info("No image, using placeholder image")
             url = resource(file:'/ws-placeholder-150.png')
         }
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)

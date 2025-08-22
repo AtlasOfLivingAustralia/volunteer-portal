@@ -506,8 +506,8 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
                 warnings.push(`Animal "${animal.vernacularName}" has no images.`);
             } else {
                 animal.images.forEach(function(image, imgIndex) {
-                    if (!image.hash || !image.ext) {
-                        warnings.push(`Animal "${animal.vernacularName}" has a problem with it's attached image. Please review.`);
+                    if (!image.hash) {
+                        warnings.push(`Animal "${animal.vernacularName}" has a problem with its attached image. Please review.`);
                     }
                 });
             }

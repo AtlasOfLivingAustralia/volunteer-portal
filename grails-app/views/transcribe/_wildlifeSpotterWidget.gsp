@@ -27,9 +27,10 @@
                 <span class="ws-info" data-container="body"><i class="fa fa-info-circle"></i></span>
             </g:if>
                 %{--</g:if>--}%
+            <!-- ${piItem} -->
             <div class="bvpBadgeMain cycler">
                 <g:each in="${piItem.images}" var="key" status="j">
-                    <!-- ${piItem.hash} | ${piItem.vernacularName} -->
+                    <!-- ${piItem.vernacularName} | ${key.hash} | ${key.ext} -->
                     <cl:sizedImage class="ct-thumbnail-image ws-thumbnail-image${j == 0 ? ' active' : ' '}"
                          prefix="wildlifespotter" name="${key.hash}" width="150" height="150" format="${key.ext ?: 'jpg'}"
                          alt="${piItem.vernacularName}" />
