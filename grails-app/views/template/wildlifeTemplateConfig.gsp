@@ -253,7 +253,7 @@
         viewParams:<cl:json value="${viewParams2}"/>,
         submitUrl: "<g:createLink controller="template" action="uploadSpotterFile"/>",
         audioSubmitUrl: "<g:createLink controller="template" action="uploadSpotterFile" params="[fileType: 'audio']"/>",
-        imageUrlTemplate: "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true"/>",
+        imageUrlTemplate: "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true" allowBroken="true"/>",
         audioUrlTemplate: "<cl:audioUrl prefix="audiotranscribe" name="{{name}}" format="{{format}}" template="true"/>",
         saveTemplateUrl: "<g:createLink controller="template" action="saveWildlifeTemplateConfig" id="${id}"/>",
         placeholderImageUrl: "${resource(dir: 'images', file: 'ws-placeholder-150.png')}"

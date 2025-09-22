@@ -35,6 +35,11 @@
                          prefix="wildlifespotter" name="${key.hash}" width="150" height="150" format="${key.ext ?: 'jpg'}"
                          alt="${piItem.vernacularName}" />
                 </g:each>
+                <g:if test="${!piItem.images}">
+                    <cl:wsPlaceholderImage class="ct-thumbnail-image ws-thumbnail-image active"
+                         prefix="wildlifespotter" width="150" height="150"
+                         alt="${piItem.vernacularName}" />
+                </g:if>
             </div>
 
             <div class="ct-caption-table">
