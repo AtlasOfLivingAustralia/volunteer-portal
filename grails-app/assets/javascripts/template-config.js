@@ -1,5 +1,6 @@
 var templateId = T_CONF.templateId; //${templateInstance.id};
 var viewParams = T_CONF.viewParams; //<cl:json value="${viewParams2}"/>;
+var placeholderImage = T_CONF.placeholderImageUrl;
 var wstc = angular.module('wildlifespottertemplateconfig', ['ngAnimate', 'ngFileUpload']);
 
 var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload', function ($http, $log, $timeout, $window, Upload) {
@@ -246,6 +247,8 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
         var url = "";
         if (!angular.isUndefined(i.hash) && i.hash !== "") {
             url = imageUrlTemplate.replace("{{name}}", i.hash).replace("{{width}}", "150").replace("{{height}}", "150").replace("{{format}}", i.ext);
+        } else {
+            url = placeholderImage;
         }
         return url;
     };
@@ -496,14 +499,35 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
         self.categoryUiStatus = results[1];
     }
 
+    function validateAnimalImages() {
+        var warnings = [];
+        self.model.animals.forEach(function(animal, index) {
+            if (!Array.isArray(animal.images) || animal.images.length === 0) {
+                warnings.push(`Animal "${animal.vernacularName}" has no images.`);
+            } else {
+                animal.images.forEach(function(image, imgIndex) {
+                    if (!image.hash) {
+                        warnings.push(`Animal "${animal.vernacularName}" has a problem with its attached image. Please review.`);
+                    }
+                });
+            }
+        });
+        return warnings;
+    }
+
     self.save = function() {
         filterModel();
-        var p = $http.post(T_CONF.saveTemplateUrl /*"<g:createLink controller="template" action="saveWildlifeTemplateConfig" id="${id}"/>"*/, self.model);
-        p.then(function(response) {
-            bootbox.alert("Saved!");
-        }, function(response) {
-            bootbox.alert("Couldn't save WildlifeSpotter config");
-        });
+        const warnings = validateAnimalImages();
+        if (warnings.length > 0) {
+            bootbox.alert("<b>Please fix the following issues before saving:</b><ul><li>" + warnings.join("</li><li>") + "</li></ul>");
+        } else {
+            const p = $http.post(T_CONF.saveTemplateUrl, self.model);
+            p.then(function (response) {
+                bootbox.alert("Saved!");
+            }, function (response) {
+                bootbox.alert("Couldn't save WildlifeSpotter config");
+            });
+        }
     };
 }];
 

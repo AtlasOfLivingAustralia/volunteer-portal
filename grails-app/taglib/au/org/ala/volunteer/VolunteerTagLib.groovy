@@ -27,6 +27,7 @@ class VolunteerTagLib {
     def projectService
     def tutorialService
     def newsItemService
+    def imageService
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -806,6 +807,26 @@ class VolunteerTagLib {
         out << "/>"
     }
 
+    def wsPlaceholderImage = {attrs, body ->
+        log.debug("No image, using placeholder image")
+        def title = attrs.remove('title')
+        def alt = attrs.remove('alt')
+        def cssClass = attrs.remove('class')
+        String imageUrl = resource(file:'/ws-placeholder-150.png')
+        out << "<img src=${imageUrl}"
+
+        if (cssClass) {
+            out << " class=\"${cssClass.encodeAsHTML()}\""
+        }
+        if (title) {
+            out << " title=\"${title.encodeAsHTML()}\""
+        }
+        if (alt) {
+            out << " alt=\"${alt.encodeAsHTML()}\""
+        }
+        out << "/>"
+    }
+
     def audioSample = { attrs, body ->
         def linkText = attrs.remove('linkText')
         out << "<a href="
@@ -818,13 +839,40 @@ class VolunteerTagLib {
     }
 
     def sizedImageUrl = { attrs, body ->
-        def prefix = attrs.remove('prefix')
-        def name = attrs.remove('name')
+        def prefix = attrs.remove('prefix') as String
+        def name = attrs.remove('name') as String
         def width = attrs.remove('width')
         def height = attrs.remove('height')
-        def format = attrs.remove('format') ?: 'jpg'
+        String format = attrs.remove('format') ?: 'jpg'
         def template = attrs.remove('template')?.toBoolean()
-        String url = g.createLink(controller: 'image', action: 'size', params: [prefix: prefix, width: width, height: height, name: name, format: format])
+        def allowBroken = attrs.remove('allowBroken')?.toBoolean() ?: false
+        log.debug("sizedImageUrl: prefix=$prefix, name=$name, width=$width, height=$height, format=$format, template=$template, allowBroken=$allowBroken")
+
+        String url
+        if (name) {
+            // check if image exists here before creating link.
+            // if image does not exist, use placeholder image
+            // If template is true, always create the link
+            // Except when allowBroken is true, then always use the placeholder image
+            def imageName = name + "_${width}_${height}" as String
+            boolean exists = imageService.imageExists(prefix, imageName, format)
+
+            // Config - allowBroken = true, template = true
+            // WS Widget grid = allowBroken = false, template = false
+            // WS Detail = allowBroken = false, template = true
+            if (template || (!allowBroken && template) || (!allowBroken && !template && exists)) {
+                def params = [prefix: prefix, width: width, height: height, name: name, format: format, allowBroken: allowBroken]
+                url = g.createLink(controller: 'image', action: 'size', mapping: 'imageSizeQuery', params: params)
+            } else {
+                log.debug("No image, using placeholder image")
+                url = resource(file:'/ws-placeholder-150.png')
+            }
+
+        } else {
+            log.debug("No image, using placeholder image")
+            url = resource(file:'/ws-placeholder-150.png')
+        }
+
         out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
     }
 

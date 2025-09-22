@@ -7,6 +7,7 @@ class UrlMappings {
         "/"(controller: "index", action: 'index')
 
         "/es"(controller: 'eventSource', action: 'index')
+        name imageSizeQuery: "/image/size"(controller: "image", action: "size")
         "/image/$prefix/$width/$height/$name.$format"(controller: 'image', action: 'size')
 
         name institutionAdmin: "/admin/institutions/$action?/$id?"(controller: 'institutionAdmin')

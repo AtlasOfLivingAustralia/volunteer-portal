@@ -311,6 +311,12 @@
                             <cl:sizedImage prefix="wildlifespotter" name="{{hash}}" width="804" height="550" format="jpg" alt="{{animal.vernacularName}}" template="true"/>
                         </div>
                         {{/animal.images}}
+                        %{--  display placeholder if animal.images is empty --}%
+                        {{^animal.images}}
+                        <div class="item active">
+                            <cl:wsPlaceholderImage width="804" height="550" alt="{{animal.vernacularName}}"/>
+                        </div>
+                        {{/animal.images}}
                     </div>
                     <a class="carousel-control left" href="#ct-full-image-carousel" data-slide="prev">
                         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
