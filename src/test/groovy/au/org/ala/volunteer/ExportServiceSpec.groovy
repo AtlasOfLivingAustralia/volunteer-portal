@@ -40,9 +40,9 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         response = new GrailsMockHttpServletResponse()
         grailsLinkGenerator = Mock(LinkGenerator)
         service.grailsLinkGenerator = grailsLinkGenerator
-        dateTimeFormat = new SimpleDateFormat()
-        dateFormat = new SimpleDateFormat('dd-MMM-yyyy')
-        dateTimeFormat = new SimpleDateFormat('dd/MM/yyyy HH:mm:ss')
+        //dateTimeFormat = new SimpleDateFormat()
+        dateFormat = new SimpleDateFormat('dd-MMM-yyyy', Locale.ENGLISH)
+        dateTimeFormat = new SimpleDateFormat('dd/MM/yyyy HH:mm:ss', Locale.ENGLISH)
         defaultTranscriptionDate = dateTimeFormat.parse("01/03/2019 10:30:00"/*'01-Mar-2019 10:30:00'*/)
         setupData()
     }
@@ -188,10 +188,10 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         and:
         results.size() == 4 // not counting headers
-        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName == 'Magpie'}.size() == 1
-        results.findAll{it.transcriberID == userA && it.taskID == kangarooTask.id.toString() && it.scientificName == 'Red Kangaroo'}.size() == 1
-        results.findAll{it.transcriberID == userB && it.taskID == birdTask.id.toString() && it.scientificName == 'Crow'}.size() == 1
-        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString() && it.scientificName == 'Red Kangaroo'}.size() == 1
+        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName_0 == 'Magpie'}.size() == 1
+        results.findAll{it.transcriberID == userA && it.taskID == kangarooTask.id.toString() && it.scientificName_0 == 'Red Kangaroo'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == birdTask.id.toString() && it.scientificName_0 == 'Crow'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString() && it.scientificName_0 == 'Red Kangaroo'}.size() == 1
     }
 
     def "Partially transcribed project tasks data can be exported in CSV form for multiple transcription project"() {
@@ -217,8 +217,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         and:
         results.size() == 2 //not counting headers
-        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName == 'Magpie'}.size() == 1
-        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString()  && it.scientificName == 'Red Kangaroo'}.size() == 1
+        results.findAll{it.transcriberID == userA && it.taskID == birdTask.id.toString() && it.scientificName_0 == 'Magpie'}.size() == 1
+        results.findAll{it.transcriberID == userB && it.taskID == kangarooTask.id.toString()  && it.scientificName_0 == 'Red Kangaroo'}.size() == 1
     }
 
     def "For multiple transcription project with tasks that have not been transcribed, data can be exported in CSV"() {
@@ -288,7 +288,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         and:
         results.size() == 1 // One row, not counting headers
         results[0]['taskID'] == task.id as String
-        results[0]['occurenceRemarks'] == 'occurenceRemarks_value'
+        results[0]['occurenceRemarks_0'] == 'occurenceRemarks_value'
     }
 
     def "Tasks with repeating fields can be exported in CSV form for single transcription projects"() {
@@ -321,8 +321,10 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
     def "Task fields can be exported in CSV form for a single transcription project"() {
         setup:
-        String today = dateFormat.format(new Date())
-        Date transcriptionDate = dateTimeFormat.parse('01/07/2019 10:30:00')
+        def todayDateFormat = new SimpleDateFormat('dd-MMM-yyyy')
+        String today = todayDateFormat.format(new Date())
+        def transcriptionDateTimeFormat = new SimpleDateFormat('dd/MM/yyyy HH:mm:ss')
+        Date transcriptionDate = transcriptionDateTimeFormat.parse('01/07/2019 10:30:00')
         Task task = createTask()
         task.externalIdentifier = 'external id'
         String userId = '1234'

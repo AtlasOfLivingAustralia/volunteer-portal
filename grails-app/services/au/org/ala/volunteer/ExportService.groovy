@@ -8,6 +8,7 @@ import org.apache.commons.lang.SerializationUtils
 import org.jooq.tools.StringUtils
 
 import javax.servlet.http.HttpServletResponse
+import java.text.SimpleDateFormat
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -71,7 +72,8 @@ class ExportService {
                 result = sb.toString()
                 break;
             case "datetranscribed":
-                result = transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
+                def dateFormatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH)
+                result = transcription?.dateFullyTranscribed ? dateFormatter.format(transcription.dateFullyTranscribed) : ""
                 break;
             case "datevalidated":
                 result = task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: ""
@@ -517,7 +519,8 @@ class ExportService {
                     fieldValues.add((String) sb.toString())
                     break;
                 case "datetranscribed":
-                    fieldValues.add(transcription?.dateFullyTranscribed?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
+                    def dateFormatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH)
+                    fieldValues.add(transcription?.dateFullyTranscribed ? dateFormatter.format(transcription.dateFullyTranscribed) : "")
                     break;
                 case "datevalidated":
                     fieldValues.add(task.dateFullyValidated?.format("dd-MMM-yyyy HH:mm:ss") ?: "")
