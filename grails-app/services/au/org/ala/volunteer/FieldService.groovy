@@ -228,11 +228,13 @@ class FieldService {
      */
     List getMaxRecordIndexByFieldForProject(Project project) {
         def select ="""
-                WITH task_ids AS 
-                    (SELECT id FROM task WHERE project_id = :projectId)
-                SELECT name , max(record_idx) AS recordIdx
-                FROM field
-                WHERE field.task_id in (SELECT id FROM task_ids)
+            WITH task_ids AS 
+                (SELECT id FROM task WHERE project_id = :projectId)
+            SELECT name, 
+                max(record_idx) AS recordIdx,
+                (max(transcription_id) IS NOT NULL) AS isTranscriptionField
+            FROM field
+            WHERE field.task_id in (SELECT id FROM task_ids)
             GROUP BY name
             ORDER BY name
         """

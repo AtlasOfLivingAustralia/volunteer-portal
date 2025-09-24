@@ -143,42 +143,67 @@ class ExportService {
     def export_default = { Project project, taskList, fieldNames, fieldList, response ->
         def sw = Stopwatch.createStarted()
         def taskMap = fieldListToMultiMap(fieldList)
+        log.debug("FieldNames: ${fieldNames}")
         log.debug("Got taskMap in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
         def databaseFieldNames = fieldService.getMaxRecordIndexByFieldForProject(project)
         log.debug("Got databaseFieldNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
 
-        def fieldIndexMap = databaseFieldNames.collectEntries { [ it[0], it[1] ] }
+        def fieldIndexMap = databaseFieldNames.collectEntries {
+            [ it[0], [index: it[1], isTranscriptionField: it[2]] ]
+        }
         log.debug("Got fieldIndexMap in {}ms", sw.elapsed(MILLISECONDS))
+        log.debug("fieldIndexMap: ${fieldIndexMap}")
         sw.reset().start()
 
         List<String> columnNames = []
 
         if (project.template.viewParams.exportGroupByIndex=="true") {
-            fieldNames.each {
-                if (!(fieldIndexMap.containsKey(it) && fieldIndexMap[it])) columnNames << it
-            }
-            def maxIdx = fieldIndexMap.values().max()
-            for (int i = 0 ; i <= maxIdx; ++i) {
-                fieldNames.each {
-                    if (fieldIndexMap.containsKey(it) && fieldIndexMap[it] && fieldIndexMap[it] >= i) columnNames << "${it}_$i"
+            // For Camera trap projects that allow grouping by index, we want to group the fields
+            // but give the transcription fields a suffix even if they are not repeating as some
+            // institutions merge their exports together.
+            fieldNames.each { String fn ->
+                def meta = fieldIndexMap[fn]
+                // Add fields that are not transcription fields first.
+                // Also include fields not present in fieldIndexMap.
+                if (!fieldIndexMap.containsKey(fn) || !meta?.isTranscriptionField) {
+                    columnNames << fn
+                    log.debug("Added non-transcription column name: ${fn}")
                 }
             }
+            def _max = fieldIndexMap.values().findAll { it?.isTranscriptionField }.collect { it.index }.max()
+            def maxIdx = (_max == null) ? 0 : _max
+            log.debug("Max index for transcription fields is ${maxIdx}")
+            for (int i = 0; i <= maxIdx; ++i) {
+                log.debug("Processing index ${i}")
+                fieldNames.each { fn ->
+                    def meta = fieldIndexMap[fn]
+                    if (meta?.isTranscriptionField && meta.index >= i) {
+                        columnNames << "${fn}_$i"
+                        log.debug("Added repeating column name: ${fn}_$i")
+                    }
+                }
+            }
+            log.debug("Got all columnNames: ${columnNames}")
         } else {
              fieldNames.each {
                 if (fieldIndexMap.containsKey(it)) {
                     if (fieldIndexMap[it]) {
-                        for (int i = 0; i <= fieldIndexMap[it]; ++i) {
+                        for (int i = 0; i <= fieldIndexMap[it].index; ++i) {
                             columnNames << "${it}_${i}"
+                            log.debug("Added repeating column name: ${it}_${i}")
                         }
                     } else {
                         columnNames << it
+                        log.debug("Added non-repeating column name: ${it}")
                     }
                 } else {
                     columnNames << it
+                    log.debug("Added non-repeating column name: ${it}")
                 }
             }
+            log.debug("Got columnNames: ${columnNames}")
         }
         log.debug("Got columnNames in {}ms", sw.elapsed(MILLISECONDS))
         sw.reset().start()
