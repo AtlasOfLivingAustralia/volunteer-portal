@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 import javax.imageio.ImageIO
+import javax.servlet.ServletOutputStream
 import java.awt.image.BufferedImage
+import java.nio.charset.StandardCharsets
 
 class TaskController {
 
@@ -807,8 +809,9 @@ class TaskController {
         if (project) {
             def profile = ProjectStagingProfile.findByProject(project)
 
-            response.addHeader("Content-type", "text/plain")
-            def writer = new BVPCSVWriter( (Writer) response.writer,  {
+            response.setContentType('text/csv;charset=utf-8')
+            def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+            def writer = new BVPCSVWriter(osw,  {
                 'imageName' { it.name }
                 'url' { it.url }
             })
@@ -827,7 +830,8 @@ class TaskController {
                 writer << it
             }
 
-            response.writer.flush()
+            osw.flush()
+            osw.close()
         }
     }
 

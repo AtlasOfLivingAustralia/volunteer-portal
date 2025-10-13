@@ -7,6 +7,8 @@ import groovy.json.JsonOutput
 import org.apache.commons.lang3.StringEscapeUtils
 import org.springframework.dao.DataIntegrityViolationException
 
+import java.nio.charset.StandardCharsets
+
 class PicklistController {
 
     static allowedMethods = [upload: "POST", save: "POST", update: "POST", delete: "POST"]
@@ -227,8 +229,8 @@ class PicklistController {
         def picklist = Picklist.get(params.long('picklistId'))
         if (picklist) {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
-            response.contentType = "text/csv"
-            OutputStreamWriter writer = new OutputStreamWriter(response.outputStream)
+            response.setContentType('text/csv;charset=utf-8')
+            OutputStreamWriter writer = new OutputStreamWriter(response.outputStream, StandardCharsets.UTF_8)
             writeItemsCsv(writer, picklist, params.institutionCode as String)
             writer.flush()
             writer.close()

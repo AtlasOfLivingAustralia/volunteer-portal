@@ -3,8 +3,13 @@ package au.org.ala.volunteer
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 
+import javax.servlet.ServletOutputStream
+import java.nio.charset.StandardCharsets
+
 @Transactional(readOnly = true)
 class TemplateFieldService {
+
+    def exportService
 
     @Transactional
     def importFieldsFromCSV(Template template, MultipartFile file) {
@@ -42,15 +47,16 @@ class TemplateFieldService {
     }
 
     def exportFieldToCSV(Template templateInstance, response) {
-
         if (!templateInstance) {
             return
         }
+        def fileName = exportService.cleanFilename("${templateInstance.name}_fields")
+        if (!fileName) fileName = "digivol_template_fields.csv"
+        response.setHeader("Content-Disposition", "attachment;filename=${fileName}.csv")
+        response.setContentType('text/csv;charset=utf-8')
 
-        response.setHeader("Content-Disposition", "attachment;filename=fields.txt");
-        response.addHeader("Content-type", "text/plain")
-
-        def writer = new BVPCSVWriter( (Writer) response.writer,  {
+        def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+        def writer = new BVPCSVWriter(osw,{
             'fieldType' { it.fieldType?.toString() }
             'label' { it.label ?: '' }
             'defaultValue' { it.defaultValue ?: '' }
@@ -70,6 +76,7 @@ class TemplateFieldService {
         for (def field : fields) {
             writer << field
         }
-        response.writer.flush()
+        osw.flush()
+        osw.close()
     }
 }
