@@ -1,6 +1,8 @@
 os: linux
 dist: jammy
-language: groovy
+language: minimal
+group: edge
+virt: vm
 jdk:
   - openjdk11
 branches:
@@ -19,8 +21,10 @@ addons:
       - sourceline: "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main"
       - key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     packages:
-    - postgresql-15
-    - postgresql-client-15
+      - groovy
+      - gradle
+      - postgresql-15
+      - postgresql-client-15
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
