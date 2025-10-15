@@ -8,6 +8,7 @@ import org.apache.commons.lang.SerializationUtils
 import org.jooq.tools.StringUtils
 
 import javax.servlet.http.HttpServletResponse
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.zip.ZipOutputStream
@@ -189,13 +190,13 @@ class ExportService {
 
         def filename = "Project-" + (cleanFilename(project.featuredLabel) ?: project.id) + "-DwC"
 
-        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv");
-        response.setContentType("text/plain");
-        OutputStream fout = response.getOutputStream();
-        OutputStream bos = new BufferedOutputStream(fout);
-        OutputStreamWriter outputwriter = new OutputStreamWriter(bos);
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename +".csv")
+        response.setContentType('text/csv;charset=utf-8')
+        OutputStream fout = response.getOutputStream()
+        OutputStream bos = new BufferedOutputStream(fout)
+        OutputStreamWriter outputwriter = new OutputStreamWriter(bos, StandardCharsets.UTF_8)
 
-        CSVWriter writer = new CSVWriter(outputwriter);
+        CSVWriter writer = new CSVWriter(outputwriter)
         // write header line (field names)
         writer.writeNext(columnNames as String[])
         log.debug("Wrote column names in {}ms", sw.elapsed(MILLISECONDS))
@@ -385,7 +386,7 @@ class ExportService {
      */
     def cleanFilename(String filename) {
         if (StringUtils.isEmpty(filename)) return
-        String cleanFilename = filename.replaceAll(Pattern.compile("[ \\\\/:*?\"\'<>|\\]\\[.;\${}&%#@!]"), "")
+        String cleanFilename = filename.replaceAll(Pattern.compile("[ \\\\/:*?\"\'<>|\\]\\[.;,\${}&%#@!]"), "")
         return cleanFilename
     }
 

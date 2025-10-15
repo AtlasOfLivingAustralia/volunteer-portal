@@ -12,6 +12,8 @@ import org.jooq.Transaction
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.multipart.MultipartFile
 
+import javax.servlet.ServletOutputStream
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -657,7 +659,7 @@ class AdminController {
         }
 
         response.setHeader("Content-Disposition", "attachment;filename=expedition-summary.csv")
-        response.addHeader("Content-type", "text/plain")
+        response.setContentType('text/csv;charset=utf-8')
         def sdf = new SimpleDateFormat("yyyy-MM-dd")
 
         def dateStr = { Date d ->
@@ -674,7 +676,8 @@ class AdminController {
             return ""
         }
 
-        def writer = new CSVWriter((Writer) response.writer,  {
+        def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+        def writer = new CSVWriter(osw,  {
             'Expedition Id' { it.project.id }
             'Expedtion Name' { it.project.featuredLabel }
             'Institution' { it.project.institution ? it.project.institution.name : it.project.featuredOwner }
@@ -700,7 +703,9 @@ class AdminController {
         for (def row : data) {
             writer << row
         }
-        response.flushBuffer()
+        //response.flushBuffer()
+        osw.flush()
+        osw.close()
     }
 
     def reindexAllTasks() {
