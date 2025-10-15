@@ -676,7 +676,7 @@ class AdminController {
             return ""
         }
 
-        def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)ß
+        def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
         def writer = new CSVWriter(osw,  {
             'Expedition Id' { it.project.id }
             'Expedtion Name' { it.project.featuredLabel }
