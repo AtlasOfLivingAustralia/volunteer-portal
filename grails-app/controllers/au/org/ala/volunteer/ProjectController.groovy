@@ -1407,8 +1407,8 @@ class ProjectController {
                                 [key: "archived", value: "Archived"],
                                 [key: "not-archived", value: "Not Archived"]]
 
-        params.sort = (params.sort ?: 'id')
-        params.order = (params.order ?: 'asc')
+        params.sort = (params.sort ?: 'dateCreated')
+        params.order = (params.order ?: 'desc')
         params.max = (params.max ?: 20)
         if (params.sort == 'status') {
             if (params.order == 'asc') params.sortFields = ['inactive', 'archived', 'id']
