@@ -110,12 +110,12 @@
                 <button type="button" class="btn btn-default" id="showNextFromProject" data-skip="true" data-container="body"
                         title="Skip to the next image">Skip</button>
                 <vpf:taskTopicButton task="${taskInstance}" class="btn btn-default"/>
-                <g:if test="${taskInstance?.project?.tutorialLinks}">
+                <g:if test="${taskInstance?.project?.tutorialLinks || taskInstance?.project?.tutorials?.size() > 0}">
                     <g:link class="btn btn-default" controller="project" action="index" id="${taskInstance?.project?.id}"
-                            target="_blank" params="${[showTutorial: true]}">View Tutorial</g:link>
+                            target="_blank" params="${[showTutorial: true]}">View Tutorials</g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="btn btn-default" controller="tutorials" action="index" target="_blank">View Tutorial</g:link>
+                    <g:link class="btn btn-default" controller="tutorials" action="groupList" params="${[institution: taskInstance?.project?.institution?.id]}" target="_blank">View Tutorials</g:link>
                 </g:else>
             </div>
 

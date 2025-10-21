@@ -92,7 +92,9 @@
                                 <g:else>
                                     <h4>Expedition Tutorial List</h4>
                                     <div id="tutorial-intro">
-                                        <p>No tutorial information available</p>
+                                        <p>No tutorial information available.</p>
+                                        <p>You can find other tutorials for ${projectInstance.institution.name}
+                                        <g:link controller="tutorials" action="groupList" params="${[institution: projectInstance.institution.id]}" target="_blank">here</g:link>.</p>
                                     </div>
                                 </g:else>
                             </div>
