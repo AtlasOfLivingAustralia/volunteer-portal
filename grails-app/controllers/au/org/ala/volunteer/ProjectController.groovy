@@ -48,7 +48,7 @@ class ProjectController {
         def showTutorial = (params.showTutorial == "true")
 
         // If the tutorial has been requested but the field is empty, redirect to tutorial index.
-        if (showTutorial && projectInstance.tutorials.size() == 0) {
+        if (showTutorial && (!projectInstance.tutorialLinks && projectInstance.tutorials.size() == 0)) {
             redirect(controller: "tutorials", action: "index")
             return
         }
