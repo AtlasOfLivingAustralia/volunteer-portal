@@ -44,7 +44,7 @@
             </tr>
             <tr>
                 <td>Time started</td>
-                <td><b><span id="time_started">{{timeStarted}}</span></b></td>
+                <td><b><span id="time_started">{{timeStartedFormatted}}</span></b></td>
             </tr>
             <tr>
                 <td>Estimated time of completion</td>
@@ -59,9 +59,9 @@
             </tr>
         </table>
 
-        {{^count}}
+        {{^lastRemaining}}
         <g:link controller="project" action="edit" id="${projectInstance.id}">Back to settings</g:link>
-        {{/count}}
+        {{/lastRemaining}}
 
 </script>
 

@@ -31,6 +31,7 @@ class TaskController {
     def multimediaService
     def projectService
     def projectStagingService
+    def institutionService
 
     def projectAdmin() {
         def currentUser = userService.currentUserId
@@ -964,5 +965,20 @@ class TaskController {
             response.outputStream.write(outputBytes)
             response.flushBuffer()
         }
+    }
+
+    def manageProjectTaskUploads() {
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        // Institution filter
+        def institutionList = Institution.list()?.sort { it.name }
+
+        // Get all TASK_DESCRIPTOR records
+        def taskQueue = taskLoadService.getTaskUploadQueue(params)
+
+        render(view: 'manageUploads', model: [institutionList: institutionList, taskList: taskQueue.taskList, taskListCount: taskQueue.taskCount])
     }
 }

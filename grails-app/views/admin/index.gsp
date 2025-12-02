@@ -84,6 +84,12 @@
                         </tr>
                         <tr>
                             <td><a class="btn btn-admin btn-primary bs3"
+                                   href="${createLink(controller: 'task', action: 'manageProjectTaskUploads')}">Manage Task Uploads</a>
+                            </td>
+                            <td>Manage task image uploads to DigiVol</td>
+                        </tr>
+                        <tr>
+                            <td><a class="btn btn-admin btn-primary bs3"
                                    href="${createLink(controller: 'frontPage', action: 'edit')}">Configure Front Page</a>
                             </td>
                             <td>Configure the appearance of the front page</td>

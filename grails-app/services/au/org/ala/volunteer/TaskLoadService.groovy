@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils
 import org.jooq.Configuration
 import org.jooq.DSLContext
 import org.jooq.JSONB
+import org.jooq.SortOrder
 import org.jooq.TransactionalCallable
 import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
@@ -40,10 +41,12 @@ import static org.jooq.impl.DSL.currentTimestamp
 import static org.jooq.impl.DSL.defaultValue
 import static org.jooq.impl.DSL.min
 import static org.jooq.impl.DSL.now
+import static org.jooq.impl.DSL.query
 import static org.jooq.impl.DSL.row
 import static org.jooq.impl.DSL.select
 import static org.jooq.impl.DSL.val
 import static org.jooq.impl.DSL.when
+import static org.jooq.impl.DSL.or as jOr
 
 // Transactions will be controlled explicitly
 @Slf4j
@@ -86,6 +89,96 @@ class TaskLoadService implements EventPublisher {
         DSLContext create = jooqContext()
 
         return create.fetchExists(TASK_DESCRIPTOR, TASK_DESCRIPTOR.PROJECT_ID.eq(projectId))
+    }
+
+    /**
+     * Get a paginated list of tasks waiting to be processed.
+     *
+     * @param params A map of parameters including:
+     *   - offset: The offset for pagination (default: 0)
+     *   - limit: The maximum number of records to return (default: 20)
+     *   - sortColumn: The column to sort by (default: 'timeCreated')
+     *   - sortOrder: The order of sorting, either 'ASC' or 'DESC' (default: 'DESC')
+     * @return A list of task records waiting to be processed.
+     */
+    def getTaskUploadQueue(Map params = [:]) {
+        DSLContext create = jooqContext()
+        def whereClause = []
+
+        // Institution Filter
+        Long institutionFilter = params.institutionFilter ? Long.valueOf(params.institutionFilter as String) : null
+        if (institutionFilter) {
+            whereClause << PROJECT.INSTITUTION_ID.eq(institutionFilter)
+        }
+
+        if (params.q) {
+            def queryOr = []
+            queryOr << PROJECT.NAME.likeIgnoreCase("%${params.q}%".toString().toLowerCase())
+            queryOr << TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER.likeIgnoreCase("%${params.q}%".toString().toLowerCase())
+            whereClause << jOr(queryOr)
+        }
+
+        int offset = (params.offset ?: 0) as Integer
+        int limit = (params.limit ?: 20) as Integer
+
+        String sortColumn = (params.sort ?: 'timeCreated').toString()
+        String sortOrder = (params.order ?: 'DESC').toString().toUpperCase()
+        log.debug("Sorting task upload queue by ${sortColumn} ${sortOrder}")
+
+        // Map friendly column names to jOOQ fields
+        def columnMap = [
+                'projectId'         : PROJECT.ID,
+                'project'           : PROJECT.NAME,
+                'projectName'       : PROJECT.NAME,
+                'id'                : TASK_DESCRIPTOR.ID,
+                'timeCreated'       : TASK_DESCRIPTOR.TIME_CREATED,
+                'retriesRemaining'  : TASK_DESCRIPTOR.RETRIES_REMAINING,
+                'externalIdentifier': TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
+                'imageUrl'          : TASK_DESCRIPTOR.IMAGE_URL,
+                'replaceDuplicates' : TASK_DESCRIPTOR.REPLACE_DUPLICATES
+        ]
+
+        def sortField = columnMap[sortColumn] ?: TASK_DESCRIPTOR.TIME_CREATED
+        def order = (sortOrder == 'ASC') ? SortOrder.ASC : SortOrder.DESC
+        log.debug("Sorting task upload queue by field ${sortField} ${order}")
+
+        // Get a list of tasks waiting to be processed
+        def taskQueueQuery = create
+                .select(
+                        PROJECT.ID,
+                        PROJECT.NAME,
+                        TASK_DESCRIPTOR.ID,
+                        TASK_DESCRIPTOR.TIME_CREATED,
+                        TASK_DESCRIPTOR.RETRIES_REMAINING,
+                        TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
+                        TASK_DESCRIPTOR.IMAGE_URL,
+                        TASK_DESCRIPTOR.REPLACE_DUPLICATES
+                )
+                .from(TASK_DESCRIPTOR)
+                .join(PROJECT).on(PROJECT.ID.eq(TASK_DESCRIPTOR.PROJECT_ID))
+                .where(whereClause)
+                .orderBy(sortField.sort(order))
+//                .limit(limit)
+//                .offset(offset)
+
+        def results = [:]
+        results.taskCount = create.fetchCount(taskQueueQuery)
+        def taskQueryWithPagination = taskQueueQuery.limit(limit).offset(offset)
+
+        results.taskList = taskQueryWithPagination.fetch().collect {row ->
+            [
+                projectId         : row.get(PROJECT.ID),
+                project           : row.get(PROJECT.NAME),
+                id                : row.get(TASK_DESCRIPTOR.ID),
+                timeCreated       : row.get(TASK_DESCRIPTOR.TIME_CREATED),
+                retriesRemaining  : row.get(TASK_DESCRIPTOR.RETRIES_REMAINING),
+                externalIdentifier: row.get(TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER),
+                imageUrl          : row.get(TASK_DESCRIPTOR.IMAGE_URL),
+                replaceDuplicates : row.get(TASK_DESCRIPTOR.REPLACE_DUPLICATES)
+            ]
+        }
+
+        return results
     }
 
     def loadTaskFromCSV(Project project, String csv, boolean replaceDuplicates) {
@@ -422,6 +515,7 @@ class TaskLoadService implements EventPublisher {
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
 
+            // TODO This needs to be removed or updated to query S3
             def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
             log.info("Updating project disk usage: ${projectSizeInBytes}")
 

@@ -1404,4 +1404,26 @@ function notify() {
         out << "<img src='${resource(dir: 'images', file: 'external_link.svg')}' alt='Open in new window' />"
         out << "</a>"
     }
+
+    /**
+     * Displays a warning if the project is archived or inactive
+     * @attr projectId The project instance
+     */
+    def archivedOrInactiveProjectWarning = { attrs, body ->
+        // TODO - Add option to style with label badges.
+        def project = Project.get(attrs.projectId as Long) as Project
+        if (project?.archived || project?.inactive) {
+            out << "("
+            if (project?.archived) {
+                out << "Archived"
+            }
+            if (project?.archived && project?.inactive) {
+                out << " / "
+            }
+            if (project?.inactive) {
+                out << "Inactive"
+            }
+            out << ")"
+        }
+    }
 }

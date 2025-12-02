@@ -108,6 +108,7 @@ dependencies {
     implementation "org.codehaus.gpars:gpars:1.2.1" // Added for the GPars dependencies.
     implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     implementation "org.grails:grails-datastore-gorm-async:${gormVersion}"
+    implementation "software.amazon.awssdk:s3:$amazonAwsSdkVersion"
 
     assets "com.bertramlabs.plugins:sass-dart-asset-pipeline:$assetPipelineVersion"
 
