@@ -778,8 +778,9 @@ class AdminController {
             render(view: '/notPermitted')
             return
         }
+        log.debug("AdminController.updateUsers called by ${userService.getCurrentUser()}")
         userService.updateAllUsers()
-        redirect(controller: 'user', action: 'list')
+        redirect(controller: 'admin', action: 'tools')
     }
 
 }

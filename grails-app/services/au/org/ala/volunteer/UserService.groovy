@@ -784,13 +784,16 @@ class UserService {
     }
 
     void updateAllUsers() {
+        log.debug("Updating all users from user details service")
         List<User> updates = []
         def users = User.all
 
         def ids = users*.userId
+        log.debug("Getting details for ${ids.size()} users from user details service")
         UserDetailsFromIdListResponse results
         try {
             results = authService.getUserDetailsById(ids, true)
+            log.debug("Got ${results.users.size()} user details from user details service")
         } catch (Exception e) {
             log.warn("couldn't get user details from web service", e)
         }
@@ -799,7 +802,15 @@ class UserService {
         if (results) {
             users.each {
                 UserDetails result = results.users[it.userId]
+
+                if (it.userId == '123764') {
+                    log.debug("DigiVol User: ${it}")
+                    log.debug("ALA User 123764 details: ${result}")
+                }
+
+
                 if (result && (result.firstName != it.firstName || result.lastName != it.lastName || result.userName != it.email || result.organisation != it.organisation)) {
+                    log.debug("Updating user ${it.userId}: ${it.firstName} ${it.lastName} ${it.email} ${it.organisation} to ${result.firstName} ${result.lastName} ${result.userName} ${result.organisation}")
                     it.firstName = result.firstName
                     it.lastName = result.lastName
                     it.email = result.userName
