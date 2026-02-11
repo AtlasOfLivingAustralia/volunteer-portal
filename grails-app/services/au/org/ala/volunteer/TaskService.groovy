@@ -922,6 +922,7 @@ ORDER BY record_idx, name;
             //file.close()
         } catch (Exception e) {
             log.error("Failed to load URL: ${imageUrl}", e)
+            throw new Exception("Failed to load URL: ${imageUrl}", e)
         }
     }
 

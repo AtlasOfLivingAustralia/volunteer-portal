@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+
 import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -980,5 +981,131 @@ class TaskController {
         def taskQueue = taskLoadService.getTaskUploadQueue(params)
 
         render(view: 'manageUploads', model: [institutionList: institutionList, taskList: taskQueue.taskList, taskListCount: taskQueue.taskCount])
+    }
+
+    def resetTaskDescriptorRetries() {
+        log.debug("Resetting task upload descriptor retries with id: ${params.long('id')}")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        Long taskDescriptorId = params.long('id')
+        if (taskDescriptorId == null || taskDescriptorId <= 0) {
+            flash.message = "No task upload descriptor ID supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def reset = taskLoadService.resetTaskDescriptorRetries(taskDescriptorId)
+        if (reset) {
+            log.debug("Reset retries for task upload descriptor with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.resetRetries.success.message") as String
+        } else {
+            log.debug("No task upload descriptor found with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.resetRetries.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def deleteTaskDescriptor() {
+        log.debug("Deleting task upload descriptor with id: ${params.long('id')}")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        Long taskDescriptorId = params.long('id')
+        if (taskDescriptorId == null || taskDescriptorId <= 0) {
+            flash.message = "No task upload descriptor ID supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def taskDescriptorList = [taskDescriptorId]
+
+        def deleted = taskLoadService.deleteTaskDescriptors(taskDescriptorList)
+        if (deleted > 0) {
+            log.debug("Deleted task upload descriptor with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.delete.success.message") as String
+        } else {
+            log.debug("No task upload descriptor found with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.delete.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def deleteTaskDescriptorList() {
+        log.debug("Deleting multiple task upload descriptors.")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        log.debug("Raw params: ${params}")
+
+        // Submitted list comes in as a string of comma separated values e.g. [5945048,5945030,5945052,5945050]
+        def rawIdParams = params.list('taskDescriptorIds[]') as List ?: []
+        params.remove('taskDescriptorIds[]')
+        // Closure to safely convert various input types to Long, returning null on failure
+        def toLongSafe = { id ->
+            try {
+                return id?.toString()?.trim()?.toLong()
+            } catch (Exception ignored) {
+                return null
+            }
+        }
+
+        // Process the raw ID parameters to extract unique Long IDs
+        def taskDescriptorIds = rawIdParams.collectMany { value ->
+            if (value == null) return []
+            if (value instanceof String) {
+                if (value.contains(',')) {
+                    return value.split(',').collect { toLongSafe(it) }.findAll { it != null }
+                } else {
+                    return [toLongSafe(value)].findAll { it != null }
+                }
+            } else if (value instanceof Number) {
+                return [value.longValue()]
+            } else {
+                return []
+            }
+        }.unique() as List<Long>
+        log.debug("Task descriptor IDs to delete: (${taskDescriptorIds.size()}) ${taskDescriptorIds}")
+
+        if (taskDescriptorIds.isEmpty()) {
+            flash.message = "No task upload descriptor IDs supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def deleted = taskLoadService.deleteTaskDescriptors(taskDescriptorIds)
+        if (deleted > 0) {
+            log.debug("Deleted ${deleted} task upload descriptors.")
+            flash.message = message(code: "task.manage.delete.multiple.success.message", args: [deleted]) as String
+        } else {
+            log.debug("No task upload descriptors found for the provided IDs.")
+            flash.message = message(code: "task.manage.delete.multiple.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def taskDescriptorErrors(Long id) {
+        log.debug("Viewing task descriptor errors.")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        // Get errors from task load service
+        def errors = taskLoadService.getTaskDescriptorErrors(id)
+        if (errors == null) {
+            flash.message = "No task upload descriptor found with id: ${id}"
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        render(template: 'taskErrors', model: [errors: errors, taskDescriptorId: id])
     }
 }

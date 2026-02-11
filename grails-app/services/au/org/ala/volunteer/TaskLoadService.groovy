@@ -26,16 +26,19 @@ import org.springframework.beans.factory.annotation.Value
 
 import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.regex.Pattern
 
 import static au.org.ala.volunteer.jooq.Sequences.HIBERNATE_SEQUENCE
 import static au.org.ala.volunteer.jooq.Tables.PROJECT
+import static au.org.ala.volunteer.jooq.Tables.INSTITUTION
 import static au.org.ala.volunteer.jooq.Tables.SHADOW_FILE_DESCRIPTOR
 import static au.org.ala.volunteer.jooq.tables.Field.FIELD
 import static au.org.ala.volunteer.jooq.tables.MediaLoadDescriptor.MEDIA_LOAD_DESCRIPTOR
 import static au.org.ala.volunteer.jooq.tables.Multimedia.MULTIMEDIA
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static au.org.ala.volunteer.jooq.tables.TaskDescriptor.TASK_DESCRIPTOR
+import static au.org.ala.volunteer.jooq.tables.TaskDescriptorError.TASK_DESCRIPTOR_ERROR
 import static org.jooq.impl.DSL.count
 import static org.jooq.impl.DSL.currentTimestamp
 import static org.jooq.impl.DSL.defaultValue
@@ -121,7 +124,7 @@ class TaskLoadService implements EventPublisher {
         int offset = (params.offset ?: 0) as Integer
         int limit = (params.limit ?: 20) as Integer
 
-        String sortColumn = (params.sort ?: 'timeCreated').toString()
+        String sortColumn = (params.sort ?: 'dateUpdated').toString()
         String sortOrder = (params.order ?: 'DESC').toString().toUpperCase()
         log.debug("Sorting task upload queue by ${sortColumn} ${sortOrder}")
 
@@ -129,9 +132,9 @@ class TaskLoadService implements EventPublisher {
         def columnMap = [
                 'projectId'         : PROJECT.ID,
                 'project'           : PROJECT.NAME,
-                'projectName'       : PROJECT.NAME,
                 'id'                : TASK_DESCRIPTOR.ID,
                 'timeCreated'       : TASK_DESCRIPTOR.TIME_CREATED,
+                'dateUpdated'       : TASK_DESCRIPTOR.DATE_UPDATED,
                 'retriesRemaining'  : TASK_DESCRIPTOR.RETRIES_REMAINING,
                 'externalIdentifier': TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
                 'imageUrl'          : TASK_DESCRIPTOR.IMAGE_URL,
@@ -147,16 +150,29 @@ class TaskLoadService implements EventPublisher {
                 .select(
                         PROJECT.ID,
                         PROJECT.NAME,
+                        INSTITUTION.NAME,
                         TASK_DESCRIPTOR.ID,
                         TASK_DESCRIPTOR.TIME_CREATED,
+                        TASK_DESCRIPTOR.DATE_UPDATED,
                         TASK_DESCRIPTOR.RETRIES_REMAINING,
                         TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
                         TASK_DESCRIPTOR.IMAGE_URL,
-                        TASK_DESCRIPTOR.REPLACE_DUPLICATES
+                        count(TASK_DESCRIPTOR_ERROR.ID).as("error_count")
                 )
                 .from(TASK_DESCRIPTOR)
                 .join(PROJECT).on(PROJECT.ID.eq(TASK_DESCRIPTOR.PROJECT_ID))
+                .join(INSTITUTION).on(INSTITUTION.ID.eq(PROJECT.INSTITUTION_ID))
+                .leftJoin(TASK_DESCRIPTOR_ERROR).on(TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID.eq(TASK_DESCRIPTOR.ID))
                 .where(whereClause)
+                .groupBy(PROJECT.ID,
+                        PROJECT.NAME,
+                        INSTITUTION.NAME,
+                        TASK_DESCRIPTOR.ID,
+                        TASK_DESCRIPTOR.TIME_CREATED,
+                        TASK_DESCRIPTOR.DATE_UPDATED,
+                        TASK_DESCRIPTOR.RETRIES_REMAINING,
+                        TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
+                        TASK_DESCRIPTOR.IMAGE_URL)
                 .orderBy(sortField.sort(order))
 //                .limit(limit)
 //                .offset(offset)
@@ -169,16 +185,84 @@ class TaskLoadService implements EventPublisher {
             [
                 projectId         : row.get(PROJECT.ID),
                 project           : row.get(PROJECT.NAME),
+                institution       : row.get(INSTITUTION.NAME),
                 id                : row.get(TASK_DESCRIPTOR.ID),
                 timeCreated       : row.get(TASK_DESCRIPTOR.TIME_CREATED),
+                dateUpdated       : row.get(TASK_DESCRIPTOR.DATE_UPDATED),
                 retriesRemaining  : row.get(TASK_DESCRIPTOR.RETRIES_REMAINING),
                 externalIdentifier: row.get(TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER),
                 imageUrl          : row.get(TASK_DESCRIPTOR.IMAGE_URL),
-                replaceDuplicates : row.get(TASK_DESCRIPTOR.REPLACE_DUPLICATES)
+                errorCount        : row.get("error_count")
             ]
         }
 
         return results
+    }
+
+    /**
+     * Deletes task descriptors with the given IDs from the database.
+     *
+     * @param taskDescriptorIds A list of task descriptor IDs to be deleted.
+     * @return The number of task descriptors deleted.
+     */
+    def deleteTaskDescriptors(List<Long> taskDescriptorIds) {
+        log.debug("Deleting task descriptors with IDs: ${taskDescriptorIds}")
+        DSLContext create = jooqContext()
+
+        // Check for and delete associated records in TASK_DESCRIPTOR_ERROR
+        def errorRecordsCount = create
+                .deleteFrom(TASK_DESCRIPTOR_ERROR)
+                .where(TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID.in(taskDescriptorIds))
+                .execute()
+        log.debug("Deleted ${errorRecordsCount} associated error records.")
+
+        def deletedCount = create
+                .deleteFrom(TASK_DESCRIPTOR)
+                .where(TASK_DESCRIPTOR.ID.in(taskDescriptorIds))
+                .execute()
+
+        return deletedCount
+    }
+
+    def getTaskDescriptorErrors(Long taskDescriptorId) {
+        log.debug("Fetching errors for task descriptor ID: ${taskDescriptorId}")
+        DSLContext create = jooqContext()
+
+        def errors = create
+                .select(TASK_DESCRIPTOR_ERROR.ERROR_MESSAGE, TASK_DESCRIPTOR_ERROR.STACK_TRACE, TASK_DESCRIPTOR_ERROR.DATE_CREATED)
+                .from(TASK_DESCRIPTOR_ERROR)
+                .where(TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID.eq(taskDescriptorId))
+                .orderBy(TASK_DESCRIPTOR_ERROR.DATE_CREATED.desc())
+                .fetch()
+                .collect { row ->
+                    [
+                        message    : row.get(TASK_DESCRIPTOR_ERROR.ERROR_MESSAGE),
+                        stacktrace: row.get(TASK_DESCRIPTOR_ERROR.STACK_TRACE),
+                        dateCreated: row.get(TASK_DESCRIPTOR_ERROR.DATE_CREATED)
+                    ]
+                }
+
+        return errors
+    }
+
+    /**
+     * Resets the retries remaining for a specific task descriptor to 3.
+     *
+     * @param taskDescriptorId The ID of the task descriptor to reset.
+     * @return The number of task descriptors updated (should be 1 if successful).
+     */
+    def resetTaskDescriptorRetries(Long taskDescriptorId) {
+        log.debug("Resetting retries for task descriptor ID: ${taskDescriptorId}")
+        DSLContext create = jooqContext()
+
+        def updatedCount = create
+                .update(TASK_DESCRIPTOR)
+                .set(TASK_DESCRIPTOR.RETRIES_REMAINING, 3)
+                .set(TASK_DESCRIPTOR.DATE_UPDATED, val(LocalDateTime.now()))
+                .where(TASK_DESCRIPTOR.ID.eq(taskDescriptorId))
+                .execute()
+
+        return updatedCount
     }
 
     def loadTaskFromCSV(Project project, String csv, boolean replaceDuplicates) {
@@ -499,6 +583,12 @@ class TaskLoadService implements EventPublisher {
         boolean skip = false
         boolean success = true
         String message
+        List<LoadStatusFailure> failures = []
+    }
+
+    static class LoadStatusFailure {
+        String message
+        String stacktrace
     }
 
     static class MultimediaLoadStatus {
@@ -625,11 +715,44 @@ class TaskLoadService implements EventPublisher {
         return dequeuedTasks
     }
 
+    /**
+     * Persist any failures recorded on a {@code LoadStatus} into the
+     * {@code TASK_DESCRIPTOR_ERROR} table.
+     *
+     * <p>This method checks {@code status.failures} and, when present,
+     * inserts one row per failure containing:
+     * - a generated id using {@code HIBERNATE_SEQUENCE.nextval()}
+     * - the creation timestamp in milliseconds
+     * - the id of the related task descriptor
+     * - the failure message
+     * - the failure stacktrace
+     *
+     * @param create the jOOQ {@code DSLContext} used to build and execute the insert
+     * @param status the {@code LoadStatus} instance whose {@code failures} will be persisted;
+     *               each failure is expected to have {@code message} and {@code stacktrace} properties
+     */
+    private void saveLoadStatusFail(DSLContext create, LoadStatus status) {
+        log.debug( "Saving load status failure for task descriptor id {}: {}", status.taskDescriptorRecord?.id, status.failures*.message)
+        if (status.failures) {
+            status.failures.inject(
+                create.insertInto(TASK_DESCRIPTOR_ERROR,
+                    TASK_DESCRIPTOR_ERROR.ID,
+                    TASK_DESCRIPTOR_ERROR.DATE_CREATED,
+                    TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID,
+                    TASK_DESCRIPTOR_ERROR.ERROR_MESSAGE,
+                    TASK_DESCRIPTOR_ERROR.STACK_TRACE)) { insert, row ->
+                insert.values(HIBERNATE_SEQUENCE.nextval(), val(new Date()), val(status.taskDescriptorRecord.id), val(row.message), val(row.stacktrace))
+            }.execute()
+        }
+    }
+
     private Closure<Integer> taskLoadTransaction = { List<LoadStatus> jobsStatuses, Long projectId, Configuration cfg ->
         def sw = Stopwatch.createStarted()
         def create = DSL.using(cfg)
         def jobFilter = TASK_DESCRIPTOR.RETRIES_REMAINING.gt(0)
         if (projectId) jobFilter = jobFilter & TASK_DESCRIPTOR.PROJECT_ID.eq(projectId)
+
+        // Select a batch of jobs to process where retries remain - decrementing retries in the same transaction
         def jobs = create
                 .update(TASK_DESCRIPTOR)
                 .set([(TASK_DESCRIPTOR.RETRIES_REMAINING) : TASK_DESCRIPTOR.RETRIES_REMAINING - 1])
@@ -762,6 +885,7 @@ class TaskLoadService implements EventPublisher {
                     create.executeDelete(status.taskRecord)
                 }
 
+                saveLoadStatusFail(create, status)
             }
             def byProject = statuses.groupBy { it.projectId }
 
@@ -780,6 +904,18 @@ class TaskLoadService implements EventPublisher {
         sw.reset().start()
         continueStatuses(jobsStatuses) { statuses ->
             def taskDescriptorIds = statuses*.taskDescriptorRecord*.id
+
+            // Check for and delete any associated records in TASK_DESCRIPTOR_ERROR table
+            def existingErrors = create.selectFrom(TASK_DESCRIPTOR_ERROR)
+                    .where(TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID.in(taskDescriptorIds))
+                    .fetch()
+            if (existingErrors) {
+                def errorDeletes = create
+                        .deleteFrom(TASK_DESCRIPTOR_ERROR)
+                        .where(TASK_DESCRIPTOR_ERROR.TASK_DESCRIPTOR_ID.in(taskDescriptorIds))
+                        .execute()
+                log.debug("Deleted {} existing task descriptor error records", errorDeletes)
+            }
 
             def deletes = create
                     .deleteFrom(TASK_DESCRIPTOR)
@@ -836,6 +972,12 @@ class TaskLoadService implements EventPublisher {
                 log.error("Exception while completing multimedia record {}", status.taskDescriptorRecord, e)
                 status.success = false
                 status.message = e.message
+                def failureMessage = "Import Image: ${e.message}"
+                if (!status.failures.any { it.message == failureMessage }) {
+                    status.failures.add(new LoadStatusFailure(
+                            message: failureMessage,
+                            stacktrace: ExceptionUtils.getStackTraceAsString(e)))
+                }
             }
         }
     }
@@ -892,6 +1034,12 @@ class TaskLoadService implements EventPublisher {
                 log.error("Copying image to store failed: ${e.message}", e)
                 status.success = false
                 status.message = e.message
+                def failureMessage = "Generate Extra Media: ${e.message}"
+                if (!status.failures.any { it.message == failureMessage }) {
+                    status.failures.add(new LoadStatusFailure(
+                            message: failureMessage,
+                            stacktrace: ExceptionUtils.getStackTraceAsString(e)))
+                }
             }
         }
     }
@@ -910,6 +1058,9 @@ class TaskLoadService implements EventPublisher {
                 log.error("Error calling after media load hook", e)
                 status.success = false
                 status.message = e.message
+                status.failures.add(new LoadStatusFailure(
+                        message: e.message,
+                        stacktrace: ExceptionUtils.getStackTraceAsString(e)))
             }
         }
     }
@@ -1084,7 +1235,7 @@ class TaskLoadService implements EventPublisher {
         Project project = Project.get(projectId)
 
         def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
-        if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, ${projectId}, ${multimedia.taskId}, ${multimedia.id}")
+        if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, Project: ${projectId}, Task: ${multimedia.taskId}, MM: ${multimedia.id}")
 
         if (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
             multimedia.filePathToThumbnail = null
