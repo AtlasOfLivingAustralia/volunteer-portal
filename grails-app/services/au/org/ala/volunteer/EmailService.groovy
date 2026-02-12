@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import com.google.common.base.Strings
 import grails.core.GrailsApplication
 import grails.util.Environment
+import org.joda.time.DateTime
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -114,6 +115,13 @@ class EmailService {
 
         def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message)
         _queuedMessages.add(qmsg)
+    }
+
+    def pushMessageOnQueue(String emailAddress, String subject, String message, int timeOutCheckForDuplicate) {
+        log.debug("Queuing email message to ${emailAddress} - ${subject}")
+
+        def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message, timeOutCheckForDuplicate: timeOutCheckForDuplicate)
+        if (!_queuedMessages.contains(qmsg)) _queuedMessages.add(qmsg)
     }
 
     /**

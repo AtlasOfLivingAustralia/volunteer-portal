@@ -23,6 +23,7 @@ import org.jooq.TransactionalRunnable
 import org.jooq.impl.DSL
 import org.jooq.tools.json.JSONArray
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
@@ -61,6 +62,10 @@ class TaskLoadService implements EventPublisher {
     Closure<DSLContext> jooqContext
     def assetResourceLocator
     def projectService
+    def groovyPageRenderer
+    def grailsApplication
+    def emailService
+    def messageSource
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -637,12 +642,12 @@ class TaskLoadService implements EventPublisher {
 
         if (!rollback) {
 
+            def failedUploadTasks = [:]
             failedStatuses(jobsStatuses) { statuses ->
                 statuses.each { status ->
                     // Manually roll back singly failed job
                     // Media byte objects rollback to be performed outside db transaction context
                     try {
-
                         log.info("Rolling back byte objects {}", status)
 
                         def taskId = status.taskId
@@ -664,10 +669,24 @@ class TaskLoadService implements EventPublisher {
                         if (mediaUrl && multimediaId && taskId && statusProjectId) {
                             taskService.rollbackMultimediaTransaction(mediaUrl, statusProjectId, taskId, multimediaId)
                         }
+
+                        if (!failedUploadTasks.containsKey(status.taskDescriptorRecord.externalIdentifier)) {
+                            failedUploadTasks[status.taskDescriptorRecord.externalIdentifier] = status.projectId
+                        }
                     } catch (e) {
                         log.error("Caught exception rolling back {}", status, e)
                     }
                 }
+            }
+
+            if (failedUploadTasks.size() > 0) {
+                log.warn("Task load completed with {} failed uploads: {}", failedUploadTasks.size(), failedUploadTasks)
+                def errorInfo = []
+                failedUploadTasks.each { externalIdentifier, failedTaskProjectId ->
+                    errorInfo.add([projectId: failedTaskProjectId, projectName: Project.get(failedTaskProjectId as Long)?.name, externalIdentifier: externalIdentifier])
+                }
+
+                notifyForFailures(errorInfo)
             }
 
             continueStatuses(jobsStatuses) { statuses ->
@@ -933,8 +952,25 @@ class TaskLoadService implements EventPublisher {
                 }
             }
         }
+
         log.debug("taskLoadTransaction: Finalise load queue entries in {}", sw.stop())
         return dequeuedTasks
+    }
+
+    /**
+     * Notify of failed uploads, with a link to the project and external identifier for each failed task.
+     *
+     * @param errorInfo a list of maps containing projectId, projectName and externalIdentifier for each failed task
+     */
+    private void notifyForFailures(List<Map<String, Object>> errorInfo) {
+        log.debug("Notifying of failed uploads: {}", errorInfo)
+        String template = '/task/failedUploadNotification'
+        def message = groovyPageRenderer.render(view: template, model: [errors: errorInfo])
+        def appName = messageSource.getMessage("default.application.name", null, "DigiVol", LocaleContextHolder.locale)
+        emailService.pushMessageOnQueue(grailsApplication.config.getProperty('grails.contact.emailAddress', String) as String,
+                "${appName} Failed Task Uploads",
+                message,
+                30)
     }
 
     private Closure taskLoadStepGenerateTasks = { DSLContext create, List<LoadStatus> statuses ->
