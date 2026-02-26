@@ -60,7 +60,6 @@ class TaskLoadService implements EventPublisher {
     def taskService
     def stagingService
     Closure<DSLContext> jooqContext
-    def assetResourceLocator
     def projectService
     def groovyPageRenderer
     def grailsApplication

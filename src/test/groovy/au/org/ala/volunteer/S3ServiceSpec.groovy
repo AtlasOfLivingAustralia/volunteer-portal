@@ -1,64 +1,40 @@
 package au.org.ala.volunteer
 
 import grails.testing.services.ServiceUnitTest
-import software.amazon.awssdk.core.sync.RequestBody
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.S3ClientBuilder
-import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import spock.lang.Specification
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.core.sync.RequestBody
 
 class S3ServiceSpec extends Specification implements ServiceUnitTest<S3Service> {
 
-    def "upload() calls s3Client.putObject()"() {
-        given:
-        def s3Client = Mock(S3Client)
-        def service = new S3Service()
-        service.s3Client = s3Client
-        service.metaClass.bucket = "test-bucket"
-        service.metaClass.region = Region.AWS_GLOBAL
+    S3Client mockS3
 
-        def input = new ByteArrayInputStream("test data".bytes)
+    void setup() {
+        mockS3 = Mock(S3Client)
+        service.awsS3Client = mockS3
 
-        when:
-        service.upload("key.text", input, "text/plain")
-
-        then:
-        1 * s3Client.putObject(_ as PutObjectRequest,_ as RequestBody)
+        service.grailsApplication.config.aws.s3.bucket = "test-bucket"
+        service.grailsApplication.config.aws.s3.region = "ap-southeast-2"
     }
 
-    def "init() reads config and upload() calls s3.putObject()"() {
+    void "upload sends object to S3"() {
         given:
-        // Mock S3 client
-        def mockS3 = Mock(S3Client)
-
-        // Minimal mock grailsApplication.config
-        def fakeConfig = [
-            aws: [
-                s3: [
-                        bucket: 'test-bucket',
-                        region: 'ap-southeast-2'
-                ]
-            ]
-        ]
-
-        service.grailsApplication = [
-                config: fakeConfig
-        ]
-
-        // Instead of mocking static builder, we override init() behavior directly:
-        service.metaClass.buildS3Client = { -> mockS3 }  // adds a fake helper method
+        def key = "test/file.txt"
+        def content = "hello world"
+        def inputStream = new ByteArrayInputStream(content.bytes)
 
         when:
-        // manually simulate init logic
-        def conf = service.grailsApplication.config.aws.s3
-        service.bucket = conf.bucket
-        service.region = Region.of(conf.region)
-        service.@s3Client = mockS3
+        service.upload(key, inputStream, "text/plain")
 
         then:
-        service.bucket == 'test-bucket'
-        service.region == Region.of('ap-southeast-2')
-        service.@s3Client == mockS3
+        1 * mockS3.putObject(
+                { PutObjectRequest req ->
+                    req.bucket() == "test-bucket" &&
+                            req.key() == key &&
+                            req.contentType() == "text/plain"
+                },
+                _ as RequestBody
+        )
     }
 }

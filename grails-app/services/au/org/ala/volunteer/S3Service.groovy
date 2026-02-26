@@ -15,34 +15,22 @@ import java.time.Duration
 class S3Service {
 
     def grailsApplication
-    private S3Client s3Client
-    private String bucket
-    private Region region
+    S3Client awsS3Client
 
-    /**
-     * Initialize the S3 client using configuration from grailsApplication.
-     * Expects aws.s3.bucket and aws.s3.region to be set in the configuration.
-     */
-    def init() {
-        def conf = grailsApplication.config.getProperty('aws.s3')
-        bucket = conf.bucket
-        region = Region.of(conf.region as String)
-
-        s3Client = S3Client.builder()
-                .region(region)
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build()
-
-        log.info("Initialized S3 client for bucket: ${bucket} in region: ${region}")
+    private String getBucket() {
+        String bucketStr = grailsApplication.config.getProperty('aws.s3.bucket', String)
+        if (!bucketStr) {
+            throw new IllegalStateException("AWS S3 bucket is not configured. Please set 'aws.s3.bucket' in the application configuration.")
+        }
+        bucketStr
     }
 
-    /**
-     * Set a custom S3 client. Primarily used for testing.
-     *
-     * @param s3Client The S3 client to use.
-     */
-    void setS3Client(S3Client s3Client) {
-        this.s3Client = s3Client
+    private Region getRegion() {
+        String regionStr = grailsApplication.config.getProperty('aws.s3.region', String)
+        if (!regionStr) {
+            throw new IllegalStateException("AWS S3 region is not configured. Please set 'aws.s3.region' in the application configuration.")
+        }
+        Region.of(regionStr)
     }
 
     /**
@@ -53,13 +41,16 @@ class S3Service {
      * @param contentType The content type of the object.
      */
     void upload(String key, InputStream inputStream, String contentType) {
+        log.debug("Uploading object to S3 with key: ${key} and content type: ${contentType}")
+        log.debug("Input stream available bytes: ${inputStream?.available()}")
+
         def builder = PutObjectRequest.builder()
-                .bucket(bucket)
+                .bucket(getBucket())
                 .key(key)
                 .contentType(contentType)
                 .ifNoneMatch("*")
                 .build()
-        s3Client.putObject(
+        awsS3Client.putObject(
                 builder as PutObjectRequest,
                 RequestBody.fromInputStream(inputStream, inputStream.available())
         )
@@ -71,8 +62,8 @@ class S3Service {
      * @param key The S3 object key to delete.
      */
     void delete(String key) {
-        s3Client.deleteObject(DeleteObjectRequest.builder()
-                .bucket(bucket)
+        awsS3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(getBucket())
                 .key(key)
                 .build() as DeleteObjectRequest)
     }
@@ -86,25 +77,25 @@ class S3Service {
      * @param expiry The duration for which the pre-signed URL is valid. Default is 15 minutes.
      * @return A URL that can be used to access the S3 object.
      */
-    URL generatePresignedUrl(String key, Duration expiry = Duration.ofMinutes(15)) {
-        def presigner = S3Presigner.builder()
-                .region(region)
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build()
-
-        def getRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build() as GetObjectRequest
-
-        def presigned = presigner.presignGetObject(
-                GetObjectPresignRequest.builder()
-                        .signatureDuration(expiry)
-                        .getObjectRequest(getRequest)
-                        .build()
-        )
-
-        presigner.close()
-        return presigned.url()
-    }
+//    URL generatePresignedUrl(String key, Duration expiry = Duration.ofMinutes(15)) {
+//        def presigner = S3Presigner.builder()
+//                .region(region)
+//                .credentialsProvider(DefaultCredentialsProvider.create())
+//                .build()
+//
+//        def getRequest = GetObjectRequest.builder()
+//                .bucket(bucket)
+//                .key(key)
+//                .build() as GetObjectRequest
+//
+//        def presigned = presigner.presignGetObject(
+//                GetObjectPresignRequest.builder()
+//                        .signatureDuration(expiry)
+//                        .getObjectRequest(getRequest)
+//                        .build()
+//        )
+//
+//        presigner.close()
+//        return presigned.url()
+//    }
 }

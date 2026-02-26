@@ -46,6 +46,7 @@ class TaskService {
     def i18nService
     def userService
     def projectService
+    def s3Service
     Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
@@ -918,6 +919,14 @@ ORDER BY record_idx, name;
             fileMap.localPath = processedFile.getAbsolutePath()
             fileMap.localUrlPrefix = urlPrefix + "${projectId}/${taskId}/${multimediaId}/"
             fileMap.contentType = conn.contentType
+
+            // S3 Image upload
+            log.debug("Uploading image to S3 with key: ${taskId}:${multimediaId}")
+            def s3ServiceEnabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
+            if (s3ServiceEnabled) {
+                s3Service.upload("${taskId}:${multimediaId}", conn.inputStream, conn.contentType as String)
+            }
+
             return fileMap
             //file.close()
         } catch (Exception e) {
