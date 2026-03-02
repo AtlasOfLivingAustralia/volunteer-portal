@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource
 import javax.imageio.ImageIO
 import javax.sql.DataSource
 import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
 import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -903,28 +904,34 @@ ORDER BY record_idx, name;
         }
 
         try {
-            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${projectId}/${taskId}/${multimediaId}")
+            def fileKeyStr = "${projectId}/${taskId}/${multimediaId}/"
+            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${fileKeyStr}")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
             def file = new File(dir, filename)
-            file << conn.inputStream
+            log.debug("Input stream available bytes: ${conn.inputStream?.available()}")
+
+            // Read the input stream into a byte array to allow reuse for both disk and S3
+            byte[] imageBytes = conn.inputStream.bytes
+            file.bytes = imageBytes
 
             File processedFile = new File(dir, filename)
             boolean result = ImageUtils.reorientImage(file, processedFile)
 
             fileMap.raw = processedFile.name
             fileMap.localPath = processedFile.getAbsolutePath()
-            fileMap.localUrlPrefix = urlPrefix + "${projectId}/${taskId}/${multimediaId}/"
+            fileMap.localUrlPrefix = urlPrefix + "${fileKeyStr}/"
             fileMap.contentType = conn.contentType
 
             // S3 Image upload
-            log.debug("Uploading image to S3 with key: ${taskId}:${multimediaId}")
+            def s3FileKey = "${fileKeyStr}/${filename}"
+            log.debug("Uploading image to S3 with key: ${s3FileKey}")
             def s3ServiceEnabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
             if (s3ServiceEnabled) {
-                s3Service.upload("${taskId}:${multimediaId}", conn.inputStream, conn.contentType as String)
+                s3Service.upload("${s3FileKey}", new ByteArrayInputStream(imageBytes), conn.contentType as String)
             }
 
             return fileMap
