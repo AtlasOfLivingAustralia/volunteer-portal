@@ -904,8 +904,8 @@ ORDER BY record_idx, name;
         }
 
         try {
-            def fileKeyStr = "${projectId}/${taskId}/${multimediaId}/"
-            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${fileKeyStr}")
+            def fileKeyStr = "${projectId}/${taskId}/${multimediaId}"
+            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${fileKeyStr}/")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
