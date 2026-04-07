@@ -17,7 +17,9 @@ class S3Service {
     def grailsApplication
     S3Client awsS3Client
 
-    private String getBucket() {
+    public static final String S3_PREFIX = "s3/"
+
+    public String getBucket() {
         String bucketStr = grailsApplication.config.getProperty('aws.s3.bucket', String)
         if (!bucketStr) {
             throw new IllegalStateException("AWS S3 bucket is not configured. Please set 'aws.s3.bucket' in the application configuration.")
@@ -25,7 +27,7 @@ class S3Service {
         bucketStr
     }
 
-    private Region getRegion() {
+    public Region getRegion() {
         String regionStr = grailsApplication.config.getProperty('aws.s3.region', String)
         if (!regionStr) {
             throw new IllegalStateException("AWS S3 region is not configured. Please set 'aws.s3.region' in the application configuration.")
@@ -98,4 +100,116 @@ class S3Service {
 //        presigner.close()
 //        return presigned.url()
 //    }
+
+/**
+ * List top-level objects in the configured S3 bucket.
+ *
+ * @param maxKeys Maximum number of keys to return (default 1000)
+ * @return Map containing list of top-level objects and metadata
+ */
+    Map listBucketTopLevel(int maxKeys = 1000) {
+        try {
+            log.debug("Listing top-level objects in S3 bucket: ${getBucket()}")
+
+            def request = ListObjectsV2Request.builder()
+                    .bucket(getBucket())
+                    .maxKeys(maxKeys)
+                    .delimiter("/")  // Use "/" as delimiter to get only top-level items
+                    .build()
+
+            def response = awsS3Client.listObjectsV2(request)
+
+            def topLevelObjects = response.contents().collect { s3Object ->
+                [
+                        key: s3Object.key(),
+                        size: s3Object.size(),
+                        lastModified: s3Object.lastModified(),
+                        storageClass: s3Object.storageClass()
+                ]
+            }
+
+            def topLevelPrefixes = response.commonPrefixes().collect { prefix ->
+                [
+                        prefix: prefix.prefix(),
+                        isDirectory: true
+                ]
+            }
+
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    objectsFound: response.keyCount(),
+                    isTruncated: response.isTruncated(),
+                    continuationToken: response.nextContinuationToken(),
+                    topLevelObjects: topLevelObjects,
+                    topLevelPrefixes: topLevelPrefixes,
+                    totalItems: topLevelObjects.size() + topLevelPrefixes.size(),
+                    status: 'SUCCESS'
+            ]
+
+        } catch (Exception e) {
+            log.error("Error listing bucket top level", e)
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    status: 'ERROR',
+                    message: e.message,
+                    errorClass: e.class.simpleName
+            ]
+        }
+    }
+
+/**
+ * Alternative: List all objects (including nested) in the configured bucket.
+ * Use for deeper inspection of bucket structure.
+ *
+ * @param prefix Optional prefix to search within (e.g., "projectId/taskId/")
+ * @param maxKeys Maximum number of keys to return (default 1000)
+ * @return Map containing all objects matching the prefix
+ */
+    Map listBucketObjects(String prefix = "", int maxKeys = 1000) {
+        try {
+            log.debug("Listing all objects in S3 bucket: ${getBucket()} with prefix: ${prefix}")
+
+            def request = ListObjectsV2Request.builder()
+                    .bucket(getBucket())
+                    .prefix(prefix)
+                    .maxKeys(maxKeys)
+                    .build()
+
+            def response = awsS3Client.listObjectsV2(request)
+
+            def objects = response.contents().collect { s3Object ->
+                [
+                        key: s3Object.key(),
+                        size: s3Object.size(),
+                        lastModified: s3Object.lastModified(),
+                        storageClass: s3Object.storageClass()
+                ]
+            }
+
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    prefix: prefix,
+                    objectsFound: response.keyCount(),
+                    isTruncated: response.isTruncated(),
+                    continuationToken: response.nextContinuationToken(),
+                    objects: objects,
+                    status: 'SUCCESS'
+            ]
+
+        } catch (Exception e) {
+            log.error("Error listing bucket objects", e)
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    prefix: prefix,
+                    status: 'ERROR',
+                    message: e.message,
+                    errorClass: e.class.simpleName
+            ]
+        }
+    }
+
 }

@@ -51,7 +51,7 @@ class TaskService {
     Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
-
+    public static final Map<String, Integer> THUMB_SIZES = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
 
     int countInactiveProjects() {
         return Project.countByInactive(true)
@@ -926,13 +926,13 @@ ORDER BY record_idx, name;
             fileMap.localUrlPrefix = urlPrefix + "${fileKeyStr}/"
             fileMap.contentType = conn.contentType
 
-            // S3 Image upload
-            def s3FileKey = "${fileKeyStr}/${filename}"
-            log.debug("Uploading image to S3 with key: ${s3FileKey}")
-            def s3ServiceEnabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
-            if (s3ServiceEnabled) {
-                s3Service.upload("${s3FileKey}", new ByteArrayInputStream(imageBytes), conn.contentType as String)
-            }
+//            // S3 Image upload
+//            def s3FileKey = "${fileKeyStr}/${filename}"
+//            log.debug("Uploading image to S3 with key: ${s3FileKey}")
+//            def s3ServiceEnabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
+//            if (s3ServiceEnabled) {
+//                s3Service.upload("${s3FileKey}", new ByteArrayInputStream(imageBytes), conn.contentType as String)
+//            }
 
             return fileMap
             //file.close()
@@ -951,8 +951,8 @@ ORDER BY record_idx, name;
     def createImageThumbs = { FileMap fileMap ->
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
-        def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
-        sizes.each{
+        //def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
+        THUMB_SIZES.each{
             fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
             BufferedImage scaledImage = srcImage
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {

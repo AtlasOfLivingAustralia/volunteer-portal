@@ -29,6 +29,7 @@ class AdminController {
     def fullTextIndexService
     def eventSourceService
     def institutionService
+    def s3Service
 
     def index() {
         if (!checkAdminAccess(true)) {
@@ -781,5 +782,70 @@ class AdminController {
         userService.updateAllUsers()
         redirect(controller: 'user', action: 'list')
     }
+
+    /**
+     * Test S3 configuration and connectivity
+     * Returns JSON with S3 configuration status and connection test results
+     */
+    def testS3() {
+        if (!checkAdminAccess(false)) {
+            render(view: '/notPermitted')
+            return
+        }
+        try {
+            def s3Enabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
+            def region = grailsApplication.config.getProperty('aws.s3.region', String, 'not-configured')
+            def bucket = grailsApplication.config.getProperty('aws.s3.bucket', String, 'not-configured')
+            def authMode = grailsApplication.config.getProperty('aws.s3.auth-mode', String, 'default')
+            def accessKeyConfigured = grailsApplication.config.getProperty('aws.s3.access-key', String, '') ? true : false
+            def secretKeyConfigured = grailsApplication.config.getProperty('aws.s3.access-secret', String, '') ? true : false
+
+            def testResult = [
+                    s3Enabled: s3Enabled,
+                    region: region,
+                    bucket: bucket,
+                    authMode: authMode,
+                    accessKeyConfigured: accessKeyConfigured,
+                    secretKeyConfigured: secretKeyConfigured,
+                    status: 'UNCHECKED'
+            ]
+
+            if (!s3Enabled) {
+                testResult.status = 'DISABLED'
+                testResult.message = 'S3 is disabled. Set aws.s3.enabled=true to enable.'
+                return render(testResult as JSON)
+            }
+
+            if (authMode == 'secret' && (!accessKeyConfigured || !secretKeyConfigured)) {
+                testResult.status = 'CONFIG_ERROR'
+                testResult.message = 'Auth mode is "secret" but credentials are not configured'
+                return render(testResult as JSON)
+            }
+
+            // Try to verify S3 connectivity by attempting to list objects (limited to 1)
+            try {
+                s3Service.getBucket()
+                testResult.bucketInfo = s3Service.listBucketTopLevel(10)
+                testResult.status = 'READY'
+                testResult.message = 'S3 configuration is valid and ready to use'
+            } catch (Exception e) {
+                testResult.status = 'ERROR'
+                testResult.message = "S3 connectivity check failed: ${e.message}"
+                testResult.errorDetails = e.class.simpleName
+            }
+
+            render(testResult as JSON)
+
+        } catch (Exception e) {
+            log.error("Error testing S3 configuration", e)
+            render([
+                    status: 'ERROR',
+                    message: 'Unexpected error during S3 configuration test',
+                    error: e.message,
+                    errorClass: e.class.simpleName
+            ] as JSON)
+        }
+    }
+
 
 }

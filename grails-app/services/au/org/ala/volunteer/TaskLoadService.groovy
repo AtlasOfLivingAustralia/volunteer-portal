@@ -44,8 +44,6 @@ import static org.jooq.impl.DSL.count
 import static org.jooq.impl.DSL.currentTimestamp
 import static org.jooq.impl.DSL.defaultValue
 import static org.jooq.impl.DSL.min
-import static org.jooq.impl.DSL.now
-import static org.jooq.impl.DSL.query
 import static org.jooq.impl.DSL.row
 import static org.jooq.impl.DSL.select
 import static org.jooq.impl.DSL.val
@@ -65,6 +63,7 @@ class TaskLoadService implements EventPublisher {
     def grailsApplication
     def emailService
     def messageSource
+    def s3Service
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -269,6 +268,7 @@ class TaskLoadService implements EventPublisher {
         return updatedCount
     }
 
+    // deprecated
     def loadTaskFromCSV(Project project, String csv, boolean replaceDuplicates) {
 
         Closure<List<MediaLoadDescriptorRecord>> importClosure = default_csv_import
@@ -387,7 +387,7 @@ class TaskLoadService implements EventPublisher {
 
 //        backgroundProcessQueue(true)
         results.success = true
-        return results;
+        return results
     }
 
     def default_csv_import = { DSLContext ctx, TaskDescriptorRecord taskDesc, String[] tokens, int linenumber ->
@@ -840,28 +840,30 @@ class TaskLoadService implements EventPublisher {
         log.debug("taskLoadTransaction: Load Step Generate Tasks in {}", sw.stop())
 
         Map<Long, Long> taskDescriptorIdToTaskIdMap = continueAndSkipStatuses(jobsStatuses) { statuses ->
-                statuses.<Long, Long, LoadStatus> collectEntries { [(it.taskDescriptorRecord.id): it.taskRecord.id] }
+            statuses.<Long, Long, LoadStatus> collectEntries { [(it.taskDescriptorRecord.id): it.taskRecord.id] }
         }
 
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepImportImage.curry(create))
         log.debug("taskLoadTransaction: Load Step Import Image in {}", sw.stop())
 
-        sw.reset().start()
-        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
-        log.debug("taskLoadTransaction: Load Step Update Multimedia in {}", sw.stop())
+//        sw.reset().start()
+//        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
+//        log.debug("taskLoadTransaction: Load Step Update Multimedia in {}", sw.stop())
 
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateFields.curry(create))
         log.debug("taskLoadTransaction: Load Step Generate Fields in {}", sw.stop())
 
-        sw.reset().start()
-        continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
-        log.debug("taskLoadTransaction: Load Step Generate Extra Media in {}", sw.stop())
+        // This is deprecated
+        //sw.reset().start()
+        //continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
+        //log.debug("taskLoadTransaction: Load Step Generate Extra Media in {}", sw.stop())
 
-        sw.reset().start()
-        continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraMedia.curry(create))
-        log.debug("taskLoadTransaction: Load Step Insert Extra Media in {}", sw.stop())
+        // Deprecated
+        //sw.reset().start()
+        //continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraMedia.curry(create))
+        //log.debug("taskLoadTransaction: Load Step Insert Extra Media in {}", sw.stop())
 
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepShadowFiles.curry(create))
@@ -874,6 +876,15 @@ class TaskLoadService implements EventPublisher {
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraFields.curry(create))
         log.debug("taskLoadTransaction: Load Step Insert Extra Fields in {}", sw.stop())
+
+        sw.reset().start()
+        continueAndSkipStatuses(jobsStatuses, taskLoadStepUploadToS3.curry(create))
+        log.debug("taskLoadTransaction: Load Step Upload to S3 if Enabled in {}", sw.stop())
+
+        sw.reset().start()
+        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
+        log.debug("taskLoadTransaction: Load Step Update Multimedia in {}", sw.stop())
+
         // DONE
 
         // Any failed tasks we roll back any created database records here
@@ -1002,6 +1013,9 @@ class TaskLoadService implements EventPublisher {
         // First real failure point, until now an SQL exception will rollback the transaction
         statuses.each { status ->
             try {
+                // Copies image to store long with a thumbnail and updates the multimedia record with the file path and
+                // mime type. This is done in a loop after the batch insert of multimedia records so that if any single
+                // image fails to copy, the whole transaction can be rolled back, avoiding orphan multimedia records with no file.
                 status.mediaLoadStatus.filePath = completeMultimediaRecord(status.mediaLoadStatus.multimediaRecord, status.projectId)
             } catch (e) {
                 log.error("Exception while completing multimedia record {}", status.taskDescriptorRecord, e)
@@ -1035,6 +1049,8 @@ class TaskLoadService implements EventPublisher {
         }
     }
 
+    // Deprecated
+    /*
     private Closure taskLoadStepGenerateExtraMedia = { DSLContext create, Map<Long, Long> taskDescriptorIdToTaskIdMap, List<LoadStatus> statuses ->
         def mediaDescriptors = create.fetch(MEDIA_LOAD_DESCRIPTOR, MEDIA_LOAD_DESCRIPTOR.TASK_DESCRIPTOR_ID.in(statuses*.taskDescriptorRecord*.id))
 
@@ -1077,8 +1093,10 @@ class TaskLoadService implements EventPublisher {
                 }
             }
         }
-    }
+    }*/
 
+    // Deprecated
+    /*
     private Closure taskLoadStepInsertExtraMedia = { DSLContext create, List<LoadStatus> statuses ->
         // Third failure point, Media After Load callback
         create.batchUpdate(statuses*.mediaRecords*.multimediaRecord.collectMany { it })
@@ -1098,7 +1116,7 @@ class TaskLoadService implements EventPublisher {
                         stacktrace: ExceptionUtils.getStackTraceAsString(e)))
             }
         }
-    }
+    }*/
 
     private Closure taskLoadStepShadowFiles = { DSLContext create, List<LoadStatus> statuses ->
         def shadowDescriptors = create.fetch(SHADOW_FILE_DESCRIPTOR, SHADOW_FILE_DESCRIPTOR.TASK_DESCRIPTOR_ID.in(statuses*.taskDescriptorRecord*.id)).groupBy { it.taskDescriptorId }
@@ -1191,6 +1209,98 @@ class TaskLoadService implements EventPublisher {
         }
     }
 
+    private Closure taskLoadStepUploadToS3 = { DSLContext create, List<LoadStatus> statuses ->
+        statuses.each {status ->
+            def s3Enabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
+            log.debug("S3 upload step for task {}, S3 enabled: {}", status.taskId, s3Enabled)
+
+            if (s3Enabled && status.mediaLoadStatus?.filePath?.localPath) {
+                try {
+                    def diskFile = new File(status.mediaLoadStatus.filePath.localPath)
+                    def diskDir = diskFile.parentFile
+
+                    if (!diskFile.exists()) {
+                        throw new IOException("Disk file not found for upload to S3: ${diskFile.absolutePath}")
+                    }
+
+                    // Prepare S3 upload parameters
+                    def fileKeyStr = "${status.projectId}/${status.taskId}/${status.mediaLoadStatus.multimediaRecord.id}"
+                    def s3FileKey = "${fileKeyStr}/${status.mediaLoadStatus.filePath.raw}"
+                    def contentType = status.mediaLoadStatus.filePath.contentType ?: "image/jpeg"
+
+                    log.debug("Uploading multimedia file to S3: key=${s3FileKey}, contentType=${contentType}, localPath=${diskFile.absolutePath}")
+
+                    // Upload the file to S3
+                    s3Service.upload(s3FileKey, new FileInputStream(diskFile), contentType)
+
+                    // Upload thumbnails if they exist
+                    TaskService.THUMB_SIZES.each { size ->
+                        def thumbnailFilename = status.mediaLoadStatus.filePath[size.key] as String
+                        if (thumbnailFilename) {
+                            def thumbnailFile = new File(diskDir, thumbnailFilename)
+                            if (thumbnailFile.exists()) {
+                                def thumbnailS3Key = "${fileKeyStr}/${thumbnailFilename}"
+                                log.debug("Uploading thumbnail to S3: key=${thumbnailS3Key}, diskPath=${thumbnailFile.absolutePath}")
+                                s3Service.upload(thumbnailS3Key, new FileInputStream(thumbnailFile), contentType)
+                            } else {
+                                log.warn("Thumbnail file not found for S3 upload: ${thumbnailFile.absolutePath}")
+                            }
+                        }
+                    }
+
+                    // Update the URL path to point to S3
+                    status.mediaLoadStatus.filePath.localUrlPrefix = S3Service.S3_PREFIX + "${fileKeyStr}/"
+
+                    // Update multimedia records with new S3 file path and content type
+                    status.mediaLoadStatus.multimediaRecord.filePathToThumbnail = status.mediaLoadStatus.filePath.localUrlPrefix + status.mediaLoadStatus.filePath.thumb
+                    status.mediaLoadStatus.multimediaRecord.filePath = status.mediaLoadStatus.filePath.localUrlPrefix + status.mediaLoadStatus.filePath.raw
+
+                    // Delete the local disk files after successful upload to S3
+                    def filesDeleted = 0
+                    if (diskFile.delete()) {
+                        filesDeleted++
+                        log.debug("Deleted original image from disk: ${diskFile.absolutePath}")
+                    }
+
+                    TaskService.THUMB_SIZES.each { size ->
+                        def thumbnailFilename = status.mediaLoadStatus.filePath[size.key] as String
+                        if (thumbnailFilename) {
+                            def thumbnailFile = new File(diskDir, thumbnailFilename)
+                            if (thumbnailFile.exists() && thumbnailFile.delete()) {
+                                filesDeleted++
+                                log.debug("Deleted thumbnail from disk: ${thumbnailFile.absolutePath}")
+                            }
+                        }
+                    }
+
+                    // Delete multimedia directory if empty
+                    def projectDir = new File("${grailsApplication.config.getProperty('images.home', String)}/${status.projectId}/")
+                    def taskDir = new File(projectDir, "${status.taskId}/")
+                    if (taskDir.exists() && taskDir.isDirectory() && taskDir.list().length == 0) {
+                        if (taskDir.delete()) {
+                            log.debug("Deleted empty task directory from disk: ${taskDir.absolutePath}")
+                        } else {
+                            log.warn("Failed to delete empty task directory from disk: ${taskDir.absolutePath}")
+                        }
+                    }
+
+                    log.debug("Successfully uploaded ${filesDeleted} file(s) to S3 and cleaned up disk")
+
+                } catch (Exception e) {
+                    log.error("Exception while uploading multimedia to S3 for task {}, MM: {}", status.taskId, status.mediaLoadStatus.multimediaRecord.id, e)
+                    status.success = false
+                    status.message = e.message
+                    def failureMessage = "Upload to S3: ${e.message}"
+                    if (!status.failures.any { it.message == failureMessage }) {
+                        status.failures.add(new LoadStatusFailure(
+                                message: failureMessage,
+                                stacktrace: ExceptionUtils.getStackTraceAsString(e)))
+                    }
+                }
+            }
+        }
+    }
+
     private static List<FieldRecord> insertFields(DSLContext create, List<List<FieldRecord>> fieldRecords) {
         def flattenedRecords = fieldRecords.collectMany { it }
         if (flattenedRecords) {
@@ -1266,6 +1376,13 @@ class TaskLoadService implements EventPublisher {
         }
     }
 
+    /**
+     * Complete the multimedia record by copying the file to the store, creating thumbnails if required and updating the multimedia record with the file path and mime type.
+     *
+     * @param multimedia the multimedia record to complete
+     * @param projectId the project id for the multimedia record, used for determining where to copy the file and whether to create thumbnails
+     * @return a FileMap containing details of the copied file, including content type for updating the multimedia record and local path for cleanup if required
+     */
     private TaskService.FileMap completeMultimediaRecord(MultimediaRecord multimedia, long projectId) {
         Project project = Project.get(projectId)
 
