@@ -597,7 +597,7 @@ class TaskLoadService implements EventPublisher {
 
     static class MultimediaLoadStatus {
         MultimediaRecord multimediaRecord
-        TaskService.FileMap filePath
+        TaskService.FileMap fileMap
     }
 
     static class MediaLoadStatus extends MultimediaLoadStatus {
@@ -1016,7 +1016,7 @@ class TaskLoadService implements EventPublisher {
                 // Copies image to store long with a thumbnail and updates the multimedia record with the file path and
                 // mime type. This is done in a loop after the batch insert of multimedia records so that if any single
                 // image fails to copy, the whole transaction can be rolled back, avoiding orphan multimedia records with no file.
-                status.mediaLoadStatus.filePath = completeMultimediaRecord(status.mediaLoadStatus.multimediaRecord, status.projectId)
+                status.mediaLoadStatus.fileMap = completeMultimediaRecord(status.mediaLoadStatus.multimediaRecord, status.projectId)
             } catch (e) {
                 log.error("Exception while completing multimedia record {}", status.taskDescriptorRecord, e)
                 status.success = false
@@ -1172,7 +1172,7 @@ class TaskLoadService implements EventPublisher {
             // exif field failures didn't cause rollback in previous version
             // TODO may need to update existing fields?
             if (extractExif) {
-                def filePath = status.mediaLoadStatus.filePath.localPath
+                def filePath = status.mediaLoadStatus.fileMap.localPath
                 try {
                     // Load EXIF data from the image if the Project is configured to do so.
                     Map exif = ImageUtils.getExifMetadata(new File(filePath))
@@ -1214,9 +1214,13 @@ class TaskLoadService implements EventPublisher {
             def s3Enabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
             log.debug("S3 upload step for task {}, S3 enabled: {}", status.taskId, s3Enabled)
 
-            if (s3Enabled && status.mediaLoadStatus?.filePath?.localPath) {
+            // Only upload if S3 is enabled and we have a local file path for an image type multimedia record. If the
+            // multimedia record doesn't have a local file path, it likely means the file copy to store failed in the
+            // previous step, which should have caused the transaction to roll back, so we shouldn't have any records
+            // in this state unless there is some unexpected edge case.
+            if (s3Enabled && 'image' == status.mediaLoadStatus?.fileMap?.type && status.mediaLoadStatus?.fileMap?.localPath) {
                 try {
-                    def diskFile = new File(status.mediaLoadStatus.filePath.localPath)
+                    def diskFile = new File(status.mediaLoadStatus.fileMap.localPath)
                     def diskDir = diskFile.parentFile
 
                     if (!diskFile.exists()) {
@@ -1225,8 +1229,8 @@ class TaskLoadService implements EventPublisher {
 
                     // Prepare S3 upload parameters
                     def fileKeyStr = "${status.projectId}/${status.taskId}/${status.mediaLoadStatus.multimediaRecord.id}"
-                    def s3FileKey = "${fileKeyStr}/${status.mediaLoadStatus.filePath.raw}"
-                    def contentType = status.mediaLoadStatus.filePath.contentType ?: "image/jpeg"
+                    def s3FileKey = "${fileKeyStr}/${status.mediaLoadStatus.fileMap.raw}"
+                    def contentType = status.mediaLoadStatus.fileMap.contentType ?: "image/jpeg"
 
                     log.debug("Uploading multimedia file to S3: key=${s3FileKey}, contentType=${contentType}, localPath=${diskFile.absolutePath}")
 
@@ -1235,7 +1239,7 @@ class TaskLoadService implements EventPublisher {
 
                     // Upload thumbnails if they exist
                     TaskService.THUMB_SIZES.each { size ->
-                        def thumbnailFilename = status.mediaLoadStatus.filePath[size.key] as String
+                        def thumbnailFilename = status.mediaLoadStatus.fileMap[size.key] as String
                         if (thumbnailFilename) {
                             def thumbnailFile = new File(diskDir, thumbnailFilename)
                             if (thumbnailFile.exists()) {
@@ -1249,11 +1253,11 @@ class TaskLoadService implements EventPublisher {
                     }
 
                     // Update the URL path to point to S3
-                    status.mediaLoadStatus.filePath.localUrlPrefix = S3Service.S3_PREFIX + "${fileKeyStr}/"
+                    status.mediaLoadStatus.fileMap.localUrlPrefix = S3Service.S3_PREFIX + "${fileKeyStr}/"
 
                     // Update multimedia records with new S3 file path and content type
-                    status.mediaLoadStatus.multimediaRecord.filePathToThumbnail = status.mediaLoadStatus.filePath.localUrlPrefix + status.mediaLoadStatus.filePath.thumb
-                    status.mediaLoadStatus.multimediaRecord.filePath = status.mediaLoadStatus.filePath.localUrlPrefix + status.mediaLoadStatus.filePath.raw
+                    status.mediaLoadStatus.multimediaRecord.filePathToThumbnail = status.mediaLoadStatus.fileMap.localUrlPrefix + status.mediaLoadStatus.fileMap.thumb
+                    status.mediaLoadStatus.multimediaRecord.filePath = status.mediaLoadStatus.fileMap.localUrlPrefix + status.mediaLoadStatus.fileMap.raw
 
                     // Delete the local disk files after successful upload to S3
                     def filesDeleted = 0
@@ -1263,7 +1267,7 @@ class TaskLoadService implements EventPublisher {
                     }
 
                     TaskService.THUMB_SIZES.each { size ->
-                        def thumbnailFilename = status.mediaLoadStatus.filePath[size.key] as String
+                        def thumbnailFilename = status.mediaLoadStatus.fileMap[size.key] as String
                         if (thumbnailFilename) {
                             def thumbnailFile = new File(diskDir, thumbnailFilename)
                             if (thumbnailFile.exists() && thumbnailFile.delete()) {
@@ -1386,18 +1390,19 @@ class TaskLoadService implements EventPublisher {
     private TaskService.FileMap completeMultimediaRecord(MultimediaRecord multimedia, long projectId) {
         Project project = Project.get(projectId)
 
-        def filePath = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
-        if (!filePath) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, Project: ${projectId}, Task: ${multimedia.taskId}, MM: ${multimedia.id}")
+        def fileMap = taskService.copyImageToStore(multimedia.filePath, projectId, multimedia.taskId, multimedia.id)
+        if (!fileMap) throw new IOException("Unable to complete copyImageToStore for ${multimedia.filePath}, Project: ${projectId}, Task: ${multimedia.taskId}, MM: ${multimedia.id}")
 
         if (project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
+            fileMap.type = "audio"
             multimedia.filePathToThumbnail = null
         } else {
-            filePath = taskService.createImageThumbs(filePath) // creates thumbnail versions of images
-            multimedia.filePathToThumbnail = filePath.localUrlPrefix  + filePath.thumb  // Ditto for the thumbnail
+            fileMap = taskService.createImageThumbs(fileMap) // creates thumbnail versions of images
+            multimedia.filePathToThumbnail = fileMap.localUrlPrefix  + fileMap.thumb  // Ditto for the thumbnail
         }
-        multimedia.filePath = filePath.localUrlPrefix + filePath.raw   // This contains the url to the image without the server component
-        multimedia.mimeType = filePath.contentType
-        return filePath
+        multimedia.filePath = fileMap.localUrlPrefix + fileMap.raw   // This contains the url to the image without the server component
+        multimedia.mimeType = fileMap.contentType
+        return fileMap
     }
 
 

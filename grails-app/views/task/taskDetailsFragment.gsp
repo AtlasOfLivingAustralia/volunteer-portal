@@ -3,8 +3,7 @@
 <div style="overflow: auto; height: 250px">
     <div class="col-sm-12 col-md-6 col-md-push-6">
         <g:each in="${taskInstance.multimedia}" var="m">
-            <g:set var="imageUrl" value="${grailsApplication.config.getProperty('server.url', String)}${m.filePath}"/>
-            <img src="${imageUrl.replaceFirst(/\.([a-zA-Z]*)$/, '_small.$1')}" width="200" style="padding-right: 10px"/>
+            <cl:multimediaForSize multimedia="${m}" size="small" width="200" style="padding-right: 10px"/>
         </g:each>
         <table>
             <g:if test="${catalogNumber}">

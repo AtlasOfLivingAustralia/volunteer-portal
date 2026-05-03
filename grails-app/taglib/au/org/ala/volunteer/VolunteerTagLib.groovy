@@ -9,6 +9,7 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.springframework.beans.factory.annotation.Value
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 class VolunteerTagLib {
 
@@ -28,6 +29,7 @@ class VolunteerTagLib {
     def tutorialService
     def newsItemService
     def imageService
+    def s3Service
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -657,14 +659,62 @@ class VolunteerTagLib {
         }
     }
 
+    def multimediaForSize = {attrs, body ->
+        def mm = attrs.multimedia as Multimedia
+        def size = attrs.size as String
+        def width = attrs.width
+        def style = attrs.style
+        if (!TaskService.THUMB_SIZES.containsKey(size)) {
+            log.warn("Unknown thumbnail size requested: ${size}")
+            return
+        }
+
+        def url
+        if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+            url = g.createLink(
+                    mapping: 'taskImage',
+                    params: [
+                            multimediaId: mm.id.toString(),
+                            externalIdentifier: mm.task.externalIdentifier,
+                            size: size
+                    ]
+            )
+        } else {
+            url = multimediaService.getImageUrl(mm, size)
+        }
+
+        out << "<img src=\"${url}\""
+        if (width) out << " width=\"${width}\""
+        if (style) out << " style=\"${style}\""
+        out << " />"
+    }
+
     def multimediaThumbnail = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        def url, fullUrl = ''
-//        def mm = attrs.task.multimedia?.first()
-        def mm = attrs.multimedia
+        def url = ''
+        def fullUrl = ''
+        def mm = attrs.multimedia as Multimedia
         if (mm) {
-            url = multimediaService.getImageThumbnailUrl(mm)
-            fullUrl = multimediaService.getImageUrl(mm)
+            if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                url = g.createLink(
+                        mapping: 'taskImage',
+                        params: [
+                                multimediaId: mm.id.toString(),
+                                externalIdentifier: mm.task.externalIdentifier,
+                                size: 'thumb'
+                        ]
+                )
+                fullUrl = g.createLink(
+                        mapping: 'taskImage',
+                        params: [
+                                multimediaId: mm.id.toString(),
+                                externalIdentifier: mm.task.externalIdentifier
+                        ]
+                )
+            } else {
+                url = multimediaService.getImageThumbnailUrl(mm)
+                fullUrl = multimediaService.getImageUrl(mm)
+            }
         }
 
         if (!url) {
@@ -679,7 +729,7 @@ class VolunteerTagLib {
             out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
             out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
         }
-        log.debug('multimediaThumbnail {}', sw)
+        log.debug("multimediaThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}")
     }
 
     def taskThumbnail = { attrs, body ->
@@ -698,8 +748,26 @@ class VolunteerTagLib {
             def url = "", fullUrl = ''
             final Multimedia mm = task.multimedia?.first()
             if (mm != null) {
-                url = multimediaService.getImageThumbnailUrl(mm)
-                fullUrl = multimediaService.getImageUrl(mm)
+                if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                    url = g.createLink(
+                            mapping: 'taskImage',
+                            params: [
+                                    multimediaId: mm.id.toString(),
+                                    externalIdentifier: mm.task.externalIdentifier,
+                                    size: 'thumb'
+                            ]
+                    )
+                    fullUrl = g.createLink(
+                            mapping: 'taskImage',
+                            params: [
+                                    multimediaId: mm.id.toString(),
+                                    externalIdentifier: mm.task.externalIdentifier
+                            ]
+                    )
+                } else {
+                    url = multimediaService.getImageThumbnailUrl(mm)
+                    fullUrl = multimediaService.getImageUrl(mm)
+                }
             }
 
             if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
@@ -723,7 +791,7 @@ class VolunteerTagLib {
             }
 
         }
-        log.debug('taskThumbnail {}', sw)
+        log.debug("taskThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}")
     }
 
     /**

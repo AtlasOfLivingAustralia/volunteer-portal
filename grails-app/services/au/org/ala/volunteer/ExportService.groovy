@@ -402,7 +402,7 @@ class ExportService {
             def recordIdx = 0
             def lastTaskId = null
             while (mms.next()) {
-                def multimedia = mms.get()[0]
+                def multimedia = mms.get()[0] as Multimedia
                 def url = multimediaService.getImageUrl(multimedia)
                 def taskId = multimedia.task.id
                 String[] values = [multimedia.task.id.toString(), multimedia.task.externalIdentifier, recordIdx.toString(), url, multimedia.mimeType, multimedia.licence]
@@ -669,7 +669,7 @@ class ExportService {
             def multimedia = task.multimedia.first()
             jsonMapValues["dwc:Occurrence"].occurrenceId = "${task.id}"
             jsonMapValues["dwc:Occurrence"].associatedMedia.image = multimediaService.getImageUrl(multimedia)
-            jsonMapValues["dwc:Occurrence"].associatedMedia.thumb = multimediaService.getImageThumbnailUrl(multimedia)
+            jsonMapValues["dwc:Occurrence"].associatedMedia.thumb = multimediaService.getImageThumbnailUrl(multimedia, true)
 
             // Remove empty fields
             jsonMapValues.each { jKey, component ->

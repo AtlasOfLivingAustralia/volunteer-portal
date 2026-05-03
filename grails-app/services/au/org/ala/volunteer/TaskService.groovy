@@ -870,7 +870,7 @@ ORDER BY record_idx, name;
     }
 
     static class FileMap {
-
+        String type = "image"
         String dir
         String raw
         String localPath
@@ -925,14 +925,6 @@ ORDER BY record_idx, name;
             fileMap.localPath = processedFile.getAbsolutePath()
             fileMap.localUrlPrefix = urlPrefix + "${fileKeyStr}/"
             fileMap.contentType = conn.contentType
-
-//            // S3 Image upload
-//            def s3FileKey = "${fileKeyStr}/${filename}"
-//            log.debug("Uploading image to S3 with key: ${s3FileKey}")
-//            def s3ServiceEnabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
-//            if (s3ServiceEnabled) {
-//                s3Service.upload("${s3FileKey}", new ByteArrayInputStream(imageBytes), conn.contentType as String)
-//            }
 
             return fileMap
             //file.close()
@@ -1020,7 +1012,6 @@ ORDER BY record_idx, name;
         return results
     }
 
-
     /**
      * Find all task ids in a project with the given field name equal to one of a set of field values.  This
      * is currently only used for sequence numbers and will require updating to support record_idx, etc.
@@ -1075,12 +1066,17 @@ ORDER BY record_idx, name;
         return Task.findById(taskId)
     }
 
+    /**
+     * Returns a map of multimedia ID to image metadata for all images associated with a task. If an image cannot be read, it is skipped and an error is logged.
+     * @param taskInstance the Task to get image metadata for
+     * @return a map of multimedia ID to image metadata for all images associated with the task
+     */
     Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
         taskInstance.multimedia.each { multimedia ->
             try {
-                imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+                imageMetaData[multimedia.id] = getImageMetaData(multimedia, 0)
             } catch(Exception e) {
                 log.error("Unable to get image metadata for resource: ${multimedia?.filePath}, skipping.")
             }
@@ -1089,6 +1085,12 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
+    /**
+     * Returns audio meta data for a task audio file. Currently just returns the URL for the audio file, but could be extended to return other metadata if required.
+     * Cached.
+     * @param multimedia The audio multimedia object
+     * @return the audio metadata (currently just the URL)
+     */
     @Cacheable(value='getAudioMetaData', key={ "${(multimedia ? multimedia.id : 0)}" })
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
@@ -1110,35 +1112,66 @@ ORDER BY record_idx, name;
     @Cacheable(value = 'getImageMetaData', key = { "${(multimedia ? multimedia.id : 0)}-${rotate}" })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate) {
         log.debug("Image metadata, rotate: ${rotate}")
+
         def path = multimedia?.filePath
         if (path) {
-            def imageUrl = multimediaService.getImageUrl(multimedia)
+            // Check if S3 storage is enabled and file is in S3
+            if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
+                // S3 storage path, send to imageDownload endpoint to handle S3 access and rotation
+                def imageUrl = grailsLinkGenerator.link(controller: 'task', action: 'imageDownload', id: multimedia.id, params: [rotate: rotate]) as String
 
-            if ([90,180,270].contains(rotate)) {
-                imageUrl = grailsLinkGenerator.link(controller: 'task', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
+                def s3Key = path.substring(S3Service.S3_PREFIX.length()) as String
+                return getImageMetaDataFromS3(s3Key, imageUrl, rotate)
+            } else {
+                // File system storage path
+                def imageUrl = multimediaService.getImageUrl(multimedia)
+
+                if ([90, 180, 270].contains(rotate)) {
+                    imageUrl = grailsLinkGenerator.link(controller: 'task', action: 'imageDownload', id: multimedia.id, params: [rotate: rotate])
+                }
+
+                String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+                String imagesHome = grailsApplication.config.getProperty('images.home', String)
+                path = imagesHome + '/' + path.substring(urlPrefix?.length())
+
+                return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
             }
-
-            String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
-            String imagesHome = grailsApplication.config.getProperty('images.home', String)
-            path = imagesHome + '/' + path.substring(urlPrefix?.length())
-            //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-
-            return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
 
         throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
+    /**
+     * Gets image metadata for an image file. The image is read from the file and the metadata is extracted from the image.
+     * If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * Cached.
+     * @param resource the Resource representing the image file
+     * @param imageUrl the URL of the image to be used in the metadata
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
     @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource ? (resource.URI ? resource.URI.toString() : (resource.filename ?: '')) : '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
-
         BufferedImage image
         try {
             image = ImageIO.read(resource.inputStream)
         } catch (Exception ex) {
             log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
+            throw new IOException("Could not read image file: $resource - could not get image metadata", ex)
         }
 
+        ImageMetaData imd = getImageMetaData(image, rotate)
+        imd.url = imageUrl
+        return imd
+    }
+
+    /**
+     * Gets image metadata for a BufferedImage. If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * @param image the BufferedImage to get metadata for
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
+    ImageMetaData getImageMetaData(BufferedImage image, int rotate) {
         if (image) {
             def width = image.width
             def height = image.height
@@ -1146,13 +1179,33 @@ ORDER BY record_idx, name;
                 width = image.height
                 height = image.width
             }
-            return new ImageMetaData(width: width, height: height, url: imageUrl)
+            return new ImageMetaData(width: width, height: height)
         } else {
-            log.error("Could not read image file: $resource - could not get image metadata")
-            throw new IOException("Could not read image file: $resource - could not get image metadata")
+            log.error("Could not read image file: ${image} - could not get image metadata")
+            throw new IOException("Could not read image file - could not get image metadata")
         }
     }
 
+    /**
+     * Gets image metadata for an image stored in S3. The image is read from S3 and the metadata is extracted from the image.
+     * @param s3Key the S3 key of the image
+     * @param imageUrl the URL of the image to be used in the metadata
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
+    ImageMetaData getImageMetaDataFromS3(String s3Key, String imageUrl, int rotate) {
+        BufferedImage image
+        try {
+            image = ImageIO.read(s3Service.getObject(s3Key))
+        } catch (Exception ex) {
+            log.error("Exception trying to read S3 object: ${s3Key}, ${ex.message}")  // don't print whole stack trace
+            throw new IOException("Could not read image file: ${s3Key} - could not get image metadata", ex)
+        }
+
+        ImageMetaData imd = getImageMetaData(image, rotate)
+        imd.url = imageUrl
+        return imd
+    }
 
     private Date findMostRecentDate(String dateField, Task task) {
         def c = Field.createCriteria()

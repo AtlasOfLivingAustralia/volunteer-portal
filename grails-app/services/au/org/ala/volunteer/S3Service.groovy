@@ -1,13 +1,10 @@
 package au.org.ala.volunteer
 
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
-
-import java.time.Duration
 
 /**
  * Service for interacting with AWS S3 for file storage.
@@ -19,7 +16,19 @@ class S3Service {
 
     public static final String S3_PREFIX = "s3/"
 
-    public String getBucket() {
+    /**
+     * Check if S3 integration is enabled based on application configuration.
+     * @return true if S3 is enabled, false otherwise
+     */
+    boolean isS3Enabled() {
+        return grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
+    }
+
+    /**
+     * Get the configured S3 bucket name from application configuration. Throws an exception if not configured.
+     * @return The S3 bucket name
+     */
+    String getBucket() {
         String bucketStr = grailsApplication.config.getProperty('aws.s3.bucket', String)
         if (!bucketStr) {
             throw new IllegalStateException("AWS S3 bucket is not configured. Please set 'aws.s3.bucket' in the application configuration.")
@@ -27,7 +36,11 @@ class S3Service {
         bucketStr
     }
 
-    public Region getRegion() {
+    /**
+     * Get the configured AWS region for S3 from application configuration. Throws an exception if not configured.
+     * @return The AWS Region object
+     */
+    Region getRegion() {
         String regionStr = grailsApplication.config.getProperty('aws.s3.region', String)
         if (!regionStr) {
             throw new IllegalStateException("AWS S3 region is not configured. Please set 'aws.s3.region' in the application configuration.")
@@ -71,42 +84,87 @@ class S3Service {
     }
 
     /**
-     * Generate a pre-signed URL for accessing an object in S3. The URL will be valid for the specified duration.
-     * This is typically used for providing temporary access to private S3 objects.
-     * Private images are not currently implemented but added for future reference.
+     * Delete all objects in the S3 bucket that match a given prefix. This is useful for deleting all files related to a
+     * specific project or task.
+     *
+     * @param prefix The prefix to filter objects by (e.g., "projectId/taskId/"). Must be provided.
+     */
+    void deleteForPrefix(String prefix) {
+        def objectsToDelete = listObjectsForPrefix(prefix)
+        if (objectsToDelete) {
+            def deleteObjectsRequest = DeleteObjectsRequest.builder()
+                    .bucket(getBucket())
+                    .delete(Delete.builder()
+                            .objects(objectsToDelete.collect { s3Object ->
+                                ObjectIdentifier.builder().key(s3Object.key).build()
+                            })
+                            .build())
+                    .build() as DeleteObjectsRequest
+            awsS3Client.deleteObjects(deleteObjectsRequest)
+        }
+    }
+
+    /**
+     * Get a public URL for an object in the S3 bucket. This assumes the object is accessible by the public (e.g.,
+     * via bucket policies or ACLs). If the object is private, this URL may not work unless appropriate permissions are set.
      *
      * @param key The S3 object key.
-     * @param expiry The duration for which the pre-signed URL is valid. Default is 15 minutes.
      * @return A URL that can be used to access the S3 object.
      */
-//    URL generatePresignedUrl(String key, Duration expiry = Duration.ofMinutes(15)) {
-//        def presigner = S3Presigner.builder()
-//                .region(region)
-//                .credentialsProvider(DefaultCredentialsProvider.create())
-//                .build()
-//
-//        def getRequest = GetObjectRequest.builder()
-//                .bucket(bucket)
-//                .key(key)
-//                .build() as GetObjectRequest
-//
-//        def presigned = presigner.presignGetObject(
-//                GetObjectPresignRequest.builder()
-//                        .signatureDuration(expiry)
-//                        .getObjectRequest(getRequest)
-//                        .build()
-//        )
-//
-//        presigner.close()
-//        return presigned.url()
-//    }
+    URL getUrl(String key) {
+        awsS3Client.utilities().getUrl(GetUrlRequest.builder()
+                .bucket(getBucket())
+                .key(key)
+                .build() as GetUrlRequest)
+    }
 
-/**
- * List top-level objects in the configured S3 bucket.
- *
- * @param maxKeys Maximum number of keys to return (default 1000)
- * @return Map containing list of top-level objects and metadata
- */
+    /**
+     * Get the Object from S3 Storage
+     * @param key The S3 object key.
+     * @return A ResponseInputStream containing the GetObjectResponse, which includes the object's data and metadata.
+     */
+    ResponseInputStream<GetObjectResponse> getObject(String key) {
+        awsS3Client.getObject(GetObjectRequest.builder()
+                .bucket(getBucket())
+                .key(key)
+                .build() as GetObjectRequest)
+    }
+
+    /**
+     * List objects in the S3 bucket that match a given prefix. This can be used to list objects within a "folder" structure.
+     *
+     * @param prefix The prefix to filter objects by (e.g., "projectId/taskId/"). Must be provided.
+     * @param maxKeys Maximum number of keys to return (default 1000)
+     * @return List of objects matching the prefix, each with key, size, last modified date, and storage class
+     */
+    List listObjectsForPrefix(String prefix, int maxKeys = 1000) {
+        if (!prefix) {
+            throw new IllegalArgumentException("Prefix must be provided to list objects for prefix.")
+        }
+        def request = ListObjectsV2Request.builder()
+                .bucket(getBucket())
+                .prefix(prefix)
+                .maxKeys(maxKeys)
+                .build() as ListObjectsV2Request
+
+        def response = awsS3Client.listObjectsV2(request)
+
+        return response.contents().collect { s3Object ->
+            [
+                key: s3Object.key(),
+                size: s3Object.size(),
+                lastModified: s3Object.lastModified(),
+                storageClass: s3Object.storageClass()
+            ]
+        }
+    }
+
+    /**
+     * List top-level objects in the configured S3 bucket.
+     *
+     * @param maxKeys Maximum number of keys to return (default 1000)
+     * @return Map containing list of top-level objects and metadata
+     */
     Map listBucketTopLevel(int maxKeys = 1000) {
         try {
             log.debug("Listing top-level objects in S3 bucket: ${getBucket()}")
@@ -159,14 +217,14 @@ class S3Service {
         }
     }
 
-/**
- * Alternative: List all objects (including nested) in the configured bucket.
- * Use for deeper inspection of bucket structure.
- *
- * @param prefix Optional prefix to search within (e.g., "projectId/taskId/")
- * @param maxKeys Maximum number of keys to return (default 1000)
- * @return Map containing all objects matching the prefix
- */
+    /**
+     * Alternative: List all objects (including nested) in the configured bucket.
+     * Use for deeper inspection of bucket structure.
+     *
+     * @param prefix Optional prefix to search within (e.g., "projectId/taskId/")
+     * @param maxKeys Maximum number of keys to return (default 1000)
+     * @return Map containing all objects matching the prefix
+     */
     Map listBucketObjects(String prefix = "", int maxKeys = 1000) {
         try {
             log.debug("Listing all objects in S3 bucket: ${getBucket()} with prefix: ${prefix}")

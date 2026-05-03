@@ -1,6 +1,6 @@
 package au.org.ala.volunteer
 
-
+import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -13,6 +13,7 @@ import javax.imageio.ImageIO
 import javax.servlet.ServletOutputStream
 import java.awt.image.BufferedImage
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.TimeUnit
 
 class TaskController {
 
@@ -32,6 +33,7 @@ class TaskController {
     def multimediaService
     def projectService
     def projectStagingService
+    def s3Service
     def institutionService
 
     def projectAdmin() {
@@ -353,6 +355,7 @@ class TaskController {
 
         final fields = Field.findAllByTaskAndSuperceded(task, false)
         final mm = task.multimedia.first()
+        // def featuredImageUrl = projectService.getFeaturedImage(task.project) + "?" + projectService.cacheBust(task.project)
 
         final result = [
                     filename: task.externalIdentifier,
@@ -934,27 +937,44 @@ class TaskController {
 
     /**
      * Moved from deprecated MultimediaController.
-     * @return
+     * This method handles downloading of the original image, as well as any alternate sized image (if size param is supplied).
      */
     def imageDownload() {
+        def sw = Stopwatch.createStarted()
         def mm = Multimedia.get(params.int("id"))
+        def size = params.size ?: '' // See TaskService.THUMB_SIZES for allowed values
         if (mm) {
             def path = mm?.filePath
-            String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
-            String imagesHome = grailsApplication.config.getProperty("images.home", String.class)
+            if (size && TaskService.THUMB_SIZES.containsKey(size)) {
+                path = path.replaceFirst(/\.([a-zA-Z]*)$/, '_' + size + '.$1')
+            }
 
-            // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))
+            BufferedImage image
+            // Check if S3 storage is enabled and file is in S3
+            if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
+                // Image is on S3 storage
+                def imageKey = path.substring(S3Service.S3_PREFIX.length())
+//                URL urlImagePath = s3Service.getUrl(imageKey)
+//                image = ImageIO.read(urlImagePath)
+                image = ImageIO.read(s3Service.getObject(imageKey))
+            } else {
+                // Image is on local disk storage
+                String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
+                String imagesHome = grailsApplication.config.getProperty("images.home", String.class)
 
-            BufferedImage image = ImageIO.read(new File(path))
+                // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+                path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), StandardCharsets.UTF_8.name())
+                image = ImageIO.read(new File(path))
+            }
+
             def rotate = params.int("rotate") ?: 0
             if (rotate) {
                 image = ImageUtils.rotateImage(image, rotate)
             }
 
             if (params.maxDimension) {
-                def size = params.int("maxDimension")
-                image = ImageUtils.scale(image, size, size)
+                def maxDimension = params.int("maxDimension")
+                image = ImageUtils.scale(image, maxDimension, maxDimension)
             } else if (params.maxWidth) {
                 def width = params.int("maxWidth")
                 image = ImageUtils.scaleWidth(image, width)
@@ -962,10 +982,11 @@ class TaskController {
 
             def outputBytes = ImageUtils.imageToBytes(image)
             response.setContentType(mm.mimeType ?: "image/jpeg")
-            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}.jpg")
+            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}")
             response.outputStream.write(outputBytes)
             response.flushBuffer()
         }
+        log.debug("Image download for multimedia id ${params.id} took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)} ms")
     }
 
     def manageProjectTaskUploads() {

@@ -558,7 +558,9 @@ class AjaxController {
             udsw.start()
             usersDetails = authService.getUserDetailsById(transcribers.toList(), true) ?: [users:[:]]
             udsw.stop()
-            mm = Multimedia.where { task.id in taskIds }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+            mm = Multimedia.where { task.id in taskIds }.collect { [id: it.taskId,
+                                                                    thumbUrl: multimediaService.getImageThumbnailUrl(it, true),
+                                                                    url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
         } else {
             allFields = [:]
             usersDetails = [users:[]]
