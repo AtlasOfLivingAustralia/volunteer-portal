@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
-    <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [cl.displayNameForUserId(id: userInstance.userId)])}"/></title>
+    <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [cl.displayNameForUserId(id: currentUser.userId)])}"/></title>
 
     <asset:stylesheet src="notebook-reset.css"/>
     <asset:stylesheet src="notebook-2.css"/>
