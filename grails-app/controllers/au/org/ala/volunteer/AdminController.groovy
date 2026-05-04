@@ -779,8 +779,9 @@ class AdminController {
             render(view: '/notPermitted')
             return
         }
-        userService.updateAllUsers()
-        redirect(controller: 'user', action: 'list')
+        int updatedUsers = userService.updateAllUsers()
+        flash.message = "Updated ${updatedUsers} users with latest Auth details"
+        redirect(controller: 'user', action: 'adminList')
     }
 
     /**
