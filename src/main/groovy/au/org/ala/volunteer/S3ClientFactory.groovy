@@ -20,13 +20,13 @@ class S3ClientFactory {
     @Value('${aws.s3.region}')
     String region
 
-    @Value('${aws.s3.auth-mode:}')
+    @Value('${aws.s3.auth-mode}')
     String authMode
 
-    @Value('${aws.s3.access-key:}')
+    @Value('${aws.s3.access-key}')
     String accessKey
 
-    @Value('${aws.s3.access-secret:}')
+    @Value('${aws.s3.access-secret}')
     String secretKey
 
     public static final String AUTH_MODE_DEFAULT = "default"
