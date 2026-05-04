@@ -17,7 +17,8 @@ class UpdateUsersJob {
     def execute() {
         log.debug("Update users job starting at ${new Date()}")
         try {
-            userService.updateAllUsers()
+            int updatedUsers = userService.updateAllUsers()
+            log.info("Update users job: Updated ${updatedUsers} users.")
         } catch (Exception e) {
             log.error("Update users job failed with exception", e)
         }
