@@ -10,6 +10,7 @@
         <div id="ct-container" >
 
             <g:set var="wsParams" value="${template.viewParams2}" />
+            <g:set var="viewParams" value="${template.viewParams}" />
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
                     <div id="ct-image-well" class="panel panel-default">

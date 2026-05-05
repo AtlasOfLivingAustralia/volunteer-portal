@@ -7,7 +7,6 @@
         <div class="thumbnail ct-thumbnail <g:if test="${!isAnswers}">ws-selector</g:if>"
              aria-selected="false"
              data-image-select-key="${st}"
-             data-validation-type="${viewParams.autoValidationType}"
              title="${g.message(code: 'audiotranscribe.widget.badge.title', args: [piItem.vernacularName])}">
     </g:if>
     <g:else>
