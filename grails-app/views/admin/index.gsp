@@ -128,7 +128,8 @@
                         <tr>
                             <td><a class="btn btn-admin btn-primary bs3"
                                    href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
-                            <td>Tools</td>
+                            <td>Tools to assist with the config/management of DigiVol. Includes Mapping, Bulk user update,
+                            Index Cache management, Index search query testing and AWS S3 configuration test.</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-admin btn-primary bs3"
