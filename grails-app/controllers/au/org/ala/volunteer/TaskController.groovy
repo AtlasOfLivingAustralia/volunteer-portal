@@ -943,6 +943,7 @@ class TaskController {
         def sw = Stopwatch.createStarted()
         def mm = Multimedia.get(params.int("id"))
         def size = params.size ?: '' // See TaskService.THUMB_SIZES for allowed values
+        def downloadFilename = mm?.task?.externalIdentifier
         if (mm) {
             def path = mm?.filePath
             if (size && TaskService.THUMB_SIZES.containsKey(size)) {
@@ -954,8 +955,6 @@ class TaskController {
             if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
                 // Image is on S3 storage
                 def imageKey = path.substring(S3Service.S3_PREFIX.length())
-//                URL urlImagePath = s3Service.getUrl(imageKey)
-//                image = ImageIO.read(urlImagePath)
                 image = ImageIO.read(s3Service.getObject(imageKey))
             } else {
                 // Image is on local disk storage
@@ -970,6 +969,8 @@ class TaskController {
             def rotate = params.int("rotate") ?: 0
             if (rotate) {
                 image = ImageUtils.rotateImage(image, rotate)
+                def rotateStr = "rotate_${rotate}"
+                downloadFilename = downloadFilename.replaceFirst(/\.([a-zA-Z]*)$/, '_' + rotateStr + '.$1')
             }
 
             if (params.maxDimension) {
@@ -982,7 +983,7 @@ class TaskController {
 
             def outputBytes = ImageUtils.imageToBytes(image)
             response.setContentType(mm.mimeType ?: "image/jpeg")
-            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}")
+            response.setHeader("Content-disposition", "inline;filename=${downloadFilename}")
             response.outputStream.write(outputBytes)
             response.flushBuffer()
         }
