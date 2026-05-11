@@ -13,6 +13,8 @@ class ProjectType implements Serializable {
 
     static hasMany = [projects: Project, landingPages: LandingPage]
 
+    public static final List<String> DISABLED_TYPES = [PROJECT_TYPE_AUDIO]
+
     static constraints = {
         name nullable: false
         label nullable: false

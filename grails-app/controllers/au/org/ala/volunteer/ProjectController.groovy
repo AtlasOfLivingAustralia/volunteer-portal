@@ -38,6 +38,7 @@ class ProjectController {
     def groovyPageRenderer
     def templateService
     def settingsService
+    def projectTypeService
     Closure<DSLContext> jooqContext
 
     /**
@@ -421,7 +422,7 @@ class ProjectController {
         }
 
         def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-        def projectTypes = ProjectType.listOrderByName()
+        def projectTypes = projectTypeService.getEnabledProjectTypes()
 
         [institutionList: institutionList, projectTypes: projectTypes]
     }
@@ -455,7 +456,7 @@ class ProjectController {
 
         if (project.errors.hasErrors()) {
             def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-            def projectTypes = ProjectType.listOrderByName()
+            def projectTypes = projectTypeService.getEnabledProjectTypes(project?.projectType)
             render(view: 'create', model: [projectInstance: project, params: params, institutionList: institutionList, projectTypes: projectTypes])
             return
         } else {
@@ -463,7 +464,7 @@ class ProjectController {
                 log.error("Error creating project, reloading create page.")
                 flash.message = "An error occurred creating the Project."
                 def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-                def projectTypes = ProjectType.listOrderByName()
+                def projectTypes = projectTypeService.getEnabledProjectTypes()
                 render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
                 return
             }
@@ -534,7 +535,7 @@ class ProjectController {
 
             return [projectInstance: project,
                     templates      : editLists?.templates,
-                    projectTypes   : ProjectType.listOrderByName(),
+                    projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                     institutionList: editLists?.insts,
                     labelColourMap : editLists?.catColourMap,
                     sortedLabels   : editLists?.sortedLabels]
@@ -715,7 +716,7 @@ class ProjectController {
                 def editLists = getGeneralProjectLists(project)
                 render(view: "editGeneralSettings", model: [projectInstance: project,
                                                             templates      : editLists?.templates,
-                                                            projectTypes   : ProjectType.listOrderByName(),
+                                                            projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                                                             institutionList: editLists?.insts,
                                                             labelColourMap : editLists?.catColourMap,
                                                             sortedLabels   : editLists?.sortedLabels])

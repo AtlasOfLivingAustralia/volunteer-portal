@@ -11,6 +11,7 @@ class LandingPageAdminController {
 
     def fileUploadService
     def settingsService
+    def projectTypeService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -21,7 +22,7 @@ class LandingPageAdminController {
         def landingPageInstance = chainModel?.landingPage ?: new LandingPage()
         landingPageInstance.label = new HashSet<Label>()
         landingPageInstance.numberOfContributors = 10
-        ['landingPageInstance': landingPageInstance, projectTypes: ProjectType.listOrderByName()]
+        ['landingPageInstance': landingPageInstance, projectTypes: projectTypeService.getEnabledProjectTypes()]
     }
 
     def edit (LandingPage landingPageInstance) {
@@ -33,7 +34,7 @@ class LandingPageAdminController {
                 landingPageInstance = LandingPage.findById(landingPageId)
             }
         }
-        ['landingPageInstance': landingPageInstance, projectTypes: ProjectType.listOrderByName()]
+        ['landingPageInstance': landingPageInstance, projectTypes: projectTypeService.getEnabledProjectTypes()]
     }
 
     def editImage(LandingPage landingPageInstance) {
