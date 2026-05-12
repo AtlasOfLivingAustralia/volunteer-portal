@@ -160,6 +160,71 @@ class S3Service {
     }
 
     /**
+     * Get information about the S3 bucket, such as bucket name, region, creation date, and number of objects. This can
+     * be used for debugging and monitoring purposes.
+     *
+     * @return Map containing bucket information
+     */
+    Map getBucketInfo(int maxKeys = 100) {
+        try {
+            int count = 0
+            String continuationToken = null
+            def projectCounts = [:]
+
+            do {
+                def request = ListObjectsV2Request.builder()
+                        .bucket(getBucket())
+                        .maxKeys(maxKeys)
+                        .continuationToken(continuationToken)
+                        .build() as ListObjectsV2Request
+
+                def listObjectsResponse = awsS3Client.listObjectsV2(request)
+                count += listObjectsResponse.keyCount()
+                continuationToken = listObjectsResponse.nextContinuationToken()
+
+                listObjectsResponse.contents().each { s3Object ->
+                    // log.debug("Object key: ${s3Object.key()}, size: ${s3Object.size()}, last modified: ${s3Object.lastModified()}")
+                    def keyParts = s3Object.key().split("/")
+                    if (keyParts.length >= 3) {
+                        def projectId = keyParts[0]
+                        def multimediaId = keyParts[2]
+                        if (!projectCounts[projectId]) {
+                            projectCounts[projectId] = [] as Set
+                        }
+                        projectCounts[projectId].add(multimediaId)
+                    }
+                }
+            } while (continuationToken != null)
+
+            int taskCount = projectCounts.values().sum { it.size() }
+            // Optionally, we could also return the count of multimedia items per project if needed:
+            /*
+            def projectMultimediaCounts = projectCounts.collectEntries { projectId, multimediaIds ->
+                [(projectId): multimediaIds.size()]
+            }
+            */
+
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    objectsCount: count,
+                    taskPrefixCount: taskCount,
+                    status: 'SUCCESS'
+            ]
+
+        } catch (Exception e) {
+            log.error("Error getting bucket info", e)
+            return [
+                    bucket: getBucket(),
+                    region: getRegion().id(),
+                    status: 'ERROR',
+                    message: e.message,
+                    errorClass: e.class.simpleName
+            ]
+        }
+    }
+
+    /**
      * List top-level objects in the configured S3 bucket.
      *
      * @param maxKeys Maximum number of keys to return (default 1000)

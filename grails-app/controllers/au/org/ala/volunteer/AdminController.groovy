@@ -826,7 +826,7 @@ class AdminController {
             // Try to verify S3 connectivity by attempting to list objects (limited to 1)
             try {
                 s3Service.getBucket()
-                testResult.bucketInfo = s3Service.listBucketTopLevel(10)
+                testResult.bucketInfo = s3Service.getBucketInfo()
                 testResult.status = 'READY'
                 testResult.message = 'S3 configuration is valid and ready to use'
             } catch (Exception e) {
