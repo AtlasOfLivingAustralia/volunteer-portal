@@ -139,7 +139,6 @@ dependencies {
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
     implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
 
-
     // ALA Plugins
     implementation "org.grails.plugins:ala-auth:$alaAuthVersion"
     implementation 'au.org.ala:ala-cas-client:3.0.0'
@@ -154,7 +153,6 @@ dependencies {
     runtimeOnly "org.slf4j:jul-to-slf4j:1.7.36"
     runtimeOnly "org.slf4j:log4j-over-slf4j:1.7.36"
 
-    implementation "com.drewnoakes:metadata-extractor:2.18.0"
     implementation 'org.imgscalr:imgscalr-lib:4.2'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
@@ -171,6 +169,7 @@ dependencies {
     implementation group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.drewnoakes:metadata-extractor:2.19.0'
 
     // DB migrations, etc
     // implementation 'org.jooq:jooq'
@@ -292,7 +291,16 @@ webdriverBinaries {
     }
 }
 
-tasks.withType(Test) {
+tasks.named('compileTestGroovy') {
+    groovyOptions.forkOptions.jvmArgs << "-Dlogback.configurationFile=${projectDir}/src/test/resources/logback-test.xml".toString()
+}
+
+tasks.named('mergeTestReports') {
+    dependsOn tasks.named('test')
+    testResults.from fileTree('build/test-results/test')
+}
+
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
     systemProperty "geb.env", System.getProperty('geb.env')
     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")

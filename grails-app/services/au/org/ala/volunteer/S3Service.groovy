@@ -5,6 +5,7 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable
 
 /**
  * Service for interacting with AWS S3 for file storage.
@@ -46,6 +47,50 @@ class S3Service {
             throw new IllegalStateException("AWS S3 region is not configured. Please set 'aws.s3.region' in the application configuration.")
         }
         Region.of(regionStr)
+    }
+
+    /**
+     * Upload a file to the S3 bucket.
+     *
+     * @param key The S3 object key.
+     * @param file The file to upload.
+     * @param contentType The content type of the file (e.g., "image/jpeg", "application/pdf").
+     */
+    void uploadFile(String key, File file, String contentType) {
+        uploadFileWithMetadata(key, file, contentType, null)
+    }
+
+    /**
+     * Upload a file to the S3 bucket with optional metadata. This can be used to store additional information
+     * about the file, such as image dimensions.
+     *
+     * @param key The S3 object key.
+     * @param file The file to upload.
+     * @param contentType The content type of the file (e.g., "image/jpeg", "application/pdf").
+     * @param metadata Optional ImageMetaData object containing additional metadata to store with the file.
+     */
+    void uploadFileWithMetadata(String key, File file, String contentType, ImageMetaData metadata = null) {
+        log.debug("Uploading file to S3 with key: ${key}, file: ${file}, metadata: ${metadata}")
+        if (!file.exists() || !file.isFile()) {
+            throw new IllegalArgumentException("File does not exist or is not a regular file: ${file}")
+        }
+        Map<String, String> metadataMap = [:]
+        if (metadata) {
+            metadataMap['img-height'] = String.valueOf(metadata.height)
+            metadataMap['img-width'] = String.valueOf(metadata.width)
+        }
+
+        def builder = PutObjectRequest.builder()
+                .bucket(getBucket())
+                .key(key)
+                .contentType(contentType)
+                .metadata(metadataMap)
+                .ifNoneMatch("*")
+                .build()
+        awsS3Client.putObject(
+                builder as PutObjectRequest,
+                RequestBody.fromFile(file)
+        )
     }
 
     /**
@@ -179,7 +224,7 @@ class S3Service {
                         .build() as ListObjectsV2Request
 
                 def listObjectsResponse = awsS3Client.listObjectsV2(request)
-                count += listObjectsResponse.keyCount()
+                count += (listObjectsResponse.keyCount() ?: 0)
                 continuationToken = listObjectsResponse.nextContinuationToken()
 
                 listObjectsResponse.contents().each { s3Object ->
@@ -196,7 +241,7 @@ class S3Service {
                 }
             } while (continuationToken != null)
 
-            int taskCount = projectCounts.values().sum { it.size() }
+            int taskCount = projectCounts ? projectCounts.values().sum { it.size() } ?: 0 : 0
             // Optionally, we could also return the count of multimedia items per project if needed:
             /*
             def projectMultimediaCounts = projectCounts.collectEntries { projectId, multimediaIds ->
@@ -215,14 +260,69 @@ class S3Service {
         } catch (Exception e) {
             log.error("Error getting bucket info", e)
             return [
-                    bucket: getBucket(),
-                    region: getRegion().id(),
+                    bucket: getBucket() ?: "Unknown (possibly not configured)",
+                    region: getRegion().id() ?: "Unknown (possibly not configured)",
                     status: 'ERROR',
                     message: e.message,
                     errorClass: e.class.simpleName
             ]
         }
     }
+
+    /**
+     * Calculate the total size of all objects in the S3 bucket that match a given prefix. This can be used to determine
+     * the total storage used by a specific project or task.
+     *
+     * @param prefix The prefix to filter objects by (e.g., "projectId/taskId/"). Must be provided.
+     * @return Total size in bytes of all objects matching the prefix
+     */
+    long calculateTotalSizeForPrefix(String prefix) {
+        if (!prefix) {
+            throw new IllegalArgumentException("Prefix must be provided to calculate total size for prefix.")
+        }
+        // Ensure the prefix ends with '/' to target a specific folder
+        prefix = prefix.endsWith("/") ? prefix : prefix + "/"
+
+        def request = ListObjectsV2Request.builder()
+                .bucket(getBucket())
+                .prefix(prefix)
+                .build()
+
+        ListObjectsV2Iterable responses = awsS3Client.listObjectsV2Paginator(request);
+
+        return responses.contents().stream()
+                .mapToLong({ it.size() })
+                .sum()
+    }
+
+    /**
+     * Calculate the total size of all objects in the S3 bucket for a specific project. This is done by calculating the total size for the prefix corresponding to the project ID.
+     *
+     * @param projectId The ID of the project to calculate total size for.
+     * @return Total size in bytes of all objects related to the project, or 0 if the project does not exist.
+     */
+    long calculateTotalSizeForProject(Long projectId) {
+        Project project = Project.get(projectId)
+        if (project) {
+            return calculateTotalSizeForPrefix("${projectId}/")
+        }
+        return 0
+    }
+
+    /**
+     * Calculate the total size of all objects in the S3 bucket for a specific task. This is done by calculating the total size for the prefix corresponding to the project ID and task ID.
+     *
+     * @param taskId The ID of the task to calculate total size for.
+     * @return Total size in bytes of all objects related to the task, or 0 if the task does not exist.
+     */
+    long calculateTotalSizeForTask(Long taskId) {
+        Task task = Task.get(taskId)
+        if (task) {
+            return calculateTotalSizeForPrefix("${task.project.id}/${taskId}/")
+        }
+        return 0
+    }
+
 
     /**
      * List top-level objects in the configured S3 bucket.
@@ -335,4 +435,31 @@ class S3Service {
         }
     }
 
+    /**
+     * Fetch metadata for an object in the S3 bucket, specifically looking for custom metadata fields "img-width" and
+     * "img-height".
+     *
+     * @param key The S3 object key to fetch metadata for.
+     * @return An ImageMetaData object containing the width and height if available, or null if the object does not
+     * exist or an error occurs.
+     */
+    ImageMetaData fetchObjectMetaData(String key) {
+        try {
+            def response = awsS3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(getBucket())
+                    .key(key)
+                    .build() as HeadObjectRequest)
+
+            int width = response.metadata().get("img-width") ? Integer.parseInt(response.metadata().get("img-width")) : 0
+            int height = response.metadata().get("img-height") ? Integer.parseInt(response.metadata().get("img-height")) : 0
+
+            return new ImageMetaData(height: height, width: width)
+        } catch (NoSuchKeyException e) {
+            log.warn("Object with key ${key} not found in S3 bucket ${getBucket()}")
+            return null
+        } catch (Exception e) {
+            log.error("Error fetching object metadata for key ${key}", e)
+            return null
+        }
+    }
 }

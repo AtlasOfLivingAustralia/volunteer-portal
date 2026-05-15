@@ -24,6 +24,7 @@ import org.jooq.impl.DSL
 import org.jooq.tools.json.JSONArray
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.core.io.FileSystemResource
 
 import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
@@ -153,6 +154,8 @@ class TaskLoadService implements EventPublisher {
                 .select(
                         PROJECT.ID,
                         PROJECT.NAME,
+                        PROJECT.ARCHIVED,
+                        PROJECT.INACTIVE,
                         INSTITUTION.NAME,
                         TASK_DESCRIPTOR.ID,
                         TASK_DESCRIPTOR.TIME_CREATED,
@@ -177,8 +180,6 @@ class TaskLoadService implements EventPublisher {
                         TASK_DESCRIPTOR.EXTERNAL_IDENTIFIER,
                         TASK_DESCRIPTOR.IMAGE_URL)
                 .orderBy(sortField.sort(order))
-//                .limit(limit)
-//                .offset(offset)
 
         def results = [:]
         results.taskCount = create.fetchCount(taskQueueQuery)
@@ -188,6 +189,8 @@ class TaskLoadService implements EventPublisher {
             [
                 projectId         : row.get(PROJECT.ID),
                 project           : row.get(PROJECT.NAME),
+                projectIsArchived : row.get(PROJECT.ARCHIVED),
+                projectIsInactive : row.get(PROJECT.INACTIVE),
                 institution       : row.get(INSTITUTION.NAME),
                 id                : row.get(TASK_DESCRIPTOR.ID),
                 timeCreated       : row.get(TASK_DESCRIPTOR.TIME_CREATED),
@@ -610,7 +613,8 @@ class TaskLoadService implements EventPublisher {
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
 
             // TODO This needs to be removed or updated to query S3
-            def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
+            //def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
+            def projectSizeInBytes = s3Service.calculateTotalSizeForProject(projectId)
             log.info("Updating project disk usage: ${projectSizeInBytes}")
 
             DSLContext create = jooqContext()
@@ -847,23 +851,13 @@ class TaskLoadService implements EventPublisher {
         continueAndSkipStatuses(jobsStatuses, taskLoadStepImportImage.curry(create))
         log.debug("taskLoadTransaction: Load Step Import Image in {}", sw.stop())
 
-//        sw.reset().start()
-//        continueAndSkipStatuses(jobsStatuses, taskLoadStepUpdateMultimedia.curry(create))
-//        log.debug("taskLoadTransaction: Load Step Update Multimedia in {}", sw.stop())
-
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateFields.curry(create))
         log.debug("taskLoadTransaction: Load Step Generate Fields in {}", sw.stop())
 
-        // This is deprecated
-        //sw.reset().start()
-        //continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
-        //log.debug("taskLoadTransaction: Load Step Generate Extra Media in {}", sw.stop())
-
-        // Deprecated
-        //sw.reset().start()
-        //continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraMedia.curry(create))
-        //log.debug("taskLoadTransaction: Load Step Insert Extra Media in {}", sw.stop())
+        // These are deprecated
+        // continueAndSkipStatuses(jobsStatuses, taskLoadStepGenerateExtraMedia.curry(create, taskDescriptorIdToTaskIdMap))
+        // continueAndSkipStatuses(jobsStatuses, taskLoadStepInsertExtraMedia.curry(create))
 
         sw.reset().start()
         continueAndSkipStatuses(jobsStatuses, taskLoadStepShadowFiles.curry(create))
@@ -895,23 +889,30 @@ class TaskLoadService implements EventPublisher {
                 // Manually roll back single failed job
                 log.info("Rolling back {} with message", status)
 
-                def extraFields = status.extraFieldRecords.findAll { it.id }
-                if (extraFields) {
-                    create.batchDelete(extraFields).execute()
-                }
+                try {
+                    def extraFields = status.extraFieldRecords.findAll { it.id }
+                    if (extraFields) {
+                        create.batchDelete(extraFields).execute()
+                    }
 
-                def mediaRecords = status.mediaRecords.findAll { it.multimediaRecord.id }
-                if (mediaRecords) {
-                    create.batchDelete(mediaRecords*.multimediaRecord).execute()
-                }
+                    def mediaRecords = status.mediaRecords.findAll { it.multimediaRecord.id }
+                    if (mediaRecords) {
+                        create.batchDelete(mediaRecords*.multimediaRecord).execute()
+                    }
 
-                if (status.mediaLoadStatus.multimediaRecord.id) {
-                    taskService.rollbackMultimediaTransaction(status.taskDescriptorRecord.imageUrl, status.projectId, status.taskId, status.mediaLoadStatus.multimediaRecord.id)
-                    create.executeDelete(status.mediaLoadStatus.multimediaRecord)
-                }
+                    if (status.mediaLoadStatus.multimediaRecord.id) {
+                        taskService.rollbackMultimediaTransaction(status.taskDescriptorRecord.imageUrl, status.projectId, status.taskId, status.mediaLoadStatus.multimediaRecord.id)
+                        create.executeDelete(status.mediaLoadStatus.multimediaRecord)
+                    }
 
-                if (status.taskRecord.id) {
-                    create.executeDelete(status.taskRecord)
+                    if (status.taskRecord.id) {
+                        create.executeDelete(status.taskRecord)
+                    }
+                } catch (e) {
+                    log.error("Caught exception rolling back LoadStatus for ${status.taskDescriptorRecord.externalIdentifier}", e)
+                    status.failures.add(new LoadStatusFailure(
+                            message: e.getMessage(),
+                            stacktrace: ExceptionUtils.getStackTraceAsString(e)))
                 }
 
                 saveLoadStatusFail(create, status)
@@ -1212,7 +1213,7 @@ class TaskLoadService implements EventPublisher {
     private Closure taskLoadStepUploadToS3 = { DSLContext create, List<LoadStatus> statuses ->
         statuses.each {status ->
             def s3Enabled = grailsApplication.config.getProperty('aws.s3.enabled', Boolean, false)
-            log.debug("S3 upload step for task {}, S3 enabled: {}", status.taskId, s3Enabled)
+            log.debug("S3 upload step for task ${status.taskId}, S3 enabled: ${s3Enabled}")
 
             // Only upload if S3 is enabled and we have a local file path for an image type multimedia record. If the
             // multimedia record doesn't have a local file path, it likely means the file copy to store failed in the
@@ -1221,7 +1222,7 @@ class TaskLoadService implements EventPublisher {
             if (s3Enabled && 'image' == status.mediaLoadStatus?.fileMap?.type && status.mediaLoadStatus?.fileMap?.localPath) {
                 try {
                     def diskFile = new File(status.mediaLoadStatus.fileMap.localPath)
-                    def diskDir = diskFile.parentFile
+                    def multimediaDiskDir = diskFile.parentFile
 
                     if (!diskFile.exists()) {
                         throw new IOException("Disk file not found for upload to S3: ${diskFile.absolutePath}")
@@ -1235,17 +1236,23 @@ class TaskLoadService implements EventPublisher {
                     log.debug("Uploading multimedia file to S3: key=${s3FileKey}, contentType=${contentType}, localPath=${diskFile.absolutePath}")
 
                     // Upload the file to S3
-                    s3Service.upload(s3FileKey, new FileInputStream(diskFile), contentType)
+                    //s3Service.upload(s3FileKey, new FileInputStream(diskFile), contentType)
+                    ImageMetaData imd = taskService.getImageMetaDataFromFile(new FileSystemResource(diskFile), null, 0)
+                    log.debug("Image metadata for S3 upload: width=${imd.width}, height=${imd.height}, contentType=${contentType}")
+                    s3Service.uploadFileWithMetadata(s3FileKey, diskFile, contentType, imd)
 
                     // Upload thumbnails if they exist
                     TaskService.THUMB_SIZES.each { size ->
                         def thumbnailFilename = status.mediaLoadStatus.fileMap[size.key] as String
                         if (thumbnailFilename) {
-                            def thumbnailFile = new File(diskDir, thumbnailFilename)
+                            def thumbnailFile = new File(multimediaDiskDir, thumbnailFilename)
                             if (thumbnailFile.exists()) {
                                 def thumbnailS3Key = "${fileKeyStr}/${thumbnailFilename}"
                                 log.debug("Uploading thumbnail to S3: key=${thumbnailS3Key}, diskPath=${thumbnailFile.absolutePath}")
-                                s3Service.upload(thumbnailS3Key, new FileInputStream(thumbnailFile), contentType)
+                                //s3Service.upload(thumbnailS3Key, new FileInputStream(thumbnailFile), contentType)
+                                ImageMetaData thumbImd = taskService.getImageMetaDataFromFile(new FileSystemResource(thumbnailFile), null, 0)
+                                log.debug("Thumbnail metadata for S3 upload: width=${thumbImd.width}, height=${thumbImd.height}, contentType=${contentType}")
+                                s3Service.uploadFileWithMetadata(thumbnailS3Key, thumbnailFile, contentType, thumbImd)
                             } else {
                                 log.warn("Thumbnail file not found for S3 upload: ${thumbnailFile.absolutePath}")
                             }
@@ -1259,7 +1266,7 @@ class TaskLoadService implements EventPublisher {
                     status.mediaLoadStatus.multimediaRecord.filePathToThumbnail = status.mediaLoadStatus.fileMap.localUrlPrefix + status.mediaLoadStatus.fileMap.thumb
                     status.mediaLoadStatus.multimediaRecord.filePath = status.mediaLoadStatus.fileMap.localUrlPrefix + status.mediaLoadStatus.fileMap.raw
 
-                    // Delete the local disk files after successful upload to S3
+                    // We are finished with the local files, delete the local disk files after successful upload to S3
                     def filesDeleted = 0
                     if (diskFile.delete()) {
                         filesDeleted++
@@ -1269,7 +1276,7 @@ class TaskLoadService implements EventPublisher {
                     TaskService.THUMB_SIZES.each { size ->
                         def thumbnailFilename = status.mediaLoadStatus.fileMap[size.key] as String
                         if (thumbnailFilename) {
-                            def thumbnailFile = new File(diskDir, thumbnailFilename)
+                            def thumbnailFile = new File(multimediaDiskDir, thumbnailFilename)
                             if (thumbnailFile.exists() && thumbnailFile.delete()) {
                                 filesDeleted++
                                 log.debug("Deleted thumbnail from disk: ${thumbnailFile.absolutePath}")
@@ -1277,14 +1284,27 @@ class TaskLoadService implements EventPublisher {
                         }
                     }
 
-                    // Delete multimedia directory if empty
+                    // Delete multimedia directory if empty, then delete parent task directory if it becomes empty
                     def projectDir = new File("${grailsApplication.config.getProperty('images.home', String)}/${status.projectId}/")
                     def taskDir = new File(projectDir, "${status.taskId}/")
-                    if (taskDir.exists() && taskDir.isDirectory() && taskDir.list().length == 0) {
-                        if (taskDir.delete()) {
-                            log.debug("Deleted empty task directory from disk: ${taskDir.absolutePath}")
-                        } else {
-                            log.warn("Failed to delete empty task directory from disk: ${taskDir.absolutePath}")
+                    if (multimediaDiskDir.exists() && multimediaDiskDir.isDirectory()) {
+                        def diskDirEntries = multimediaDiskDir.list()
+                        if (diskDirEntries != null && diskDirEntries.length == 0) {
+                            if (multimediaDiskDir.delete()) {
+                                log.debug("Deleted empty multimedia directory from disk: ${multimediaDiskDir.absolutePath}")
+                            } else {
+                                log.warn("Failed to delete empty multimedia directory from disk: ${multimediaDiskDir.absolutePath}")
+                            }
+                        }
+                    }
+                    if (taskDir.exists() && taskDir.isDirectory()) {
+                        def taskDirEntries = taskDir.list()
+                        if (taskDirEntries != null && taskDirEntries.length == 0) {
+                            if (taskDir.delete()) {
+                                log.debug("Deleted empty task directory from disk: ${taskDir.absolutePath}")
+                            } else {
+                                log.warn("Failed to delete empty task directory from disk: ${taskDir.absolutePath}")
+                            }
                         }
                     }
 

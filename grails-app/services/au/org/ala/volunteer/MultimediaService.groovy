@@ -137,7 +137,6 @@ class MultimediaService {
 
         if (s3Service.isS3Enabled() && media.filePathToThumbnail?.startsWith(S3Service.S3_PREFIX)) {
             // If S3 is enabled and the thumbnail path starts with the S3 prefix, return the S3 URL.
-            def imageKey = media.filePathToThumbnail.substring(S3Service.S3_PREFIX.length())
             def urlImagePath = grailsLinkGenerator.link(
                 mapping: 'taskImage',
                 params: [
@@ -147,15 +146,8 @@ class MultimediaService {
                 ],
                 absolute: absolute
             )
-            // Check the image at the end of this URL exists:
-            BufferedImage image = ImageIO.read(s3Service.getObject(imageKey))
-            // Check image has content (i.e. it exists and is not an empty file):
-            if (image != null && image.getWidth() > 0 && image.getHeight() > 0) {
-                return urlImagePath
-            } else {
-                log.warn("Thumbnail requested for $media but S3 object at ${urlImagePath} does not exist or is not a valid image")
-                return grailsLinkGenerator.resource(file:'/sample-task-thumbnail.jpg', absolute: absolute)
-            }
+
+            return urlImagePath
         } else {
             String filePath = filePathFor(media) ?: ''
             String filename = filenameFromFilePath(media.filePathToThumbnail) ?: ''

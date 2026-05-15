@@ -107,7 +107,8 @@
                                 <td>
                                     <g:link controller="project" action="show" id="${taskUpload.projectId}">
                                         ${taskUpload.project}
-                                    </g:link> <cl:archivedOrInactiveProjectWarning projectId="${taskUpload.projectId}"/><br/>
+                                    </g:link> <cl:archivedOrInactiveProjectWarning archived="${taskUpload.projectIsArchived}"
+                                                                                   inactive="${taskUpload.projectIsInactive}"/><br/>
                                     <g:if test="${!params.institutionFilter}">
                                     <span class="task-descriptor-institution">(${taskUpload.institution})</span>
                                     </g:if>
@@ -205,7 +206,8 @@ jQuery(function($) {
         let filter = $(this).val();
 
         window.location = "${createLink(controller: 'task', action: 'manageProjectTaskUploads')}" +
-            "?q=${params.q}&institutionFilter=" + filter;
+            "?q=" + encodeURIComponent("${params.q?.encodeAsJavaScript()}") +
+            "&institutionFilter=" + encodeURIComponent(filter);
     });
 
     function doProjectSearch() {

@@ -888,7 +888,7 @@ ORDER BY record_idx, name;
      * @param imageUrl
      * @return fileMap
      */
-    def copyImageToStore = { String imageUrl, projectId, taskId, multimediaId ->
+    Closure copyImageToStore = { String imageUrl, projectId, taskId, multimediaId ->
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         if (!filename.trim()) {
@@ -968,12 +968,41 @@ ORDER BY record_idx, name;
         return bi2
     }
 
-    /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
+    /**
+     * Deletes images from local disk and S3 (if enabled) for a given multimediaId.  This is used when a transaction
+     * fails after copying the image to the store, to ensure we don't end up with orphaned files.
+     * @param imageUrl the original image URL, used to determine the filename to delete
+     * @param projectId the project ID, used to determine the directory to delete
+     * @param taskId the task ID, used to determine the directory to delete
+     * @param multimediaId the multimedia ID, used to determine the directory to deleted
+     */
     def rollbackMultimediaTransaction(String imageUrl, long projectId, long taskId, long multimediaId) {
         // Just delete the whole MM directory.
+        def success = true
+        def failedMessage = ""
         if (projectId && taskId && multimediaId) {
             def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectId + '/' + taskId + "/" + multimediaId)
-            if (dir.exists() && !dir.deleteDir()) throw new IOException("Couldn't delete $dir")
+            // Check if files on S3 need to be deleted as well, and if so, delete them before deleting the local files
+            if (s3Service.isS3Enabled()) {
+                try {
+                    s3Service.deleteForPrefix("${projectId}/${taskId}/${multimediaId}/")
+                } catch (Exception e) {
+                    failedMessage = "Failed to delete S3 objects with prefix ${projectId}/${taskId}/${multimediaId}/: ${e.message}. See logs for more details."
+                    log.error(failedMessage, e)
+                    success = false
+                }
+            }
+
+            if (dir.exists() && !dir.deleteDir()) {
+                failedMessage = "Failed to delete directory ${dir.absolutePath}"
+                log.error(failedMessage)
+                success = false
+            }
+
+            if (!success) {
+                throw new IOException("Failed to rollback multimedia transaction for imageUrl ${imageUrl}, projectId " +
+                        "${projectId}, taskId ${taskId}, multimediaId ${multimediaId}. ${failedMessage}")
+            }
         }
     }
 
@@ -1153,11 +1182,14 @@ ORDER BY record_idx, name;
     @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource ? (resource.URI ? resource.URI.toString() : (resource.filename ?: '')) : '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
         BufferedImage image
+        def ris = resource.inputStream
         try {
-            image = ImageIO.read(resource.inputStream)
+            image = ImageIO.read(ris)
         } catch (Exception ex) {
             log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
             throw new IOException("Could not read image file: $resource - could not get image metadata", ex)
+        } finally {
+            ris?.close()
         }
 
         ImageMetaData imd = getImageMetaData(image, rotate)
@@ -1187,24 +1219,60 @@ ORDER BY record_idx, name;
     }
 
     /**
-     * Gets image metadata for an image stored in S3. The image is read from S3 and the metadata is extracted from the image.
+     * Adjusts the width and height of the given ImageMetaData according to the given rotation.
+     * @param imd the ImageMetaData to adjust
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return a new ImageMetaData with adjusted width and height if rotation is 90 or 270, otherwise returns the
+     * original ImageMetaData
+     */
+    private ImageMetaData rotateImageMetaData(ImageMetaData imd, int rotate) {
+        if (rotate == 90 || rotate == 270) {
+            return new ImageMetaData(width: imd.height, height: imd.width)
+        } else {
+            return imd
+        }
+    }
+
+    /**
+     * Gets image metadata for an image stored in S3. The metadata is fetched from S3 without downloading the whole
+     * image. If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * Cached.
      * @param s3Key the S3 key of the image
      * @param imageUrl the URL of the image to be used in the metadata
      * @param rotate the number of degrees to rotate the image (0 is do not rotate)
      * @return the image metadata
      */
+    @Cacheable(value='getImageMetaDataFromS3', key = { "${s3Key}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromS3(String s3Key, String imageUrl, int rotate) {
-        BufferedImage image
-        try {
-            image = ImageIO.read(s3Service.getObject(s3Key))
-        } catch (Exception ex) {
-            log.error("Exception trying to read S3 object: ${s3Key}, ${ex.message}")  // don't print whole stack trace
-            throw new IOException("Could not read image file: ${s3Key} - could not get image metadata", ex)
+        ImageMetaData imd = s3Service.fetchObjectMetaData(s3Key)
+        if (imd) {
+            if (rotate > 0) imd = rotateImageMetaData(imd, rotate)
+            imd.url = imageUrl
+            return imd
+        } else {
+            // Null metadata means no metadata was stored with the image.
+            BufferedImage image
+            try {
+                def inputStream = s3Service.getObject(s3Key)
+                try {
+                    image = ImageIO.read(inputStream)
+                } finally {
+                    inputStream?.close()
+                }
+            } catch (Exception ex) {
+                log.error("Exception trying to read S3 object: ${s3Key}, ${ex.message}")  // don't print whole stack trace
+                throw new IOException("Could not read image file: ${s3Key} - could not get image metadata", ex)
+            }
+
+            if (!image) {
+                log.error("Could not read image file from S3: ${s3Key} - could not get image metadata")
+                throw new IOException("Could not read image file from S3: ${s3Key} - could not get image metadata")
+            }
+            imd = getImageMetaData(image, rotate)
+            imd.url = imageUrl
+            return imd
         }
 
-        ImageMetaData imd = getImageMetaData(image, rotate)
-        imd.url = imageUrl
-        return imd
     }
 
     private Date findMostRecentDate(String dateField, Task task) {
@@ -1918,5 +1986,21 @@ ORDER BY record_idx, name;
                 task.save(failOnError: true, flush: true)
             }
         }
+    }
+
+    def deleteMultimediaForTasks(List<Task> tasks) {
+        int count = 0
+        if (tasks) {
+            tasks.each { task ->
+                def multimedia = Multimedia.findAllByTask(task)
+                multimedia.each { m ->
+                    task.multimedia.remove(m)
+                    m.delete(flush: true, failOnError: true)
+                    count++
+                }
+                task.save(flush: true)
+            }
+        }
+        count
     }
 }

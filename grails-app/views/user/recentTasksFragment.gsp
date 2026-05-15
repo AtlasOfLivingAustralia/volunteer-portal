@@ -18,7 +18,7 @@
                 <div class="thumbnail taskThumbnail" style="text-align: center">
                     <a href="${createLink(controller: 'task', action: 'show', id: task.id)}">
                         <g:set var="multimedia" value="${task.multimedia?.first()}"/>
-                        <cl:multimediaForSize multimedia="${m}" size="small" />
+                        <cl:multimediaForSize multimedia="${multimedia}" size="small" />
                         <br/>
                         ${task.externalIdentifier}
                     </a>

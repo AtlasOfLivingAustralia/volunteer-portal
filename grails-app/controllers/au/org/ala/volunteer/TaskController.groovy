@@ -34,7 +34,6 @@ class TaskController {
     def projectService
     def projectStagingService
     def s3Service
-    def institutionService
 
     def projectAdmin() {
         def currentUser = userService.currentUserId
@@ -355,7 +354,6 @@ class TaskController {
 
         final fields = Field.findAllByTaskAndSuperceded(task, false)
         final mm = task.multimedia.first()
-        // def featuredImageUrl = projectService.getFeaturedImage(task.project) + "?" + projectService.cacheBust(task.project)
 
         final result = [
                     filename: task.externalIdentifier,
@@ -955,7 +953,17 @@ class TaskController {
             if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
                 // Image is on S3 storage
                 def imageKey = path.substring(S3Service.S3_PREFIX.length())
-                image = ImageIO.read(s3Service.getObject(imageKey))
+                def inputStream
+                try {
+                    inputStream = s3Service.getObject(imageKey)
+                    image = ImageIO.read(inputStream)
+                } catch (Exception ex) {
+                    log.error("Error retrieving image from S3 for multimedia id ${mm.id} with key ${imageKey}: ${ex.message}", ex)
+                    // Handle error, e.g. set image to null to trigger placeholder
+                    image = null
+                } finally {
+                    inputStream?.close()
+                }
             } else {
                 // Image is on local disk storage
                 String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
@@ -963,7 +971,19 @@ class TaskController {
 
                 // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
                 path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), StandardCharsets.UTF_8.name())
-                image = ImageIO.read(new File(path))
+                log.debug("Resolved image path for multimedia id ${mm.id}: ${path}")
+                def localFile = new File(path)
+                if (!localFile.exists()) {
+                    log.error("Image file not found for multimedia id ${mm.id} at path: ${path}")
+                    image = null
+                } else {
+                    image = ImageIO.read(new File(path))
+                }
+            }
+
+            if (!image) {
+                redirect(controller: 'image', action: 'taskPlaceholder')
+                return
             }
 
             def rotate = params.int("rotate") ?: 0
@@ -986,7 +1006,12 @@ class TaskController {
             response.setHeader("Content-disposition", "inline;filename=${downloadFilename}")
             response.outputStream.write(outputBytes)
             response.flushBuffer()
+        } else {
+            // response.sendError(404, "Multimedia not found")
+            log.debug("No multimedia found with id ${params.id}, sending placeholder image")
+            redirect(controller: 'image', action: 'taskPlaceholder')
         }
+
         log.debug("Image download for multimedia id ${params.id} took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)} ms")
     }
 

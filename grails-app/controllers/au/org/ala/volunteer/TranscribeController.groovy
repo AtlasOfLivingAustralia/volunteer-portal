@@ -40,7 +40,16 @@ class TranscribeController {
     def task() {
 //        Stopwatch sw = Stopwatch.createStarted()
 
-        def task = Task.get(params.int('id'))
+        //def task = Task.get(params.int('id'))
+        def task = Task.where { id == params.long('id') }.join('project').find()
+
+        if (task?.project) {
+            Task.withTransaction {
+                // Accessing size triggers collection initialization while the session is hot
+                task.project.tutorials?.size()
+            }
+        }
+
         def currentUserId = userService.currentUserId
         userService.registerCurrentUser()
 

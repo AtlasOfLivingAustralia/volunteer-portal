@@ -1722,6 +1722,17 @@ class ProjectController {
         }
     }
 
+    def resetProjectSize() {
+        def project = Project.findById(params.long('id'))
+        if (!project || (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution))) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+        projectService.projectSize(project)
+        flash.message = "Project size recalculated for ${project.name}."
+        redirect(action: 'editTaskSettings', params: params)
+    }
+
     // Deprecated?
     def summary() {
         /*

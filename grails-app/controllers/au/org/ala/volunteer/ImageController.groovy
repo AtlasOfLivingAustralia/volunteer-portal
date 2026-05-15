@@ -134,6 +134,10 @@ class ImageController {
         sendImage(result, contentType(format))
     }
 
+    def taskPlaceholder() {
+        sendPlaceholder(SAMPLE_TASK_IMAGE)
+    }
+
     /**
      * Send a placeholder image to the client. The type parameter can be used to specify different placeholder
      * images for different contexts (e.g., task images vs. WS images).
@@ -146,6 +150,7 @@ class ImageController {
         if (placeholderResource?.exists()) {
             log.debug("Placeholder image found: ${placeholderResource.filename}, sending to client")
             response.contentType = contentType(FilenameUtils.getExtension(placeholderResource.filename))
+            response.setHeader("Content-disposition", "inline;filename=${placeholderResource.filename}")
             placeholderResource.inputStream.withStream { input ->
                 response.outputStream << input
             }
@@ -156,32 +161,21 @@ class ImageController {
         }
     }
 
-
-
     private def sendImage(File file, String contentType) {
-//        lastModified(file.lastModified())
         def lm = file.lastModified()
-        lastModified(lm)
+        log.debug("Sending image ${file.name} with last modified time: ${new Date(lm)} (long value: ${lm})")
 
         response.contentType = contentType
-
-        cache([
-                store: true,
-                shared: true,
-                neverExpires: true
-        ])
+        response.setDateHeader("Last-Modified", lm)
+        response.setHeader("Cache-Control", "public, max-age=31536000")
+        response.setHeader("ETag", "\"${file.lastModified()}\"")
+        response.setHeader("Content-disposition", "inline;filename=${file.name}")
 
         try {
-            withCacheHeaders {
-                delegate.lastModified {
-                    new Date(lm)
-                }
-                generate {
-                    file.withInputStream { stream ->
-                        response.outputStream << stream
-                    }
-                }
+            file.withInputStream { stream ->
+                response.outputStream << stream
             }
+            response.flushBuffer()
         } catch (ClientAbortException e) {
             // client hung up, can't do anything
             log.debug('client hung up', e)
@@ -253,9 +247,12 @@ class ImageController {
                     } catch (IOException e) {
                         if (e.message != 'Broken pipe') {
                             log.error("Exception streaming S3 image", e)
+                            sendPlaceholder(SAMPLE_TASK_IMAGE)
                         } else {
                             log.debug('client hung up', e)
                         }
+                    } finally {
+                        s3Object?.close()
                     }
                 } catch (Exception e) {
                     log.warn("Error retrieving image from S3: ${imageKey}", e)

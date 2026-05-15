@@ -1476,19 +1476,29 @@ function notify() {
     /**
      * Displays a warning if the project is archived or inactive
      * @attr projectId The project instance
+     * @attr archived Optional flag to indicate if the project is archived (overrides project instance value)
+     * @attr inactive Optional flag to indicate if the project is inactive (overrides project instance value)
      */
     def archivedOrInactiveProjectWarning = { attrs, body ->
         // TODO - Add option to style with label badges.
-        def project = Project.get(attrs.projectId as Long) as Project
-        if (project?.archived || project?.inactive) {
+        Boolean archived = attrs.containsKey('archived') ? Boolean.parseBoolean(String.valueOf(attrs.archived)) : null
+        Boolean inactive = attrs.containsKey('inactive') ? Boolean.parseBoolean(String.valueOf(attrs.inactive)) : null
+
+        if (archived == null || inactive == null) {
+            Project project = attrs.projectId ? Project.get(attrs.projectId as Long) : null
+            if (archived == null) archived = project?.archived
+            if (inactive == null) inactive = project?.inactive
+        }
+
+        if (archived || inactive) {
             out << "("
-            if (project?.archived) {
+            if (archived) {
                 out << "Archived"
             }
-            if (project?.archived && project?.inactive) {
+            if (archived && inactive) {
                 out << " / "
             }
-            if (project?.inactive) {
+            if (inactive) {
                 out << "Inactive"
             }
             out << ")"
