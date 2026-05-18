@@ -105,10 +105,10 @@ class TemplateService {
 
         // DG-216 Remove views in Template.DISABLED_VIEWS from the list of available templates, as it is not currently supported,
         // unless it is the selected view, in which case it needs to be included so that the template can still be edited.
-        results.removeAll { Template.DISABLED_VIEWS.contains(it) && it != selectedViewName }
+        def enabledTemplates = results.findAll { !Template.DISABLED_VIEWS.contains(it) || it == selectedViewName }
 
         log.debug("Views after collect/sort: ${results}")
-        return results
+        return enabledTemplates
     }
 
     /**
@@ -173,10 +173,11 @@ class TemplateService {
         // We must remove any template using disabled views in Template.DISABLED_VIEWS except where the current project's
         // template or other templates are using that view.
         def templateViews = getAvailableTemplateViews(project.template.viewName)
-        templates.removeAll {
-            !templateViews.contains(it.template.viewName)
-        }
-        return templates
+        def enabledTemplates = templates.findAll { templateViews.contains(it.template.viewName) }
+//        templates.removeAll {
+//            !templateViews.contains(it.template.viewName)
+//        }
+        return enabledTemplates
     }
 
     /**

@@ -52,9 +52,11 @@ class ProjectTypeService {
 
         // Check ProjectType.DISABLED_TYPES for disabled types and remove them from the list before returning. If the
         // provided projectType is in the disabled list, then do not remove it.
-        projectTypes.removeAll { ProjectType.DISABLED_TYPES.contains(it.name) && it.name != projectType?.name }
+        def enabledProjectTypes = projectTypes.findAll {
+            !ProjectType.DISABLED_TYPES.contains(it.name) || it.name == projectType?.name
+        }
         //log.debug("Enabled project types: ${projectTypes*.name}")
 
-        return projectTypes
+        return enabledProjectTypes
     }
 }

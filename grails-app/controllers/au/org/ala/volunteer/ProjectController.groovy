@@ -456,7 +456,7 @@ class ProjectController {
 
         if (project.errors.hasErrors()) {
             def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-            def projectTypes = projectTypeService.getEnabledProjectTypes(project?.projectType)
+            def projectTypes = projectTypeService.getEnabledProjectTypes(project.projectType)
             render(view: 'create', model: [projectInstance: project, params: params, institutionList: institutionList, projectTypes: projectTypes])
             return
         } else {
