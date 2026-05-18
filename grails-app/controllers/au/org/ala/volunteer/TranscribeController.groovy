@@ -44,10 +44,8 @@ class TranscribeController {
         def task = Task.where { id == params.long('id') }.join('project').find()
 
         if (task?.project) {
-            Task.withTransaction {
-                // Accessing size triggers collection initialization while the session is hot
-                task.project.tutorials?.size()
-            }
+            // Accessing size triggers collection initialization while the session is hot
+            task.project.tutorials?.size()
         }
 
         def currentUserId = userService.currentUserId

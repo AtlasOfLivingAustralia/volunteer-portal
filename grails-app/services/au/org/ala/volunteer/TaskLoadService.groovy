@@ -113,7 +113,15 @@ class TaskLoadService implements EventPublisher {
         def whereClause = []
 
         // Institution Filter
-        Long institutionFilter = params.institutionFilter ? Long.valueOf(params.institutionFilter as String) : null
+        Long institutionFilter = null
+        // institutionFilter = params.institutionFilter ? Long.valueOf(params.institutionFilter as String) : null
+        if (params.institutionFilter) {
+            try {
+                institutionFilter = Long.valueOf(params.institutionFilter as String)
+            } catch (NumberFormatException ignored) {
+                institutionFilter = null
+            }
+        }
         if (institutionFilter) {
             whereClause << PROJECT.INSTITUTION_ID.eq(institutionFilter)
         }

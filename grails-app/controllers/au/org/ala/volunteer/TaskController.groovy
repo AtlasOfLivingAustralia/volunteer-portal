@@ -943,6 +943,11 @@ class TaskController {
         def size = params.size ?: '' // See TaskService.THUMB_SIZES for allowed values
         def downloadFilename = mm?.task?.externalIdentifier
         if (mm) {
+            if (!mm.filePath) {
+                log.error("No file path found for multimedia with id ${mm.id}")
+                redirect(controller: 'image', action: 'taskPlaceholder')
+                return
+            }
             def path = mm?.filePath
             if (size && TaskService.THUMB_SIZES.containsKey(size)) {
                 path = path.replaceFirst(/\.([a-zA-Z]*)$/, '_' + size + '.$1')

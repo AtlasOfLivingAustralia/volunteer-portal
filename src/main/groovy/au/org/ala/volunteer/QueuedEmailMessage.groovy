@@ -11,7 +11,6 @@ class QueuedEmailMessage {
     String subject
     String message
     DateTime timeQueued = new DateTime()
-    int timeOutCheckForDuplicate = 120 // seconds
 
     String toString() {
         return "Queued Email to: ${emailAddress}, with subject: ${subject}"
@@ -27,11 +26,13 @@ class QueuedEmailMessage {
         if (message != that.message) return false
         if (subject != that.subject) return false
 
-        // If I've been queued in the last x seconds then consider myself equal to another message with the same content
-        if (timeQueued?.isBefore(DateTime.now().minusSeconds(timeOutCheckForDuplicate))) {
-            return false
-        }
-
         return true
+    }
+
+    int hashCode() {
+        int result = emailAddress?.hashCode() ?: 0
+        result = 31 * result + subject?.hashCode() ?: 0
+        result = 31 * result + message?.hashCode() ?: 0
+        return result
     }
 }

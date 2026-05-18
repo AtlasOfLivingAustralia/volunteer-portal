@@ -195,6 +195,8 @@ class ImageController {
      * The size is determined by parsing the externalIdentifier for a suffix (e.g., "image123_thumb.jpg" -> "thumb") and checking if it matches a known size.
      * If the image is stored on S3, it will be streamed directly to the client. Otherwise, it will be read from local disk storage (and then streamed to the client).
      * If the image cannot be found or an error occurs, a placeholder image will be returned.
+     * Note that this will serve images to the client without any authentication or authorization checks, so it should
+     * only be used for images that are intended to be publicly accessible.
      *
      * @param multimediaId The ID of the Multimedia associated with the Task
      * @param externalIdentifier An image name that may contain an embedded size (e.g., "image123_thumb.jpg")

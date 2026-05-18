@@ -85,7 +85,7 @@ class S3Service {
                 .key(key)
                 .contentType(contentType)
                 .metadata(metadataMap)
-                .ifNoneMatch("*")
+                // .ifNoneMatch("*")
                 .build()
         awsS3Client.putObject(
                 builder as PutObjectRequest,
@@ -108,7 +108,7 @@ class S3Service {
                 .bucket(getBucket())
                 .key(key)
                 .contentType(contentType)
-                .ifNoneMatch("*")
+                // .ifNoneMatch("*")
                 .build()
         awsS3Client.putObject(
                 builder as PutObjectRequest,

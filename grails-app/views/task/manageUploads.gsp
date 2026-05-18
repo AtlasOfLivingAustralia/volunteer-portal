@@ -45,7 +45,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <g:select class="form-control institutitonFilter"
+                    <g:select class="form-control institutionFilter"
                               name="institutionFilter"
                               from="${institutionList}"
                               optionKey="id"
@@ -202,7 +202,7 @@ jQuery(function($) {
         doProjectSearch();
     });
 
-    $('.institutitonFilter').change(function() {
+    $('.institutionFilter').change(function() {
         let filter = $(this).val();
 
         window.location = "${createLink(controller: 'task', action: 'manageProjectTaskUploads')}" +

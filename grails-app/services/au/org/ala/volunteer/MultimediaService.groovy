@@ -48,7 +48,7 @@ class MultimediaService {
     def deleteMultimedia(Multimedia media) {
         // Delete from S3
         if (s3Service.isS3Enabled()) {
-            def prefix = "${media.task?.projectId}/${media.task?.id}/${media.id}"
+            def prefix = "${media.task?.projectId}/${media.task?.id}/${media.id}/"
             deleteS3Callback(prefix)
         }
 
@@ -80,6 +80,7 @@ class MultimediaService {
      * @return The URL of the multimedia file, or an empty string if the multimedia object is null or if the file path is null or empty.
      */
     String getImageUrl(Multimedia media, String size = null) {
+        if (!media) return ''
         def filePath = media.filePath ?: ''
         if (size && TaskService.THUMB_SIZES.containsKey(size)) {
             filePath = filePath.replaceFirst(/\.([a-zA-Z]*)$/, '_' + size + '.$1')

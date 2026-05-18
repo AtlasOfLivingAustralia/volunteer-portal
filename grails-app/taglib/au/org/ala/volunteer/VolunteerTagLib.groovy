@@ -661,6 +661,10 @@ class VolunteerTagLib {
 
     def multimediaForSize = {attrs, body ->
         def mm = attrs.multimedia as Multimedia
+        if (!mm) {
+            log.warn("No multimedia provided for multimediaForSize tag")
+            return
+        }
         def size = attrs.size as String
         def width = attrs.width
         def style = attrs.style

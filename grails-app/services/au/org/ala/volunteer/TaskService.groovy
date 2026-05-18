@@ -17,7 +17,6 @@ import org.springframework.core.io.Resource
 import javax.imageio.ImageIO
 import javax.sql.DataSource
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
 import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -2002,5 +2001,23 @@ ORDER BY record_idx, name;
             }
         }
         count
+    }
+
+    /**
+     * Gets the first Task for a given project, ordered by id ascending.
+     * @param project the project to find the first task for
+     * @return the first Task for the given project or null if no tasks exist for the project.
+     */
+    Task getFirstTaskForProject(Project project) {
+        if (!project) {
+            return null
+        }
+
+        def c = Task.createCriteria()
+        def list = c.list(max: 1) {
+            eq("project", project)
+            order("id", "asc")
+        }
+        return list ? list.get(0) : null
     }
 }

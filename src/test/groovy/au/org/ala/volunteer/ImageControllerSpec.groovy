@@ -57,7 +57,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         }
     }
 
-    def serves_disk_image_when_multimedia_found_and_s3_disabled() {
+    void serves_disk_image_when_multimedia_found_and_s3_disabled() {
         given:
         long multimediaId = 1
         String externalIdentifier = 'test-image.jpg'
@@ -83,7 +83,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         // log.debug("Response headers: ${response.headerNames.collectEntries { [(it): response.getHeader(it)] }}")
     }
 
-    def serves_s3_image_when_s3_enabled_and_multimedia_found() {
+    void serves_s3_image_when_s3_enabled_and_multimedia_found() {
         given:
         long multimediaId = 1
         String externalIdentifier = 'test-image.jpg'
@@ -100,7 +100,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.status == 200
     }
 
-    def returns_placeholder_when_multimedia_not_found() {
+    void returns_placeholder_when_multimedia_not_found() {
         given:
         long multimediaId = 999
         String externalIdentifier = 'missing.jpg'
@@ -113,7 +113,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.status == 200
     }
 
-    def applies_size_from_query_parameter_to_image_path() {
+    void applies_size_from_query_parameter_to_image_path() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"
@@ -142,7 +142,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         }
     }
 
-    def extracts_valid_size_from_external_identifier_suffix() {
+    void extracts_valid_size_from_external_identifier_suffix() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"
@@ -166,7 +166,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=${expectedFilename}")
     }
 
-    def prefers_query_parameter_size_over_embedded_size_in_external_identifier() {
+    void prefers_query_parameter_size_over_embedded_size_in_external_identifier() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"
@@ -191,7 +191,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=${expectedFilename}")
     }
 
-    def ignores_invalid_embedded_size_in_external_identifier() {
+    void ignores_invalid_embedded_size_in_external_identifier() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"
@@ -215,7 +215,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=${expectedFilename}")
     }
 
-    def returns_placeholder_when_disk_file_does_not_exist() {
+    void returns_placeholder_when_disk_file_does_not_exist() {
         given:
         long multimediaId = 1
         String externalIdentifier = 'missing.jpg'
@@ -234,7 +234,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=sample-task.jpg")
     }
 
-    def returns_placeholder_when_s3_retrieval_fails_with_exception() {
+    void returns_placeholder_when_s3_retrieval_fails_with_exception() {
         given:
         long multimediaId = 1
         String externalIdentifier = 'test-image.jpg'
@@ -254,7 +254,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=sample-task.jpg")
     }
 
-    def returns_placeholder_when_s3_service_returns_invalid_stream() {
+    void returns_placeholder_when_s3_service_returns_invalid_stream() {
         given:
         long multimediaId = 1
         String externalIdentifier = 'test-image.jpg'
@@ -281,7 +281,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=sample-task.jpg")
     }
 
-    def handles_empty_external_identifier() {
+    void handles_empty_external_identifier() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"
@@ -305,7 +305,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
         response.header("Content-disposition").equalsIgnoreCase("inline;filename=${expectedFilename}")
     }
 
-    def handles_external_identifier_with_special_characters() {
+    void handles_external_identifier_with_special_characters() {
         given:
         long multimediaId = 1
         String prefix = "project123/task456/"

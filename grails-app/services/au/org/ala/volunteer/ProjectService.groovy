@@ -332,10 +332,8 @@ class ProjectService implements EventPublisher {
         if (tasks.multimedia.size() > 0) {
             log.info("Delete Project ${projectInstance.id}: Delete multimedia...")
             int mmCount = taskService.deleteMultimediaForTasks(tasks)
-//            def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
+            // def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
             log.info("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
-//            sessionFactory.currentSession.flush()
-//            sessionFactory.currentSession.clear()
         }
 
         // Delete Fields
@@ -830,7 +828,7 @@ class ProjectService implements EventPublisher {
         }
         // Get first task, if its image is in S3, get info from S3 Service
         try {
-            def firstTask = project.tasks?.first()
+            def firstTask = taskService.getFirstTaskForProject(project)
             if (firstTask?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
                 def s3Size = s3Service.calculateTotalSizeForPrefix("${project.id}/")
                 project.sizeInBytes = s3Size
@@ -951,7 +949,7 @@ class ProjectService implements EventPublisher {
             throw new IllegalArgumentException("Project cannot be null")
         }
         def removalSuccess = false
-        def firstTask = project.tasks?.first()
+        def firstTask = taskService.getFirstTaskForProject(project)
         if (firstTask?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
             s3Service.deleteForPrefix("${project.id}/")
             s3Service.delete("${project.id}")
@@ -1015,7 +1013,7 @@ class ProjectService implements EventPublisher {
         String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
         def tasks = Task.findAllByProject(project)
         tasks.each { task ->
-            Multimedia multimedia = Multimedia.findByTask(task)
+            Multimedia multimedia = Multimedia.findAllByTask(task)?.first()
             if (s3Service.isS3Enabled() && multimedia.filePath.startsWith(S3Service.S3_PREFIX)) {
                 def s3Key = multimedia.filePath.substring(S3Service.S3_PREFIX.length())
                 def s3Object = s3Service.getObject(s3Key)

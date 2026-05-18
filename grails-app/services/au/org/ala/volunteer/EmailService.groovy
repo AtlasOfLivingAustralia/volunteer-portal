@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class EmailService {
 
     private static Queue<QueuedEmailMessage> _queuedMessages = new ConcurrentLinkedQueue<QueuedEmailMessage>()
+    private Map<String, DateTime> _recentMessages = [:]  // messageKey -> timestamp
 
     def mailService
     GrailsApplication grailsApplication
@@ -117,11 +118,46 @@ class EmailService {
         _queuedMessages.add(qmsg)
     }
 
+    /**
+     * Pushes a mail message on a queue to be sent asynchronously. The frequency of the queue being processed is
+     * controlled by the {@link ProcessMailQueueJob}
+     * <p />
+     * The message will eventually be sent via #sendMail
+     *
+     * @param emailAddress The email address to send to
+     * @param subject The subject line of the message
+     * @param message The message body
+     * @param timeOutCheckForDuplicate Time in seconds to check for duplicate messages (same recipient, subject and body) before adding to the queue.
+     */
     def pushMessageOnQueue(String emailAddress, String subject, String message, int timeOutCheckForDuplicate) {
         log.debug("Queuing email message to ${emailAddress} - ${subject}")
 
-        def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message, timeOutCheckForDuplicate: timeOutCheckForDuplicate)
-        if (!_queuedMessages.contains(qmsg)) _queuedMessages.add(qmsg)
+        String messageKey = "${emailAddress}:${subject}:${message}".toString()
+        DateTime lastQueued = _recentMessages[messageKey]
+
+        // Check if this exact message was queued recently
+        if (lastQueued && lastQueued.isAfter(DateTime.now().minusSeconds(timeOutCheckForDuplicate))) {
+            log.debug("Duplicate message skipped (queued ${timeOutCheckForDuplicate} seconds ago)")
+            return
+        }
+
+//        def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message, timeOutCheckForDuplicate: timeOutCheckForDuplicate)
+//        if (!_queuedMessages.contains(qmsg)) _queuedMessages.add(qmsg)
+        def qmsg = new QueuedEmailMessage(emailAddress: emailAddress, subject: subject, message: message)
+        _queuedMessages.add(qmsg)
+        _recentMessages[messageKey] = new DateTime()  // Track timestamp
+
+        // Cleanup old entries (optional, prevents memory leak)
+        cleanupOldTrackedMessages()
+    }
+
+    /**
+     * Cleanup old entries from the _recentMessages map to prevent memory growth. This should be called periodically, e.g. after adding a new message.
+     * It removes entries that are older than a certain threshold (e.g. 10 minutes).
+     */
+    private void cleanupOldTrackedMessages() {
+        DateTime cutoff = DateTime.now().minusSeconds(600)  // Keep 10 minutes of history
+        _recentMessages.entrySet().removeAll { it.value.isBefore(cutoff) }
     }
 
     /**
