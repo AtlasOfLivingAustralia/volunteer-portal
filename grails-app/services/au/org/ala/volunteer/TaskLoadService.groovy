@@ -65,6 +65,7 @@ class TaskLoadService implements EventPublisher {
     def emailService
     def messageSource
     def s3Service
+    def sessionFactory
 
     @Value('${digivol.ingest.queue.size:200}')
     Integer batchSize = 100
@@ -620,9 +621,7 @@ class TaskLoadService implements EventPublisher {
         while ((dequeuedTasks = doTaskLoadIteration(projectId)) != 0) {
             log.info("Completed loading {} tasks for project {}", dequeuedTasks, projectId)
 
-            // TODO This needs to be removed or updated to query S3
-            //def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
-            def projectSizeInBytes = s3Service.calculateTotalSizeForProject(projectId)
+            def projectSizeInBytes = projectService.getProjectSizeInBytes(projectId)
             log.info("Updating project disk usage: ${projectSizeInBytes}")
 
             DSLContext create = jooqContext()
@@ -632,6 +631,10 @@ class TaskLoadService implements EventPublisher {
                     .where(PROJECT.ID.eq(projectId))
                     .execute()
             log.info("Updated ${updateProjectSize} projects.")
+
+            // Clear Hibernate session cache so the updated project is reloaded on next access
+            def project = Project.get(projectId)
+            sessionFactory.currentSession.evict(project)
         }
     }
 

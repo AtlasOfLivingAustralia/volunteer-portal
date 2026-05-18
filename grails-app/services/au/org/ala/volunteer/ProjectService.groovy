@@ -803,12 +803,22 @@ class ProjectService implements EventPublisher {
         long sizeInBytes = 0L
 
         if (project) {
-            final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
-            try {
-                sizeInBytes = projectPath.directorySize()
-                log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
-            } catch (Exception e) {
-                log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+            Task task = taskService.getFirstTaskForProject(project)
+            if (task?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                try {
+                    sizeInBytes = s3Service.calculateTotalSizeForProject(projectId)
+                    log.debug("Project [${project.name}] disk usage from S3: ${sizeInBytes}")
+                } catch (Exception e) {
+                    log.warn("ProjectService was unable to calculate project size from S3: ${e.message}", e)
+                }
+            } else {
+                final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
+                try {
+                    sizeInBytes = projectPath.directorySize()
+                    log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
+                } catch (Exception e) {
+                    log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+                }
             }
         }
 

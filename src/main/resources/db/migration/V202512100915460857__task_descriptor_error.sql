@@ -2,12 +2,6 @@
     Author: Chris Dunstall
 
     Task Descriptor Error
-        - This table is used to record errors associated with Task Descriptors. Each record will include the error
-          message and stack trace, along with a reference to the associated Task Descriptor.
-        - The date_updated column is added to the task_descriptor table to track when a Task Descriptor was last updated,
-          which can be useful for monitoring and debugging purposes.
-        - ID not having a default is intentional. There is no domain for this table, and only one place records can be
-          created.
 */
 
 CREATE TABLE IF NOT EXISTS task_descriptor_error (

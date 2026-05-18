@@ -33,6 +33,7 @@ class MultimediaService {
         if (s3Service.isS3Enabled()) {
             def prefix = "${task.projectId}/${task.id}/"
             deleteS3Callback(prefix)
+            return
         }
 
         // Delete from disk
@@ -50,6 +51,7 @@ class MultimediaService {
         if (s3Service.isS3Enabled()) {
             def prefix = "${media.task?.projectId}/${media.task?.id}/${media.id}/"
             deleteS3Callback(prefix)
+            return
         }
 
         def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) +
