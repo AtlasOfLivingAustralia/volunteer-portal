@@ -69,15 +69,27 @@ class TemplateService {
         return views
     }
 
-    def getAvailableTemplateViews() {
+    /**
+     * Returns a list of available template views by checking the GSPs in the templateViews folder. This is used to
+     * populate the dropdown for selecting a template view when creating/editing templates, and also to filter out
+     * templates using views that are no longer supported.
+     * @param selectedViewName the view name of the currently selected template
+     * @return a list of available template view names (without the .gsp suffix)
+     */
+    def getAvailableTemplateViews(String selectedViewName = null) {
         def views = []
         def pattern
 
         if (Environment.isDevelopmentEnvironmentAvailable()) {
             log.debug("Checking for dev templates")
             findDevGsps 'grails-app/views/transcribe/templateViews', views
-            // This is a pattern for windows... linux developer would have to modify?
-            pattern = Pattern.compile("^grails-app\\\\views\\\\transcribe\\\\templateViews\\\\(.*Transcribe)[.]gsp\$")
+            // Set pattern for extracting view name from path. Windows paths are different to Linux/Mac, so need to
+            // assign accordingly.
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                pattern = Pattern.compile("^grails-app\\\\views\\\\transcribe\\\\templateViews\\\\(.*Transcribe)[.]gsp\$")
+            } else {
+                pattern = Pattern.compile("^transcribe/templateViews/(.*Transcribe)[.]gsp\$")
+            }
         } else {
             log.debug("Checking for WAR deployed templates")
             findWarGsps '/WEB-INF/grails-app/views/transcribe/templateViews', views
@@ -91,8 +103,12 @@ class TemplateService {
             m.matches() ? [m.group(1)] : []
         }.sort()
 
-        log.debug("Views after collect/sort: {}", results)
-        return results
+        // DG-216 Remove views in Template.DISABLED_VIEWS from the list of available templates, as it is not currently supported,
+        // unless it is the selected view, in which case it needs to be included so that the template can still be edited.
+        def enabledTemplates = results.findAll { !Template.DISABLED_VIEWS.contains(it) || it == selectedViewName }
+
+        log.debug("Views after collect/sort: ${results}")
+        return enabledTemplates
     }
 
     /**
@@ -151,7 +167,17 @@ class TemplateService {
      * @return the list of templates.
      */
     def getTemplatesForProject(Project project, boolean includeHidden = false, boolean concise = false) {
-        return getTemplatesForInstitution(project.institution, project.template.id, includeHidden, concise)
+        def templates = []
+        templates = getTemplatesForInstitution(project.institution, project.template.id, includeHidden, concise)
+
+        // We must remove any template using disabled views in Template.DISABLED_VIEWS except where the current project's
+        // template or other templates are using that view.
+        def templateViews = getAvailableTemplateViews(project.template.viewName)
+        def enabledTemplates = templates.findAll { templateViews.contains(it.template.viewName) }
+//        templates.removeAll {
+//            !templateViews.contains(it.template.viewName)
+//        }
+        return enabledTemplates
     }
 
     /**
@@ -164,7 +190,12 @@ class TemplateService {
      * @return a list of available templates
      */
     def getTemplatesForInstitution(Institution institution, boolean includeHidden = false, boolean concise = false) {
-        return getTemplatesForInstitution(institution, 0L, includeHidden, concise)
+        def templates = getTemplatesForInstitution(institution, 0L, includeHidden, concise)
+
+        // Remove disabled templates in Template.DISABLED_VIEWS.
+        templates.removeAll { Template.DISABLED_VIEWS.contains(it.template.viewName) }
+
+        return templates
     }
 
     /**

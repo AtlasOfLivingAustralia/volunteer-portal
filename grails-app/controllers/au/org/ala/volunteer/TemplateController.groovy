@@ -107,7 +107,7 @@ class TemplateController {
                 return
             }
 
-            def availableViews = templateService.getAvailableTemplateViews()
+            def availableViews = templateService.getAvailableTemplateViews(template.viewName)
             def projectUsageList = [:]
             def projectList = template.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
             def institutionName = ""
