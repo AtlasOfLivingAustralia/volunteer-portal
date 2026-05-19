@@ -23,6 +23,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.annotation.PreDestroy
 import javax.imageio.ImageIO
 import javax.sql.DataSource
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.concurrent.ThreadLocalRandom
@@ -80,6 +81,9 @@ class ProjectService implements EventPublisher {
     def emailService
     def messageSource
     def projectStagingService
+    def s3Service
+    def sessionFactory
+    def taskService
     @Autowired
     Closure<DSLContext> jooqContextFactory
 
@@ -279,8 +283,6 @@ class ProjectService implements EventPublisher {
     }
 
     def deleteProject(Project projectInstance) {
-
-
         if (!projectInstance) {
             return
         }
@@ -321,19 +323,32 @@ class ProjectService implements EventPublisher {
         //def projectForumWatchListCount = ProjectForumWatchList.executeUpdate("delete from ProjectForumWatchList where project = :project", [project: projectInstance])
         log.info("Delete Project ${projectInstance.id}: project forum watch list deleted")
 
+        // If task images are stored on S3 we need to delete them before we delete the tasks, otherwise we won't know
+        // the S3 keys to delete
+        def successfulDelete = deleteProjectTaskImages(projectInstance, true)
+        log.info("Delete Project ${projectInstance.id}: Delete task images...${successfulDelete ? 'Success' : 'Failed'}")
+
         // Delete Multimedia
-        log.info("Delete Project ${projectInstance.id}: Delete multimedia...")
-        def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
-        log.info("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
+        if (tasks.multimedia.size() > 0) {
+            log.info("Delete Project ${projectInstance.id}: Delete multimedia...")
+            int mmCount = taskService.deleteMultimediaForTasks(tasks)
+            // def mmCount = Multimedia.executeUpdate("delete from Multimedia m where m.id in (select mm.id from Multimedia mm where mm.task.project = :project)", [project: projectInstance])
+            log.info("Delete Project ${projectInstance.id}: ${mmCount} multimedia items deleted")
+        }
+
         // Delete Fields
         log.info("Project ${projectInstance.id}: Delete Fields...")
         def fieldCount = Field.executeUpdate("delete from Field f where f.id in (select ff.id from Field ff where ff.task.project = :project)", [project: projectInstance])
         log.info("Delete Project ${projectInstance.id}: ${fieldCount} fields deleted")
+        sessionFactory.currentSession.flush()
+        sessionFactory.currentSession.clear()
 
         // Viewed Tasks
         log.info("Project ${projectInstance.id}: Delete Viewed Tasks...")
         def viewedTaskCount = ViewedTask.executeUpdate("delete from ViewedTask vt where vt.id in (select vt2.id from ViewedTask vt2 where vt2.task.project = :project)", [project: projectInstance])
         log.info("Delete Project ${projectInstance.id}: ${viewedTaskCount} viewed tasks deleted")
+        sessionFactory.currentSession.flush()
+        sessionFactory.currentSession.clear()
 
         // Delete Tasks
         // Tasks are deleted automatically because they're owned by the project
@@ -351,10 +366,9 @@ class ProjectService implements EventPublisher {
         } else {
             log.warn("DeleteProject: Directory ${dir.absolutePath} does not exist!")
         }
-
     }
 
-    public List<ProjectSummary>  getFeaturedProjectList() {
+    public List<ProjectSummary> getFeaturedProjectList() {
 
         Stopwatch sw = Stopwatch.createStarted()
         def resultMaps = generateProjectSummariesQuery(jooqContextFactory(), [], null, null, 'transcribed', null, null, null, ProjectStatusFilterType.showIncompleteOnly, ProjectActiveFilterType.showActiveOnly, false).fetchMaps()
@@ -789,12 +803,22 @@ class ProjectService implements EventPublisher {
         long sizeInBytes = 0L
 
         if (project) {
-            final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
-            try {
-                sizeInBytes = projectPath.directorySize()
-                log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
-            } catch (Exception e) {
-                log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+            Task task = taskService.getFirstTaskForProject(project)
+            if (task?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                try {
+                    sizeInBytes = s3Service.calculateTotalSizeForProject(projectId)
+                    log.debug("Project [${project.name}] disk usage from S3: ${sizeInBytes}")
+                } catch (Exception e) {
+                    log.warn("ProjectService was unable to calculate project size from S3: ${e.message}", e)
+                }
+            } else {
+                final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
+                try {
+                    sizeInBytes = projectPath.directorySize()
+                    log.debug("Project [${project.name}] disk usage: ${sizeInBytes}")
+                } catch (Exception e) {
+                    log.warn("ProjectService was unable to calculate project path directory size: ${e.message}", e)
+                }
             }
         }
 
@@ -802,14 +826,33 @@ class ProjectService implements EventPublisher {
         sizeInBytes
     }
 
+    /**
+     * Calculates the project size by checking if the first task's first multimedia file is in S3. If it is, it
+     * calculates the size from S3, otherwise it calculates from the file system.
+     * @param project the project to calculate the size for.
+     * @return a map containing the size in bytes and any error that might have occurred during the process.
+     */
     def projectSize(Project project) {
-        final projectPath = new File((grailsApplication.config.getProperty('images.home', String) as String), project.id.toString())
+        if (!project) {
+            throw new IllegalArgumentException("Project cannot be null")
+        }
+        // Get first task, if its image is in S3, get info from S3 Service
         try {
-            long sizeInBytes = projectPath.directorySize()
-            project.merge() // In case something has opened a project instance (sometimes happens with task load)
-            project.sizeInBytes = sizeInBytes
-            project.save(flush: true, failOnError: true)
-            [size: sizeInBytes, error: null]
+            def firstTask = taskService.getFirstTaskForProject(project)
+            if (firstTask?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                def s3Size = s3Service.calculateTotalSizeForPrefix("${project.id}/")
+                project.sizeInBytes = s3Size
+                project.save(flush: true, failOnError: true)
+                return [size: s3Size, error: null]
+            } else {
+                final projectPath = new File((grailsApplication.config.getProperty('images.home', String) as String), project.id.toString())
+                long sizeInBytes = projectPath.directorySize()
+                project.merge()
+                // In case something has opened a project instance (sometimes happens with task load)
+                project.sizeInBytes = sizeInBytes
+                project.save(flush: true, failOnError: true)
+                [size: sizeInBytes, error: null]
+            }
         } catch (e) {
             log.warn("ProjectService was unable to calculate project path directory size (possibly already archived?): ${e.message}")
             [error: e, size: -1]
@@ -860,8 +903,17 @@ class ProjectService implements EventPublisher {
         return false
     }
 
+    /**
+     * Writes a zip archive of all the task files for a given project to the provided output stream. If
+     * S3 is enabled and the multimedia file path starts with the S3 prefix, it will attempt to retrieve the file from
+     * S3 and add it to the zip. Otherwise, it will attempt to retrieve the file from the local file system based on
+     * the configured images home and url prefix.
+     * @param project the project to archive
+     * @param outputStream the output stream to write the zip archive to
+     * @throws IOException if no images or directory found for the project.
+     * @see {@link #addProjectTasksToZip(ZipArchiveOutputStream, Project)}
+     */
     def writeArchive(Project project, OutputStream outputStream) {
-        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
         def zos = new ZipArchiveOutputStream(outputStream)
         zos.encoding = 'UTF-8'
         zos.fallbackToUTF8 = true
@@ -869,7 +921,7 @@ class ProjectService implements EventPublisher {
         zos.useLanguageEncodingFlag = true
         zos.useZip64 = AsNeeded
         zos.withStream {
-            addToZip(zos, projectPath, '')
+            addProjectTasksToZip(zos, project)
             zos.finish()
         }
     }
@@ -881,17 +933,46 @@ class ProjectService implements EventPublisher {
      * @throws IOException if no images or directory found for the project.
      */
     def archiveProject(Project project) {
-        final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
-        def result = projectPath.deleteDir()
-        if (!result) {
-            log.warn("Couldn't delete images for $project")
-            throw new IOException("Couldn't delete images for $project")
-        } else {
+        if (!project) {
+            throw new IllegalArgumentException("Project cannot be null")
+        }
+        def removalSuccess = deleteProjectTaskImages(project)
+
+        if (removalSuccess) {
             log.info("Archived project (from service): ${project.name} [${project.id}]")
+            project.sizeInBytes = 0L
             project.archived = true
             project.inactive = true
             project.save(flush: true, failOnError: true)
         }
+    }
+
+    /**
+     * Deletes project images from either S3 or the file system depending on where they're stored. Used mainly by the delete task Actor.
+     * @param project the project to delete images for.
+     * @param s3Only specify true to only attempt to delete from S3, false to attempt to delete from both S3 and the file system.
+     * @return true if deletion was successful, false if not.
+     * @throws IOException if no images or directory found for the project.
+     */
+    private boolean deleteProjectTaskImages(Project project, boolean s3Only = false) {
+        if (!project) {
+            throw new IllegalArgumentException("Project cannot be null")
+        }
+        def removalSuccess = false
+        def firstTask = taskService.getFirstTaskForProject(project)
+        if (firstTask?.multimedia?.first()?.filePath?.startsWith(S3Service.S3_PREFIX)) {
+            s3Service.deleteForPrefix("${project.id}/")
+            s3Service.delete("${project.id}")
+            removalSuccess = true
+        } else if (!s3Only) {
+            final projectPath = new File(grailsApplication.config.getProperty('images.home', String) as String, project.id.toString())
+            removalSuccess = projectPath.deleteDir()
+            if (!removalSuccess) {
+                log.warn("Couldn't delete images for $project")
+                throw new IOException("Couldn't delete images for $project")
+            }
+        }
+        return removalSuccess
     }
 
     /**
@@ -929,6 +1010,50 @@ class ProjectService implements EventPublisher {
         return newProject
     }
 
+    /**
+     * Adds the multimedia files for all tasks in the project to the provided ZipArchiveOutputStream. If S3 is enabled
+     * and the multimedia file path starts with the S3 prefix, it will attempt to retrieve the file from S3 and
+     * add it to the zip. Otherwise, it will attempt to retrieve the file from the local file system based on the
+     * configured images home and url prefix.
+     * @param zos the ZipArchiveOutputStream to add the files to
+     * @param project the project whose task multimedia files should be added to the zip
+     */
+    private def addProjectTasksToZip(ZipArchiveOutputStream zos, Project project) {
+        def imagesHome = grailsApplication.config.getProperty('images.home', String) as String
+        String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
+        def tasks = Task.findAllByProject(project)
+        tasks.each { task ->
+            Multimedia multimedia = Multimedia.findAllByTask(task)?.first()
+            if (s3Service.isS3Enabled() && multimedia.filePath.startsWith(S3Service.S3_PREFIX)) {
+                def s3Key = multimedia.filePath.substring(S3Service.S3_PREFIX.length())
+                def s3Object = s3Service.getObject(s3Key)
+                if (s3Object) {
+                    zos.putArchiveEntry(new ZipArchiveEntry("${task.externalIdentifier}"))
+                    s3Object.withStream { input ->
+                        zos << input
+                    }
+                    zos.closeArchiveEntry()
+                    s3Object.close()
+                } else {
+                    log.warn("Could not find S3 object for key ${s3Key}")
+                }
+            } else {
+                String filePath = URLDecoder.decode(imagesHome + '/' + multimedia.filePath.substring(urlPrefix?.length()), StandardCharsets.UTF_8.name())
+                File imageFile = new File(filePath)
+                if (imageFile.exists()) {
+                    zos.putArchiveEntry(new ZipArchiveEntry("${task.externalIdentifier}"))
+                    imageFile.withInputStream { input ->
+                        zos << input
+                    }
+                    zos.closeArchiveEntry()
+                } else {
+                    log.warn("Could not find image file for task ${task.id} at path ${filePath}")
+                }
+            }
+        }
+    }
+
+    // Deprecated
     static def addToZip(ZipArchiveOutputStream zos, File path, String entryPath) {
         String entryName = entryPath + path.getName()
 

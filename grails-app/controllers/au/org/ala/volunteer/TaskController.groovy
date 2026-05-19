@@ -1,5 +1,6 @@
 package au.org.ala.volunteer
 
+import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -12,6 +13,7 @@ import javax.imageio.ImageIO
 import javax.servlet.ServletOutputStream
 import java.awt.image.BufferedImage
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.TimeUnit
 
 class TaskController {
 
@@ -31,6 +33,7 @@ class TaskController {
     def multimediaService
     def projectService
     def projectStagingService
+    def s3Service
 
     def projectAdmin() {
         def currentUser = userService.currentUserId
@@ -932,27 +935,72 @@ class TaskController {
 
     /**
      * Moved from deprecated MultimediaController.
-     * @return
+     * This method handles downloading of the original image, as well as any alternate sized image (if size param is supplied).
      */
     def imageDownload() {
+        def sw = Stopwatch.createStarted()
         def mm = Multimedia.get(params.int("id"))
+        def size = params.size ?: '' // See TaskService.THUMB_SIZES for allowed values
+        def downloadFilename = mm?.task?.externalIdentifier
         if (mm) {
+            if (!mm.filePath) {
+                log.error("No file path found for multimedia with id ${mm.id}")
+                redirect(controller: 'image', action: 'taskPlaceholder')
+                return
+            }
             def path = mm?.filePath
-            String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
-            String imagesHome = grailsApplication.config.getProperty("images.home", String.class)
+            if (size && TaskService.THUMB_SIZES.containsKey(size)) {
+                path = path.replaceFirst(/\.([a-zA-Z]*)$/, '_' + size + '.$1')
+            }
 
-            // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-            path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()))
+            BufferedImage image
+            // Check if S3 storage is enabled and file is in S3
+            if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
+                // Image is on S3 storage
+                def imageKey = path.substring(S3Service.S3_PREFIX.length())
+                def inputStream
+                try {
+                    inputStream = s3Service.getObject(imageKey)
+                    image = ImageIO.read(inputStream)
+                } catch (Exception ex) {
+                    log.error("Error retrieving image from S3 for multimedia id ${mm.id} with key ${imageKey}: ${ex.message}", ex)
+                    // Handle error, e.g. set image to null to trigger placeholder
+                    image = null
+                } finally {
+                    inputStream?.close()
+                }
+            } else {
+                // Image is on local disk storage
+                String urlPrefix = grailsApplication.config.getProperty("images.urlPrefix", String.class)
+                String imagesHome = grailsApplication.config.getProperty("images.home", String.class)
 
-            BufferedImage image = ImageIO.read(new File(path))
+                // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
+                path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), StandardCharsets.UTF_8.name())
+                log.debug("Resolved image path for multimedia id ${mm.id}: ${path}")
+                def localFile = new File(path)
+                if (!localFile.exists()) {
+                    log.error("Image file not found for multimedia id ${mm.id} at path: ${path}")
+                    image = null
+                } else {
+                    image = ImageIO.read(new File(path))
+                }
+            }
+
+            if (!image) {
+                redirect(controller: 'image', action: 'taskPlaceholder')
+                return
+            }
+
             def rotate = params.int("rotate") ?: 0
             if (rotate) {
                 image = ImageUtils.rotateImage(image, rotate)
+                def rotateStr = "rotate_${rotate}"
+                downloadFilename = downloadFilename.replaceFirst(/\.([a-zA-Z]*)$/, '_' + rotateStr + '.$1')
             }
 
             if (params.maxDimension) {
-                def size = params.int("maxDimension")
-                image = ImageUtils.scale(image, size, size)
+                def maxDimension = params.int("maxDimension")
+                image = ImageUtils.scale(image, maxDimension, maxDimension)
             } else if (params.maxWidth) {
                 def width = params.int("maxWidth")
                 image = ImageUtils.scaleWidth(image, width)
@@ -960,9 +1008,156 @@ class TaskController {
 
             def outputBytes = ImageUtils.imageToBytes(image)
             response.setContentType(mm.mimeType ?: "image/jpeg")
-            response.setHeader("Content-disposition", "attachment;filename=${mm.task.externalIdentifier}.jpg")
+            response.setHeader("Content-disposition", "inline;filename=${downloadFilename}")
             response.outputStream.write(outputBytes)
             response.flushBuffer()
+        } else {
+            // response.sendError(404, "Multimedia not found")
+            log.debug("No multimedia found with id ${params.id}, sending placeholder image")
+            redirect(controller: 'image', action: 'taskPlaceholder')
         }
+
+        log.debug("Image download for multimedia id ${params.id} took ${sw.stop().elapsed(TimeUnit.MILLISECONDS)} ms")
+    }
+
+    def manageProjectTaskUploads() {
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        // Institution filter
+        def institutionList = Institution.list()?.sort { it.name }
+
+        // Get all TASK_DESCRIPTOR records
+        def taskQueue = taskLoadService.getTaskUploadQueue(params)
+
+        render(view: 'manageUploads', model: [institutionList: institutionList, taskList: taskQueue.taskList, taskListCount: taskQueue.taskCount])
+    }
+
+    def resetTaskDescriptorRetries() {
+        log.debug("Resetting task upload descriptor retries with id: ${params.long('id')}")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        Long taskDescriptorId = params.long('id')
+        if (taskDescriptorId == null || taskDescriptorId <= 0) {
+            flash.message = "No task upload descriptor ID supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def reset = taskLoadService.resetTaskDescriptorRetries(taskDescriptorId)
+        if (reset) {
+            log.debug("Reset retries for task upload descriptor with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.resetRetries.success.message") as String
+        } else {
+            log.debug("No task upload descriptor found with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.resetRetries.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def deleteTaskDescriptor() {
+        log.debug("Deleting task upload descriptor with id: ${params.long('id')}")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+        Long taskDescriptorId = params.long('id')
+        if (taskDescriptorId == null || taskDescriptorId <= 0) {
+            flash.message = "No task upload descriptor ID supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def taskDescriptorList = [taskDescriptorId]
+
+        def deleted = taskLoadService.deleteTaskDescriptors(taskDescriptorList)
+        if (deleted > 0) {
+            log.debug("Deleted task upload descriptor with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.delete.success.message") as String
+        } else {
+            log.debug("No task upload descriptor found with id: ${taskDescriptorId}")
+            flash.message = message(code: "task.manage.delete.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def deleteTaskDescriptorList() {
+        log.debug("Deleting multiple task upload descriptors.")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        log.debug("Raw params: ${params}")
+
+        // Submitted list comes in as a string of comma separated values e.g. [5945048,5945030,5945052,5945050]
+        def rawIdParams = params.list('taskDescriptorIds[]') as List ?: []
+        params.remove('taskDescriptorIds[]')
+        // Closure to safely convert various input types to Long, returning null on failure
+        def toLongSafe = { id ->
+            try {
+                return id?.toString()?.trim()?.toLong()
+            } catch (Exception ignored) {
+                return null
+            }
+        }
+
+        // Process the raw ID parameters to extract unique Long IDs
+        def taskDescriptorIds = rawIdParams.collectMany { value ->
+            if (value == null) return []
+            if (value instanceof String) {
+                if (value.contains(',')) {
+                    return value.split(',').collect { toLongSafe(it) }.findAll { it != null }
+                } else {
+                    return [toLongSafe(value)].findAll { it != null }
+                }
+            } else if (value instanceof Number) {
+                return [value.longValue()]
+            } else {
+                return []
+            }
+        }.unique() as List<Long>
+        log.debug("Task descriptor IDs to delete: (${taskDescriptorIds.size()}) ${taskDescriptorIds}")
+
+        if (taskDescriptorIds.isEmpty()) {
+            flash.message = "No task upload descriptor IDs supplied."
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        def deleted = taskLoadService.deleteTaskDescriptors(taskDescriptorIds)
+        if (deleted > 0) {
+            log.debug("Deleted ${deleted} task upload descriptors.")
+            flash.message = message(code: "task.manage.delete.multiple.success.message", args: [deleted]) as String
+        } else {
+            log.debug("No task upload descriptors found for the provided IDs.")
+            flash.message = message(code: "task.manage.delete.multiple.failed.message") as String
+        }
+
+        redirect(action: 'manageProjectTaskUploads', params: params)
+    }
+
+    def taskDescriptorErrors(Long id) {
+        log.debug("Viewing task descriptor errors.")
+        if (!userService.isSiteAdmin()) {
+            render(view: '/notPermitted')
+            return
+        }
+
+        // Get errors from task load service
+        def errors = taskLoadService.getTaskDescriptorErrors(id)
+        if (errors == null) {
+            flash.message = "No task upload descriptor found with id: ${id}"
+            redirect(action: 'manageProjectTaskUploads', params: params)
+            return
+        }
+
+        render(template: 'taskErrors', model: [errors: errors, taskDescriptorId: id])
     }
 }

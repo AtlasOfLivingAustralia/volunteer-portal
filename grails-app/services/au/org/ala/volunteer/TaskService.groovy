@@ -46,10 +46,11 @@ class TaskService {
     def i18nService
     def userService
     def projectService
+    def s3Service
     Closure<DSLContext> jooqContext
 
     private static final int NUMBER_OF_RECENT_DAYS = 90
-
+    public static final Map<String, Integer> THUMB_SIZES = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
 
     int countInactiveProjects() {
         return Project.countByInactive(true)
@@ -868,7 +869,7 @@ ORDER BY record_idx, name;
     }
 
     static class FileMap {
-
+        String type = "image"
         String dir
         String raw
         String localPath
@@ -886,7 +887,7 @@ ORDER BY record_idx, name;
      * @param imageUrl
      * @return fileMap
      */
-    def copyImageToStore = { String imageUrl, projectId, taskId, multimediaId ->
+    Closure copyImageToStore = { String imageUrl, projectId, taskId, multimediaId ->
         def url = new URL(imageUrl)
         def filename = url.path.replaceAll(/\/.*\//, "") // get the filename portion of url
         if (!filename.trim()) {
@@ -902,26 +903,33 @@ ORDER BY record_idx, name;
         }
 
         try {
-            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${projectId}/${taskId}/${multimediaId}")
+            def fileKeyStr = "${projectId}/${taskId}/${multimediaId}"
+            def dir = new File("${grailsApplication.config.getProperty('images.home', String)}/${fileKeyStr}/")
             if (!dir.exists()) {
                 log.debug "Creating dir ${dir.absolutePath}"
                 dir.mkdirs()
             }
             fileMap.dir = dir.absolutePath
             def file = new File(dir, filename)
-            file << conn.inputStream
+            log.debug("Input stream available bytes: ${conn.inputStream?.available()}")
+
+            // Read the input stream into a byte array to allow reuse for both disk and S3
+            byte[] imageBytes = conn.inputStream.bytes
+            file.bytes = imageBytes
 
             File processedFile = new File(dir, filename)
             boolean result = ImageUtils.reorientImage(file, processedFile)
 
             fileMap.raw = processedFile.name
             fileMap.localPath = processedFile.getAbsolutePath()
-            fileMap.localUrlPrefix = urlPrefix + "${projectId}/${taskId}/${multimediaId}/"
+            fileMap.localUrlPrefix = urlPrefix + "${fileKeyStr}/"
             fileMap.contentType = conn.contentType
+
             return fileMap
             //file.close()
         } catch (Exception e) {
             log.error("Failed to load URL: ${imageUrl}", e)
+            throw new Exception("Failed to load URL: ${imageUrl}", e)
         }
     }
 
@@ -934,8 +942,8 @@ ORDER BY record_idx, name;
     def createImageThumbs = { FileMap fileMap ->
         BufferedImage srcImage = ImageIO.read(new FileInputStream(fileMap.dir + "/" +fileMap.raw))
         // Scale the image using the imgscalr library
-        def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
-        sizes.each{
+        //def sizes = ['thumb': 300, 'small': 600, 'medium': 1280, 'large': 2000]
+        THUMB_SIZES.each{
             fileMap[it.key] = fileMap.raw.replaceFirst(/\.(.{3,4})$/,'_' + it.key +'.$1') // add _small to filename
             BufferedImage scaledImage = srcImage
             if (srcImage.width > it.value /* || srcImage.height > it.value */) {
@@ -959,12 +967,41 @@ ORDER BY record_idx, name;
         return bi2
     }
 
-    /** Attempt to rollback any changes made during @link copyImageToStore or @link createImageThumbs */
+    /**
+     * Deletes images from local disk and S3 (if enabled) for a given multimediaId.  This is used when a transaction
+     * fails after copying the image to the store, to ensure we don't end up with orphaned files.
+     * @param imageUrl the original image URL, used to determine the filename to delete
+     * @param projectId the project ID, used to determine the directory to delete
+     * @param taskId the task ID, used to determine the directory to delete
+     * @param multimediaId the multimedia ID, used to determine the directory to deleted
+     */
     def rollbackMultimediaTransaction(String imageUrl, long projectId, long taskId, long multimediaId) {
         // Just delete the whole MM directory.
+        def success = true
+        def failedMessage = ""
         if (projectId && taskId && multimediaId) {
             def dir = new File((grailsApplication.config.getProperty('images.home', String) as String) + '/' + projectId + '/' + taskId + "/" + multimediaId)
-            if (dir.exists() && !dir.deleteDir()) throw new IOException("Couldn't delete $dir")
+            // Check if files on S3 need to be deleted as well, and if so, delete them before deleting the local files
+            if (s3Service.isS3Enabled()) {
+                try {
+                    s3Service.deleteForPrefix("${projectId}/${taskId}/${multimediaId}/")
+                } catch (Exception e) {
+                    failedMessage = "Failed to delete S3 objects with prefix ${projectId}/${taskId}/${multimediaId}/: ${e.message}. See logs for more details."
+                    log.error(failedMessage, e)
+                    success = false
+                }
+            }
+
+            if (dir.exists() && !dir.deleteDir()) {
+                failedMessage = "Failed to delete directory ${dir.absolutePath}"
+                log.error(failedMessage)
+                success = false
+            }
+
+            if (!success) {
+                throw new IOException("Failed to rollback multimedia transaction for imageUrl ${imageUrl}, projectId " +
+                        "${projectId}, taskId ${taskId}, multimediaId ${multimediaId}. ${failedMessage}")
+            }
         }
     }
 
@@ -1002,7 +1039,6 @@ ORDER BY record_idx, name;
 
         return results
     }
-
 
     /**
      * Find all task ids in a project with the given field name equal to one of a set of field values.  This
@@ -1058,12 +1094,17 @@ ORDER BY record_idx, name;
         return Task.findById(taskId)
     }
 
+    /**
+     * Returns a map of multimedia ID to image metadata for all images associated with a task. If an image cannot be read, it is skipped and an error is logged.
+     * @param taskInstance the Task to get image metadata for
+     * @return a map of multimedia ID to image metadata for all images associated with the task
+     */
     Map getImageMetaData(Task taskInstance) {
         def imageMetaData = [:]
 
         taskInstance.multimedia.each { multimedia ->
             try {
-                imageMetaData[multimedia.id] = getImageMetaData(multimedia)
+                imageMetaData[multimedia.id] = getImageMetaData(multimedia, 0)
             } catch(Exception e) {
                 log.error("Unable to get image metadata for resource: ${multimedia?.filePath}, skipping.")
             }
@@ -1072,6 +1113,12 @@ ORDER BY record_idx, name;
         return imageMetaData
     }
 
+    /**
+     * Returns audio meta data for a task audio file. Currently just returns the URL for the audio file, but could be extended to return other metadata if required.
+     * Cached.
+     * @param multimedia The audio multimedia object
+     * @return the audio metadata (currently just the URL)
+     */
     @Cacheable(value='getAudioMetaData', key={ "${(multimedia ? multimedia.id : 0)}" })
     String getAudioMetaData(Multimedia multimedia) {
         def path = multimedia?.filePath
@@ -1093,35 +1140,69 @@ ORDER BY record_idx, name;
     @Cacheable(value = 'getImageMetaData', key = { "${(multimedia ? multimedia.id : 0)}-${rotate}" })
     ImageMetaData getImageMetaData(Multimedia multimedia, int rotate) {
         log.debug("Image metadata, rotate: ${rotate}")
+
         def path = multimedia?.filePath
         if (path) {
-            def imageUrl = multimediaService.getImageUrl(multimedia)
+            // Check if S3 storage is enabled and file is in S3
+            if (s3Service.isS3Enabled() && path.startsWith(S3Service.S3_PREFIX)) {
+                // S3 storage path, send to imageDownload endpoint to handle S3 access and rotation
+                def imageUrl = grailsLinkGenerator.link(controller: 'task', action: 'imageDownload', id: multimedia.id, params: [rotate: rotate]) as String
 
-            if ([90,180,270].contains(rotate)) {
-                imageUrl = grailsLinkGenerator.link(controller: 'task', action:'imageDownload', id: multimedia.id, params:[rotate: rotate])
+                def s3Key = path.substring(S3Service.S3_PREFIX.length()) as String
+                return getImageMetaDataFromS3(s3Key, imageUrl, rotate)
+            } else {
+                // File system storage path
+                def imageUrl = multimediaService.getImageUrl(multimedia)
+
+                if ([90, 180, 270].contains(rotate)) {
+                    imageUrl = grailsLinkGenerator.link(controller: 'task', action: 'imageDownload', id: multimedia.id, params: [rotate: rotate])
+                }
+
+                String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
+                String imagesHome = grailsApplication.config.getProperty('images.home', String)
+                path = imagesHome + '/' + path.substring(urlPrefix?.length())
+
+                return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
             }
-
-            String urlPrefix = grailsApplication.config.getProperty('images.urlPrefix', String)
-            String imagesHome = grailsApplication.config.getProperty('images.home', String)
-            path = imagesHome + '/' + path.substring(urlPrefix?.length())
-            //path = URLDecoder.decode(imagesHome + '/' + path.substring(urlPrefix?.length()), "utf-8")  // have to reverse engineer the files location on disk, this info should be part of the Multimedia structure!
-
-            return getImageMetaDataFromFile(new FileSystemResource(path), imageUrl, rotate)
         }
 
         throw new IOException("Could not read multimedia file: ${multimedia?.filePath}")
     }
 
+    /**
+     * Gets image metadata for an image file. The image is read from the file and the metadata is extracted from the image.
+     * If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * Cached.
+     * @param resource the Resource representing the image file
+     * @param imageUrl the URL of the image to be used in the metadata
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
     @Cacheable(value='getImageMetaDataFromFile', key = { "${(resource ? (resource.URI ? resource.URI.toString() : (resource.filename ?: '')) : '')}-${(imageUrl ?: '')}-${rotate}"})
     ImageMetaData getImageMetaDataFromFile(Resource resource, String imageUrl, int rotate) {
-
         BufferedImage image
+        def ris = resource.inputStream
         try {
-            image = ImageIO.read(resource.inputStream)
+            image = ImageIO.read(ris)
         } catch (Exception ex) {
             log.error("Exception trying to read image path: ${resource}, ${ex.message}")  // don't print whole stack trace
+            throw new IOException("Could not read image file: $resource - could not get image metadata", ex)
+        } finally {
+            ris?.close()
         }
 
+        ImageMetaData imd = getImageMetaData(image, rotate)
+        imd.url = imageUrl
+        return imd
+    }
+
+    /**
+     * Gets image metadata for a BufferedImage. If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * @param image the BufferedImage to get metadata for
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
+    ImageMetaData getImageMetaData(BufferedImage image, int rotate) {
         if (image) {
             def width = image.width
             def height = image.height
@@ -1129,13 +1210,69 @@ ORDER BY record_idx, name;
                 width = image.height
                 height = image.width
             }
-            return new ImageMetaData(width: width, height: height, url: imageUrl)
+            return new ImageMetaData(width: width, height: height)
         } else {
-            log.error("Could not read image file: $resource - could not get image metadata")
-            throw new IOException("Could not read image file: $resource - could not get image metadata")
+            log.error("Could not read image file: ${image} - could not get image metadata")
+            throw new IOException("Could not read image file - could not get image metadata")
         }
     }
 
+    /**
+     * Adjusts the width and height of the given ImageMetaData according to the given rotation.
+     * @param imd the ImageMetaData to adjust
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return a new ImageMetaData with adjusted width and height if rotation is 90 or 270, otherwise returns the
+     * original ImageMetaData
+     */
+    private ImageMetaData rotateImageMetaData(ImageMetaData imd, int rotate) {
+        if (rotate == 90 || rotate == 270) {
+            return new ImageMetaData(width: imd.height, height: imd.width)
+        } else {
+            return imd
+        }
+    }
+
+    /**
+     * Gets image metadata for an image stored in S3. The metadata is fetched from S3 without downloading the whole
+     * image. If the rotate parameter is provided, the image dimensions are adjusted according to the rotation.
+     * Cached.
+     * @param s3Key the S3 key of the image
+     * @param imageUrl the URL of the image to be used in the metadata
+     * @param rotate the number of degrees to rotate the image (0 is do not rotate)
+     * @return the image metadata
+     */
+    @Cacheable(value='getImageMetaDataFromS3', key = { "${s3Key}-${(imageUrl ?: '')}-${rotate}"})
+    ImageMetaData getImageMetaDataFromS3(String s3Key, String imageUrl, int rotate) {
+        ImageMetaData imd = s3Service.fetchObjectMetaData(s3Key)
+        if (imd) {
+            if (rotate > 0) imd = rotateImageMetaData(imd, rotate)
+            imd.url = imageUrl
+            return imd
+        } else {
+            // Null metadata means no metadata was stored with the image.
+            BufferedImage image
+            try {
+                def inputStream = s3Service.getObject(s3Key)
+                try {
+                    image = ImageIO.read(inputStream)
+                } finally {
+                    inputStream?.close()
+                }
+            } catch (Exception ex) {
+                log.error("Exception trying to read S3 object: ${s3Key}, ${ex.message}")  // don't print whole stack trace
+                throw new IOException("Could not read image file: ${s3Key} - could not get image metadata", ex)
+            }
+
+            if (!image) {
+                log.error("Could not read image file from S3: ${s3Key} - could not get image metadata")
+                throw new IOException("Could not read image file from S3: ${s3Key} - could not get image metadata")
+            }
+            imd = getImageMetaData(image, rotate)
+            imd.url = imageUrl
+            return imd
+        }
+
+    }
 
     private Date findMostRecentDate(String dateField, Task task) {
         def c = Field.createCriteria()
@@ -1848,5 +1985,39 @@ ORDER BY record_idx, name;
                 task.save(failOnError: true, flush: true)
             }
         }
+    }
+
+    def deleteMultimediaForTasks(List<Task> tasks) {
+        int count = 0
+        if (tasks) {
+            tasks.each { task ->
+                def multimedia = Multimedia.findAllByTask(task)
+                multimedia.each { m ->
+                    task.multimedia.remove(m)
+                    m.delete(flush: true, failOnError: true)
+                    count++
+                }
+                task.save(flush: true)
+            }
+        }
+        count
+    }
+
+    /**
+     * Gets the first Task for a given project, ordered by id ascending.
+     * @param project the project to find the first task for
+     * @return the first Task for the given project or null if no tasks exist for the project.
+     */
+    Task getFirstTaskForProject(Project project) {
+        if (!project) {
+            return null
+        }
+
+        def c = Task.createCriteria()
+        def list = c.list(max: 1) {
+            eq("project", project)
+            order("id", "asc")
+        }
+        return list ? list.get(0) : null
     }
 }

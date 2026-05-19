@@ -69,7 +69,7 @@
     <cl:ifSiteAdmin>
     <div class="panel panel-default">
         <div class="panel-body">
-            <h4>Disk Usage Statistics</h4>
+            <h4>Disk Usage Statistics*</h4>
             <table class="table table-condensed">
                 <tr>
                     <th><g:message code="system.space.usable" default="Usable space"/></th>
@@ -87,6 +87,10 @@
                     </td>
                 </tr>
             </table>
+            <g:set var="s3Enabled" value="${grailsApplication.config.getProperty('aws.s3.enabled', Boolean)}"/>
+            <g:if test="${s3Enabled}">
+            <p>* Local disk only. AWS S3 Image storage not included in these stats.</p>
+            </g:if>
         </div>
     </div>
     </cl:ifSiteAdmin>

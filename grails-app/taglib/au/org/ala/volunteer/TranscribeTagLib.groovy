@@ -476,9 +476,10 @@ class TranscribeTagLib {
             try {
                 imageMetaData = taskService.getImageMetaData(multimedia, rotate)
             } catch (Exception e) {
-                log.error("Unable to get image file metadata for ${multimedia?.filePath}")
+                log.error("Unable to get image file metadata for ${multimedia?.filePath}", e)
             }
 
+            // No image exists, get the placeholder image
             if (!imageMetaData) {
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/images/sample-task.jpg")
                 def sampleUrl = resource(file:'/sample-task.jpg')

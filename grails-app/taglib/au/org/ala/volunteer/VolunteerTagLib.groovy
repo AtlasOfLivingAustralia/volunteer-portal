@@ -9,6 +9,7 @@ import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.springframework.beans.factory.annotation.Value
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 class VolunteerTagLib {
 
@@ -28,6 +29,7 @@ class VolunteerTagLib {
     def tutorialService
     def newsItemService
     def imageService
+    def s3Service
 
     static returnObjectForTags = ['emailForUserId', 'displayNameForUserId', 'achievementBadgeBase', 'newAchievements', 'achievementsEnabled', 'buildDate', 'myProfileAlert', 'readStatusIcon', 'newAlert', 'formatFileSize', 'createLoginLink']
 
@@ -657,14 +659,66 @@ class VolunteerTagLib {
         }
     }
 
+    def multimediaForSize = {attrs, body ->
+        def mm = attrs.multimedia as Multimedia
+        if (!mm) {
+            log.warn("No multimedia provided for multimediaForSize tag")
+            return
+        }
+        def size = attrs.size as String
+        def width = attrs.width
+        def style = attrs.style
+        if (!TaskService.THUMB_SIZES.containsKey(size)) {
+            log.warn("Unknown thumbnail size requested: ${size}")
+            return
+        }
+
+        def url
+        if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+            url = g.createLink(
+                    mapping: 'taskImage',
+                    params: [
+                            multimediaId: mm.id.toString(),
+                            externalIdentifier: mm.task.externalIdentifier,
+                            size: size
+                    ]
+            )
+        } else {
+            url = multimediaService.getImageUrl(mm, size)
+        }
+
+        out << "<img src=\"${url}\""
+        if (width) out << " width=\"${width}\""
+        if (style) out << " style=\"${style}\""
+        out << " />"
+    }
+
     def multimediaThumbnail = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
-        def url, fullUrl = ''
-//        def mm = attrs.task.multimedia?.first()
-        def mm = attrs.multimedia
+        def url = ''
+        def fullUrl = ''
+        def mm = attrs.multimedia as Multimedia
         if (mm) {
-            url = multimediaService.getImageThumbnailUrl(mm)
-            fullUrl = multimediaService.getImageUrl(mm)
+            if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                url = g.createLink(
+                        mapping: 'taskImage',
+                        params: [
+                                multimediaId: mm.id.toString(),
+                                externalIdentifier: mm.task.externalIdentifier,
+                                size: 'thumb'
+                        ]
+                )
+                fullUrl = g.createLink(
+                        mapping: 'taskImage',
+                        params: [
+                                multimediaId: mm.id.toString(),
+                                externalIdentifier: mm.task.externalIdentifier
+                        ]
+                )
+            } else {
+                url = multimediaService.getImageThumbnailUrl(mm)
+                fullUrl = multimediaService.getImageUrl(mm)
+            }
         }
 
         if (!url) {
@@ -679,7 +733,7 @@ class VolunteerTagLib {
             out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"/>"
             out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
         }
-        log.debug('multimediaThumbnail {}', sw)
+        log.debug("multimediaThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}")
     }
 
     def taskThumbnail = { attrs, body ->
@@ -698,8 +752,26 @@ class VolunteerTagLib {
             def url = "", fullUrl = ''
             final Multimedia mm = task.multimedia?.first()
             if (mm != null) {
-                url = multimediaService.getImageThumbnailUrl(mm)
-                fullUrl = multimediaService.getImageUrl(mm)
+                if (s3Service.isS3Enabled() && mm.filePath?.startsWith(S3Service.S3_PREFIX)) {
+                    url = g.createLink(
+                            mapping: 'taskImage',
+                            params: [
+                                    multimediaId: mm.id.toString(),
+                                    externalIdentifier: mm.task.externalIdentifier,
+                                    size: 'thumb'
+                            ]
+                    )
+                    fullUrl = g.createLink(
+                            mapping: 'taskImage',
+                            params: [
+                                    multimediaId: mm.id.toString(),
+                                    externalIdentifier: mm.task.externalIdentifier
+                            ]
+                    )
+                } else {
+                    url = multimediaService.getImageThumbnailUrl(mm)
+                    fullUrl = multimediaService.getImageUrl(mm)
+                }
             }
 
             if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
@@ -723,7 +795,7 @@ class VolunteerTagLib {
             }
 
         }
-        log.debug('taskThumbnail {}', sw)
+        log.debug("taskThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}")
     }
 
     /**
@@ -1403,5 +1475,37 @@ function notify() {
         out << "<a href=\"${attrs.href}\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"${attrs.title ?: 'External link'}\">"
         out << "<img src='${resource(dir: 'images', file: 'external_link.svg')}' alt='Open in new window' />"
         out << "</a>"
+    }
+
+    /**
+     * Displays a warning if the project is archived or inactive
+     * @attr projectId The project instance
+     * @attr archived Optional flag to indicate if the project is archived (overrides project instance value)
+     * @attr inactive Optional flag to indicate if the project is inactive (overrides project instance value)
+     */
+    def archivedOrInactiveProjectWarning = { attrs, body ->
+        // TODO - Add option to style with label badges.
+        Boolean archived = attrs.containsKey('archived') ? Boolean.parseBoolean(String.valueOf(attrs.archived)) : null
+        Boolean inactive = attrs.containsKey('inactive') ? Boolean.parseBoolean(String.valueOf(attrs.inactive)) : null
+
+        if (archived == null || inactive == null) {
+            Project project = attrs.projectId ? Project.get(attrs.projectId as Long) : null
+            if (archived == null) archived = project?.archived
+            if (inactive == null) inactive = project?.inactive
+        }
+
+        if (archived || inactive) {
+            out << "("
+            if (archived) {
+                out << "Archived"
+            }
+            if (archived && inactive) {
+                out << " / "
+            }
+            if (inactive) {
+                out << "Inactive"
+            }
+            out << ")"
+        }
     }
 }
