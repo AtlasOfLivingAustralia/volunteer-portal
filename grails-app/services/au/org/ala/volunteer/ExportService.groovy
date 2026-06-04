@@ -197,6 +197,7 @@ class ExportService {
         OutputStreamWriter outputwriter = new OutputStreamWriter(bos, StandardCharsets.UTF_8)
 
         CSVWriter writer = new CSVWriter(outputwriter)
+        writer << '\uFEFF' // Write BOM for UTF-8
         // write header line (field names)
         writer.writeNext(columnNames as String[])
         log.debug("Wrote column names in {}ms", sw.elapsed(MILLISECONDS))

@@ -44,6 +44,7 @@ class CSVHeadingsWriter {
     private lastProducer
 
     private headingsWritten = false
+    boolean writeForExcel = true
 
     CSVHeadingsWriter(Writer writer, Closure definition) {
         this.writer = writer
@@ -59,6 +60,11 @@ class CSVHeadingsWriter {
 
         producers = columns.values().toList()
         lastProducer = producers.last()
+
+        if (writeForExcel) {
+            // Write the UTF-8 BOM to the start of the file so that Excel will open it with UTF-8 encoding
+            writer << '\uFEFF'
+        }
     }
 
     def leftShift(row) {

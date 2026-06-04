@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
 import grails.gorm.transactions.Transactional
+import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.input.BOMInputStream
 import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -26,7 +28,11 @@ class TemplateFieldService {
             }
         }
 
-        InputStream is = file.inputStream;
+        //InputStream is = file.inputStream
+        InputStream is = BOMInputStream.builder()
+                .setInputStream(file.inputStream)
+                .setByteOrderMarks(ByteOrderMark.UTF_8)
+                .get()
         is.eachCsvLine { String[] tokens ->
 
             def field = new TemplateField(template: template)

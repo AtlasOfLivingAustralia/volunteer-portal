@@ -678,6 +678,7 @@ class AdminController {
         }
 
         def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+        osw.write("\uFEFF") // Write BOM for UTF-8
         def writer = new CSVWriter(osw,  {
             'Expedition Id' { it.project.id }
             'Expedtion Name' { it.project.featuredLabel }
