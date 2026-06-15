@@ -280,6 +280,7 @@ class StatsController {
 
         try {
             new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
+                writer << '\uFEFF' // Write UTF-8 BOM for Excel compatibility
                 // write header line (field names)
                 writer.writeNext(headers as String[])
 

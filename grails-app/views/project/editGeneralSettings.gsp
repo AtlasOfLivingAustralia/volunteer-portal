@@ -233,7 +233,7 @@
         var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
         labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
-            console.log(item);
+            // console.log(item);
             //var obj = JSON.parse(item);
             var updateUrl = "${createLink(controller: 'project', action: 'addLabel', id: projectInstance.id)}";
             //showSpinner();

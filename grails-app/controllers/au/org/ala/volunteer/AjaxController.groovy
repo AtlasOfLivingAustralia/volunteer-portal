@@ -14,6 +14,8 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
+import javax.servlet.ServletOutputStream
+import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
@@ -114,12 +116,14 @@ class AjaxController {
 
         // Pre-create the writer and write the headings straight away to prevent a read timeout.
         def writer
+        def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+
         if (params.wt && params.wt == 'csv') {
             def nodata = params.nodata ?: 'nodata'
 
-            response.addHeader("Content-type", "text/plain")
+            response.setContentType('text/csv;charset=utf-8')
 
-            writer = new CSVHeadingsWriter((Writer) response.writer, {
+            writer = new CSVHeadingsWriter(osw, {
                 'user_id' { it[0] }
                 'email' { it[1] }
                 'display_name' { it[2] }
@@ -137,7 +141,7 @@ class AjaxController {
                 'is_forum_mod' { it[14] }
             })
             writer.writeHeadings()
-            response.flushBuffer()
+            osw.flush()
         }
 
         def asyncCounts = Task.async.withStatelessSession {
@@ -258,7 +262,9 @@ class AjaxController {
             for (def row : report) {
                 writer << row
             }
-            response.flushBuffer()
+            //response.flushBuffer()
+            osw.flush()
+            osw.close()
         } else {
             respond report
         }
@@ -305,10 +311,11 @@ class AjaxController {
 
     def expeditionBiocacheData() {
         setNoCache()
-        response.addHeader("Content-type", "text/plain")
+        response.setContentType('text/csv;charset=utf-8')
 
         if (params.id) {
-            def projectInstance = Project.get(params.id)
+            log.debug("Generating expedition biocache data for project id ${params.id}")
+            def projectInstance = Project.get(params.long('id'))
             if (projectInstance) {
 
                 def findValue = { List<Field> fieldValues, String name ->
@@ -329,14 +336,17 @@ class AjaxController {
                 }
 
                 def fieldNames = new CSVWriterColumnsBuilder(columns).columns.collect { it.key }
-                def writer = new CSVWriter(response.writer, columns)
+                def osw = new OutputStreamWriter(response.outputStream as ServletOutputStream, StandardCharsets.UTF_8)
+                def writer = new CSVWriter(osw, columns)
                 def fields = Field.findAll("from Field as f where f.task in (from Task as task where task.project = :project) and f.transcription is null and f.superceded = false and f.name in (:fields)",[project: projectInstance, fields: fieldNames]).groupBy { it.task }
+                log.debug("Expedition biocache data found ${fields.size()} tasks with fields for project ${projectInstance.name}")
 
                 for (Task t : fields.keySet()) {
                     writer << [task: t, fieldValues: fields[t]]
                 }
 
-                response.writer.flush()
+                osw.flush()
+                osw.close()
             }
         } else {
             render([success: false, message:"Unable to retrieve project with id '${params.id}'"] as JSON)
@@ -548,7 +558,9 @@ class AjaxController {
             udsw.start()
             usersDetails = authService.getUserDetailsById(transcribers.toList(), true) ?: [users:[:]]
             udsw.stop()
-            mm = Multimedia.where { task.id in taskIds }.collect { [id: it.taskId, thumbUrl: multimediaService.getImageThumbnailUrl(it), url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
+            mm = Multimedia.where { task.id in taskIds }.collect { [id: it.taskId,
+                                                                    thumbUrl: multimediaService.getImageThumbnailUrl(it, true),
+                                                                    url: multimediaService.getImageUrl(it) ] }.groupBy { it.id }
         } else {
             allFields = [:]
             usersDetails = [users:[]]

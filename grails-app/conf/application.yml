@@ -225,6 +225,16 @@ images:
     home: /data/volunteer-portal
     urlPrefix: /data/volunteer/
 
+# Enable S3 image storage for task images
+#aws:
+#    s3:
+#        enabled: false
+#        region: ap-southeast-2
+#        bucket: ala-digivol-test
+#        auth-mode: default|secret # Use default for no credentials or rules based auth. Use secret for explicit access key and secret key.
+#        access-key: <your-access-key> #required for authMode secret
+#        access-secret: <your-secret-key> #required for authMode secret
+
 elasticsearch:
     location: "/data/volunteer/elasticsearch"
 

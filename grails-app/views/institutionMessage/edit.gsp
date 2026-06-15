@@ -118,7 +118,7 @@
         function initRecipient() {
             const recipientType = "${institutionMessageInstance.getRecipientType()}";
             $('#recipient').prop('disabled', false);
-            console.log("Init recipient");
+            // console.log("Init recipient");
             getRecipientData(recipientType);
             $('#recipient').selectpicker();
         }
@@ -126,7 +126,7 @@
         initRecipient();
 
         $('.recipient-type').change(function() {
-            console.log("recipient type change");
+            // console.log("recipient type change");
             $('#recipient').prop('disabled', false);
             getRecipientData(this.value);
         });
@@ -143,7 +143,7 @@
         }
 
         function updateRecipient(type, data) {
-            console.log("Update recipient field");
+            // console.log("Update recipient field");
             let selectList = "";
 
             if (type === 'user') {
@@ -172,7 +172,7 @@
             } else if (type === 'project') {
                 // build project select
                 const selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : ""}";
-                console.log("Selected Value: " + selectedValues);
+                // console.log("Selected Value: " + selectedValues);
                 $.each(data, function(idx, p) {
                     selectList += "<option value='" + p.id + "'>" + p.name + "</option>";
                 });
@@ -212,7 +212,7 @@
         }
 
         function getUserList() {
-            console.log("Get user List");
+            // console.log("Get user List");
             const url = "${createLink(controller: 'institutionAdmin', action: 'getUsersForInstitution', id: institutionMessageInstance?.institution?.id)}";
             $.get({
                 url: url,
@@ -224,7 +224,7 @@
         }
 
         function getProjectList() {
-            console.log("Get project List");
+            // console.log("Get project List");
             const url = "${createLink(controller: 'institutionAdmin', action: 'getActiveProjectsForInstitution', id: institutionMessageInstance?.institution?.id)}";
             $.get({
                 url: url,

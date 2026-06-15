@@ -216,6 +216,9 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="i in a.images">
+%{--                            <td ngf-drop="tcc.addImage(a.images,$index,$files)">--}%
+%{--                                <img ng-src="{{i.hash && i.hash.trim() ? tcc.imageUrl(i) : '${resource(dir: 'images', file: 'ws-placeholder-150.png')}'}}">--}%
+%{--                            </td>--}%
                             <td ngf-drop="tcc.addImage(a.images,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
                             <td>
                                 <button class="btn btn-mini btn-primary" type="file"
@@ -239,7 +242,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <button class="btn btn-primary" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
+            <button class="btn btn-primary" ng-click="tcc.save()" style="margin-top: 1rem;"><i class="fa fa-save"></i> Save</button>
         </div>
     </div>
 </div>
@@ -250,9 +253,10 @@
         viewParams:<cl:json value="${viewParams2}"/>,
         submitUrl: "<g:createLink controller="template" action="uploadSpotterFile"/>",
         audioSubmitUrl: "<g:createLink controller="template" action="uploadSpotterFile" params="[fileType: 'audio']"/>",
-        imageUrlTemplate: "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true"/>",
+        imageUrlTemplate: "<cl:sizedImageUrl prefix="wildlifespotter" name="{{name}}" width="{{width}}" height="{{height}}" format="{{format}}" template="true" allowBroken="true"/>",
         audioUrlTemplate: "<cl:audioUrl prefix="audiotranscribe" name="{{name}}" format="{{format}}" template="true"/>",
-        saveTemplateUrl: "<g:createLink controller="template" action="saveWildlifeTemplateConfig" id="${id}"/>"
+        saveTemplateUrl: "<g:createLink controller="template" action="saveWildlifeTemplateConfig" id="${id}"/>",
+        placeholderImageUrl: "${resource(dir: 'images', file: 'ws-placeholder-150.png')}"
     };
 </asset:script>
 

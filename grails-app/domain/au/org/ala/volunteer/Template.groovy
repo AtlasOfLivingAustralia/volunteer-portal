@@ -34,13 +34,15 @@ class Template implements Serializable {
         isHidden defaultValue: 'false'
     }
 
+    public static final List<String> DISABLED_VIEWS = ['audioTranscribe']
+
     String toString() {
         //return "Template: ${name}, [view: ${viewName}, isGlobal: ${isGlobal}, isHidden: ${isHidden}, Project Count: ${projects.size()}]"
         return "${name}" + (isGlobal ? " (Global)" : "") + (isHidden ? " (Hidden)" : "") + (projects.size() == 0 ? " (Unassigned)" : "")
     }
 
     def getTemplateMap() {
-        return [id: id, name: name, isGlobal: isGlobal, isHidden: isHidden]
+        return [id: id, name: name, viewName: viewName, isGlobal: isGlobal, isHidden: isHidden]
     }
 
 }

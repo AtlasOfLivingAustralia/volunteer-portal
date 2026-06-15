@@ -4,8 +4,12 @@ import au.com.bytecode.opencsv.CSVReader
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
+import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.input.BOMInputStream
 import org.apache.commons.lang3.StringEscapeUtils
 import org.springframework.dao.DataIntegrityViolationException
+
+import java.nio.charset.StandardCharsets
 
 class PicklistController {
 
@@ -37,7 +41,12 @@ class PicklistController {
     def uploadCsvFile() {
         if (userService.isInstitutionAdmin()) {
             def f = request.getFile('picklistFile')
-            CSVReader csvReader = f.inputStream.toCsvReader(['charset': 'UTF-8'])
+            //CSVReader csvReader = f.inputStream.toCsvReader(['charset': 'UTF-8'])
+            InputStream cleanStream = BOMInputStream.builder()
+                    .setInputStream(f.inputStream)
+                    .setByteOrderMarks(ByteOrderMark.UTF_8) // Explicitly target Excel's UTF-8 BOM
+                    .get()
+            CSVReader csvReader = new CSVReader(new InputStreamReader(cleanStream, StandardCharsets.UTF_8))
             picklistService.replaceItems(params.long('picklistId'), csvReader, params.institutionCode?.toString())
             updatedCsvMessage("${Picklist.get(params.long('picklistId')).name}/${params.institutionCode}")
             redirect(action: "manage", params: [picklistId: params.picklistId])
@@ -227,8 +236,9 @@ class PicklistController {
         def picklist = Picklist.get(params.long('picklistId'))
         if (picklist) {
             response.setHeader("Content-disposition", "attachment;filename=" + picklist.name + ".csv")
-            response.contentType = "text/csv"
-            OutputStreamWriter writer = new OutputStreamWriter(response.outputStream)
+            response.setContentType('text/csv;charset=utf-8')
+            OutputStreamWriter writer = new OutputStreamWriter(response.outputStream, StandardCharsets.UTF_8)
+            writer << '\uFEFF' // Write BOM for UTF-8
             writeItemsCsv(writer, picklist, params.institutionCode as String)
             writer.flush()
             writer.close()

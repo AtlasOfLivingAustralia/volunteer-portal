@@ -71,6 +71,10 @@
     /*display: initial;*/
 }
 
+.animalCount {
+    border-radius: 4px !important;
+}
+
 #ct-landing .btn-ct-landing {
     margin: 0 auto;
 }
@@ -458,7 +462,7 @@
     -webkit-border-radius: 18px;
     -moz-border-radius: 18px;
     border-radius: 20px;
-    line-height: 35px;
+    line-height: 29px;
     text-align: center;
     cursor: pointer;
 }

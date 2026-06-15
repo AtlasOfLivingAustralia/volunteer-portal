@@ -8,10 +8,10 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <g:if test="${project}">
-        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [userInstance?.displayName, project?.name ?: 'Unknown project'])}"/></title>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.titleProject', args: [cl.displayNameForUserId(id: userInstance.userId), project?.name ?: 'Unknown project'])}"/></title>
     </g:if>
     <g:else>
-        <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [userInstance?.displayName])}"/></title>
+        <title><cl:pageTitle title="${message(code: 'user.notebook.title', args: [cl.displayNameForUserId(id: userInstance.userId)])}"/></title>
     </g:else>
 
     <asset:stylesheet src="notebook-reset.css"/>
@@ -125,7 +125,7 @@
                         <g:set var="perspective" value="by me"/>
                     </g:if>
                     <g:else>
-                        <g:set var="perspective" value="by ${userInstance.displayName}"/>
+                        <g:set var="perspective" value="by ${cl.displayNameForUserId(id: userInstance.userId)}"/>
                     </g:else>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All tasks</span></g:link></li>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed ${perspective}</span></g:link></li>

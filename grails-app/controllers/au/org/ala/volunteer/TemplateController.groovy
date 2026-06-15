@@ -107,7 +107,7 @@ class TemplateController {
                 return
             }
 
-            def availableViews = templateService.getAvailableTemplateViews()
+            def availableViews = templateService.getAvailableTemplateViews(template.viewName)
             def projectUsageList = [:]
             def projectList = template.projects.sort { a, b -> a.institution?.name <=> b.institution?.name }
             def institutionName = ""
@@ -190,7 +190,7 @@ class TemplateController {
             try {
                 templateService.deleteTemplate(template)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'template.label', default: 'Template'), "'${template.name}'"])}"
-                redirect(action: "list", params: params)
+                redirect(action: "list")
             } catch (Exception e) {
                 String message = "${message(code: 'default.not.deleted.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
                 flash.message = message
@@ -199,7 +199,7 @@ class TemplateController {
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'template.label', default: 'Template'), params.id])}"
-            redirect(action: "list", params: params)
+            redirect(action: "list")
         }
     }
 
@@ -378,7 +378,7 @@ class TemplateController {
 
         Template template = Template.get(params.int("id"))
         String fieldType = params.fieldType
-        String classifier = params.fieldTypeClassifier
+        String classifier = URLDecoder.decode(params.fieldTypeClassifier ?: "", "UTF-8")
 
         if (template && fieldType) {
             def permissions = templateService.getTemplatePermissions(template)
@@ -398,7 +398,7 @@ class TemplateController {
                 def displayOrder = getLastDisplayOrder(template) + 1
                 FieldCategory category = params.category ?: FieldCategory.none
                 FieldType type = params.type ?: FieldType.text
-                def label = params.label ?: ""
+                def label = URLDecoder.decode(params.label ?: "", "UTF-8")
                 def field = new TemplateField(template: template, category: category, fieldType: fieldType, fieldTypeClassifier: classifier, displayOrder: displayOrder, defaultValue: '', type: type, label: label)
                 field.save(flush: true, failOnError: true)
 

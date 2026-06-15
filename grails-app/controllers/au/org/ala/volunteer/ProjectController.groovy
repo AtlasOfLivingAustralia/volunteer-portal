@@ -38,6 +38,7 @@ class ProjectController {
     def groovyPageRenderer
     def templateService
     def settingsService
+    def projectTypeService
     Closure<DSLContext> jooqContext
 
     /**
@@ -48,7 +49,7 @@ class ProjectController {
         def showTutorial = (params.showTutorial == "true")
 
         // If the tutorial has been requested but the field is empty, redirect to tutorial index.
-        if (showTutorial && projectInstance.tutorials.size() == 0) {
+        if (showTutorial && (!projectInstance.tutorialLinks && projectInstance.tutorials.size() == 0)) {
             redirect(controller: "tutorials", action: "index")
             return
         }
@@ -421,7 +422,7 @@ class ProjectController {
         }
 
         def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-        def projectTypes = ProjectType.listOrderByName()
+        def projectTypes = projectTypeService.getEnabledProjectTypes()
 
         [institutionList: institutionList, projectTypes: projectTypes]
     }
@@ -455,7 +456,7 @@ class ProjectController {
 
         if (project.errors.hasErrors()) {
             def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-            def projectTypes = ProjectType.listOrderByName()
+            def projectTypes = projectTypeService.getEnabledProjectTypes(project.projectType)
             render(view: 'create', model: [projectInstance: project, params: params, institutionList: institutionList, projectTypes: projectTypes])
             return
         } else {
@@ -463,7 +464,7 @@ class ProjectController {
                 log.error("Error creating project, reloading create page.")
                 flash.message = "An error occurred creating the Project."
                 def institutionList = (userService.isSiteAdmin() ? Institution.listApproved([sort: 'name', order: 'asc']) : userService.getAdminInstitutionList())
-                def projectTypes = ProjectType.listOrderByName()
+                def projectTypes = projectTypeService.getEnabledProjectTypes()
                 render(view: 'create', model: [params: params, institutionList: institutionList, projectTypes: projectTypes])
                 return
             }
@@ -534,7 +535,7 @@ class ProjectController {
 
             return [projectInstance: project,
                     templates      : editLists?.templates,
-                    projectTypes   : ProjectType.listOrderByName(),
+                    projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                     institutionList: editLists?.insts,
                     labelColourMap : editLists?.catColourMap,
                     sortedLabels   : editLists?.sortedLabels]
@@ -715,7 +716,7 @@ class ProjectController {
                 def editLists = getGeneralProjectLists(project)
                 render(view: "editGeneralSettings", model: [projectInstance: project,
                                                             templates      : editLists?.templates,
-                                                            projectTypes   : ProjectType.listOrderByName(),
+                                                            projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                                                             institutionList: editLists?.insts,
                                                             labelColourMap : editLists?.catColourMap,
                                                             sortedLabels   : editLists?.sortedLabels])
@@ -1407,8 +1408,8 @@ class ProjectController {
                                 [key: "archived", value: "Archived"],
                                 [key: "not-archived", value: "Not Archived"]]
 
-        params.sort = (params.sort ?: 'id')
-        params.order = (params.order ?: 'asc')
+        params.sort = (params.sort ?: 'dateCreated')
+        params.order = (params.order ?: 'desc')
         params.max = (params.max ?: 20)
         if (params.sort == 'status') {
             if (params.order == 'asc') params.sortFields = ['inactive', 'archived', 'id']
@@ -1720,6 +1721,17 @@ class ProjectController {
             log.error("Exception while creating image archive for $project", e)
             //os.close()
         }
+    }
+
+    def resetProjectSize() {
+        def project = Project.findById(params.long('id'))
+        if (!project || (!userService.isAdmin() && !userService.isInstitutionAdmin(project?.institution))) {
+            response.sendError(SC_FORBIDDEN, "you don't have permission")
+            return
+        }
+        projectService.projectSize(project)
+        flash.message = "Project size recalculated for ${project.name}."
+        redirect(action: 'editTaskSettings', params: params)
     }
 
     // Deprecated?

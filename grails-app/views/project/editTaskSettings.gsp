@@ -14,7 +14,8 @@
     <div class="alert alert-warning">
         There are <strong>${taskCount}</strong> <a
             href="${createLink(controller: 'task', action: 'list', id: projectInstance.id)}">tasks</a> loaded.<br />
-        Current disk usage: <cl:formatFileSize size="${projectInstance.sizeInBytes}"/> (${projectInstance.sizeInBytes} bytes)
+        Current disk usage: <cl:formatFileSize size="${projectInstance.sizeInBytes}"/>
+        <cl:ifSiteAdmin>- <a href="${createLink(controller: 'project', action: 'resetProjectSize', id: projectInstance.id)}">Reset disk usage</a></cl:ifSiteAdmin>
     </div>
 
 <div class="form-horizontal">

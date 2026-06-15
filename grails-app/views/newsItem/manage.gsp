@@ -204,7 +204,7 @@
             let url = "${createLink(controller: 'newsItem', action: 'toggleNewsItemStatus')}/" + newsItemId;
             const paramString = getQueryStringParams();
             if (paramString) url += "?" + paramString;
-             console.log("url: " + url);
+             // console.log("url: " + url);
 
             $('<form/>', { action: url, method: 'POST' }).append(
                 $('<input>', {type: 'hidden', id: 'verifyId', name: 'verifyId', value: newsItemId})

@@ -392,7 +392,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         then:
         1 * multimediaService.getImageUrl(multimedia) >> ""
-        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia, true) >> ""
 
         and:
         result.size() == 1 // One row, not counting headers
@@ -421,7 +421,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         then:
         1 * multimediaService.getImageUrl(multimedia) >> ""
-        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia, true) >> ""
 
         and:
         result.size() == 1 // One row, not counting headers
@@ -450,7 +450,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         then:
         1 * multimediaService.getImageUrl(multimedia) >> ""
-        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia, true) >> ""
 
         and:
         result.size() == 1 // One row, not counting headers
@@ -479,7 +479,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         then:
         1 * multimediaService.getImageUrl(multimedia) >> ""
-        1 * multimediaService.getImageThumbnailUrl(multimedia) >> ""
+        1 * multimediaService.getImageThumbnailUrl(multimedia, true) >> ""
 
         and:
         result.size() == 1 // One row, not counting headers

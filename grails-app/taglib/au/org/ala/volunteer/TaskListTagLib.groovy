@@ -6,6 +6,8 @@ class TaskListTagLib {
 
     def multimediaService
 
+  // Deprecated
+  /*
   def renderTaskList = { attrs, body ->
 
     def tasks = attrs.taskInstanceList
@@ -62,4 +64,5 @@ class TaskListTagLib {
     }
 
   }
+   */
 }

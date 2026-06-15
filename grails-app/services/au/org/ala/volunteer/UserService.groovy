@@ -783,7 +783,7 @@ class UserService {
         values.size() > 0 ? values[0] : ''
     }
 
-    void updateAllUsers() {
+    int updateAllUsers() {
         List<User> updates = []
         def users = User.all
 
@@ -792,7 +792,7 @@ class UserService {
         try {
             results = authService.getUserDetailsById(ids, true)
         } catch (Exception e) {
-            log.warn("couldn't get user details from web service", e)
+            log.warn("UpdateAllUsers: Couldn't get user details from web service", e)
         }
 
 
@@ -803,7 +803,10 @@ class UserService {
                     it.firstName = result.firstName
                     it.lastName = result.lastName
                     it.email = result.userName
-                    it.organisation = result.organisation
+                    it.organisation = result.organisation?.size() > 255 ? result.organisation.take(243) + "[truncated]" : result.organisation
+                    if (result.organisation?.size() > 255) {
+                        log.warn("UpdateAllUsers: User ${it.userId} has an organisation that exceeds the database field length. Truncating and adding [truncated] suffix.")
+                    }
                     updates << it
                 }
             }
@@ -814,6 +817,8 @@ class UserService {
             def dbIds = updates*.id
             log.debug("Updated ids ${dbIds}")
         }
+
+        return updates.size()
     }
 
     /**

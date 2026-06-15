@@ -165,7 +165,7 @@
                     return function(value) {
 
                         var rule = transcribeValidation.rules[ruleName];
-                        console.log(rule);
+                        // console.log(rule);
                         if (rule) {
                             var element = $(grid.getActiveCellNode()).find("input, select");
                             var result = rule.test(value, element);

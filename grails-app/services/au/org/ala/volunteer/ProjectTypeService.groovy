@@ -42,4 +42,21 @@ class ProjectTypeService {
         return "${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}projectType/${projectType.name}.png"
     }
 
+    /**
+     * Returns a list of project types that are enabled for use. This is used to filter out project
+     * types that are not currently supported or should not be available for selection when creating or editing
+     * projects.
+     */
+    def getEnabledProjectTypes(ProjectType projectType = null) {
+        def projectTypes = ProjectType.listOrderByName()
+
+        // Check ProjectType.DISABLED_TYPES for disabled types and remove them from the list before returning. If the
+        // provided projectType is in the disabled list, then do not remove it.
+        def enabledProjectTypes = projectTypes.findAll {
+            !ProjectType.DISABLED_TYPES.contains(it.name) || it.name == projectType?.name
+        }
+        //log.debug("Enabled project types: ${projectTypes*.name}")
+
+        return enabledProjectTypes
+    }
 }

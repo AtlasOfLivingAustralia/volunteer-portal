@@ -123,6 +123,46 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well" style="margin-top: 10px">
+                        <h3>S3 Configuration</h3>
+                        <hr/>
+                        <button id="test-s3" class="btn btn-default" data-href="${createLink(action: 'testS3')}">Test S3</button>
+                        <span id="test-s3-spinner" class="hidden"><cl:spinner/></span>
+
+                        <div id="test-s3-results" class="hidden" style="margin-top: 15px">
+                            <div id="test-s3-message" class="alert" role="alert"></div>
+                            <table class="table table-condensed table-bordered">
+                                <tbody>
+                                <tr>
+                                    <th>Status</th>
+                                    <td id="test-s3-status"></td>
+                                </tr>
+                                <tr>
+                                    <th>Enabled</th>
+                                    <td id="test-s3-enabled"></td>
+                                </tr>
+                                <tr>
+                                    <th>Region</th>
+                                    <td id="test-s3-region"></td>
+                                </tr>
+                                <tr>
+                                    <th>Bucket</th>
+                                    <td id="test-s3-bucket"></td>
+                                </tr>
+                                <tr>
+                                    <th>Auth Mode</th>
+                                    <td id="test-s3-auth-mode"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <pre id="test-s3-json"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -161,6 +201,56 @@
                 $("#queueLength").html(results.queueLength);
             });
         }
+
+        $('#test-s3').click(function(e) {
+            e.preventDefault();
+
+            var $button = $(this);
+            var $spinner = $('#test-s3-spinner');
+            var $results = $('#test-s3-results');
+            var $message = $('#test-s3-message');
+
+            $button.prop('disabled', true);
+            $spinner.removeClass('hidden');
+            $results.addClass('hidden');
+
+            $.ajax({
+                url: $button.data('href'),
+                dataType: 'json'
+            }).done(function(results) {
+                var status = results.status || 'UNKNOWN';
+                var alertClass = status === 'READY' ? 'alert-success' : (status === 'DISABLED' || status === 'UNCHECKED' ? 'alert-warning' : 'alert-danger');
+
+                $message
+                    .removeClass('alert-success alert-warning alert-danger')
+                    .addClass(alertClass)
+                    .text(results.message || 'S3 test completed.');
+
+                $('#test-s3-status').text(status);
+                $('#test-s3-enabled').text(results.s3Enabled);
+                $('#test-s3-region').text(results.region || '');
+                $('#test-s3-bucket').text(results.bucket || '');
+                $('#test-s3-auth-mode').text(results.authMode || '');
+                $('#test-s3-json').text(JSON.stringify(results, null, 2));
+                $results.removeClass('hidden');
+            }).fail(function(xhr) {
+                $message
+                    .removeClass('alert-success alert-warning alert-danger')
+                    .addClass('alert-danger')
+                    .text('S3 test failed: ' + (xhr.statusText || 'Unexpected error'));
+
+                $('#test-s3-status').text(xhr.status || 'ERROR');
+                $('#test-s3-enabled').text('');
+                $('#test-s3-region').text('');
+                $('#test-s3-bucket').text('');
+                $('#test-s3-auth-mode').text('');
+                $('#test-s3-json').text(xhr.responseText || '');
+                $results.removeClass('hidden');
+            }).always(function() {
+                $button.prop('disabled', false);
+                $spinner.addClass('hidden');
+            });
+        });
 
         var qEditor = CodeMirror.fromTextArea(document.getElementById("query"), {
             matchBrackets: true,

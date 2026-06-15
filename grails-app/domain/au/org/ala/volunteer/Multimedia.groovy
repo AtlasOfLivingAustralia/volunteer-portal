@@ -28,4 +28,15 @@ class Multimedia implements Serializable {
     mimeType nullable: true, maxSize: 50
     task nullable: true
   }
+
+  String toString() {
+    // Multiline string for better readability in logs, especially when there are multiple multimedia items associated with a task.
+    StringBuilder sb = new StringBuilder()
+    sb.append("Multimedia [\n")
+    sb.append("  id: ${id},\n")
+    sb.append("  filePath: ${filePath},\n")
+    sb.append("  filePathToThumbnail: ${filePathToThumbnail},\n")
+    sb.append("]")
+    return sb.toString()
+  }
 }

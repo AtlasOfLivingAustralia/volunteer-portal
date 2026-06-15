@@ -160,14 +160,14 @@ $(function($) {
     });
 
     function doSearch() {
-        console.log(window.location.search);
+        // console.log(window.location.search);
         const params = new URLSearchParams(window.location.search);
         let statulabelFiltersFilter = params.get('labelFilter');
         let q = params.get('q');
 
         var labelFilter = $('.labelFilter').val();
         q = encodeURIComponent($('#searchbox').val());
-        console.log(q);
+        // console.log(q);
 
         let hasParams = false;
         let url = "${createLink(controller: 'user', action: 'adminList')}?";
@@ -183,7 +183,7 @@ $(function($) {
             url += "q=" + q;
         }
 
-        console.log(url);
+        // console.log(url);
         window.location = url;
     }
 

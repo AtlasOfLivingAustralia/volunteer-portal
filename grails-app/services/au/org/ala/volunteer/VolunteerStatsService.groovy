@@ -182,7 +182,7 @@ class VolunteerStatsService {
             } else if (topic instanceof TaskForumTopic) {
                 def task = ((TaskForumTopic) topic).task
                 forumName = task.project.name
-                thumbnail = multimediaService.getImageThumbnailUrl(task.multimedia?.first())
+                thumbnail = multimediaService.getImageThumbnailUrlForDisplay(task.multimedia?.first())
                 forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
             } else {
                 forumName = "General Discussion"
@@ -314,7 +314,7 @@ class VolunteerStatsService {
             sw2.reset().start()
             def thumbnails = thumbnailLists.collect { LatestTranscribersTask t ->
                 def task = Task.findById (t.taskId)
-                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrl(task.multimedia?.first())]
+                [id: t.id, thumbnailUrl: multimediaService.getImageThumbnailUrlForDisplay(task.multimedia?.first())]
             }
             log.debug("Took ${sw2.stop().elapsed(MILLISECONDS)}ms to compile thumbnail info for user ${userId}")
 
