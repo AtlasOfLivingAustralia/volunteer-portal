@@ -195,7 +195,7 @@ class ExportService {
         OutputStream fout = response.getOutputStream()
         OutputStream bos = new BufferedOutputStream(fout)
         OutputStreamWriter outputwriter = new OutputStreamWriter(bos, StandardCharsets.UTF_8)
-        ouputwriter << '\uFEFF' // Write BOM for UTF-8
+        outputwriter << '\uFEFF' // Write BOM for UTF-8
 
         CSVWriter writer = new CSVWriter(outputwriter)
         // write header line (field names)
