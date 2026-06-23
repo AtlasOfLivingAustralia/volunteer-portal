@@ -279,8 +279,9 @@ class StatsController {
         def result = statsService.getInstitutionRawData(institution)
 
         try {
-            new CSVWriter(new OutputStreamWriter(response.outputStream, Charsets.UTF_8)).withCloseable { CSVWriter writer ->
-                writer << '\uFEFF' // Write UTF-8 BOM for Excel compatibility
+            def outputStream = new OutputStreamWriter(response.outputStream, Charsets.UTF_8)
+            outputStream << '\uFEFF' // Write UTF-8 BOM for Excel compatibility
+            new CSVWriter(outputStream).withCloseable { CSVWriter writer ->
                 // write header line (field names)
                 writer.writeNext(headers as String[])
 
