@@ -2,7 +2,7 @@
     <li class="hidden-xs">
         <div class="navbar-login logged-in">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-2 col-lg-3">
                     <p class="text-center">
                         <a href="//en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="${message(code:"avatar.customise.label")}">
                             <img src="//www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=80"
@@ -11,9 +11,10 @@
                     </p>
                 </div>
 
-                <div class="col-lg-8">
-                    <p class="text-left word-wrap-break-word"><strong>${cl.showCurrentUserName()}</strong><br/><a
-                            href="#">${cl.showCurrentUserEmail()}</a></p>
+                <div class="col-10 col-lg-9">
+                    <p class="text-left word-wrap-break-word"><strong>${cl.showCurrentUserName()}</strong><br/>
+                        <a href="#" class="profile-email">${cl.showCurrentUserEmail()}</a>
+                    </p>
                 </div>
             </div>
         </div>

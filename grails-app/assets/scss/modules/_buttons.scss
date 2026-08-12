@@ -1,6 +1,6 @@
 .btn {
 	border: transparent;
-	border-radius: 30px;
+	border-radius: 10px;
   	&.btn-default {
 	  border: 1px solid $btn-default-border;
 	}
@@ -46,13 +46,13 @@
 .btn-group {
 	&.btn-group-sm {
 	  .btn {
-		border-radius: 30px;
+		border-radius: 10px;
 		padding: 5px 10px;
 	  }
 	}
 	&.btn-group-xs {
 	  .btn {
-		border-radius: 30px;
+		border-radius: 10px;
 		padding: 1px 5px;
 	  }
 	}

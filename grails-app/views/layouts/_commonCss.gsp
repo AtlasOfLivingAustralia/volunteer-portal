@@ -42,4 +42,20 @@
     .primary-color {
         color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
+
+    @media (max-width: 991.98px) {
+        .navbar .navbar-collapse.show {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .navbar {
+            overflow: visible;
+        }
+
+        .navbar .navbar-nav {
+            position: static;
+        }
+    }
 </style>

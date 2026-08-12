@@ -65,7 +65,7 @@
                                     <g:hiddenField name="inactive" value="true"/>
                                 </g:else>
                                 <div class="btn-group">
-                                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <a class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                         <i class="fa fa-cog"></i>&nbsp;Actions
                                         <span class="caret"></span>
                                     </a>

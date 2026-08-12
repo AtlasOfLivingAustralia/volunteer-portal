@@ -23,7 +23,7 @@
                             </cl:isNotLoggedIn>
                             <cl:isLoggedIn>
                                 <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                         <span class="glyphicon glyphicon-user"></span>
                                         <g:message code="action.myProfile" />
                                         <span class="glyphicon glyphicon-chevron-down"></span>

@@ -339,7 +339,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
 
       // var $ctqn = $('#ct-questions-nav');
       // $ctqn.find('button.active').removeClass('active');
-      // $ctqn.find('button[data-target="'+to+'"]').addClass('active');
+      // $ctqn.find('button[data-bs-target="'+to+'"]').addClass('active');
 
       var summary = to == '#ct-animals-summary';
       $('#btnNext').toggleClass('hidden', summary);

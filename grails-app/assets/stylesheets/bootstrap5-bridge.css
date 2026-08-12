@@ -1,0 +1,5 @@
+.pull-left { float: left; }
+.pull-right { float: right; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.img-responsive { max-width: 100%; height: auto; }

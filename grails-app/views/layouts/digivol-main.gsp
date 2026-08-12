@@ -23,79 +23,76 @@
     <![endif]-->
 </head>
 <body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <g:link uri="/" class="navbar-brand"><asset:image src="logoDigivol.png"/></g:link>
-        </div>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation" role="button">
+            <span class="visually-hidden">Toggle navigation</span>
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div id="navbar" class="navbar-collapse collapse">
+        <g:link uri="${grailsApplication.config.getProperty("grails.serverURL", String) ?: '/'}" class="navbar-brand digivol-logo">
+            <asset:image src="logoDigivol.png"/>
+        </g:link>
 
+        <div id="navbar" class="collapse navbar-collapse">
             <div class="custom-search-input">
                 <g:form controller="project" action="list" method="GET" >
-                <div class="input-group">
-                    <g:textField name="q" class="form-control input-lg" placeholder="Search e.g. Bivalve" />
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" id="header-search" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
-                </div>
+                    <div class="input-group">
+                        <g:textField name="q" class="form-control input-lg header-search-input" placeholder="Search e.g. Bivalve" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" id="header-search" type="submit">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
                 </g:form>
             </div>
 
-            <ul class="nav navbar-nav navbar-right main-menu">
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}"><g:link
-                        uri="/">Home</g:link>
+            <ul class="navbar-nav ms-auto main-menu">
+                <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'bvp' ? 'active' : ''}">
+                    <g:link uri="${grailsApplication.config.getProperty("grails.serverURL", String) ?: '/'}" class="nav-link">Home</g:link>
                 </li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}"><g:link
-                        controller="institution" action="list">Institutions</g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}"><g:link
-                        controller="project" action="list">Expeditions</g:link></li>
-               %{-- <li class="${pageProperty(name: 'page.selectedNavItem') == 'wildlife-spotter' ? 'active' : ''}"><g:link
-                        controller="project" action="wildlifespotter">Wildlife Spotter</g:link></li>--}%
+                <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'institutions' ? 'active' : ''}">
+                    <g:link controller="institution" action="list" class="nav-link">Institutions</g:link>
+                </li>
+                <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'expeditions' ? 'active' : ''}">
+                    <g:link controller="project" action="list" class="nav-link">Expeditions</g:link>
+                </li>
                 <cl:showLandingPage />
-
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}"><g:link
-                        controller="tutorials" action="index">Tutorials</g:link></li>
-                <li class="${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}"><g:link
-                        controller="forum" action="index">Forum</g:link></li>
-                %{--<li class="${pageProperty(name: 'page.selectedNavItem') == 'contact' ? 'active' : ''}"><g:link--}%
-                        %{--controller="contact" action="index">Contact Us</g:link></li>--}%
+                <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'tutorials' ? 'active' : ''}">
+                    <g:link controller="tutorials" action="index" class="nav-link">Tutorials</g:link>
+                </li>
+                <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'forum' ? 'active' : ''}">
+                    <g:link controller="forum" action="index" class="nav-link">Forum</g:link>
+                </li>
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
-                    <li>
-                        <cl:loginLink><i class="glyphicon glyphicon-user"></i> Log in</cl:loginLink>
+                    <li class="nav-item">
+                        <cl:loginLink class="nav-link"><i class="glyphicon glyphicon-user"></i> Log in</cl:loginLink>
                     </li>
                 </cl:isNotLoggedIn>
                 <cl:isLoggedIn>
-                    <li class="dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <li class="nav-item dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span>
                            <!-- My Profile -->
-                            <g:message code="action.myProfile" /> <span class="hidden unread-count label label-danger label-as-badge"></span>
+                            <g:message code="action.myProfile" />
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
 
                         <g:render template="/layouts/profileDropDown"/>
                     </li>
                     <cl:ifAdmin>
-                        <li class="${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
-                            <a href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
+                        <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
+                            <a class="nav-link" href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
                         </li>
                     </cl:ifAdmin>
                 </cl:isLoggedIn>
-
-            <!-- Logged In Ends -->
-
+                <!-- Logged In Ends -->
             </ul>
+
+
         </div>
     </div>
 </nav>
@@ -181,7 +178,7 @@
                 <div class="col-sm-12">
                     <span class="footer-brand"><asset:image src="logoDigivolInverted.png"/></span>
 
-                    <div class="social-icons pull-right">
+                    <div class="social-icons float-end">
                         <g:link controller="newsItem" action="index" class="btn-lg" target="_blank" title="DigiVol News"><i class="fa fa-newspaper-o fa-lg"></i></g:link>
                         <a href="https://www.facebook.com/AMDigiVol/" class="btn-lg" target="_blank" title="DigiVol on Facebook"><i class="fa fa-facebook fa-lg"></i></a>
                         <a href="https://twitter.com/AMDigiVol" class="btn-lg" target="_blank" title="DigiVol on Twitter/X"><i class="fa fa-twitter fa-lg"></i></a>

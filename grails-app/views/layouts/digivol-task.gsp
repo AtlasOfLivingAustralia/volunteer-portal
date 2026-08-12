@@ -306,7 +306,7 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
+                        data-bs-dismiss="modal">Cancel</button>
                 <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
             </div>
         </div>
@@ -924,7 +924,7 @@
     var submitRequiresConfirmation = false;
     var $submitConfirm = $("#submitConfirmModal");
 
-    $submitConfirm.on("hide", function() {    // remove the event listeners when the dialog is dismissed
+    $submitConfirm.on("hide.bs.modal", function() {    // remove the event listeners when the dialog is dismissed
         $("#submit-confirm-ok").off("click");
     });
 
@@ -1017,15 +1017,19 @@
 
     function submitFormWithAction(action) {
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
+        const submitConfirmModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('submitConfirmModal'));
+
         if (submitRequiresConfirmation && !dontConfirm) {
             // capture action in closure so we can invoke the correct doSubmitWithAction
             $("#submit-confirm-ok").on("click", function(e) {
                 amplify.store("bvp_transcribe_dontconfirm", $('#submit-dont-confirm').prop('checked'));
                 doSubmitWithAction(action);
-                $("#submitConfirmModal").modal('hide');     // dismiss the dialog
+                //$("#submitConfirmModal").modal('hide');     // dismiss the dialog
+                submitConfirmModal.hide();
             });
 
-            $('#submitConfirmModal').modal('show');
+            //$('#submitConfirmModal').modal('show');
+            submitConfirmModal.show();
         } else {
             doSubmitWithAction(action);
         }

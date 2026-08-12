@@ -286,17 +286,17 @@
           });
         }
 
-        var systemMessageMax = 255;
+        const systemMessageMax = 255;
         $('#count_message').html($('#systemMessage').val().length + ' / ' + systemMessageMax );
-        $('#hero_count_message').html($('#hero_count_message').val().length + ' / ' + systemMessageMax );
+        $('#hero_count_message').html($('#heroImageAttribution').val().length + ' / ' + systemMessageMax );
 
         $('#systemMessage').keyup(function() {
-            var text_length = $('#systemMessage').val().length;
+            let text_length = $('#systemMessage').val().length;
             $('#count_message').html(text_length + ' / ' + systemMessageMax);
         });
 
         $('#heroImageAttribution').keyup(function() {
-            var text_length = $('#heroImageAttribution').val().length;
+            let text_length = $('#heroImageAttribution').val().length;
             $('#hero_count_message').html(text_length + ' / ' + systemMessageMax);
         });
     });
