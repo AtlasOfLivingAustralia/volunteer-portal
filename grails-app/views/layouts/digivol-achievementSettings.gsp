@@ -38,8 +38,8 @@
                 </div>
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
-                        <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${achievementDescriptionInstance?.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                        <div class="panel-heading text-end" >
+                            <h4 class="float-start">${achievementDescriptionInstance?.name} - <g:pageProperty name="page.pageTitle"/></h4>
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>
                             </div>

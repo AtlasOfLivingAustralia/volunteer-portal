@@ -48,7 +48,7 @@
             <p>
                 This tool is to maintain users and specific roles within your institutions or expeditions as validators or forum moderators.<br>
                 This section is for adding new users to roles.
-                <a data-toggle="collapse" href="#collapseInstructions" aria-expanded="false"
+                <a data-bs-toggle="collapse" href="#collapseInstructions" aria-expanded="false"
                    aria-controls="collapseInstructions">Click here for instructions</a>.
             </p>
             <div class="collapse" id="collapseInstructions">
@@ -135,7 +135,7 @@
             <p>
                 This section allows Institution Administrators to manage the existing user roles within their institutions
                 and expeditions. You can filter the roles by institution, expedition and/or by user.<br />
-                <a data-toggle="collapse" href="#collapseInformation" aria-expanded="false"
+                <a data-bs-toggle="collapse" href="#collapseInformation" aria-expanded="false"
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">

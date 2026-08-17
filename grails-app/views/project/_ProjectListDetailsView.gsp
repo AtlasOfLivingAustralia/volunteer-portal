@@ -12,7 +12,7 @@
                                 <div class="text-center" style="padding-left: 50px; padding-bottom: 20px;">
                                     <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
                                     <div class="btn-group ">
-                                        <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
+                                        <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-bs-toggle="dropdown" href="#">
                                             <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
                                         </button>
                                         <ul class="dropdown-menu">

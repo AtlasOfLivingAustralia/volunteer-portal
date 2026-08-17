@@ -298,7 +298,9 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
       //var carousel = $('#ct-full-image-carousel');
       var carousel = detail.find('.carousel');
       carousel.carousel({interval: false});
-      detail.find('[title]').tooltip();
+      detail.find('[title]').each(function() {
+        new bootstrap.Tooltip(this);
+      });
 
       switchCtPage('#ws-dynamic-container');
     }
@@ -499,7 +501,10 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
     syncSelections();
 
     // enable tooltips
-    $('[title]').tooltip();
+    //$('[title]').tooltip();
+    $('[title]').each(function() {
+      new bootstrap.Tooltip(this);
+    });
 
   });
 

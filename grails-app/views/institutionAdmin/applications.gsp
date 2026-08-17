@@ -20,7 +20,7 @@
 
     <cl:ifSiteAdmin>
         <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
                 <span class="caret"></span>
             </a>
@@ -108,7 +108,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
 
                 <h3>Quick Create Institution</h3>
             </div>
@@ -122,7 +122,7 @@
             </div>
 
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
                 <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
             </div>
         </div>

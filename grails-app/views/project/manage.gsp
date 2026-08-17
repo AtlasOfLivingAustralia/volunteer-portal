@@ -27,7 +27,7 @@
             <p>
                 This page is your expedition management console. It lists all expeditions within your institution, displaying
                 information such as active and archive status and disk usage.<br/>
-                <a data-toggle="collapse" href="#collapseInformation" aria-expanded="false"
+                <a data-bs-toggle="collapse" href="#collapseInformation" aria-expanded="false"
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">

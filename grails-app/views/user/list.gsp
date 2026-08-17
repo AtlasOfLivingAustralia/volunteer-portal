@@ -38,7 +38,7 @@
                         <tr>
                             <th colspan="5" style="text-align: right">
                                 <cl:ifAdmin>
-                                    <g:link controller="admin" action="updateUsers" class="btn btn-default pull-left">Update Users</g:link>
+                                    <g:link controller="admin" action="updateUsers" class="btn btn-default float-start">Update Users</g:link>
                                 </cl:ifAdmin>
                                 <div class="custom-search-input body">
                                     <div class="input-group">
@@ -79,7 +79,7 @@
                                 <td><img src="//www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=80"
                                          class="avatar"/>
                                 </td>
-                                <td style="width:300px;" class="text-left">
+                                <td style="width:300px;" class="text-start">
                                     <g:link controller="user" action="show" id="${userInstance.id}"><cl:displayNameForUserId
                                             id="${userInstance.userId}"/></g:link>
                                     <g:if test="${userInstance.userId == currentUser}">(that's you!)</g:if>

@@ -53,7 +53,8 @@
 
                 $("#searchbox").focus();
 
-                $('[data-toggle="tooltip"]').tooltip();
+                //$('[data-bs-toggle="tooltip"]').tooltip();
+                new bootstrap.Tooltip($('[data-bs-toggle="tooltip"]'));
 
             });
 
@@ -127,14 +128,14 @@
                         <div class="thumbnail institution">
                             <div class="institution-settings-btn">
                                 <cl:ifInstitutionAdmin institution="${inst}">
-                                    <a class="btn btn-warning btn-sm pull-right" title="Settings" data-toggle="tooltip"
+                                    <a class="btn btn-warning btn-sm float-end" title="Settings" data-bs-toggle="tooltip"
                                             href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
                                             class="fa fa-cog"></i></a>
                                 </cl:ifInstitutionAdmin>
                             </div>
                             <div class="logo-centre">
                                 <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                    <img class="img-responsive cropme" src="<cl:institutionLogoUrl id="${inst.id}"/>" style="max-height: 200px;"/>
+                                    <img class="img-fluid cropme" src="<cl:institutionLogoUrl id="${inst.id}"/>" style="max-height: 200px;"/>
                                 </a>
                             </div>
                             <div class="caption">

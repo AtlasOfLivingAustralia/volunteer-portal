@@ -3,8 +3,8 @@
     <div class="col-md-12">
         <h3>Staged <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> (${images.size()})
 
-            <div class="btn-group pull-right">
-                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+            <div class="btn-group float-end">
+                <a class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Actions
                     <span class="caret"></span>
                 </a>

@@ -81,7 +81,7 @@
                                                 value="${message(code: 'upload.picklist.label', default: 'Upload')}"
                                                 action="uploadCsvData"/>
                                 <a href="#picklistModal" id="upload-picklist-file" role="button" class="btn btn-default"
-                                   data-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
+                                   data-bs-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
                                 <button id="sort-button" type="button" class="btn btn-default" title="Sort list"><i class="fa fa-arrow-down"></i>
                                 </button>
                                 <button id="reverse-button" type="button" class="btn btn-default" title="Reverse list order"><i
@@ -104,7 +104,7 @@
                 <g:uploadForm class="form-horizontal" action="uploadCsvFile">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
 
                         <h3 id="picklistModalLabel">Upload picklist file</h3>
                     </div>
@@ -139,7 +139,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+                        <button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">Close</button>
                         <input class="btn btn-primary" type="submit"/>
                     </div>
                 </g:uploadForm>

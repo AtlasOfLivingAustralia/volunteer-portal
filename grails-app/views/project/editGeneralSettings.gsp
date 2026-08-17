@@ -48,7 +48,7 @@
           optionKey="id"
           value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
-        <div id="institution-link-icon" class="col-md-3 control-label text-left">
+        <div id="institution-link-icon" class="col-md-3 control-label text-start">
             <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
                 action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
         </div>
@@ -68,7 +68,7 @@
         <div class="col-md-6">
             %{-- <g:textField class="form-control" maxlength="500" name="shortDescription" value="${projectInstance.shortDescription}"/> --}%
             <g:textArea class="form-control" name="shortDescription" maxlength="500" rows="5" value="${projectInstance.shortDescription}" />
-            <span class="pull-right label label-default" id="count_message"></span>
+            <span class="float-end label label-default" id="count_message"></span>
         </div>
     </div>
 

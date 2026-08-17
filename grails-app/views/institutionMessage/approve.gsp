@@ -23,7 +23,7 @@
         %>
 
         <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
                 <span class="caret"></span>
             </a>

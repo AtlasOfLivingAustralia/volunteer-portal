@@ -34,7 +34,7 @@
         <div class="panel-body">
             <p>
                 This tool allows Administrators to manage the templates for transcriptions in expeditions. <br/>
-                <a data-toggle="collapse" href="#collapseInformation" aria-expanded="false"
+                <a data-bs-toggle="collapse" href="#collapseInformation" aria-expanded="false"
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">

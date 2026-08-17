@@ -47,7 +47,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-2 text-right">
+                        <div class="col-md-2 text-end">
                             <label for="add-user">Add User:</label>
                         </div>
                         <div class="col-md-4">

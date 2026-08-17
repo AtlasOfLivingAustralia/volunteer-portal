@@ -48,7 +48,7 @@
             <p><strong>Upload CSV</strong></p>
             <g:if test="${flash.message}">
                 <div class="alert">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-bs-dismiss="alert">&times;</button>
                     ${flash.message}
                 </div>
             </g:if>

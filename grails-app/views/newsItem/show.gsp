@@ -29,7 +29,7 @@
                         </div>
                         <div class="news-item__text">
                             <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
-                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive news-image" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid news-image" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
                             </cl:ifNewsItemHasThumb>
                             ${raw(newsItem?.content)}
                         </div>

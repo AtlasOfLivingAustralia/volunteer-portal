@@ -23,7 +23,7 @@
                             <div class="thumbnail row-style">
                                 <div class="row">
                                     <div class="col-xs-3">
-                                        <a name="${b.name}"><img class="img-responsive" src="${cl.achievementBadgeUrl(achievement:  b)}"></a>
+                                        <a name="${b.name}"><img class="img-fluid" src="${cl.achievementBadgeUrl(achievement:  b)}"></a>
                                     </div>
 
                                     <div class="col-xs-9">

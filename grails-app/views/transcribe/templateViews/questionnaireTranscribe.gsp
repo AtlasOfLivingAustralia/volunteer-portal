@@ -82,7 +82,7 @@
                                         <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}"/>
                                         <tr>
                                             <td><g:fieldValue bean="${f.field}" field="uiLabel"/></td>
-                                            <td><span id="validation-${name}" class="pull-right validation pointer"
+                                            <td><span id="validation-${name}" class="float-end validation pointer"
                                                       data-target-field="${name}"></span><span id="display-${name}"></span>
                                             </td>
                                         </tr>
@@ -96,9 +96,9 @@
                 <div class="col-xs-12">
 
                     <div class="transcription-actions">
-                        <button id="carousel-control-right" type="button" class="btn btn-default pull-right btn-next qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
+                        <button id="carousel-control-right" type="button" class="btn btn-default float-end btn-next qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
                         <g:if test="${validator}">
-                            <div class="btn-group pull-right">
+                            <div class="btn-group float-end">
                                 <button type="button" id="btnValidate" class="btn btn-default btn-next bvp-submit-button">
                                     ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                 </button>
@@ -108,10 +108,10 @@
                             </div>
                         </g:if>
                         <g:else>
-                            <button id="btnSave" type="button" class="btn btn-default pull-right btn-next bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
-                            <button id="btnSavePartial" type="button" class="btn btn-default pull-right">Save <i class="fa fa-check fa-sm"></i></button>
+                            <button id="btnSave" type="button" class="btn btn-default float-end btn-next bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
+                            <button id="btnSavePartial" type="button" class="btn btn-default float-end">Save <i class="fa fa-check fa-sm"></i></button>
                         </g:else>
-                        <button type="button" class="btn btn-default pull-left qt-previous"><i class="fa fa-chevron-left fa-sm"></i> Back</button>
+                        <button type="button" class="btn btn-default float-start qt-previous"><i class="fa fa-chevron-left fa-sm"></i> Back</button>
                     </div>
                 </div>
             </div>
@@ -260,7 +260,8 @@
                 badgeType: badgeType,
                 iconType: iconType
               });
-              $badge.tooltip();
+              //$badge.tooltip();
+              new bootstrap.Tooltip($badge);
 
               if (fieldsSeen[id]) {
                 var $inline = $('#inline-validation-'+id);
@@ -289,7 +290,8 @@
         });
 
         // enable tooltips
-        $('[title]').tooltip();
+        //$('[title]').tooltip();
+        new bootstrap.Tooltip($('[title]'));
 
     <g:set var="okCaption" value="Submit for validation anyway"/>
     <g:set var="cancelCaption" value="Let me fix the marked fields"/>

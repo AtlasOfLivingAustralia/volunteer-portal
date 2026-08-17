@@ -86,7 +86,7 @@
 
 
             <div class="transcription-branding">
-                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-responsive institution-logo-main pull-left">
+                <img src="<g:transcriptionLogoUrl id="${taskInstance?.project?.institution}"/>" class="img-fluid institution-logo-main float-start">
                 <h1><g:link controller="project" action="show" id="${taskInstance?.project?.id}">${taskInstance?.project?.name}</g:link> ${taskInstance?.externalIdentifier}</h1>
                 <h2><g:transcribeSubheadingLine task="${taskInstance}" recordValues="${recordValues}" sequenceNumber="${sequenceNumber}"/></h2>
             </div>
@@ -300,7 +300,7 @@
 
             <div class="modal-footer">
                 <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
-                        data-dismiss="modal">Cancel</button>
+                        data-bs-dismiss="modal">Cancel</button>
                 <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
             </div>
         </div>
@@ -843,10 +843,12 @@
           $("#submit-confirm-ok").on("click", function(e) {
             amplify.store("bvp_transcribe_dontconfirm", $('#submit-dont-confirm').prop('checked'));
             doSubmitWithAction(action);
-            $("#submitConfirmModal").modal('hide');     // dismiss the dialog
+            //$("#submitConfirmModal").modal('hide');     // dismiss the dialog
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('submitConfirmModal')).hide();
           });
 
-          $('#submitConfirmModal').modal('show');
+          //$('#submitConfirmModal').modal('show');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('submitConfirmModal')).show();
         } else {
           doSubmitWithAction(action);
         }

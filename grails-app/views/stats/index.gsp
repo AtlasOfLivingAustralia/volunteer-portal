@@ -48,19 +48,19 @@
                                     <table width="100%">
                                         <tr data-ng-if="statsCtrl.showInstitutionCounts">
                                             <td><b>New Volunteers<cl:ifNotSiteAdmin> for this Institution</cl:ifNotSiteAdmin>*:</b></td>
-                                            <td class="text-right">{{ statsCtrl.newVolunteers }}</td>
+                                            <td class="text-end">{{ statsCtrl.newVolunteers }}</td>
                                         </tr>
                                         <tr>
                                             <td><b>Total New Volunteers for DigiVol*:</b></td>
-                                            <td class="text-right">{{ statsCtrl.cachedNewVolunteers }}</td>
+                                            <td class="text-end">{{ statsCtrl.cachedNewVolunteers }}</td>
                                         </tr>
                                         <tr data-ng-if="statsCtrl.showInstitutionCounts">
                                             <td><b>Total Volunteers<cl:ifNotSiteAdmin> for this Institution</cl:ifNotSiteAdmin></b>*:</td>
-                                            <td class="text-right">{{ statsCtrl.totalVolunteers }}</td>
+                                            <td class="text-end">{{ statsCtrl.totalVolunteers }}</td>
                                         </tr>
                                         <tr>
                                             <td><b>Total DigiVol Volunteers:</b></td>
-                                            <td class="text-right">{{ statsCtrl.cachedTotalVolunteers }}</td>
+                                            <td class="text-end">{{ statsCtrl.cachedTotalVolunteers }}</td>
                                         </tr>
                                     </table>
                                     <p>* Volunteers with a volunteer score.</p>

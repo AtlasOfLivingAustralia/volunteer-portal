@@ -12,7 +12,7 @@
     <div class="col-md-8">
         <div class="row">
             <div class="col-md-10">
-                <button type="button" class="btn btn-info pull-right" id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
+                <button type="button" class="btn btn-info float-end" id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
             </div>
 
             <div class="col-md-2">

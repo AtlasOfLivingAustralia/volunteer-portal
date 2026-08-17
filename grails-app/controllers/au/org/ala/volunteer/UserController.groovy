@@ -806,22 +806,6 @@ class UserController {
         [userInstance: user, recentTasks: tasks]
     }
 
-    def socialFragment() {
-        def user = User.get(params.int("id"))
-
-        def recentPosts = forumService.getRecentPostsForUser(user, 5)
-        def watchedTopics = UserForumWatchList.findByUser(user)?.topics
-
-        def messages = ForumMessage.findAllByUser(user)
-        def friends =  messages.unique({ it.topic.creator })*.topic.creator
-
-        if (friends.contains(user)) {
-            friends.remove(user)
-        }
-
-        [userInstance: user, recentPosts: recentPosts, watchedTopics: watchedTopics, friends: friends]
-    }
-
     def transcribedTasksFragment() {
         def user = User.get(params.int("id"))
 

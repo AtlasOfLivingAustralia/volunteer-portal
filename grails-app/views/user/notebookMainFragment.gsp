@@ -29,7 +29,7 @@
     <div class="row">
         <div class="span6">
             <div class="media">
-                <a class="pull-left" href="//en.gravatar.com/" class="external" target="_blank" id="gravitarLink"
+                <a class="float-start" href="//en.gravatar.com/" class="external" target="_blank" id="gravitarLink"
                    title="To customise this avatar, register your email address at gravatar.com...">
                     <img id="gravatar"
                          src="//www.gravatar.com/avatar/${userInstance.email.toLowerCase().encodeAsMD5()}?s=125"
@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<div class="span5 pull-right">
+<div class="span5 float-end">
     <section id="my-difference" class="well">
         <h1>How you're making a difference!</h1>
         <ul>

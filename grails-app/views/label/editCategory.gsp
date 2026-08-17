@@ -303,11 +303,13 @@ $(function($) {
         $('#change-cat-label-name').text(labelName);
         $('#cat-change-label-id').val(labelId);
         //console.log("Setting hidden field to " + $('#cat-change-label-id').val());
-        $( "#change-cat-modal" ).modal( "show" );
+        //$( "#change-cat-modal" ).modal( "show" );
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('change-cat-modal')).show();
     });
 
     $("#btn-close-change-cat").click(function() {
-        $( "#change-cat-modal" ).modal( "hide" );
+        //$( "#change-cat-modal" ).modal( "hide" );
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('change-cat-modal')).hide();
     });
 
     $("#btn-save-change-cat").click(function() {
@@ -363,12 +365,14 @@ $(function($) {
             //console.log(jqXHR);
         });
 
-        $( "#view-labels-modal" ).modal( "show" );
+        //$( "#view-labels-modal" ).modal( "show" );
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('view-labels-modal')).show();
     });
 
     $("#btn-close-view-labels").click(function(e) {
         e.preventDefault();
-        $( "#view-labels-modal" ).modal( "hide" );
+        //$( "#view-labels-modal" ).modal( "hide" );
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('view-labels-modal')).hide();
     });
 
     // Attach click event listeners to each row

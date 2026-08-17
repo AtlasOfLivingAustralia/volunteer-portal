@@ -5,7 +5,7 @@
             <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
             <div class="expedition-thumb-settings-btn-group">
                 <div class="btn-group ">
-                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-toggle="dropdown" href="#">
+                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-bs-toggle="dropdown" href="#">
                         <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
@@ -23,7 +23,7 @@
                 <g:link controller="project" action="index" class="thumbImg" id="${projectSummary.project?.id}">
                     <cl:featuredImage project="${projectSummary.project}"
                                       preLoad="true"
-                                      class="img-responsive cropme"
+                                      class="img-fluid cropme"
                                       style="width: 100%; height: 236px;"
                                       data-error-url="${resource(file: '/banners/default-expedition-large.jpg')}"/>
                 </g:link>

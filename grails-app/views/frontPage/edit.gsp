@@ -62,7 +62,7 @@
                                                                                             default="System message"/></label>
                             <div class="col-md-6">
                                 <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
-                                <span class="pull-right label label-default count_message" id="count_message"></span>
+                                <span class="float-end label label-default count_message" id="count_message"></span>
                                 <span class="help-block">(Displayed on every page)</span>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                             </label>
                             <div class="col-md-6">
                                 <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control" value="${frontPage.heroImageAttribution}" />
-                                <span class="pull-right label label-default count_message" id="hero_count_message"></span>
+                                <span class="float-end label label-default count_message" id="hero_count_message"></span>
                             </div>
                         </div>
 
@@ -135,7 +135,7 @@
                             </label>
                             <div class="col-md-6">
                                 <g:if test="${frontPage.heroImage}">
-                                    <img class="img-responsive"
+                                    <img class="img-fluid"
                                          src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/hero/${frontPage.heroImage}"/>
 
                                 </g:if>

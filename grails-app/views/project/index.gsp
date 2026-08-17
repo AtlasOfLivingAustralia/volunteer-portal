@@ -52,7 +52,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="logo-holder">
-                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id?:-1}"/>" class="img-responsive institution-logo-main">
+                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id?:-1}"/>" class="img-fluid institution-logo-main">
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
             </div>
             <div class="col-sm-4">
                 <cl:hasNoProjectBackgroundImage project="${projectInstance}">
-                    <cl:featuredImage project="${projectInstance}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-responsive" />
+                    <cl:featuredImage project="${projectInstance}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-fluid" />
                 </cl:hasNoProjectBackgroundImage>
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
@@ -193,7 +193,7 @@
                             <g:each in="${roles}" status="i" var="role">
                                 <g:set var="roleIcon" value="${role.icons[0]}"/>
                                 <div class="col-xs-3 col-sm-2 roleIcon">
-                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-responsive" title="${roleIcon?.name}" alt="${roleIcon?.name}">
+                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-fluid" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 </div>
                                 <div class="col-xs-9 col-sm-4 roleList">
                                     <h3>${role.name}</h3>

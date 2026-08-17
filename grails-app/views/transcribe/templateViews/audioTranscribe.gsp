@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                             <div id="classification-status-animals-selected" style="display: none;"></div>
-                            <div class="text-right">
+                            <div class="text-end">
                                 <g:if test="${!validator}">
                                     <button type="button" id="btnSave"
                                             class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
@@ -77,7 +77,7 @@
                                             </div>
                                             <g:each var="cat" in="${wsParams.categories}" status="i">
                                                 <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
@@ -95,7 +95,7 @@
 
                                                 </div>
                                             </g:each>
-                                            <div class="btn-group pull-right" role="group" aria-label="...">
+                                            <div class="btn-group float-end" role="group" aria-label="...">
                                                 <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
                                                 <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-default btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
                                             </div>
@@ -233,9 +233,9 @@
                     <div>
                         <div class="classificationRow">
                             <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
-                            <button type="button" class="btn btn-mini btn-default animalDelete pull-right" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
-                            <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton pull-right" tabindex="-1" style="display:none;">Save Comment</button>
-                            <button type="button" aria-expanded="false" class="btn btn-link editCommentButton pull-right" tabindex="-1">Add Comment</button>
+                            <button type="button" class="btn btn-mini btn-default animalDelete float-end" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
+                            <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton float-end" tabindex="-1" style="display:none;">Save Comment</button>
+                            <button type="button" aria-expanded="false" class="btn btn-link editCommentButton float-end" tabindex="-1">Add Comment</button>
                         </div>
                         <div class="classificationComments">{{comment}}</div>
                         <div class="editClassificationComments" style="display: none;"><label class="sr-only">Comment on the {{name}} you found</label><textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea></div>
@@ -256,7 +256,7 @@
                     <span class="ws-full-image-carousel-close">&times;</span>
                     <ol class="carousel-indicators">
                         {{#animal.images}}
-                        <li class="{{active}}" data-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
+                        <li class="{{active}}" data-bs-target="#ct-full-image-carousel" data-slide-to="{{idx}}"></li>
                         {{/animal.images}}
                     </ol>
                     <div class="carousel-inner" data-container="body">

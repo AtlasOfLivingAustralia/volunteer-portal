@@ -42,7 +42,7 @@
     <%pageScope.crumbs = [[link: createLink(controller: 'institution', action: 'list'), label: message(code: 'default.institutions.label', default: 'Institutions')]] %>
     <div class="row">
         <div class="col-sm-4 col-sm-push-8">
-            <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>" class="img-responsive institution-logo-main">
+            <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>" class="img-fluid institution-logo-main">
             <table class="table table-striped contact">
                 <tbody>
                 <g:if test="${institutionInstance?.displayContact}">
@@ -156,7 +156,7 @@
 
                     <div class="col-sm-6">
                         <div class="card-filter">
-                            <div class="btn-group pull-right" role="group" aria-label="...">
+                            <div class="btn-group float-end" role="group" aria-label="...">
                                 <a href="?mode=" class="btn btn-default btn-xs ${params.mode != 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
                                 <a href="?mode=list" class="btn btn-default btn-xs ${params.mode == 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>
                             </div>
@@ -182,7 +182,7 @@
                         <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                         <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                        <div class="btn-group pull-right hide" style="padding-right: 10px">
+                        <div class="btn-group float-end hide" style="padding-right: 10px">
                             <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                 <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
                                 <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
@@ -190,7 +190,7 @@
                         </div>
 
                         <cl:ifAdmin>
-                            <div class="btn-group pull-right" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
+                            <div class="btn-group float-end" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
                                 <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                                     <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>

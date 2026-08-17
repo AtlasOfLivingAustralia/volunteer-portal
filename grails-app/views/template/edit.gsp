@@ -176,7 +176,7 @@
                             <g:each in="${projectUsageList}" var="institution">
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="heading${instCounter}">
-                                        <h4 class="panel-title" data-toggle="collapse" data-target="#collapse${instCounter}">
+                                        <h4 class="panel-title" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}">
                                             ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
                                         </h4>
                                     </div>
@@ -209,7 +209,8 @@
 
     $(document).ready(function() {
         $('#collapse-all-button').on('click', function () {
-            $('#accordion .panel-collapse').collapse('toggle');
+            //$('#accordion .panel-collapse').collapse('toggle');
+            bootstrap.Collapse.getOrCreateInstance($('#accordion .panel-collapse')).toggle();
             if ($('#collapse-all').hasClass('fa-expand')) {
                 $('#collapse-all').removeClass('fa-expand').addClass('fa-compress');
             } else {

@@ -12,7 +12,7 @@
             <tr>
                 <th colspan="2">
                     ${section.label}
-                    <a class="btn btn-small pull-right"
+                    <a class="btn btn-small float-end"
                        href="${createLink(controller: 'leaderBoard', action: 'topList', params: [category: section.category, institutionId: institutionInstance?.id])}">View Top 20</a>
                 </th>
             </tr>

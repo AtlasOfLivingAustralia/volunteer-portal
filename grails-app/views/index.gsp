@@ -61,7 +61,7 @@
 
         <div class="row">
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconLabels.png" class="img-responsive"/>
+                <asset:image src="iconLabels.png" class="img-fluid"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -72,7 +72,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconNotes.png" class="img-responsive"/>
+                <asset:image src="iconNotes.png" class="img-fluid"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -83,7 +83,7 @@
             </div>
 
             <div class="col-sm-1 col-xs-4">
-                <asset:image src="iconWild.png" class="img-responsive"/>
+                <asset:image src="iconWild.png" class="img-fluid"/>
             </div>
 
             <div class="col-sm-3 col-xs-8">
@@ -110,7 +110,7 @@
                 <div id="news-parent">
                     <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
                         <g:link controller="newsItem" action="show" id="${newsItem.id}">
-                            <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-responsive news-image"
+                            <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid news-image"
                                  alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
                         </g:link>
                     </cl:ifNewsItemHasThumb>
@@ -149,7 +149,7 @@
                 <g:link controller="project" action="index" id="${frontPage.projectOfTheDay?.id}">
                     <cl:featuredImage project="${frontPage.projectOfTheDay}"
                                       preLoad="true"
-                                      class="img-responsive cropme featured-exp-img"
+                                      class="img-fluid cropme featured-exp-img"
                                       style="width:100%;height:312px;"
                                       dataErrorUrl="${resource(file: '/banners/default-expedition-large.jpg')}" />
 

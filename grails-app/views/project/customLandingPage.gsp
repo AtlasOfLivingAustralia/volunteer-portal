@@ -68,7 +68,7 @@
 
                         <div class="col-sm-6">
                             <div class="card-filter">
-                                <div class="btn-group pull-right" role="group" aria-label="...">
+                                <div class="btn-group float-end" role="group" aria-label="...">
                                     <a href="${createLink(mapping: 'landingPage', params: queryStringParams + [mode: 'grid'])}"
                                        class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}">
                                         <i class="glyphicon glyphicon-th-large "></i>
@@ -100,7 +100,7 @@
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                             <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                            <div class="btn-group pull-right hide" style="padding-right: 10px">
+                            <div class="btn-group float-end hide" style="padding-right: 10px">
                                 <g:each in="${ProjectStatusFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
                                     <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
@@ -108,7 +108,7 @@
                             </div>
 
                             <cl:ifAdmin>
-                                <div class="btn-group pull-right" style="padding-right: 10px; margin-bottom: 10px; margin-top: -10px;">
+                                <div class="btn-group float-end" style="padding-right: 10px; margin-bottom: 10px; margin-top: -10px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                                         <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>

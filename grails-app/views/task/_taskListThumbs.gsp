@@ -80,7 +80,7 @@
                         </g:else>
 
                         <g:if test="${lastView}">
-                            <i class="glyphicon glyphicon-lock lastViewedTask pull-right" title="Locked by ${lastView.userId}"
+                            <i class="glyphicon glyphicon-lock lastViewedTask float-end" title="Locked by ${lastView.userId}"
                                viewedTaskId="${lastView.id}"></i>
                         </g:if>
                         </div> %{-- End of thumbnail div --}%

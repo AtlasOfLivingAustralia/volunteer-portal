@@ -54,8 +54,8 @@
 
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
-                        <div class="panel-heading text-right" >
-                            <h4 class="pull-left">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                        <div class="panel-heading text-end" >
+                            <h4 class="float-start">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
                             <g:form name="activationForm" controller="project" action="update" class="form-horizontal">
                                 <g:hiddenField name="id" value="${projectInstance.id}"/>
                                 <g:if test="${projectInstance.inactive}">

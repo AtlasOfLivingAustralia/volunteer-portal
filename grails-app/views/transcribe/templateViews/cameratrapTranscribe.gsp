@@ -42,9 +42,9 @@
                         <div id="ct-questions-nav" class="stepwizard">
                             <div class="stepwizard-row">
                                 <div class="stepwizard-step">
-                                    <button type="button" class="btn btn-circle btn-default ${validator ? '' : 'active'}" data-target="#ct-landing" data-toggle="nav">1</button>
-                                    <button type="button" class="btn btn-circle btn-default" data-target="#ct-animals-present" data-toggle="nav">2</button>
-                                    <button type="button" class="btn btn-circle btn-default ${validator ? 'active' : ''}" data-target="#ct-animals-summary" data-toggle="nav">3</button>
+                                    <button type="button" class="btn btn-circle btn-default ${validator ? '' : 'active'}" data-bs-target="#ct-landing" data-bs-toggle="nav">1</button>
+                                    <button type="button" class="btn btn-circle btn-default" data-bs-target="#ct-animals-present" data-bs-toggle="nav">2</button>
+                                    <button type="button" class="btn btn-circle btn-default ${validator ? 'active' : ''}" data-bs-target="#ct-animals-summary" data-bs-toggle="nav">3</button>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="btn-toolbar">
-                                            <div id="ct-animals-btn-group" class="btn-group btn-group-sm" data-toggle="buttons">
+                                            <div id="ct-animals-btn-group" class="btn-group btn-group-sm" data-bs-toggle="buttons">
                                                 <label class="btn btn-default active">
                                                     <input type="radio" name="options" id="ct-btn-all" class="btn-animal-filter" autocomplete="off" data-filter-tag="" checked>All
                                                 </label>
@@ -113,7 +113,7 @@
 
                                             <div class="btn-group btn-group-sm">
                                                 <button type="button" id="ct-other-btn" class="btn btn-default btn-sm"
-                                                        data-toggle="button">Other</button>
+                                                        data-bs-toggle="button">Other</button>
                                             </div>
 
                                             <div class="btn-group btn-group-sm" style="height: 28px">
@@ -122,7 +122,7 @@
                                                        placeholder="${message(code: 'default.input.filter.placeholder', default: "Filter")}">
                                             </div>
 
-                                            <div id="ct-sort-btn-group" class="btn-group btn-group-sm" data-toggle="buttons">
+                                            <div id="ct-sort-btn-group" class="btn-group btn-group-sm" data-bs-toggle="buttons">
                                                 <label class="btn btn-default active" title="${message(code: 'default.button.default.sort.label', default: 'Default order')}" data-container="body">
                                                     <input type="radio" name="options" id="button-sort-initial" autocomplete="off" data-sort-fn="initial" checked><i class="fa fa-random"></i>
                                                 </label>
@@ -282,7 +282,7 @@
                         </div>
                     </div>
 
-                    <div class="text-right" style="margin-top: 20px; margin-bottom: 20px;">
+                    <div class="text-end" style="margin-top: 20px; margin-bottom: 20px;">
                         <button type="button" id="btnNext"
                                 class="btn btn-primary btn-lg ${validator ? 'hidden' : ''}">${message(code: 'default.button.next.label', default: 'Next Step')} <i
                                 class="fa fa-chevron-right"></i></button>

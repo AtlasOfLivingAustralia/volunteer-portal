@@ -54,7 +54,7 @@
             <div class="panel panel-default" ng-repeat="c in tcc.model.categories">
                 <div class="panel-heading pointer"
                      ng-click="tcc.categoryUiStatus[$index].minimized = !tcc.categoryUiStatus[$index].minimized">
-                    <div class="pull-right">
+                    <div class="float-end">
                         <div class="btn-group btn-group-xs" role="group" aria-label="Category options">
                             <button class="btn btn-default"
                                     ng-click="tcc.moveCategoryUp($index); $event.stopPropagation();"><i
@@ -147,7 +147,7 @@
             <div class="panel panel-default" ng-repeat="a in tcc.model.animals">
                 <div class="panel-heading pointer"
                      ng-click="tcc.animalUiStatus[$index].minimized = !tcc.animalUiStatus[$index].minimized">
-                    <div class="pull-right">
+                    <div class="float-end">
                         <div class="btn-group btn-group-xs" role="group" aria-label="Animal options">
                             <button class="btn btn-default"
                                     ng-click="tcc.moveAnimalUp($index); $event.stopPropagation();"><i

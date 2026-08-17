@@ -29,7 +29,7 @@
                         src="rotate.png" /></button>
             </div>
 
-            <div class="btn-group btn-group-sm pull-right">
+            <div class="btn-group btn-group-sm float-end">
                 <button type="button" class="btn btn-default fontSizeButton" title="Small sized fonts"
                         style="font-size: 12px">A</button>
                 <button type="button" class="btn btn-default fontSizeButton" title="Medium sized fonts"
@@ -72,7 +72,7 @@
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
                                tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
                             </a>
-                            <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
+                            <button class="btn btn-default btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="glyphicon glyphicon-resize-full"></i></button>
                         </div>
                         <div class="col-md-12">
@@ -96,7 +96,7 @@
                             <a href="#" class="btn btn-default btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
                                     class="fa fa-question help-container"></i></a>
-                            <button class="btn btn-default btn-mini pull-right textAreaResizeButton" style="margin-bottom: 3px"><i
+                            <button class="btn btn-default btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="glyphicon glyphicon-resize-full"></i></button>
                         </div>
 

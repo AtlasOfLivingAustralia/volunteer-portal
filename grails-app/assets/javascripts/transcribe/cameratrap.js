@@ -157,11 +157,17 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
         var carousel = mu.appendTemplate($container, 'carousel-template', _.extend({imgs: urls}, templateObj));
         //var carousel = $('#ct-full-image-carousel');
         carousel.carousel({interval: false});
-        carousel.find('[title]').tooltip();
+        //carousel.find('[title]').tooltip();
+        carousel.find('[title]').each(function() {
+          new bootstrap.Tooltip(this);
+        });
         change = true;
       } else if (urls.length == 1) {
         var $img = mu.appendTemplate($container, 'single-image-template', _.extend({url: urls[0].url}, templateObj));
-        $img.find('[title]').tooltip();
+        //$img.find('[title]').tooltip();
+        $img.find('[title]').each(function() {
+          new bootstrap.Tooltip(this);
+        });
         change = true;
       }
       if (change) switchCtPage('#ct-full-image-container');
@@ -170,8 +176,16 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
     // zoom out
     $('#ct-full-image-container').on('click', 'img, .ct-full-image-carousel-close', function (e) {
       switchCtPage('#ct-animals-present');
-      var $container = $('#ct-full-image-container');
-      $container.find('[title]').tooltip('hide');
+      let $container = $('#ct-full-image-container');
+      //$container.find('[title]').tooltip('hide');
+      $container.find('[title]').each(function() {
+        const tooltip = bootstrap.Tooltip.getInstance(this);
+        if (tooltip) {
+          tooltip.hide();
+          tooltip.dispose();
+        }
+      });
+
       $container.empty();
     });
 
@@ -589,7 +603,10 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
     syncTranscribersSelection();
 
     // enable tooltips
-    $('[title]').tooltip();
+    //$('[title]').tooltip();
+    $('[title]').each(function() {
+      new bootstrap.Tooltip(this);
+    });
 
   });
 

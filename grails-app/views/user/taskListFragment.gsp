@@ -19,7 +19,7 @@
                 </g:else>
             </g:else>
         </div>
-        <div class="col-sm-4 text-right">
+        <div class="col-sm-4 text-end">
 
             <div class="custom-search-input body">
                 <div class="input-group">
@@ -31,8 +31,8 @@
                     </span>
                 </div>
             </div>
-            <div class="pull-right search-help">
-                <button class="btn btn-info pull-right"
+            <div class="float-end search-help">
+                <button class="btn btn-info float-end"
                         data-tooltip="Enter search text here to show only tasks matching values in the ImageID, CatalogNumber, Expedition and Transcribed columns"><span
                         class="help-container"><i class="fa fa-question"></i></span>
                 </button>

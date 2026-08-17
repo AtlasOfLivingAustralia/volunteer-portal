@@ -160,7 +160,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Task Descriptor Errors</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -168,7 +168,7 @@
                 <div class="text-center"><em>Loading…</em></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -267,7 +267,8 @@ jQuery(function($) {
         var $modal = $('#taskErrorsModal');
         $modal.find('.modal-title').text('Errors for Task ' + externalId);
         $modal.find('.modal-body').html('<div class="text-center"><em>Loading…</em></div>');
-        $modal.modal('show');
+        // $modal.modal('show');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('taskErrorsModal')).show();
 
         $.get(href, function(html) {
             // expect server to return an HTML fragment

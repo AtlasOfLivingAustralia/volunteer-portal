@@ -31,7 +31,7 @@
 
 
             <div class="btn-group">
-                <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                <a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Tools
                     <span class="caret"></span>
                 </a>
@@ -130,7 +130,7 @@
                         href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Reset</a>
                 </div>
                 <div class="col-md-2">
-                    <div class="btn-group btn-group-sm pull-right">
+                    <div class="btn-group btn-group-sm float-end">
                         <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
                             <i class="fa fa-th-list"></i>
                         </g:link>

@@ -38,12 +38,12 @@
                 <div class="col-md-9">
                     <div class="panel panel-default subpanel">
                         <g:if test="${!institutionInstance?.isApproved}">
-                            <div class="panel-heading text-right" style="padding-bottom: 2em;">
+                            <div class="panel-heading text-end" style="padding-bottom: 2em;">
                         </g:if>
                         <g:else>
-                            <div class="panel-heading text-right">
+                            <div class="panel-heading text-end">
                         </g:else>
-                            <h4 class="pull-left">${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
+                            <h4 class="float-start">${institutionInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
 
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>

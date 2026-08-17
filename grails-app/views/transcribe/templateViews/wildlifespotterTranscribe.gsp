@@ -53,7 +53,7 @@
                                 </div>
                             </div>
                             <div id="classification-status-animals-selected" style="display: none;"></div>
-                            <div class="text-right">
+                            <div class="text-end">
                                 <g:if test="${!validator}">
                                     <button type="button" id="btnSave"
                                             class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
@@ -82,7 +82,7 @@
                                             </div>
                                             <g:each var="cat" in="${wsParams?.categories}" status="i">
                                                 <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
@@ -238,7 +238,7 @@
                         <div class="editClassificationComments" style="display: none;">
                             <label class="sr-only">Comment on the {{name}} you found</label>
                             <textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea>
-                            <button type="button" aria-expanded="false" class="btn btn-default saveCommentButton pull-right" tabindex="-1" style="display:none;">Save</button>
+                            <button type="button" aria-expanded="false" class="btn btn-default saveCommentButton float-end" tabindex="-1" style="display:none;">Save</button>
                         </div>
                         <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesOnly}">
                             <input type="hidden" name="numAnimals" data-validate-type="speciesOnly" data-default="{{curval}}" value="{{curval}}">

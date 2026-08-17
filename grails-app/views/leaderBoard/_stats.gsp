@@ -8,7 +8,7 @@
     <div class="panel panel-default volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats
-            <cl:ifSiteAdmin><g:link controller="user" action="adminList" class="pull-right"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
+            <cl:ifSiteAdmin><g:link controller="user" action="adminList" class="float-end"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
         </h2>
 
         <h3>
@@ -31,7 +31,7 @@
 <g:if test="${!disableHonourBoard}">
     <div class="panel panel-default leaderboard">
         <!-- Default panel contents -->
-        <h2 class="heading"><g:message code="honour.board.label" /> <g:link controller="leaderBoard" action="describeBadges" class="pull-right"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
+        <h2 class="heading"><g:message code="honour.board.label" /> <g:link controller="leaderBoard" action="describeBadges" class="float-end"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
         <!-- Table -->
         <table class="table">
             <thead>

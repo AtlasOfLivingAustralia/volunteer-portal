@@ -135,7 +135,7 @@
                 </p>
                 <h2 id="examples" class="body-heading">Examples</h2>
                 <p>
-                    <asset:image src="digivol-example.png" class="img-responsive"/>
+                    <asset:image src="digivol-example.png" class="img-fluid"/>
                 </p>
 
             </div>

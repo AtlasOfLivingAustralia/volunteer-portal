@@ -59,7 +59,7 @@
 
             <div class="text-center">
                 <div class="thumbnail display-inline-block">
-                    <img class="img-responsive" src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>"/>
+                    <img class="img-fluid" src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>"/>
                 </div>
 
                 <div>

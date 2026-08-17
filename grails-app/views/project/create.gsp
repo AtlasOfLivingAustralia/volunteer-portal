@@ -55,7 +55,7 @@
                                 <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
                             </div>
-                            <div id="institution-link-icon" class="col-md-3 control-label text-left">
+                            <div id="institution-link-icon" class="col-md-3 control-label text-start">
                                 <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
                                     action: 'index', id: params?.institutionId)}" target="_blank">Institution Page</a>
                             </div>

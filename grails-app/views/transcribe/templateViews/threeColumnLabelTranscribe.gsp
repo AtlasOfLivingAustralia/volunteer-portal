@@ -59,7 +59,7 @@
                         <div class="form-group">
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                            <span class="pull-right">
+                            <span class="float-end">
                                 <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft"/>
                             </span>
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
