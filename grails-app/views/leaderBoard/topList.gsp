@@ -15,8 +15,8 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <table class="table table-bordered table-striped">
                         <thead>
                         <tr>

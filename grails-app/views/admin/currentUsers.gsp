@@ -20,10 +20,10 @@
     <div class="row">
         <div class="col-sm-12">
 
-            <div data-ng-controller="CurrentUsersCtrl" class="panel panel-default ng-cloak" style="margin-top:1em">
-                <div class="panel-heading">Current User Activity</div>
+            <div data-ng-controller="CurrentUsersCtrl" class="card ng-cloak" style="margin-top:1em">
+                <div class="card-header">Current User Activity</div>
 
-                <div class="panel-body">
+                <div class="card-body">
                     {{activities.length}} Users currently online
                     <small>(Last refreshed {{ lastRefreshed | date:'medium' }})</small>
                 </div>

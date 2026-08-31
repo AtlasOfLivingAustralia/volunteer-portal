@@ -52,8 +52,8 @@
 
     <content tag="pageTitle"><g:message code="admin.user.report.label" default="User Reporting"/></content>
 
-    <div class="panel panel-default" style="margin-top: 5px;">
-        <div class="panel-body">
+    <div class="card" style="margin-top: 5px;">
+        <div class="card-body">
             <p>This report has two flavours: Filtered by tag and all users.</p>
             <p><b>Filtered by tag:</b> This report collates users who are tagged by the selected tag and who
             transcribed tasks between the provided start and end dates.</p>
@@ -64,7 +64,7 @@
 
     <g:form action="requestUserReport" class="form-horizontal" method="POST">
         <div class="form-group">
-            <label for="dateSelect" class="col-md-3 control-label">Date Range*</label>
+            <label for="dateSelect" class="col-md-3 form-label">Date Range*</label>
             <div class="col-md-8 input-daterange input-group" id="datepicker">
                 <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" />
                 <span class="input-group-addon">to</span>
@@ -72,7 +72,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="labelFilter" class="col-md-3 control-label">Filter by User Tag</label>
+            <label for="labelFilter" class="col-md-3 form-label">Filter by User Tag</label>
             <div class="col-md-8 input-group">
                 <g:select name="labelFilter"
                           from="${userLabelList}"

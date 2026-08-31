@@ -41,8 +41,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <div class="lead">Thank you - your transcription was saved
                         <span id="dateSaved">at <g:formatDate date="${taskInstance.dateLastUpdated}"
                                                               format="h:mm:ss a z 'on' d MMMM yyyy"/>

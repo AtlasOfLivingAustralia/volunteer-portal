@@ -28,7 +28,7 @@
 </style>
 
 <div class="form-group">
-    <label class="control-label col-md-3" for="institution">
+    <label class="form-label col-md-3" for="institution">
         <g:message code="institution.label" default="Institution"/>
     </label>
     <div class="col-md-6">
@@ -42,7 +42,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="recipientType">
+    <label class="form-label col-md-3" for="recipientType">
         <g:message code="institutionMessage.recipientType.label" default="Recipient Type"/>
     </label>
     <div class="col-md-6">
@@ -52,13 +52,13 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="recipient">
+    <label class="form-label col-md-3" for="recipient">
         <g:message code="institutionMessage.recipient.label" default="Recipient"/>
     </label>
     <div class="col-md-6">
-        <div class="clearfix loading-recipient hidden">
+        <div class="clearfix loading-recipient d-none">
             <div class="loader float-right" role="status">
-                <span class="sr-only">Loading...</span>
+                <span class="visually-hidden">Loading...</span>
             </div>
         </div>
         <select name="recipient"
@@ -69,7 +69,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="subject">
+    <label class="form-label col-md-3" for="subject">
         <g:message code="institutionMessage.subject.label" default="Subject"/>
     </label>
     <div class="col-md-6">
@@ -81,7 +81,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="includeContact" class="control-label col-md-3">
+    <label for="includeContact" class="form-label col-md-3">
         <g:message code="institutionMessage.includeContact.label" default="Include Institution Contact" /><br />
         <small id="includeContactHelp" class="form-text text-muted"><g:message code="institutionMessage.includeContact.help" default="Include Contact Details in Message" /></small>
     </label>
@@ -95,7 +95,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="body">
+    <label class="form-label col-md-3" for="body">
         <g:message code="institutionMessage.body.label" default="Message Body"/>
     </label>
     <div class="col-md-9">

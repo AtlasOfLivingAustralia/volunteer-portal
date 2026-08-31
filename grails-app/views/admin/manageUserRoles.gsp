@@ -42,8 +42,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h3>Add new User Role</h3>
             <p>
                 This tool is to maintain users and specific roles within your institutions or expeditions as validators or forum moderators.<br>
@@ -52,7 +52,7 @@
                    aria-controls="collapseInstructions">Click here for instructions</a>.
             </p>
             <div class="collapse" id="collapseInstructions">
-                <div class="panel panel-default panel-body">
+                <div class="card card-body">
                     <p>
                         To add a user to a new role:
                     </p>
@@ -111,7 +111,7 @@
                     <div class="form-group col-md-3">
                         <label>User's Name</label>
                         <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required autocomplete="off"/>
-                        <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
+                        <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                         <input id="userId" name="userId" type="hidden" value="${userId}"/>
                     </div>
                 </div>
@@ -126,8 +126,8 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div id="maintain-message">
 
             </div>
@@ -139,7 +139,7 @@
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">
-                <div class="panel panel-default panel-body">
+                <div class="card card-body">
                     <ul>
                         <li><b>Filter by institution:</b> Select the institution to filter the roles by that institution.</li>
                         <li><b>Filter by expedition:</b> Type in a search term to search all expedition names within your
@@ -166,11 +166,11 @@
                 <div class="col-md-3">
                     <input type="text" id="user-searchbox" class="form-control" value="${displayUserFilter}" placeholder="Filter by User..." autocomplete="off"/>
                     <input id="filter-userId" name="filterUserId" type="hidden" value="${filterUserId}"/>
-                    <i id="ajax-filter-spinner" class="fa fa-cog fa-spin hidden"></i>
+                    <i id="ajax-filter-spinner" class="fa fa-cog fa-spin d-none"></i>
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-default bs3" id="apply-filter">Apply</button>
-                    <a class="btn btn-default bs3"
+                    <button type="button" class="btn btn-secondary bs3" id="apply-filter">Apply</button>
+                    <a class="btn btn-secondary bs3"
                        href="${createLink(controller: 'admin', action: 'manageUserRoles')}">Reset</a>
                 </div>
             </div>

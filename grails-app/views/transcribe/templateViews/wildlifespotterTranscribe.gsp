@@ -13,8 +13,8 @@
 
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
-                    <div id="ct-image-well" class="panel panel-default">
-                        <div class="panel-body">
+                    <div id="ct-image-well" class="card">
+                        <div class="card-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
                                     <g:imageViewer multimedia="${multimedia}"/>
@@ -27,9 +27,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><h3 class="panel-title">Classification Status:</h3></div>
-                        <div class="panel-body">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Classification Status:</h3></div>
+                        <div class="card-body">
                             <div id="classification-status-no-animals-selected" class="form-horizontal">
                                 <div class="form-group">
                                     <div class="col-sm-12">
@@ -60,7 +60,7 @@
                                 </g:if>
                                 <g:else>
                                     <button type="button" id="btnValidate"
-                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}">
+                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'd-none'}">
                                         ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
                                 </g:else>
@@ -82,13 +82,13 @@
                                             </div>
                                             <g:each var="cat" in="${wsParams?.categories}" status="i">
                                                 <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
                                                                 <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}">
                                                                     <g:if test="${entry.hash}">
-                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.${entry.ext?:'png'}")}" height="100" width="100" title="${entry.name}">
+                                                                        <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.${entry.ext?:'png'}")}" height="100" width="100" title="${entry.name}" alt="${entry.name}"/>
                                                                     </g:if>
                                                                     <g:else>
                                                                         ${entry.name}
@@ -108,7 +108,7 @@
                                         </div>
                                         <div id="ct-animals-filter" style="display: none;">
                                         </div>
-                                        <p class="sr-only">Click 'i' for more information about each animal</p>
+                                        <p class="visually-hidden">Click 'i' for more information about each animal</p>
                                         %{--, or press the 'i' key on your keyboard--}%
                                     </div>
                                 </div>
@@ -236,9 +236,9 @@
                         <div class="animalName">{{name}}</div>
                         <div class="classificationComments">{{comment}}</div>
                         <div class="editClassificationComments" style="display: none;">
-                            <label class="sr-only">Comment on the {{name}} you found</label>
+                            <label class="visually-hidden">Comment on the {{name}} you found</label>
                             <textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea>
-                            <button type="button" aria-expanded="false" class="btn btn-default saveCommentButton float-end" tabindex="-1" style="display:none;">Save</button>
+                            <button type="button" aria-expanded="false" class="btn btn-secondary saveCommentButton float-end" tabindex="-1" style="display:none;">Save</button>
                         </div>
                         <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesOnly}">
                             <input type="hidden" name="numAnimals" data-validate-type="speciesOnly" data-default="{{curval}}" value="{{curval}}">
@@ -258,26 +258,26 @@
                         </span>
                     </td>
                     <td class="col-md-1" style="border-top: 0;">
-                        <button type="button" class="btn btn-default btn-xs animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-xs animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-                            <span class="sr-only">Increase count by 1</span>
+                            <span class="visually-hidden">Increase count by 1</span>
                         </button>
-                        <button type="button" class="btn btn-default btn-xs animalCount animalCountMinus" title="Decrease count by 1" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-xs animalCount animalCountMinus" title="Decrease count by 1" tabindex="-1">
                             <i class="fa fa-minus" aria-hidden="true"></i>
-                            <span class="sr-only">Decrease count by 1</span>
+                            <span class="visually-hidden">Decrease count by 1</span>
                         </button>
                     </td>
                     </g:if>
                     <td class="col-md-2" style="border-top: 0;">
                         <button type="button"
-                                class="btn btn-default btn-xs editCommentButton"
+                                class="btn btn-outline-secondary btn-xs editCommentButton"
                                 title="Add a comment">
                             <i class="fa fa-commenting" tabindex="-1"></i>
-                            <span class="sr-only">Add a comment</span>
+                            <span class="visually-hidden">Add a comment</span>
                         </button>
-                        <button type="button" class="btn btn-xs btn-default animalDelete" title="Delete selection" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-xs animalDelete" title="Delete selection" tabindex="-1">
                             <i aria-hidden="true" class="fa fa-trash"></i>
-                            <span class="sr-only">Delete selection</span>
+                            <span class="visually-hidden">Delete selection</span>
                         </button>
                     </td>
                 </tr>
@@ -319,12 +319,12 @@
                         {{/animal.images}}
                     </div>
                     <a class="carousel-control left" href="#ct-full-image-carousel" data-slide="prev">
-                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
+                        <span class="fa fa-chevron-left" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
                     </a>
                     <a class="carousel-control right" href="#ct-full-image-carousel" data-slide="next">
-                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
+                        <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
                     </a>
                 </div>
                 <div class="description">

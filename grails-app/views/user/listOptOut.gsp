@@ -18,21 +18,21 @@
 
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h3 style="margin-block-start: 0.5em;">Add User Opt-out</h3>
         <g:form controller="user" class="form-horizontal" action="addUserOptOut" method="POST">
             <div class="form-group">
-                <label class="control-label col-md-1" for="user">
+                <label class="form-label col-md-1" for="user">
                     Add User:
                 </label>
                 <div class="col-md-4">
                     <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required autocomplete="off"/>
-                    <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
+                    <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
                 <div class="col-md-1">
-                    <input type="submit" class="save btn btn-default" id="addButton"
+                    <input type="submit" class="save btn btn-secondary" id="addButton"
                            value="${message(code: 'default.button.add.label', default: 'Add')}"/>
                 </div>
             </div>
@@ -40,8 +40,8 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">

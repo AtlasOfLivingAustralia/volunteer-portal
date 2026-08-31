@@ -40,11 +40,9 @@
                 <g:form controller="project" action="list" method="GET" >
                     <div class="input-group">
                         <g:textField name="q" class="form-control input-lg header-search-input" placeholder="Search e.g. Bivalve" />
-                        <span class="input-group-btn">
-                            <button class="btn btn-info btn-lg" id="header-search" type="submit">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </button>
-                        </span>
+                        <button class="btn btn-info btn-lg" id="header-search" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </g:form>
             </div>
@@ -69,16 +67,16 @@
                 <!-- Logged In Starts -->
                 <cl:isNotLoggedIn>
                     <li class="nav-item">
-                        <cl:loginLink class="nav-link"><i class="glyphicon glyphicon-user"></i> Log in</cl:loginLink>
+                        <cl:loginLink class="nav-link"><i class="fa fa-user"></i> Log in</cl:loginLink>
                     </li>
                 </cl:isNotLoggedIn>
                 <cl:isLoggedIn>
                     <li class="nav-item dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <span class="glyphicon glyphicon-user"></span>
+                            <span class="fa fa-user"></span>
                            <!-- My Profile -->
                             <g:message code="action.myProfile" />
-                            <span class="glyphicon glyphicon-chevron-down"></span>
+                            <span class="fa fa-chevron-down"></span>
                         </a>
 
                         <g:render template="/layouts/profileDropDown"/>

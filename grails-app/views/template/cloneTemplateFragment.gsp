@@ -4,12 +4,12 @@
     </div>
 
     <div class="form-group">
-        <label for="newName" class="control-label">New template name:</label>
+        <label for="newName" class="form-label">New template name:</label>
         <g:textField name="newName" class="form-control" value="Copy of ${templateInstance?.name}"/>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" id="btnCancelCloneTemplate">Cancel</button>
+        <button type="button" class="btn btn-secondary" id="btnCancelCloneTemplate">Cancel</button>
         <g:submitButton class="btn btn-success" id="btnCopyTemplate" name="clone">Clone template</g:submitButton>
     </div>
 </g:form>

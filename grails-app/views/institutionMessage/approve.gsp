@@ -41,8 +41,8 @@
         </div>
     </cl:headerContent>
     <div class="container" role="main">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
                         <small>${messageCount ?: 0} Messages found.</small>
@@ -111,7 +111,7 @@
                                         <i class="fa fa-clock-o" title="Not Approved"></i>
                                     </td>
                                     <td style="text-wrap: none">
-                                        <a class="btn btn-xs btn-default" title="Edit/Approve Message"
+                                        <a class="btn btn-xs btn-secondary" title="Edit/Approve Message"
                                             href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
                                         <a class="btn btn-xs btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
                                     </td>

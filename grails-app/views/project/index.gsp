@@ -13,6 +13,7 @@
 </cl:hasNoProjectBackgroundImage>
 
 <sitemesh:parameter name="backHref" value="${projectInstance.institutionId ? createLink(controller: 'institution', action: 'index', id: projectInstance.institutionId) : createLink(controller: 'project', action: 'list')}" />
+<sitemesh:parameter name="backText" value="${projectInstance.institutionId ? projectInstance.institution.name : 'Expedition List'}" />
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -67,10 +68,10 @@
                 </div>
                 <div class="cta-primary">
                     <g:if test="${percentComplete < 100}">
-                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="glyphicon glyphicon-arrow-right"></span></a>
+                        <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="fa fa-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks || projectInstance.tutorials.size() > 0}">
                             <a href="#tutorial" class="btn btn-lg btn-hollow ${oldClass} tutorial">Tutorial Information</a>
-                            <div id="tutorialContent" class="hidden">
+                            <div id="tutorialContent" class="d-none">
                                 <g:if test="${projectInstance.tutorialLinks}">
                                 <h4>Expedition Tutorial Information</h4>
                                 <div id="tutorial-intro">
@@ -101,7 +102,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="glyphicon glyphicon-ok"></span></a>
+                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="fa fa-check"></span></a>
                         <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType.name?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
                     </g:else>
 
@@ -123,7 +124,7 @@
                         </cl:ifInstitutionAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
-                        <g:link class="btn btn-default btn-hollow grey" controller="task" action="projectAdmin"
+                        <g:link class="btn btn-secondary btn-hollow grey" controller="task" action="projectAdmin"
                                 id="${projectInstance.id}">Validate tasks</g:link>
                     </cl:ifValidator>
                 </div>
@@ -146,11 +147,11 @@
                     <g:render template="projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
                 </div>
 
-                <div class="col-sm-3 col-xs-6">
+                <div class="col-sm-3 col-6">
                     <h3><b>${transcriberCount}</b>Volunteers</h3>
                 </div>
 
-                <div class="col-sm-3 col-xs-6">
+                <div class="col-sm-3 col-6">
                     <h3><b>${projectInstance.tasks?.size()}</b>Tasks</h3>
                 </div>
             </div>
@@ -192,10 +193,10 @@
                         <div class="row">
                             <g:each in="${roles}" status="i" var="role">
                                 <g:set var="roleIcon" value="${role.icons[0]}"/>
-                                <div class="col-xs-3 col-sm-2 roleIcon">
+                                <div class="col-3 col-sm-2 roleIcon">
                                     <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-fluid" title="${roleIcon?.name}" alt="${roleIcon?.name}">
                                 </div>
-                                <div class="col-xs-9 col-sm-4 roleList">
+                                <div class="col-9 col-sm-4 roleList">
                                     <h3>${role.name}</h3>
                                     <ul>
                                         <g:each in="${role.members}" var="member">

@@ -18,8 +18,8 @@
         <a href="${createLink(action: 'addRule')}" class="btn btn-success"><i
                 class="icon-plus icon-white"></i>&nbsp;Add new rule</a>
     </cl:headerContent>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover table-striped">
@@ -50,7 +50,7 @@
                                        class="btn btn-xs btn-danger delete-button" title="Delete rule '${rule.name}"><i
                                             class="fa fa-remove"></i></a>
                                     <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
-                                       class="btn btn-default btn-xs" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
+                                       class="btn btn-secondary btn-xs" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                         </g:each>

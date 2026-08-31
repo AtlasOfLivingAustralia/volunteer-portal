@@ -328,49 +328,6 @@ class TaskController {
         }
     }
 
-    def summary(Task task) {
-        /*
-        {
-          "filename": "filename",
-          "thumbnail": "thumbnail",
-          "image": "image",
-          "externalId": "externalId",
-          "transcriber": "transcriber",
-          "dateTranscribed": "dateTranscribed",
-          "validator": "validator",
-          "dateValidated": "dateValidated",
-          "valid": "isValid",
-          "fields": {
-            [
-              { "name", "value", ...}, ...
-            ]
-          }
-        }
-         */
-        if (!task) {
-            response.sendError(404, "Task not found")
-            return
-        }
-
-        final fields = Field.findAllByTaskAndSuperceded(task, false)
-        final mm = task.multimedia.first()
-
-        final result = [
-                    filename: task.externalIdentifier,
-                    thumbnail: multimediaService.getImageThumbnailUrl(mm, true),
-                    image: multimediaService.getImageUrl(mm),
-                // TODO: replace these?
-                    transcriber: userService.detailsForUserId(task.fullyTranscribedBy as String)?.displayName,
-                    dateTranscribed: task.dateFullyTranscribed,
-                    validator: userService.detailsForUserId(task.fullyValidatedBy)?.displayName,
-                    dateValidated: task.dateFullyValidated,
-                    valid: task.isValid,
-                    records: fields.groupBy { it.recordIdx }.sort { it.key }.collect { it.value.collectEntries { [(it.name): it.value] } }
-                ]
-
-        respond result, model: [taskInstance: task]
-    }
-
     def showImage() {
 
         if (params.id) {

@@ -16,8 +16,8 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
 

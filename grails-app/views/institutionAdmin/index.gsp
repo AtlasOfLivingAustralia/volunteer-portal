@@ -42,8 +42,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <cl:ifSiteAdmin>
             <div class="row">
                 <div class="col-md-3">
@@ -57,7 +57,7 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Institution..."/>
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-default bs3"
+                    <a class="btn btn-secondary bs3"
                         href="${createLink(controller: 'institutionAdmin', action: 'index')}">Reset</a>
                 </div>
             </div>
@@ -110,11 +110,11 @@
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
 
-                                        <a class="btn btn-xs btn-default"
+                                        <a class="btn btn-xs btn-outline-secondary"
                                             title="View institution home page"
                                            href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                                                 class="fa fa-home"></i></a>
-                                        <a class="btn btn-xs btn-default"
+                                        <a class="btn btn-xs btn-outline-secondary"
                                             title="Institution settings"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
@@ -163,7 +163,7 @@
             </div>
 
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
                 <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
             </div>
         </div>

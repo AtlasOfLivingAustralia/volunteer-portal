@@ -14,7 +14,7 @@
 <content tag="adminButtonBar">
     <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"
             id="${achievementDescriptionInstance?.id}" method="post">
-        <input type="submit" class="btn btn-default"
+        <input type="submit" class="btn btn-secondary"
                value="${message(code: 'default.button.awardAll.label', default: 'Award All Eligible')}"/>
     </g:form>
     <g:form class="form-inline" style="display: inline-block" action="unawardAll"
@@ -57,7 +57,7 @@
         <h4>Grant achievement</h4>
         <g:form class="form-horizontal" action="award" id="${achievementDescriptionInstance?.id}" method="POST">
             <div class="form-group">
-                <label class="control-label col-md-3" for="user">
+                <label class="form-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>
                 </label>
 
@@ -67,13 +67,13 @@
                 </div>
 
                 <div class="col-md-3">
-                    <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
+                    <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-offset-3 col-md-9">
-                    <input type="submit" class="save btn btn-default" id="awardButton"
+                    <input type="submit" class="save btn btn-secondary" id="awardButton"
                            value="${message(code: 'default.button.award.label', default: 'Award')}"/>
                 </div>
             </div>

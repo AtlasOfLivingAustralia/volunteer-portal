@@ -16,8 +16,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
                     <ul class="list-group">
@@ -43,15 +43,15 @@
                 </div>
 
                 <div class="col-md-9">
-                    <div class="panel panel-default subpanel">
-                        <div class="panel-heading text-end" style="padding-bottom: 25px;">
+                    <div class="card subpanel">
+                        <div class="card-header text-end" style="padding-bottom: 25px;">
                             <h4 class="float-start"><g:pageProperty name="page.pageTitle"/></h4>
 
                             <div class="btn-group">
                                 <g:pageProperty name="page.adminButtonBar"/>
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <g:layoutBody/>
                         </div>
                     </div>

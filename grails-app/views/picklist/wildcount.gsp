@@ -56,7 +56,7 @@
 
             <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
 
-            <div id="progress-div" class="hidden">
+            <div id="progress-div" class="d-none">
                 <div class="progress progress-striped active">
                     <div class="bar" style="width: 0;"></div>
                 </div>
@@ -144,7 +144,7 @@
 
             $('#upload').click(function (e) {
 
-                $('#progress-div,#upload-div').toggleClass('hidden');
+                $('#progress-div,#upload-div').toggleClass('d-none');
 
                 var files = $('#csv-input')[0].files;
 

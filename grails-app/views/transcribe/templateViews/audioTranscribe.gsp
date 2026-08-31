@@ -13,8 +13,8 @@
             <g:set var="viewParams" value="${template.viewParams}" />
             <div class="row">
                 <div id="ct-image-span" class="col-sm-6">
-                    <div id="ct-image-well" class="panel panel-default">
-                        <div class="panel-body">
+                    <div id="ct-image-well" class="card">
+                        <div class="card-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
                                     <g:audioWaveViewer multimedia="${multimedia}" waveColour="${taskInstance.project.institution?.themeColour}"/>
@@ -22,9 +22,9 @@
                             </g:each>
                         </div>
                     </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading"><h3 class="panel-title">Classification Status:</h3></div>
-                        <div class="panel-body">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Classification Status:</h3></div>
+                        <div class="card-body">
                             <div id="classification-status-no-animals-selected" class="form-horizontal">
                                 <div class="form-group">
                                     <div class="col-sm-12">
@@ -55,7 +55,7 @@
                                 </g:if>
                                 <g:else>
                                     <button type="button" id="btnValidate"
-                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'hidden'}">
+                                            class="btn btn-success bvp-submit-button ${validator ? '' : 'd-none'}">
                                         ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
                                 </g:else>
@@ -77,7 +77,7 @@
                                             </div>
                                             <g:each var="cat" in="${wsParams.categories}" status="i">
                                                 <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
@@ -96,8 +96,8 @@
                                                 </div>
                                             </g:each>
                                             <div class="btn-group float-end" role="group" aria-label="...">
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-default btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-default btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-outline-secondary btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="fa fa-th-large"></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-outline-secondary btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="fa fa-th-list"></i></a>
                                             </div>
                                         </div>
                                         <div id="ct-animals-no-filter">
@@ -107,7 +107,7 @@
                                         </div>
                                         <div id="ct-animals-filter" style="display: none;">
                                         </div>
-                                        <p class="sr-only">Click 'i' for more information about each animal</p>
+                                        <p class="visually-hidden">Click 'i' for more information about each animal</p>
                                         %{--, or press the 'i' key on your keyboard--}%
                                     </div>
                                 </div>
@@ -233,12 +233,12 @@
                     <div>
                         <div class="classificationRow">
                             <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
-                            <button type="button" class="btn btn-mini btn-default animalDelete float-end" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="sr-only">Delete selection</span></button>
+                            <button type="button" class="btn btn-mini btn-outline-secondary animalDelete float-end" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="visually-hidden">Delete selection</span></button>
                             <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton float-end" tabindex="-1" style="display:none;">Save Comment</button>
                             <button type="button" aria-expanded="false" class="btn btn-link editCommentButton float-end" tabindex="-1">Add Comment</button>
                         </div>
                         <div class="classificationComments">{{comment}}</div>
-                        <div class="editClassificationComments" style="display: none;"><label class="sr-only">Comment on the {{name}} you found</label><textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea></div>
+                        <div class="editClassificationComments" style="display: none;"><label class="visually-hidden">Comment on the {{name}} you found</label><textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea></div>
                     </div>
                 </li>
                 {{/selectedAnimals}}

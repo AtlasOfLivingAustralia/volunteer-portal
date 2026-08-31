@@ -7,8 +7,8 @@
     <content tag="templateView">
 <div class="row">
     <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                 <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" height="330"/>
             </div>
@@ -18,8 +18,8 @@
     <div class="col-md-4">
         <div class="row" id="taskMetadata">
             <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-body">
+                <div class="card">
+                    <div class="card-body">
                         <table style="width: 100%">
                             <tr>
                                 <td>
@@ -35,9 +35,10 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <a href="#" class="btn btn-default btn-xs fieldHelp"
-                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
-                                                class="fa fa-question help-container"></i></a>
+                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
+                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">
+                                            <i class="fa fa-question help-container"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -60,8 +61,8 @@
     </div>
 </div>
 
-<div class="transcribeSection panel panel-default">
-    <div class="panel-body">
+<div class="transcribeSection card">
+    <div class="card-body">
         <div class="row">
             <div class="col-md-6">
                 <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection details</span>

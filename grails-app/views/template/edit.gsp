@@ -10,16 +10,16 @@
             margin-left: 0px !important;
         }
 
-        h4.panel-title {
+        h4.card-title {
             font-size: 12px;
 
         }
 
-        .panel-title:hover {
+        .card-title:hover {
             cursor: pointer;
         }
 
-        .panel {
+        .card {
             margin: 5px !important;
         }
 
@@ -39,12 +39,12 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-default">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-secondary">Create new template</a>
         </div>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${templateInstance}">
@@ -57,18 +57,18 @@
                         <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
-                            <label for="name" class="col-md-3 control-label"><g:message code="template.name.label" default="Name"/></label>
+                            <label for="name" class="col-md-3 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
                                 <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                             <div class="col-md-3">
-                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-default" id="btnEditFields" label="Edit Fields"/>
-                                <button class="btn btn-default" id="btnPreview">Preview Template</button>
+                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-secondary" id="btnEditFields" label="Edit Fields"/>
+                                <button class="btn btn-secondary" id="btnPreview">Preview Template</button>
                             </div>
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
-                            <label for="viewName" class="col-md-3 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                            <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <g:if test="${availableViews}">
                                     <g:select from="${availableViews}" name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
@@ -84,7 +84,7 @@
 
                         <div id="row-view-params-json"
                              class="form-group ${hasErrors(bean: templateInstance, field: 'viewParams', 'error')}">
-                            <label class="col-md-3 control-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
+                            <label class="col-md-3 form-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
                                                                                          default="Template View Parameters:"/></label>
 
                             <div class="col-md-6">
@@ -94,7 +94,7 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
-                            <label class="col-md-3 control-label" for="supportMultipleTranscriptions">
+                            <label class="col-md-3 form-label" for="supportMultipleTranscriptions">
                                 <g:message code="template.multipletanscriptions.label"
                                            default="Support multiple transcriptions per task?"/>
 
@@ -103,7 +103,7 @@
                                 <div style="padding-top: 10px">
                                     <g:checkBox name="supportMultipleTranscriptions"
                                                 checked="${templateInstance.supportMultipleTranscriptions}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                                    title="<g:message code="template.multipletanscriptions.helptext"
                                                                      default="Ignored for Specimen and Fieldnote Expedition types."/>">
                                     <span class="help-container"><i class="fa fa-question"></i></span></a>
@@ -113,7 +113,7 @@
 
                         <cl:ifSiteAdmin>
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
-                            <label class="col-md-3 control-label" for="isGlobal">
+                            <label class="col-md-3 form-label" for="isGlobal">
                                 <g:message code="template.isglobal.label"
                                            default="Is a Global Template?"/>
                             </label>
@@ -121,7 +121,7 @@
                                 <div style="padding-top: 10px">
                                     <g:checkBox name="isGlobal"
                                                 checked="${templateInstance.isGlobal}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                                    title="<g:message code="template.globaltemplate.helptext"
                                                                      default="A global template is available to all institutions."/>">
                                     <span class="help-container"><i class="fa fa-question"></i></span></a>
@@ -130,7 +130,7 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
-                            <label class="col-md-3 control-label" for="isHidden">
+                            <label class="col-md-3 form-label" for="isHidden">
                                 <g:message code="template.ishidden.label"
                                            default="Hide Template?"/>
                             </label>
@@ -138,7 +138,7 @@
                                 <div style="padding-top: 10px">
                                     <g:checkBox name="isHidden"
                                                 checked="${templateInstance.isHidden}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                                    title="<g:message code="template.hidden.helptext"
                                                                      default="Hide this template from all users."/>">
                                     <span class="help-container"><i class="fa fa-question"></i></span></a>
@@ -162,26 +162,26 @@
                     </g:form>
 
                     <div class="form-group" style="padding-top: 10px;">
-                        <label class="col-md-3 control-label" style="padding-top: 5px;">
+                        <label class="col-md-6 form-label" style="padding-top: 5px;">
                             <g:message code="template.project.label"
                                        default="Projects that use this template:"/>
                             &nbsp;
-                            <button class="btn btn-xs btn-default collapse-toggle" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
+                            <button class="btn btn-xs btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
                         </label>
 
                         <div class="col-md-6">
                             %{-- Accordian display --}%
-                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
                             <g:set var="instCounter" value="0"/>
                             <g:each in="${projectUsageList}" var="institution">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading" role="tab" id="heading${instCounter}">
-                                        <h4 class="panel-title" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}">
+                                <div class="card">
+                                    <div class="card-header" role="tab" id="heading${instCounter}">
+                                        <h4 class="card-title" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}">
                                             ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
                                         </h4>
                                     </div>
-                                    <div id="collapse${instCounter}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${instCounter}">
-                                        <div class="panel-body">
+                                    <div id="collapse${instCounter}" class="collapse" role="tabpanel" aria-labelledby="heading${instCounter}">
+                                        <div class="card-body">
                                             <ul>
                                                 <g:each in="${institution.value}" var="project">
                                                     <li style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
@@ -209,8 +209,7 @@
 
     $(document).ready(function() {
         $('#collapse-all-button').on('click', function () {
-            //$('#accordion .panel-collapse').collapse('toggle');
-            bootstrap.Collapse.getOrCreateInstance($('#accordion .panel-collapse')).toggle();
+            bootstrap.Collapse.getOrCreateInstance($('#accordion .collapse')).toggle();
             if ($('#collapse-all').hasClass('fa-expand')) {
                 $('#collapse-all').removeClass('fa-expand').addClass('fa-compress');
             } else {

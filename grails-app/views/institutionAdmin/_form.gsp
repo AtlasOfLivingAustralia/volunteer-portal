@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 <input type="hidden" name="entry" value="${entry}" />
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'name', 'has-error')}">
-    <label class="control-label col-md-3" for="name">
+    <label class="form-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
         <span class="required-indicator">*</span>
     </label>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'acronym', 'has-error')}">
-    <label class="control-label col-md-3" for="acronym">
+    <label class="form-label col-md-3" for="acronym">
         <g:message code="institution.acronym.label" default="Acronym"/>
         <span class="required-indicator">*</span>
     </label>
@@ -21,7 +21,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'shortDescription', 'has-error')}">
-    <label class="control-label col-md-3" for="shortDescription">
+    <label class="form-label col-md-3" for="shortDescription">
         <g:message code="institution.shortDescription.label" default="Short Description"/>
     </label>
     <div class="col-md-6">
@@ -30,7 +30,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'description', 'has-error')}">
-    <label class="control-label col-md-3" for="description">
+    <label class="form-label col-md-3" for="description">
         <g:message code="institution.description.label" default="Description"/>
     </label>
     <div class="col-md-9">
@@ -39,7 +39,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'contactName', 'has-error')}">
-    <label class="control-label col-md-3" for="contactName">
+    <label class="form-label col-md-3" for="contactName">
         <g:message code="institution.contactName.label" default="Contact Name"/>
         <span class="required-indicator">*</span>
     </label>
@@ -49,7 +49,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'contactEmail', 'has-error')}">
-    <label class="control-label col-md-3" for="contactEmail">
+    <label class="form-label col-md-3" for="contactEmail">
         <g:message code="institution.contactEmail.label" default="Contact Email"/>
         <span class="required-indicator">*</span>
     </label>
@@ -59,7 +59,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'contactPhone', 'has-error')}">
-    <label class="control-label col-md-3" for="contactPhone">
+    <label class="form-label col-md-3" for="contactPhone">
         <g:message code="institution.contactPhone.label" default="Contact Phone"/>
     </label>
     <div class="col-md-6">
@@ -68,7 +68,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'websiteUrl', 'has-error')}">
-    <label class="control-label col-md-3" for="websiteUrl">
+    <label class="form-label col-md-3" for="websiteUrl">
         <g:message code="institution.websiteUrl.label" default="Website URL"/>
     </label>
     <div class="col-md-6">
@@ -78,7 +78,7 @@
 
 <g:if test="${entry == 'CREATE' || (mode == 'edit' && institutionInstance?.isApproved)}">
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'displayContact', 'has-error')}">
-    <label class="control-label col-md-3" for="isInactive">
+    <label class="form-label col-md-3" for="isInactive">
         <g:message code="institution.displayContact.label" default="Display Contact Details"/>
     </label>
     <div class="col-md-6">
@@ -87,7 +87,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'imageCaption', 'has-error')}">
-    <label class="control-label col-md-3" for="imageCaption">
+    <label class="form-label col-md-3" for="imageCaption">
         <g:message code="institution.imageCaption.label" default="Image caption/attribution"/>
     </label>
     <div class="col-md-6">
@@ -96,7 +96,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: institutionInstance, field: 'themeColour', 'has-error')}">
-    <label class="control-label col-md-3" for="themeColour">
+    <label class="form-label col-md-3" for="themeColour">
         <g:message code="institution.themeColour.label" default="Theme colour code (hex)"/>
     </label>
     <div class="col-md-6">
@@ -109,7 +109,7 @@
 </g:if>
 <g:if test="${institutionInstance?.collectoryUid}">
     <div class="form-group ${hasErrors(bean: institutionInstance, field: 'collectoryUid', 'has-error')}">
-        <label class="control-label col-md-3" for="collectoryUid">
+        <label class="form-label col-md-3" for="collectoryUid">
             <g:message code="institution.collectoryUid.label" default="Collectory Uid"/>
         </label>
         <div class="col-md-6">
@@ -120,7 +120,7 @@
 <cl:ifSiteAdmin>
     <g:if test="${mode == 'edit' && institutionInstance?.isApproved}">
         <div class="form-group ${hasErrors(bean: institutionInstance, field: 'isInactive', 'has-error')}">
-            <label class="control-label col-md-3" for="isInactive">
+            <label class="form-label col-md-3" for="isInactive">
                 <g:message code="institution.isInactive.label" default="Inactive"/>
             </label>
             <div class="col-md-6">

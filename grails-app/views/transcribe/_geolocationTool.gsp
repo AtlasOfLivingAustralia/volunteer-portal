@@ -15,11 +15,9 @@
             <div class="custom-search-input in-modal">
                 <div class="input-group">
                     <input type="text" name="address" id="address" class="form-control input-lg" placeholder="Search e.g. Wollongong">
-                    <span class="input-group-btn">
                         <button id="locationSearch" class="btn btn-info btn-lg" type="button">
-                            <i class="glyphicon glyphicon-search"></i>
+                            <i class="fa fa-search"></i>
                         </button>
-                    </span>
                 </div>
             </div>
 

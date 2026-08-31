@@ -20,8 +20,8 @@
 </cl:headerContent>
 
 <div class="container" role="main">
-    <div class="panel panel-default" style="margin-top: 2em;">
-        <div class="panel-body">
+    <div class="card" style="margin-top: 2em;">
+        <div class="card-body">
             <h4>Expedition Statistics</h4>
             <table class="table table-condensed">
                 <tr>
@@ -41,8 +41,8 @@
             </table>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
@@ -50,11 +50,9 @@
                                id="projectAdminSearch" value="${params.q}"
                                placeholder="Search tasks..."
                                size="60"/>
-                        <span class="input-group-btn">
-                            <button class="btn btn-small btn-primary" id="searchButton">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </button>
-                        </span>
+                        <button class="btn btn-small btn-primary" id="searchButton">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -64,16 +62,16 @@
 
                 </div>
                 <div class="col-md-2">
-                    <a class="btn btn-default bs3"
+                    <a class="btn btn-secondary bs3"
                        href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Reset</a>
                 </div>
                 <div class="col-md-2">
                     <div class="btn-group btn-group-sm float-end">
-                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-default ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-outline-secondary ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
                             <i class="fa fa-th-list"></i>
                         </g:link>
-                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-default ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
-                            <i class="fa fa-th"></i>
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-outline-secondary ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                            <i class="fa fa-th-large"></i>
                         </g:link>
                     </div>
                 </div>
@@ -149,7 +147,7 @@
                                                 id="${taskInstance.id}">View</g:link>
                                     </g:if>
                                     <g:else>
-                                        <button class="btn btn-sm btn-default"
+                                        <button class="btn btn-sm btn-secondary"
                                                 onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
                                     </g:else>
                                 </td>

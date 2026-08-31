@@ -5,7 +5,7 @@
                 <div class="col-sm-12">
                     <div class="thumbnail row-style">
                         <div class="row">
-                            <div class="col-xs-3">
+                            <div class="col-3">
                                 <a href="${createLink(controller: 'project', action: 'index', id: projectSummary.project.id)}">
                                     <cl:featuredImage project="${projectSummary.project}" class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}" />
                                 </a>
@@ -27,7 +27,7 @@
                                     </cl:ifInstitutionAdmin>
                                 </div>
                             </div>
-                            <div class="col-xs-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
+                            <div class="col-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
                                 <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: true, maxDescriptionLen: 250]" />
                             </div>
                         </div>

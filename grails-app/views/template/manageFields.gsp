@@ -21,8 +21,8 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <g:uploadForm action="importFieldsFromCSV" controller="template">
                     <g:hiddenField name="id" value="${templateInstance.id}"/>
@@ -30,9 +30,9 @@
                         <button class="btn btn-success" id="btnAddField">
                             <i class="icon-plus icon-white"></i>&nbsp;Add field
                         </button>
-                        <button class="btn btn-default" id="btnCleanUpOrdering">Clean up ordering</button>
-                        <button class="btn btn-default" id="btnPreviewTemplate">Preview Template</button>
-                        <button class="btn btn-default" id="btnExportAsCSV">Export as CSV</button>
+                        <button class="btn btn-secondary" id="btnCleanUpOrdering">Clean up ordering</button>
+                        <button class="btn btn-secondary" id="btnPreviewTemplate">Preview Template</button>
+                        <button class="btn btn-secondary" id="btnExportAsCSV">Export as CSV</button>
                     </div>
                     <div class="col-md-6">
                         <input type="file" data-filename-placement="inside" name="uploadFile"/>
@@ -72,18 +72,17 @@
                                 <td>${field.category}</td>
                                 <td class="text-center">
                                     <g:if test="${field.helpText}">
-                                        <a href="#" class="btn btn-default btn-xs fieldHelp"
+                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                            title="<markdown:renderHtml>${field.helpText}</markdown:renderHtml>"><span
                                                 class="help-container"><i class="fa fa-question"></i> </span></a>
                                     </g:if>
                                 </td>
-                                <td class="text-center">
-                                    <button class="btn btn-xs btn-default btnMoveFieldDown"><i class="fa fa-arrow-down"></i></button>
-                                    <button class="btn btn-xs btn-default btnMoveFieldUp"><i class="fa fa-arrow-up"></i></button>
-                                    <button class="btn btn-xs btn-default btnMoveFieldAnywhere"><i class="fa fa-arrows"></i></button>
-                                    <button class="btn btn-xs btnDeleteField btn-danger"><i class="fa fa-times"></i>
-                                    </button>
-                                    <button class="btn btn-xs btn-default btnEditField imageButton"><i class="fa fa-pencil"></i></button>
+                                <td class="text-center flex-nowrap">
+                                    <button class="btn btn-xs btn-outline-secondary btnEditField imageButton"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldDown"><i class="fa fa-arrow-down"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldUp"><i class="fa fa-arrow-up"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldAnywhere"><i class="fa fa-arrows"></i></button>
+                                    <button class="btn btn-xs btnDeleteField btn-danger"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>

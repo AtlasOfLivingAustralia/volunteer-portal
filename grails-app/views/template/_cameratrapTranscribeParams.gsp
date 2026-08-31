@@ -34,7 +34,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="jumpNTasks"><g:message code="template.cameratrap.jump.label"
+    <label class="col-md-3 form-label" for="jumpNTasks"><g:message code="template.cameratrap.jump.label"
                                                              default="Number of tasks to jump on save / skip"/></label>
 
     <div class="col-md-6">
@@ -43,7 +43,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="animalsPicklistId"><g:message code="template.cameratrap.animals.label"
+    <label class="col-md-3 form-label" for="animalsPicklistId"><g:message code="template.cameratrap.animals.label"
                                                                     default="All Animals Picklist"/></label>
 
     <div class="col-md-6">

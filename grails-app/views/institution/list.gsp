@@ -90,13 +90,13 @@
                                 <g:if test="${params.q}">
                                     <span class="tag currentFilter">
                                         <span>${params.q}</span>
-                                        <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                        <a href="?mode=${params.mode}&q="><i class="remove fa fa-remove"></i></a>
                                     </span>
                                 </g:if>
                                 <g:if test="${params.tag}">
                                     <span class="tag currentFilter">
                                         <span>${params.tag}</span>
-                                        <a href="?mode=${params.mode}&tag="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                        <a href="?mode=${params.mode}&tag="><i class="remove fa fa-remove"></i></a>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -112,11 +112,9 @@
                             <div class="custom-search-input body">
                                 <div class="input-group">
                                     <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
-                                    <span class="input-group-btn">
-                                        <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                            <i class="glyphicon glyphicon-search"></i>
-                                        </button>
-                                    </span>
+                                    <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -144,15 +142,15 @@
                                 <div class="expedition-progress">
                                     <div class="progress-legend">
                                         <div class="row">
-                                            <div class="col-xs-4">
+                                            <div class="col-4">
                                                 <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
                                                 <strong>${projectCount}</strong> Expedition${projectCount == 1 ? '' : 's'}
                                             </div>
-                                            <div class="col-xs-4">
+                                            <div class="col-4">
                                                 <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
                                                 <strong>${volunteerCount}</strong> Volunteers
                                             </div>
-                                            <div class="col-xs-4">
+                                            <div class="col-4">
                                                 <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
                                                 <strong>${taskCount}</strong> Tasks
                                             </div>
@@ -162,7 +160,7 @@
                             </div>
                         </div>
                     </div>
-                    <g:if test="${(i+1) % 2 == 0}"><div class="clearfix visible-md-block visible-lg-block"></div></g:if>
+                    <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
                 </g:each>
                 <div class="row">
                     <div class="col-sm-12">

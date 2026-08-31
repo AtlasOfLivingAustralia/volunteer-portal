@@ -40,8 +40,8 @@
     %>
 </cl:headerContent>
 <div id="edit-tutorial" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${tutorial}">
@@ -63,7 +63,7 @@
                     <g:form action="update" class="form-horizontal" id="${tutorial?.id}" enctype="multipart/form-data">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="institutionId">Institution*</label>
+                            <label class="form-label col-md-3" for="institutionId">Institution*</label>
                             <div class="col-md-6">
                             <cl:ifSiteAdmin>
                                 <g:select class="form-control" name="institutionId" id="institutionId" from="${institutionList}"
@@ -77,7 +77,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="name">Tutorial name*</label>
+                            <label class="form-label col-md-3" for="name">Tutorial name*</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="130" name="name" id="name" value="${tutorial?.name}" required="required"/>
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="description">Description</label>
+                            <label class="form-label col-md-3" for="description">Description</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="description" maxlength="255" id="description" value="${tutorial?.description}" />
@@ -93,7 +93,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="tutorialFileLink">Tutorial File</label>
+                            <label class="form-label col-md-3" for="tutorialFileLink">Tutorial File</label>
 
                             <div class="col-md-6 tutorial-text-row">
                                 <cl:tutorialLink tutorial="${tutorial}"><span class="fa fa-file"></span>&nbsp;${tutorial?.filename}</cl:tutorialLink>
@@ -101,7 +101,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="tutorialFile">Upload New Tutorial File</label>
+                            <label class="form-label col-md-3" for="tutorialFile">Upload New Tutorial File</label>
 
                             <div class="col-md-6">
                                 <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile" />
@@ -109,14 +109,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="fileInfo">Tutorial Created</label>
+                            <label class="form-label col-md-3" for="fileInfo">Tutorial Created</label>
                             <div class="col-md-6 tutorial-text-row">
                                 <g:formatDate date="${tutorial?.dateCreated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.createdBy?.displayName}
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="fileInfo">Tutorial Last Updated</label>
+                            <label class="form-label col-md-3" for="fileInfo">Tutorial Last Updated</label>
                             <div class="col-md-6 tutorial-text-row">
                                 <g:if test="${tutorial?.lastUpdated}">
                                 <g:formatDate date="${tutorial?.lastUpdated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.updatedBy ? tutorial?.updatedBy?.displayName : 'System (migration)'}

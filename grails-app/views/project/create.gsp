@@ -19,8 +19,8 @@
     %>
 </cl:headerContent>
 <div id="create-project" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${projectInstance}">
@@ -50,19 +50,19 @@
                     <g:form action="save" class="form-horizontal">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="institutionId">Expedition institution*</label>
+                            <label class="form-label col-md-3" for="institutionId">Expedition institution*</label>
                             <div class="col-md-6">
                                 <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
                             </div>
-                            <div id="institution-link-icon" class="col-md-3 control-label text-start">
+                            <div id="institution-link-icon" class="col-md-3 form-label text-start">
                                 <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
                                     action: 'index', id: params?.institutionId)}" target="_blank">Institution Page</a>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="name">Expedition name*</label>
+                            <label class="form-label col-md-3" for="name">Expedition name*</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="name" value="${params?.name}" required="required"/>
@@ -70,7 +70,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="shortDescription">Short description</label>
+                            <label class="form-label col-md-3" for="shortDescription">Short description</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="shortDescription" value="${params?.shortDescription}" />
@@ -78,7 +78,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="description">Long description</label>
+                            <label class="form-label col-md-3" for="description">Long description</label>
 
                             <div class="col-md-9">
                                 <g:textArea name="description" class="mce form-control" value="${params?.description}" rows="10" />
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="template">Template*</label>
+                            <label class="form-label col-md-3" for="template">Template*</label>
 
                             <div class="col-md-6">
                                 <g:select name="template" from="${[]}" id="template" required="required"
@@ -95,7 +95,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="projectType">Expedition type*</label>
+                            <label class="form-label col-md-3" for="projectType">Expedition type*</label>
 
                             <div class="col-md-6">
                                 <g:select name="projectType" from="${projectTypes}" optionValue="label" optionKey="id"

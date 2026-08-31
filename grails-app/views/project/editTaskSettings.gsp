@@ -21,11 +21,11 @@
 <div class="form-horizontal">
 
     <div class="form-group">
-        <label class="control-label col-md-5">Upload images and create new tasks</label>
+        <label class="form-label col-md-5">Upload images and create new tasks</label>
 
         <div class="col-md-6">
             %{--<a class="btn" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>--}%
-            <a id="btnTaskStaging" class="btn btn-default"
+            <a id="btnTaskStaging" class="btn btn-secondary"
                href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
 
         </div>
@@ -33,27 +33,27 @@
 
     <g:if test="${currentlyLoading}">
     <div class="form-group">
-        <label class="control-label col-md-5">View task load progress</label>
+        <label class="form-label col-md-5">View task load progress</label>
 
         <div class="col-md-6">
-            <a class="btn btn-default"
+            <a class="btn btn-secondary"
                href="${createLink(controller: 'project', action: 'loadProgress', id: projectInstance.id)}">View progress</a>
         </div>
     </div>
     </g:if>
 
     <div class="form-group">
-        <label class="control-label col-md-5">Attach new data to existing tasks</label>
+        <label class="form-label col-md-5">Attach new data to existing tasks</label>
 
         <div class="col-md-6" title="${currentlyLoading ? 'Tasks are currently loading, please wait for existing staged tasks to load before staging more tasks' : ''}">
-            <a class="btn btn-default${currentlyLoading ? ' disabled' : ''}"
+            <a class="btn btn-secondary${currentlyLoading ? ' disabled' : ''}"
                href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
         </div>
     </div>
 
 
     <div class="form-group">
-        <label class="control-label col-md-5">Permanently remove all tasks and their images</label>
+        <label class="form-label col-md-5">Permanently remove all tasks and their images</label>
 
         <div class="col-md-6">
             <button id="btnDeleteAllTasks" class="btn btn-danger"><i

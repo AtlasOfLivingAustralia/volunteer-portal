@@ -63,8 +63,8 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="col-sm-12 col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-body">
+                <div class="card">
+                    <div class="card-body">
                         <g:if test="${taskInstance?.project?.projectType?.name == ProjectType.PROJECT_TYPE_AUDIO}">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
@@ -80,7 +80,7 @@
                         </g:else>
 
                         <div class="col-sm-12" style="padding-top: 0.5em; padding-left: 0px;">
-                        <a class="btn btn-default btn-small"
+                        <a class="btn btn-secondary btn-small"
                            href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
                         <cl:ifAdmin>
                             <g:if test="${taskInstance?.project.requiredNumberOfTranscriptions > 1}">
@@ -100,7 +100,7 @@
             </div>
 
             <div class="col-sm-12 col-md-6">
-                <div class="panel panel-default">
+                <div class="card">
                     <table class="table">
                         <tr>
                             <td>ID</td>
@@ -169,8 +169,8 @@
 
         <div class="row-fluid">
             <div class="col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <h3>Fields</h3>
                     </div>
                     <table class="table table-bordered table-condensed">

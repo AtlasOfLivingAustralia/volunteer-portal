@@ -28,13 +28,13 @@
                                     <g:if test="${params.q}">
                                         <span class="tag currentFilter">
                                             <span>${params.q}</span>
-                                            <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                            <a href="?mode=${params.mode}&q="><i class="remove fa fa-remove"></i></a>
                                         </span>
                                     </g:if>
                                     <g:if test="${params.tag}">
                                         <span class="tag currentFilter">
                                             <span>${params.tag}</span>
-                                            <a href="?mode=${params.mode}&tag="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                            <a href="?mode=${params.mode}&tag="><i class="remove fa fa-remove"></i></a>
                                         </span>
                                     </g:if>
                                 </g:if>
@@ -49,23 +49,21 @@
                             <div class="card-filter">
                                 <div class="btn-group float-end" role="group" aria-label="...">
                                     <a href="${createLink(action: 'list', params: queryStringParams + [mode: 'grid'])}"
-                                       class="btn btn-default btn-xs ${params.mode != 'grid' ? '' : 'active'}">
-                                        <i class="glyphicon glyphicon-th-large "></i>
+                                       class="btn btn-outline-secondary btn-xs ${params.mode != 'grid' ? '' : 'active'}">
+                                        <i class="fa fa-th-large "></i>
                                     </a>
                                     <a href="${createLink(action:'list', params: queryStringParams)}"
-                                       class="btn btn-default btn-xs ${params.mode == 'grid' ? '' : 'active'}">
-                                        <i class="glyphicon glyphicon-th-list"></i>
+                                       class="btn btn-outline-secondary btn-xs ${params.mode == 'grid' ? '' : 'active'}">
+                                        <i class="fa fa-th-list"></i>
                                     </a>
                                 </div>
 
                                 <div class="custom-search-input body">
                                     <div class="input-group">
                                         <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
-                                        <span class="input-group-btn">
-                                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                                <i class="glyphicon glyphicon-search"></i>
-                                            </button>
-                                        </span>
+                                        <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                            <i class="fa fa-search"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

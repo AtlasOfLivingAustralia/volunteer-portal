@@ -13,8 +13,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                     <g:imageViewer multimedia="${multimedia}"/>
                 </div>
@@ -22,8 +22,8 @@
         </div>
 
         <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <div id="taskMetadata">
                         <div id="institutionLogo"></div>
 
@@ -43,7 +43,7 @@
                         <span>
                             <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                     style="">Copy values from a previous task</button>
-                            <a href="#" class="btn btn-default btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>
+                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>
                         </span>
 
                         <div style="display: none;">
@@ -56,8 +56,8 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <div class="row">
                         <g:set var="allTextField"
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
@@ -67,7 +67,7 @@
 
                         <div class="col-md-12" style="margin-top: 5px">
                             All text
-                            <a href="#" class="btn btn-default btn-xs fieldHelp"
+                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
                                     class="fa fa-question help-container"></i></a>
                         </div>
@@ -93,7 +93,7 @@
                         </div>
 
                         <div class="col-md-12" style="margin-top: 5px">
-                            Verbatim Locality <a href='#' class='btn btn-default btn-xs fieldHelp'
+                            Verbatim Locality <a href='#' class='btn btn-outline-secondary btn-xs fieldHelp'
                                                  title='Enter (or cut and paste from the box above) the locality information into this box'><i
                                     class='fa fa-question help-container'></i></a>
                         </div>
@@ -114,8 +114,8 @@
     <g:hiddenField name="recordValues.0.locationID" class="locationID" id="recordValues.0.locationID"
                    value="${recordValues?.get(0)?.locationID ?: TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.locationID, template)?.defaultValue}"/>
 
-    <div class="panel panel-default transcribeSection">
-        <div class="panel-body">
+    <div class="card transcribeSection">
+        <div class="card-body">
             <div class="row transcribeSectionHeader">
                 <div class="col-md-12">
                     <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Collection Event</span> &ndash; a collecting event is a unique combination of who (collector), when (date) and where (locality) a specimen was collected
@@ -176,7 +176,7 @@
                     </div>
 
                     <div class="col-md-6 collectionEventSection">
-                        <strong>a.</strong>&nbsp; <button type="button" class="btn btn-default"
+                        <strong>a.</strong>&nbsp; <button type="button" class="btn btn-secondary"
                                                           id="show_collection_event_selector">Find existing collection event</button>
                     </div>
 
@@ -198,7 +198,7 @@
 
                     <div class="row">
                         <div class="col-md-6 col-md-offset-2">
-                            <strong>i.</strong>&nbsp;<button type="button" class="btn btn-default"
+                            <strong>i.</strong>&nbsp;<button type="button" class="btn btn-secondary"
                                                              id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
                         </div>
 

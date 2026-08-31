@@ -63,18 +63,18 @@
 
         <div>
             <span style="padding: 5px; float: left">
-                <button class="btn btn-default btn-sm" id="show_prev_task"><asset:image
+                <button class="btn btn-secondary btn-sm" id="show_prev_task"><asset:image
                         src="left_arrow.png"/>&nbsp;Previous</button>
-                <button class="btn btn-default btn-sm" id="show_next_task">Next&nbsp;<asset:image
+                <button class="btn btn-secondary btn-sm" id="show_next_task">Next&nbsp;<asset:image
                         src="right_arrow.png"/></button>
                 <span id="task_location"></span>
             </span>
             <span style="padding: 5px;float:right">
                 <span style="color: white;">Label text:</span>
                 <span><g:textField style="width:120px;margin-bottom: 0" name="search_text" id="search_text"/></span>
-                <button class="btn btn-default btn-sm" style="margin-right: 10px" id="search_button">Search</button>
-                <button class="btn btn-default btn-sm" id="copy_task_data">Copy</button>
-                <button class="btn btn-default btn-sm" id="cancel_button">Cancel</button>
+                <button class="btn btn-secondary btn-sm" style="margin-right: 10px" id="search_button">Search</button>
+                <button class="btn btn-secondary btn-sm" id="copy_task_data">Copy</button>
+                <button class="btn btn-secondary btn-sm" id="cancel_button">Cancel</button>
             </span>
         </div>
         <hr/>

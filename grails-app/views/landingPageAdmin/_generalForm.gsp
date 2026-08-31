@@ -9,7 +9,7 @@
     <g:hiddenField name="id" value="${landingPageInstance?.id}" />
 
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'title', 'has-error')} required">
-       <label for="title" class="control-label col-md-3"><g:message code="landingPage.title.label"
+       <label for="title" class="form-label col-md-3"><g:message code="landingPage.title.label"
                                                                       default="Title"/></label>
        <div class="col-md-9">
            <g:field name="title" type="text" class="form-control" value="${landingPageInstance.title}"/>
@@ -17,7 +17,7 @@
     </div>
 
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'has-error')} required">
-        <label for="shortUrl" class="control-label col-md-3"><g:message code="landingPage.shortUrl.label"
+        <label for="shortUrl" class="form-label col-md-3"><g:message code="landingPage.shortUrl.label"
                                                                      default="Title"/></label>
         <div class="col-md-9">
             <g:field name="shortUrl" type="text" class="form-control" value="${landingPageInstance.shortUrl}"/>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'enabled', 'has-error')} required">
-       <label for="enabled" class="control-label col-md-3"><g:message code="landingPage.enabled.label"
+       <label for="enabled" class="form-label col-md-3"><g:message code="landingPage.enabled.label"
                                                                       default="Is this landing page enabled?"/></label>
         <div class="col-md-9">
             <g:checkBox name="enabled" checked="${landingPageInstance?.enabled}"/>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'bodyCopy', 'has-error')}">
-        <label for="bodyCopy" class="control-label col-md-3"><g:message code="landingPage.bodyCopy.label"
+        <label for="bodyCopy" class="form-label col-md-3"><g:message code="landingPage.bodyCopy.label"
                                                                                     default="Description"/></label>
         <div class="col-md-9">
             <g:textArea name="bodyCopy" rows="10" class="mce form-control" placeholder="Markdown..." value="${landingPageInstance.bodyCopy}"/>
@@ -41,7 +41,7 @@
     </div>
 
     %{--<div class="form-group" ${hasErrors(bean: landingPage, field: 'numberOfContributors', 'has-error')}>
-        <label for="numberOfContributors" class="control-label col-md-3"><g:message code="landingPage.numberOfContributors.label"
+        <label for="numberOfContributors" class="form-label col-md-3"><g:message code="landingPage.numberOfContributors.label"
                                                                            default="The number of contributors to show on the landing page"/></label>
         <div class="col-md-6">
             <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${landingPage.numberOfContributors}"/>
@@ -49,7 +49,7 @@
     </div>--}%
 
    <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'imageAttribution', 'has-error')}">
-       <label for="imageAttribution" class="control-label col-md-3">
+       <label for="imageAttribution" class="form-label col-md-3">
            <g:message code="landingPage.imageAttribution" default="Image Attribution Text" />
        </label>
        <div class="col-md-9">
@@ -58,7 +58,7 @@
    </div>
 
     <div class="form-group"  ${hasErrors(bean: landingPageInstance, field: 'projectType', 'has-error')}>
-        <label class="control-label col-md-3" for="projectType"><g:message code="landingPage.projectType.label"
+        <label class="form-label col-md-3" for="projectType"><g:message code="landingPage.projectType.label"
                                                                            default="Description"/></label>
 
         <div class="col-md-9">

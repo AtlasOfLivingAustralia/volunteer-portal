@@ -42,8 +42,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">
@@ -81,7 +81,7 @@
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <a class="btn btn-xs btn-default"
+                                        <a class="btn btn-xs btn-secondary"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
                                         <cl:ifSiteAdmin>
@@ -122,7 +122,7 @@
             </div>
 
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
+                <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
                 <a href="#" class="btn btn-primary" id="quick-create-button">Create Institution</a>
             </div>
         </div>

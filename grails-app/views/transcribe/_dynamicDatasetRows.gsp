@@ -92,7 +92,7 @@
 
                     htmlStr += '<label for="' + name + '">' + e.label;
                     if (e.helpText) {
-                      htmlStr += '<a href="#" class="btn btn-default btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
+                      htmlStr += '<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
                     }
                     htmlStr += '</label> ';
 
@@ -128,7 +128,7 @@
                     fieldCount++;
                 }
                 if (entryIndex > 0) {
-                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="glyphicon glyphicon-remove glyphicon-white"></span> Delete </button>';
+                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="fa fa-remove"></span> Delete </button>';
                 }
                 htmlStr += "</div>";
                 itemCount++;

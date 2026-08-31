@@ -21,8 +21,8 @@
         <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success">Create a new Picklist</a>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
 
             <div class="row">
                 <div class="col-md-12 table-responsive">
@@ -40,7 +40,7 @@
                                 <td><g:link action="show"
                                             id="${picklistInstance.id}">${picklistInstance.id}</g:link></td>
                                 <td>${picklistInstance.uiLabel}</td>
-                                <td><g:link class="btn btn-default" controller="picklist" action="show"
+                                <td><g:link class="btn btn-secondary" controller="picklist" action="show"
                                             id="${picklistInstance.id}">View</g:link></td>
                             </tr>
                         </g:each>

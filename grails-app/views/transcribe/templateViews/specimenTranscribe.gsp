@@ -7,8 +7,8 @@
     <content tag="templateView">
 <div class="row">
     <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
                 <g:imageViewer multimedia="${multimedia}"/>
             </div>
@@ -16,8 +16,8 @@
     </div>
 
     <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <div id="taskMetadata">
                     <div id="institutionLogo"></div>
 
@@ -37,9 +37,10 @@
                     <span>
                         <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                 style="">Copy values from a previous task</button>
-                        <a href="#" class="btn btn-default btn-xs fieldHelp"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
-                                class="fa fa-question help-container"></i></a>
+                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
+                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">
+                            <i class="fa fa-question help-container"></i>
+                        </a>
                     </span>
 
                     <div style="display: none;">
@@ -53,14 +54,15 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <g:set var="allTextField"
                        value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                 <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span> &ndash; Record exactly what appears in the labels so we have a searchable reference for them
-                <a href="#" class="btn btn-default btn-xs fieldHelp"
-                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
-                        class="help-container fa fa-question"></i></a>
+                <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
+                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'>
+                    <i class="help-container fa fa-question"></i>
+                </a>
                 <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>

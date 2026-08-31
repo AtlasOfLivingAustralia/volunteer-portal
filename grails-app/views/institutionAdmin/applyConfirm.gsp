@@ -16,8 +16,8 @@
 
 </cl:headerContent>
 <div id="create-institution" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <p>
                 <b>Institution Name:</b> ${institutionInstance.name} <br />
                 <b>Contact: </b>

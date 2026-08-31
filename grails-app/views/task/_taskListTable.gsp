@@ -35,13 +35,13 @@
 
             <td style="padding: 0.9em;">
                 <g:link controller="task" action="showDetails" id="${taskInstance.id}" title="${g.message(code: 'task.details.button.label')}"><i
-                        class="glyphicon glyphicon-list-alt"></i></g:link>
+                        class="fa fa-list-alt"></i></g:link>
                 ${taskInstance.externalIdentifier}
                 <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
                 <g:set var="disableLink" value="" />
                 <g:if test="${lastView}">
                     <g:set var="disableLink" value="disabled='disabled'" />
-                    <i class="glyphicon glyphicon-lock lastViewedTask" title="Locked by ${lastView.userId}"
+                    <i class="fa fa-lock lastViewedTask" title="Locked by ${lastView.userId}"
                        viewedTaskId="${lastView.id}"></i>
                 </g:if>
             </td>

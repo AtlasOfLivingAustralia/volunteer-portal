@@ -15,8 +15,8 @@
 
 </cl:headerContent>
 <div id="create-institution" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <p>You can apply for an Institution within DigiVol! An Insitution can create Expeditions that utilise the
             volunteer power of Citizen Science to transcribe your digital assets for your research.</p>
             <p>Complete the form below and it will be reviewed by the DigiVol admin team. You will be notified when
@@ -24,8 +24,8 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${institutionInstance}">

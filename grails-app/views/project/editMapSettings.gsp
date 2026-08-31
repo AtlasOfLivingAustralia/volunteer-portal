@@ -47,21 +47,21 @@
         <div class="col-md-6">
             <div class="row">
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapZoomLevel">Zoom</label>
+                    <label class="form-label col-md-4" for="mapZoomLevel">Zoom</label>
                     <div class="col-md-6">
                         <g:textField name="mapZoomLevel" class="form-control" value="${initZoom}"/>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapLatitude">Center Latitude:</label>
+                    <label class="form-label col-md-4" for="mapLatitude">Center Latitude:</label>
                     <div class="col-md-6">
                         <g:textField name="mapLatitude" class="form-control" value="${initLatitude}"/>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label col-md-4" for="mapLongitude">Center Longitude:</label>
+                    <label class="form-label col-md-4" for="mapLongitude">Center Longitude:</label>
                     <div class="col-md-6">
                         <g:textField name="mapLongitude" class="form-control" value="${initLongitude}"/>
                     </div>

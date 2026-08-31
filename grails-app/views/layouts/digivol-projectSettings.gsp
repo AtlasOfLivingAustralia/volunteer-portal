@@ -23,8 +23,8 @@
         <cl:projectCreatedBy project="${projectInstance}" />
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
                     <ul class="list-group">
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="col-md-9">
-                    <div class="panel panel-default subpanel">
-                        <div class="panel-heading text-end" >
+                    <div class="card subpanel">
+                        <div class="card-header text-end" >
                             <h4 class="float-start">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
                             <g:form name="activationForm" controller="project" action="update" class="form-horizontal">
                                 <g:hiddenField name="id" value="${projectInstance.id}"/>
@@ -65,7 +65,7 @@
                                     <g:hiddenField name="inactive" value="true"/>
                                 </g:else>
                                 <div class="btn-group">
-                                    <a class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                    <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                         <i class="fa fa-cog"></i>&nbsp;Actions
                                         <span class="caret"></span>
                                     </a>
@@ -104,7 +104,7 @@
                                 </div>
                             </g:form>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <g:layoutBody/>
                         </div>
                     </div>

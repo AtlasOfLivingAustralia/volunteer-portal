@@ -10,8 +10,8 @@
 
 <cl:headerContent title="${message(code: 'default.contact.label', default: 'Contact Us')}" selectedNavItem="contact"/>
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <h3>Help in using <g:message code="default.application.name"/> and reporting issues</h3>

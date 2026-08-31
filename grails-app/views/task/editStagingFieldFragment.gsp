@@ -1,7 +1,7 @@
 <div class="form-horizontal">
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="fieldType">Field type</label>
+        <label class="form-label col-md-3" for="fieldType">Field type</label>
 
         <div class="col-md-6">
             <g:select class="fieldType form-control" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
@@ -25,7 +25,7 @@
 
     <div id="formatBlock">
         <div class="form-group">
-            <label class="control-label col-md-3" for="definition" id="formatLabel">Definition/Value</label>
+            <label class="form-label col-md-3" for="definition" id="formatLabel">Definition/Value</label>
 
             <div class="col-md-6">
                 <g:textField name="definition" value="${fieldDefinition?.format}" class="form-control"/>
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="fieldName">Field name</label>
+        <label class="form-label col-md-3" for="fieldName">Field name</label>
 
         <div class="col-md-6">
             <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="recordIndex">Index (optional)</label>
+        <label class="form-label col-md-3" for="recordIndex">Index (optional)</label>
 
         <div class="col-md-6">
             <g:textField name="recordIndex" value="${fieldDefinition?.recordIndex}" class="form-control"/>
@@ -57,7 +57,7 @@
     <div class="form-group">
 
         <div class="col-md-offset-3 col-md-9">
-            <button class="btn btn-default" id="btnCancelEditFieldDefinition">Cancel</button>
+            <button class="btn btn-secondary" id="btnCancelEditFieldDefinition">Cancel</button>
             <button class="btn btn-primary" id="btnSaveFieldDefinition">Save</button>
         </div>
     </div>

@@ -63,8 +63,8 @@
 %>
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-default transcribeSection">
-            <div class="panel-body">
+        <div class="card transcribeSection">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-12">
                         <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Details</span>
@@ -91,7 +91,7 @@
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {
-            $(this).addClass("btn btn-default").attr("target", "tutorialWindow");
+            $(this).addClass("btn btn-secondary").attr("target", "tutorialWindow");
         });
     });
 

@@ -23,7 +23,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="picklistInstitutionCode">
+        <label class="form-label col-md-3" for="picklistInstitutionCode">
             <g:message code="project.picklistInstitutionCode.label" default="Picklist Collection Code"/>
         </label>
 

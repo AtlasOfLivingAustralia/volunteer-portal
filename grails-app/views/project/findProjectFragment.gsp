@@ -3,7 +3,7 @@
     <div class="control-group">
         <g:textField name="search" class="form-control" value="" placeholder="Search"/>
         <button id="btnSearchProjects" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
-        <button class="btn btn-default" id="btnCancelProjectSearch">Cancel</button>
+        <button class="btn btn-secondary" id="btnCancelProjectSearch">Cancel</button>
     </div>
 
     <div id="searchResults" style="height: 300px; overflow-y: auto">

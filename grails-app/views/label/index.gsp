@@ -31,8 +31,8 @@
 
 <div class="container" role="main">
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
 
             <div class="row">
                 <div class="col-md-6" style="margin-top: 20px;margin-left: 5px;">
@@ -64,9 +64,11 @@
                                 <td style="vertical-align: middle;">${labelCategory.createdBy == 0L ? "System" : User.get(labelCategory.createdBy).displayName}</td>
                                 <td>
                                     <g:if test="${(!labelCategory.isDefault)}">
-                                    <i class="fa fa-trash label-button delete-label-button"
-                                       data-href="${createLink(controller: 'label', action: 'deleteCategory', id: labelCategory.id)}"
+                                    <a class="btn btn-xs btn-danger" title="Delete Category">
+                                        <i class="fa fa-times label-button delete-label-button"
+                                           data-href="${createLink(controller: 'label', action: 'deleteCategory', id: labelCategory.id)}"
                                        title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
+                                    </a>
                                     </g:if>
                                 </td>
                             </tr>

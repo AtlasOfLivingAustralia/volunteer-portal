@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <g:if test="${(i+1) % 2 == 0}"><div class="clearfix visible-md-block visible-lg-block"></div></g:if>
+    <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
 </g:each>
 <g:if test="${!disablePagination}">
     <div class="pagination">

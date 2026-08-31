@@ -25,9 +25,9 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel panel-default">
+            <div class="card">
 
-                <div class="panel-body">
+                <div class="card-body">
                     <p style="text-align: center">There are currently no new tasks ready to transcribe.</p>
 
                     <p style="text-align: center">Please check back later for more transcription tasks.</p>

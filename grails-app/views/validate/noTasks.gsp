@@ -14,16 +14,16 @@
     </asset:script>
 
 </head>
-<body class="admin  ">
+<body class="admin">
 
 <cl:headerContent title="Thank you - we are done for now !" crumbLabel="Thanks - we're done!"/>
 
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel panel-default">
+            <div class="card">
 
-                <div class="panel-body">
+                <div class="card-body">
                     <p style="text-align: center">There are currently no new tasks ready to validate, please check back later</p>
 
                     <p style="text-align: center"><g:link controller="task" action="projectAdmin" id="${projectId}">Click here to return to the Expedition admin menu</g:link>.</p>

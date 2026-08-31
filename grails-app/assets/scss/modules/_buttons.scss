@@ -1,6 +1,7 @@
 .btn {
-	border: transparent;
-	border-radius: 10px;
+	//border: transparent;
+	//border-radius: 10px;
+	padding: 0.125rem 0.5rem;
   	&.btn-default {
 	  border: 1px solid $btn-default-border;
 	}
@@ -62,6 +63,10 @@
 }
 .btn:focus {
   outline: none;
+}
+
+.input-group > .btn {
+	margin-left: 0.5px !important;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {

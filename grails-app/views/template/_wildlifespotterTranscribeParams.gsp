@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.AutoValidationType" %>
 <div class="form-group">
-    <label class="col-md-3 control-label" for="exportGroupByIndex">
+    <label class="col-md-3 form-label" for="exportGroupByIndex">
         <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
     </label>
     <div class="col-md-6">
@@ -11,7 +11,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="exportGroupByIndex">
+    <label class="col-md-3 form-label" for="exportGroupByIndex">
         <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
     </label>
     <div class="col-md-6">
@@ -22,7 +22,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="exportGroupByIndex">
+    <label class="col-md-3 form-label" for="exportGroupByIndex">
         <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
     </label>
     <div class="col-md-6" style="padding-bottom: 10px;">
@@ -33,9 +33,9 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="autoValidationType">
+    <label class="col-md-3 form-label" for="autoValidationType">
         <g:message code="template.autoValidationType.label" default="System Validation Type"/>
-        &nbsp;&nbsp;<a href="#" class="btn btn-default btn-xs fieldHelp"
+        &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                        title="<g:message code="template.autoValidationType.helptext"
                                          default="Select the field combination that the System will use for comparison when auto-validating."/>">
         <span class="help-container"><i class="fa fa-question"></i></span></a>
@@ -50,7 +50,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="jumpNTasks">
+    <label class="col-md-3 form-label" for="jumpNTasks">
         <g:message code="template.wildlifeSpotter.jump.label" default="Number of tasks to jump on save / skip"/>
     </label>
     <div class="col-md-6">

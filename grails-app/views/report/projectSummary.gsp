@@ -13,8 +13,8 @@
 
 <content tag="pageTitle"><g:message code="admin.project.summary.label" default="Project Summary Report"/></content>
 
-<div class="panel panel-default" style="margin-top: 5px;">
-    <div class="panel-body">
+<div class="card" style="margin-top: 5px;">
+    <div class="card-body">
         <p>This report provides a summary outlook of all projects you have access to. <br/>
             Includes task counts, transcribe and validation counts, expedition type, percentage complete, date started
             and finished, and average transcription time.</p>

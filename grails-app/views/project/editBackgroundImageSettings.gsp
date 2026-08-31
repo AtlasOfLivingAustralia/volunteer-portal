@@ -39,7 +39,7 @@
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_BG_IMAGE}" />
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="backgroundImage">Background Image</label>
+        <label class="form-label col-md-3" for="backgroundImage">Background Image</label>
 
         <div class="col-md-9">
             <input type="file" data-filename-placement="inside" name="backgroundImage" id="backgroundImage"/>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="backgroundImageAttribution">Image attribution text</label>
+        <label class="form-label col-md-3" for="backgroundImageAttribution">Image attribution text</label>
 
         <div class="col-md-6">
             <g:textField name="backgroundImageAttribution" class="form-control"
@@ -56,7 +56,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="backgroundImageOverlayColour">
+        <label class="form-label col-md-3" for="backgroundImageOverlayColour">
             <g:message code="project.backgroundImageOverlayColour.label" default="Background image overlay colour (rgba)"/>
         </label>
         <div class="col-md-6">
@@ -67,7 +67,7 @@
         </div>
         <div class="col-md-3">
             <cl:helpText>This will be applied over the background image.  Use this if the background image makes the text that overlays it unreadable.  A good starting point is black at half opacity (i.e. `rgba(0,0,0,0.5)`).</cl:helpText>
-            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-default btn-xs">Set to default</button>
+            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-secondary btn-xs">Set to default</button>
         </div>
     </div>
 

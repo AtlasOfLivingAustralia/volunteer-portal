@@ -20,8 +20,8 @@
             class="icon-plus icon-white"></i>&nbsp;Add Badge</a>
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-striped table-hover">

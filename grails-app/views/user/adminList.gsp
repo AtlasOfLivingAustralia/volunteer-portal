@@ -30,8 +30,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
 
             %{--                    TODO Convert to user search --}%
             <div class="row">
@@ -48,7 +48,7 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search by name or email..."/>
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-default bs3"
+                    <a class="btn btn-secondary bs3"
                         href="${createLink(controller: 'user', action: 'adminList')}">Reset</a>
                 </div>
             </div>

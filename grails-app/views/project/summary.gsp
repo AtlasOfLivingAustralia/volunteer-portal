@@ -16,8 +16,8 @@
     <div class="container">
     <div class="row">
         <div class="span-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <dl>
                         <g:each in="${pageScope.getVariablesMap().entrySet().findAll { !(it.key in ['out','expressionOut','pagePlugin','pluginContextPath','it']) }}" var="entry">
                             <dt>${entry.key.capitalize()}</dt>

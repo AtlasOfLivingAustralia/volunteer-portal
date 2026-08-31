@@ -17,17 +17,17 @@
             ]
         %>
     </cl:headerContent>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="well well-sm">
                         <h3>General</h3>
                         <hr/>
-                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-default">Mapping tool</a>
+                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-secondary">Mapping tool</a>
                         <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
-                           class="btn btn-default">Expedition-Institution migration tool</a>
-                        <g:link action="updateUsers" class="btn btn-default">Update users now</g:link>
+                           class="btn btn-secondary">Expedition-Institution migration tool</a>
+                        <g:link action="updateUsers" class="btn btn-secondary">Update users now</g:link>
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <div class="well well-sm">
                         <h3>Caches</h3>
                         <hr/>
-                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-default">Clear page caches</a>
-                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-default">Clear entity caches</a>
+                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-secondary">Clear page caches</a>
+                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-secondary">Clear entity caches</a>
                     </div>
                 </div>
             </div>
@@ -62,16 +62,16 @@
 
                                 <div class="form-group">
                                     <div id="set-query" class="col-sm-10">
-                                        <button id="match_all" class="btn btn-default btn-sm" data-query="matchAll">Match All</button>
-                                        <button id="project_name" class="btn btn-default btn-sm"
+                                        <button id="match_all" class="btn btn-secondary btn-sm" data-query="matchAll">Match All</button>
+                                        <button id="project_name" class="btn btn-secondary btn-sm"
                                                 data-query="projectName">Project Name</button>
-                                        <button id="project_id" class="btn btn-default btn-sm" data-query="projectId">Project Id</button>
-                                        <button id="task_id" class="btn btn-default btn-sm" data-query="taskId">Task Id</button>
+                                        <button id="project_id" class="btn btn-secondary btn-sm" data-query="projectId">Project Id</button>
+                                        <button id="task_id" class="btn btn-secondary btn-sm" data-query="taskId">Task Id</button>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="query">Query text</label>
+                                    <label class="form-label col-sm-2" for="query">Query text</label>
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="query" name="query" rows="10">{
@@ -83,7 +83,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="searchType">Search Type</label>
+                                    <label class="form-label col-sm-2" for="searchType">Search Type</label>
 
                                     <div class="col-sm-10">
                                         <select id="searchType" class="form-control" name="searchType">
@@ -98,7 +98,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="aggregation">Aggregation</label>
+                                    <label class="form-label col-sm-2" for="aggregation">Aggregation</label>
 
                                     <div class="col-sm-10">
                                         <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
@@ -115,7 +115,7 @@
 
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <g:submitButton class="btn btn-default" name="submitQuery" value="Run Query"/>
+                                        <g:submitButton class="btn btn-secondary" name="submitQuery" value="Run Query"/>
                                     </div>
                                 </div>
                             </fieldset>
@@ -129,10 +129,10 @@
                     <div class="well" style="margin-top: 10px">
                         <h3>S3 Configuration</h3>
                         <hr/>
-                        <button id="test-s3" class="btn btn-default" data-href="${createLink(action: 'testS3')}">Test S3</button>
-                        <span id="test-s3-spinner" class="hidden"><cl:spinner/></span>
+                        <button id="test-s3" class="btn btn-secondary" data-href="${createLink(action: 'testS3')}">Test S3</button>
+                        <span id="test-s3-spinner" class="d-none"><cl:spinner/></span>
 
-                        <div id="test-s3-results" class="hidden" style="margin-top: 15px">
+                        <div id="test-s3-results" class="d-none" style="margin-top: 15px">
                             <div id="test-s3-message" class="alert" role="alert"></div>
                             <table class="table table-condensed table-bordered">
                                 <tbody>
@@ -211,8 +211,8 @@
             var $message = $('#test-s3-message');
 
             $button.prop('disabled', true);
-            $spinner.removeClass('hidden');
-            $results.addClass('hidden');
+            $spinner.removeClass('d-none');
+            $results.addClass('d-none');
 
             $.ajax({
                 url: $button.data('href'),
@@ -232,7 +232,7 @@
                 $('#test-s3-bucket').text(results.bucket || '');
                 $('#test-s3-auth-mode').text(results.authMode || '');
                 $('#test-s3-json').text(JSON.stringify(results, null, 2));
-                $results.removeClass('hidden');
+                $results.removeClass('d-none');
             }).fail(function(xhr) {
                 $message
                     .removeClass('alert-success alert-warning alert-danger')
@@ -245,10 +245,10 @@
                 $('#test-s3-bucket').text('');
                 $('#test-s3-auth-mode').text('');
                 $('#test-s3-json').text(xhr.responseText || '');
-                $results.removeClass('hidden');
+                $results.removeClass('d-none');
             }).always(function() {
                 $button.prop('disabled', false);
-                $spinner.addClass('hidden');
+                $spinner.addClass('d-none');
             });
         });
 

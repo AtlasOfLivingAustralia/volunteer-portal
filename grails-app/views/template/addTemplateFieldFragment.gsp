@@ -2,33 +2,33 @@
 
 <form>
     <div class="form-group">
-        <label class="control-label" for="fieldName">Field:</label>
+        <label class="form-label" for="fieldName">Field:</label>
         <g:select name="fieldName" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="fieldTypeClassifier">Classifier:<cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText></label>
+        <label class="form-label" for="fieldTypeClassifier">Classifier:<cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText></label>
         <g:textField class="form-control" name="fieldTypeClassifier" value=""/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="label">Label (blank for default):</label>
+        <label class="form-label" for="label">Label (blank for default):</label>
         <g:textField class="form-control" name="label" value=""/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="category">Category:</label>
+        <label class="form-label" for="category">Category:</label>
         <g:select class="form-control" name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
     </div>
 
     <div class="form-group">
-        <label class="control-label" for="type">Type:</label>
+        <label class="form-label" for="type">Type:</label>
         <g:select class="form-control" name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
                   value="${FieldType.text}"/>
     </div>
 
     <div class="modal-footer">
-        <button id="btnCancelAddField" class="btn btn-default">Cancel</button>
+        <button id="btnCancelAddField" class="btn btn-secondary">Cancel</button>
         <button id="btnSaveField" class="btn btn-primary">Add field</button>
     </div>
 

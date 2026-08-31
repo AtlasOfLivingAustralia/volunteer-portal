@@ -18,8 +18,8 @@
     %>
 </cl:headerContent>
 <div id="create-project" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <g:hasErrors bean="${labelCategory}">
             <div class="row">
                 <div class="col-md-12">
@@ -43,7 +43,7 @@
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="saveCategory" class="form-horizontal">
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="categoryName"><g:message code="default.label.category.label" default="${entityName}"/> Name*</label>
+                            <label class="form-label col-md-3" for="categoryName"><g:message code="default.label.category.label" default="${entityName}"/> Name*</label>
                             <div class="col-md-9">
                                 <g:textField class="form-control" id="categoryName" name="name" value="${params?.name}" required="required"/>
                             </div>

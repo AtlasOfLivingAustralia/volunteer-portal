@@ -31,8 +31,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-hover table-striped">
@@ -50,7 +50,7 @@
                             <tr settingKey="${setting.key}">
                                 <td>
                                     ${setting.key}
-                                    <a href="#" class="btn btn-default btn-xs fieldHelp"
+                                    <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                                        title="<g:message code="settings.description.${key}"
                                                          default="${setting.description}"/>">
                                         <span class="help-container"><i class="fa fa-question"></i></span>
@@ -59,7 +59,7 @@
 %{--                                <td>${setting.defaultValue}</td>--}%
                                 <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
 %{--                                <td>${setting.description}</td>--}%
-                                <td><button class="btn btn-default btnEditSetting">Edit</button></td>
+                                <td><button class="btn btn-secondary btnEditSetting">Edit</button></td>
                             </tr>
                         </g:each>
                         </tbody>
@@ -70,12 +70,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <g:form action="sendTestEmail" class="form-horizontal">
-                        <label class="control-label col-md-1" for="to">To:</label>
+                        <label class="form-label col-md-1" for="to">To:</label>
                         <div class="col-md-5">
                             <g:textField class="form-control" name="to"/>
                         </div>
 
-                        <button class="btn btn-default" type="submit">Send test email</button>
+                        <button class="btn btn-secondary" type="submit">Send test email</button>
                     </g:form>
                 </div>
             </div>

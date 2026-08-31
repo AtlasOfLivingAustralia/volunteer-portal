@@ -18,8 +18,8 @@
     %>
 </cl:headerContent>
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <h4>Either drag the marker to a location, or search for a locality by name in the box below.</h4>
@@ -63,7 +63,7 @@
                     </table>
                 </div>
             </div>
-            <button class="btn btn-default" id="btnToggleFullData">Toggle full geolocate data</button>
+            <button class="btn btn-secondary" id="btnToggleFullData">Toggle full geolocate data</button>
 
             <div class="row">
                 <div class="col-md-12 form-horizontal" style="display: none" id="allDataDiv">

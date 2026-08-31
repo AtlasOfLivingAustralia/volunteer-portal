@@ -5,7 +5,7 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}">
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Message')}"/>
     <title><cl:pageTitle title="${g.message(code:"institutionMessage.list.label", default:"Institution Messages")}" /></title>
-    <style type="text/css">
+    <style>
         table {
             font-size: 0.9em;
         }
@@ -44,8 +44,8 @@
     </cl:headerContent>
 
     <div class="container" role="main">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <p>
                     Welcome to the DigiVol Institution messaging system. This system allows institutions to contact individual
                     volunteers directly, via email, through DigiVol. Institutions can contact individuals, or a group of individuals
@@ -67,8 +67,8 @@
                 </p>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <g:select class="form-control institutitonFilter" name="institution" from="${institutionList}"
@@ -152,14 +152,14 @@
                                     </g:else>
                                     </td>
                                     <td style="text-wrap: none">
-                                        <a class="btn btn-xs btn-default" title="Resend Message"
+                                        <a class="btn btn-xs btn-secondary" title="Resend Message"
                                            href="${createLink(controller: 'institutionMessage', action: 'resend', id: iMessage.id)}"><i class="fa fa-share"></i></a>
                                     <g:if test="${!iMessage.approved}">
-                                        <a class="btn btn-xs btn-default" title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
+                                        <a class="btn btn-xs btn-secondary" title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
                                             href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-default" title="View Message Details"
+                                        <a class="btn btn-xs btn-secondary" title="View Message Details"
                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-list-alt"></i></a>
                                     </g:else>
                                 <cl:ifSiteAdmin>

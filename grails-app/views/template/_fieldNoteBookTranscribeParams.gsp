@@ -32,7 +32,7 @@
 </div>
 
 <div class="form-group">
-    <div class="control-label col-md-3">
+    <div class="form-label col-md-3">
         <label for="transcribeSectionHeader"><g:message code="template.transcribeSectionHeader.label" default="Transcribe Section Header Label" /></label>
     </div>
     <div class="col-md-6">

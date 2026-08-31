@@ -24,9 +24,9 @@
 
         <g:each in="${sortedCategories}" var="category" status="i">
             <g:if test="${fieldMap[category]}">
-                <div class="panel panel-success">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">${i + 1}. ${category.displayName()}</h3></th>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${i + 1}. ${category.displayName()}</h3></th>
                     </div>
                     <table class="table">
                         <tbody>

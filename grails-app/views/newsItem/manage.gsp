@@ -26,8 +26,8 @@
 
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
                     <g:select class="form-control statusFilter" name="statusFilter" from="${statusFilterList}"
@@ -38,17 +38,15 @@
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search News Items..."/>
-                            <span class="input-group-btn">
-                                <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                </button>
-                            </span>
+                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <a class="btn btn-default bs3"
+                    <a class="btn btn-secondary bs3"
                        href="${createLink(controller: 'newsItem', action: 'manage')}">Reset</a>
                 </div>
 
@@ -110,15 +108,15 @@
                                 <td style="white-space: nowrap;">
                                 <!-- Toggle Status -->
                                     <g:if test="${!newsItem.isActive}">
-                                        <a class="btn btn-xs btn-default toggle-news-item-status" alt="Activate" title="Activate News Item"><i class="fa fa-toggle-off"></i></a>
+                                        <a class="btn btn-xs btn-outline-secondary toggle-news-item-status" alt="Activate" title="Activate News Item"><i class="fa fa-toggle-off"></i></a>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-default toggle-news-item-status" alt="Deactivate" title="Deactivate News Item"><i class="fa fa-toggle-on"></i></a>
+                                        <a class="btn btn-xs btn-outline-secondary toggle-news-item-status" alt="Deactivate" title="Deactivate News Item"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
                                 <!-- Edit -->
                                     <g:link action="edit" id="${newsItem.id}" title="Edit News Item" alt="Edit">
-                                        <span class="btn btn-xs btn-default edit-news-item">
+                                        <span class="btn btn-xs btn-outline-secondary edit-news-item">
                                             <i class="fa fa-pencil"></i>
                                         </span>
                                     </g:link>

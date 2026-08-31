@@ -154,15 +154,6 @@ class UserController {
         redirect(action: 'listOptOut')
     }
 
-    def list() {
-        if (!userService.isAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        []
-    }
-
     def adminList() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')
@@ -245,48 +236,6 @@ class UserController {
         render userList as JSON
     }
 
-    /**
-     * Not used.
-     * @deprecated
-     */
-    def project() {
-        if (!userService.isAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        def projectInstance = Project.get(params.long('id'))
-        if (projectInstance) {
-            params.max = Math.min(params.max ? params.int('max') : 10, 100)
-            if (!params.sort) {
-                params.sort = params.sort ? params.sort : "displayName"
-                params.order = "asc"
-            }
-            //def userList = User.list(params)
-            def userList = []
-            def userIds = taskService.getUserIdsAndCountsForProject(projectInstance, params)
-            def userCount = taskService.getUserIdsAndCountsForProject(projectInstance, new HashMap<String, Object>()).size()
-            userIds.each {
-                // iterate over each user and assign to a role.
-                def userId = it[0] as String
-                def count = it[1] as int
-                def user = User.findByUserId(userId)
-                if (user) {
-                    user.transcribedCount = count
-                    userList.add(user)
-                }
-            }
-
-            def currentUser = userService.currentUserId
-            render(view: "list", model: [userInstanceList: userList, userInstanceTotal: userCount,
-                                         currentUser: currentUser, projectInstance: projectInstance])
-        } else {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'project.label', default: 'Project'), params.id]) as String
-            redirect(action: "list")
-        }
-    }
-
     def unreadValidatedTasks() {
         def projId = params.long('projId')
         def project = null
@@ -296,37 +245,6 @@ class UserController {
         def userId = params.get('userId', userService.currentUser?.userId)
         def results = [count: taskService.countUnreadValidatedTasks(project, userId)]
         respond(results)
-    }
-
-    def taskListFragment() {
-        def selectedTab = params.int("selectedTab", 1)
-        def project = Project.get(params.int("projectId"))
-        def user = User.get(params.long('id'))
-
-        def results = taskService.getTaskViewList(selectedTab, user, project, (params.q as String) ?: '',
-                params.int('offset', 0), params.int('max', 10),
-                params.sort as String, params.order as String)
-
-        def isValidator = userService.isValidator(project)
-
-        results.viewList.each { Map it ->
-            long projectId = it.projectId != null ? it.projectId as long : 0L
-            long institutionId = it.institutionId != null ? it.institutionId as long : 0L
-            it['isValidator'] = userService.isValidatorForProjectId(projectId, institutionId)
-        }
-
-        def result = new TaskListResult(
-                viewList                : results.viewList as List,
-//                recentValidatedTaskCount: recentValidatedTaskCount,
-                totalMatchingTasks      : results.totalMatchingTasks as int,
-                selectedTab             : selectedTab,
-                projectInstance         : project,
-                userInstance            : user,
-                isValidator             : isValidator
-        )
-
-        log.debug("$result")
-        respond(result)
     }
 
     /**
@@ -523,91 +441,10 @@ class UserController {
         }
     }
 
-    /**
-     * @deprecated
-     * @return
-     */
-    def editRoles() {
-        if (!userService.isAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        def user = User.get(params.long('id'))
-        user.userRoles = sortUserRoles (user)
-
-        def currentUser = userService.currentUserId
-        if (!user || !currentUser) {
-            flash.message = "User not found!"
-            redirect(action: "list")
-            return
-        }
-
-        if (!userService.isAdmin()) {
-            flash.message = "You have insufficient priviliges to manage the roles for this user!"
-            render(view: '/notPermitted')
-        }
-
-        [userInstance: user,
-         currentUser: currentUser,
-         roles: Role.findAllByNameInList([BVPRole.FORUM_MODERATOR, BVPRole.VALIDATOR]),
-         institutions: Institution.list (sort: 'name', order: 'asc'),
-         projects: Project.list(sort: 'name', order: 'asc')]
-    }
-
     private def sortUserRoles (def userInstance) {
         return userInstance.userRoles.sort {a, b ->
             a.role.name <=> b.role.name ?: a.project?.name <=> b.project?.name ?: a.institution?.name <=> b.institution?.name
         }
-    }
-
-    /**
-     * @deprecated
-     */
-    def deleteRoles() {
-        if (!userService.isAdmin()) {
-            render status: 403
-            return
-        }
-        def userRoleId = params.selectedUserRoleId as long
-        def userRole = UserRole.get(userRoleId)
-        if (userRole) {
-            userRole.delete(flush: true)
-        }
-        render ([status: "success"] as JSON)
-    }
-
-    /**
-     * @deprecated
-     */
-    def addRoles() {
-        def currentUser = userService.getCurrentUser()
-
-        if (!userService.isAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        def userInstance = User.get(params.long("id"))
-        if (!userInstance) {
-            flash.message = "User not found!"
-            redirect(action: "list")
-            return
-        }
-        def selectedProject = null
-        def selectedInstitution = null
-        def selectedValue = params.int("selectedValue")
-        if (params.byoption == "project") {
-            selectedProject = Project.get(selectedValue)
-        } else {
-            selectedInstitution = Institution.get(selectedValue)
-        }
-        def role = Role.get(params.long("role")) //Role.list()[0]
-        def userRole = new UserRole(user: userInstance, role: role, project: selectedProject, institution: selectedInstitution, createdBy: currentUser)
-        userRole.save(flush: true, failOnError: true)
-        userInstance.addToUserRoles(userRole)
-        userInstance.userRoles = sortUserRoles (userInstance)
-        render template:'userRoles', model: [userInstance: userInstance]
     }
 
     def notebook() {

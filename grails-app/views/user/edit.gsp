@@ -29,8 +29,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${userInstance}">
@@ -43,7 +43,7 @@
                         <g:hiddenField name="id" value="${userInstance?.id}"/>
 
                         <div class="form-group">
-                            <label for="displayName" class="control-label col-md-3"><g:message code="user.displayName.label" default="Name"/></label>
+                            <label for="displayName" class="form-label col-md-3"><g:message code="user.displayName.label" default="Name"/></label>
                             <div class="col-md-6">
                                 <g:textField name="displayName" class="form-control" disabled="disabled"
                                              value="${fieldValue(bean: userInstance, field: 'displayName')}"/>
@@ -51,7 +51,7 @@
                         </div>
 
                         <div class="form-group  ${hasErrors(bean: userInstance, field: 'transcribedCount', 'has-error')}">
-                            <label for="transcribedCount" class="control-label col-md-3">
+                            <label for="transcribedCount" class="form-label col-md-3">
                                 <g:message code="user.transcribedCount.label" default="Transcribed Count"/>
                             </label>
                             <div class="col-md-6">
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="form-group  ${hasErrors(bean: userInstance, field: 'validatedCount', 'has-error')}">
-                            <label for="validatedCount" class="control-label col-md-3">
+                            <label for="validatedCount" class="form-label col-md-3">
                                 <g:message code="user.validatedCount.label" default="Validated Count"/>
                             </label>
                             <div class="col-md-6">
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="form-group  ${hasErrors(bean: userInstance, field: 'userId', 'has-error')}">
-                            <label for="userId" class="control-label col-md-3">
+                            <label for="userId" class="form-label col-md-3">
                                 <g:message code="user.userId.label" default="User Id"/>
                             </label>
                             <div class="col-md-6">
@@ -81,7 +81,7 @@
                         </div>
 
                         <div class="form-group  ${hasErrors(bean: userInstance, field: 'email', 'has-error')}">
-                            <label for="email" class="control-label col-md-3">
+                            <label for="email" class="form-label col-md-3">
                                 <g:message code="user.email.label" default="Email Address"/>
                             </label>
                             <div class="col-md-6">
@@ -103,7 +103,7 @@
 
                         <div class="well form-horizontal" style="padding: 10px !important;">
                             <div class="form-group">
-                                <label for="roles" class="control-label col-md-3">
+                                <label for="roles" class="form-label col-md-3">
                                     <g:message code="user.roles.label" default="Roles"/>
                                     <a class="btn btn-link"
                                        href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
@@ -150,7 +150,7 @@
                             <g:form method="post" class="form-horizontal">
                                 <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}" />
                             <div class="form-group">
-                                <label for="label" class="control-label col-md-3">
+                                <label for="label" class="form-label col-md-3">
                                     <g:message code="user.labels.label" default="Tags"/>
                                 </label>
                                 <div class="col-md-3">

@@ -70,12 +70,12 @@
             <p style="margin-top: 20px;"><%=institutionInstance.description%></p>
             <div class="cta-primary ">
                 <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">See our expeditions
-                    <span class="glyphicon glyphicon-arrow-down"></span></a>
-                <a class="btn btn-lg btn-hollow grey hidden">Learn more</a>
+                    <span class="fa fa-arrow-down"></span></a>
+                <a class="btn btn-lg btn-hollow grey d-none">Learn more</a>
                 <cl:ifAdmin>
                     <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
                             controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i
-                            class="glyphicon glyphicon-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
+                            class="fa fa-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
                     <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
                             controller="admin" action="manageUserRoles" params="${[institution: institutionInstance?.id]}"><i
                             class="fa fa-user"></i>&nbsp;User Permissions</g:link>&nbsp;
@@ -91,31 +91,31 @@
                         <g:set var="tv" value="${(taskCounts?.percentTranscribed as Integer) - (taskCounts?.percentValidated as Integer)}"/>
                         <div class="progress">
                             <div class="progress-bar progress-bar-success" style="width: ${taskCounts?.percentValidated}%">
-                                <span class="sr-only">${taskCounts?.percentValidated}% Complete</span>
+                                <span class="visually-hidden">${taskCounts?.percentValidated}% Complete</span>
                             </div>
                             <div class="progress-bar progress-bar-transcribed" style="width: ${tv}%">
-                                <span class="sr-only">${tv}% Complete</span>
+                                <span class="visually-hidden">${tv}% Complete</span>
                             </div>
                         </div>
                         <div class="progress-legend">
                             <div class="row">
-                                <div class="col-xs-4">
+                                <div class="col-4">
                                     <b>${taskCounts?.percentValidated}%</b> Validated
                                 </div>
-                                <div class="col-xs-4">
+                                <div class="col-4">
                                     <b>${taskCounts?.percentTranscribed}%</b> Transcribed
                                 </div>
-                                <div class="col-xs-4">
+                                <div class="col-4">
                                     <b>${taskCounts?.taskCount}</b> Tasks
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-3 col-xs-6">
+                <div class="col-sm-3 col-6">
                     <h3><b>${underwayProjects} Expeditions</b>Underway</h3>
                 </div>
-                <div class="col-sm-3 col-xs-6">
+                <div class="col-sm-3 col-6">
                     <h3><b>${completedProjects} Expeditions</b>Completed</h3>
                 </div>
                 <a name="expeditionList"></a>
@@ -137,13 +137,13 @@
                                 <g:if test="${params.q}">
                                 <span class="tag currentFilter">
                                     <span>${params.q}</span>
-                                    <a href="?mode=${params.mode}&q="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                    <a href="?mode=${params.mode}&q="><i class="remove fa fa-remove"></i></a>
                                 </span>
                                 </g:if>
                                 <g:if test="${params.tag}">
                                     <span class="tag currentFilter">
                                         <span>${params.tag}</span>
-                                        <a href="?mode=${params.mode}&tag="><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                                        <a href="?mode=${params.mode}&tag="><i class="remove fa fa-remove"></i></a>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -157,18 +157,16 @@
                     <div class="col-sm-6">
                         <div class="card-filter">
                             <div class="btn-group float-end" role="group" aria-label="...">
-                                <a href="?mode=" class="btn btn-default btn-xs ${params.mode != 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-large "></i></a>
-                                <a href="?mode=list" class="btn btn-default btn-xs ${params.mode == 'list' ? 'active' : ''}"><i class="glyphicon glyphicon-th-list"></i></a>
+                                <a href="?mode=" class="btn btn-outline-secondary btn-xs ${params.mode != 'list' ? 'active' : ''}"><i class="fa fa-th-large"></i></a>
+                                <a href="?mode=list" class="btn btn-outline-secondary btn-xs ${params.mode == 'list' ? 'active' : ''}"><i class="fa fa-th-list"></i></a>
                             </div>
 
                             <div class="custom-search-input body">
                                 <div class="input-group">
                                     <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
-                                    <span class="input-group-btn">
-                                        <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                            <i class="glyphicon glyphicon-search"></i>
-                                        </button>
-                                    </span>
+                                    <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>

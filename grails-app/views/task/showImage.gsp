@@ -33,7 +33,7 @@
 <div class="container-fluid">
     <div id="imageViewerHeader">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-12">
                 <h4>${taskInstance?.project?.featuredLabel} - ${taskInstance?.externalIdentifier}</h4>
                 <cl:messages/>
             </div>
@@ -42,18 +42,18 @@
         <div class="row" style="margin-bottom: 10px">
 
             <div class="col-sm-9" id="journalPageButtons">
-                <button class="btn btn-default btn-small" id="showPreviousJournalPage"
+                <button class="btn btn-secondary btn-small" id="showPreviousJournalPage"
                         title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
                     <asset:image src="left_arrow.png"/> show previous
                 </button>
-                <button class="btn btn-default btn-small" id="showNextJournalPage"
+                <button class="btn btn-secondary btn-small" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
                     show next <asset:image src="right_arrow.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="rotateImage" title="Rotate the page 180 degrees">
+                <button class="btn btn-secondary btn-small" id="rotateImage" title="Rotate the page 180 degrees">
                     Rotate&nbsp;<asset:image src="rotate.png"/>
                 </button>
-                <button class="btn btn-default btn-small" id="closeWindow" title="Close this window">
+                <button class="btn btn-secondary btn-small" id="closeWindow" title="Close this window">
                     Close
                 </button>
             </div>
@@ -69,8 +69,8 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <div id="imageWell" class="panel panel-default">
-                <div class="panel-body">
+            <div id="imageWell" class="card">
+                <div class="card-body">
                     <g:each in="${taskInstance?.multimedia}" var="multimedia" status="i">
                         <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
                             <g:imageViewer multimedia="${multimedia}" hidePinImage="${true}"

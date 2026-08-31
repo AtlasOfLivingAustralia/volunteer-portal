@@ -400,7 +400,7 @@ class TranscribeTagLib {
                         mb.div(id:'row') {
                             mb.div(class:'col-sm-12', style:'padding-top:10px; padding-left:0px;') {
                                 mkp.yieldUnescaped("""
-                                    <a id="wave-play" class="btn btn-default" data-action="play" style="padding-top: 5px;">
+                                    <a id="wave-play" class="btn btn-secondary" data-action="play" style="padding-top: 5px;">
                                         <i class="fa fa-play"></i>
                                         Play /
                                         <i class="fa fa-pause"></i>
@@ -633,8 +633,8 @@ class TranscribeTagLib {
 
         def nextSectionNumberClosure = this.&nextSectionNumber
 
-        mb.div(class:'panel panel-default transcribeSection') {
-            div(class: 'panel-body') {
+        mb.div(class:'card card-default transcribeSection') {
+            div(class: 'card-body') {
                 if ((attrs?.renderHeaderTitle == null) || (attrs.renderHeaderTitle == 'true')) {
                     div(class: 'row transcribeSectionHeader') {
                         div(class: 'col-md-12') {
@@ -715,7 +715,7 @@ class TranscribeTagLib {
         if (field && field.helpText) {
             //def helpText = markdownService.markdown(field.helpText)
             def helpText = markdownService.renderMarkdown(field.helpText)
-            mb.a(href:'#', class:'btn btn-default btn-xs fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
+            mb.a(href:'#', class:'btn btn-outline-secondary btn-xs fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
                 i(class:'fa fa-question help-container') {
                     mkp.yieldUnescaped('')
                 }

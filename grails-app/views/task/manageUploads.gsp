@@ -41,8 +41,8 @@
 
 <div class="container" role="main">
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <g:select class="form-control institutionFilter"
@@ -56,11 +56,9 @@
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Expedition Name..."/>
-                            <span class="input-group-btn">
-                                <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                </button>
-                            </span>
+                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -130,7 +128,7 @@
                                     <button role="button" class="btn btn-danger btn-xs action-button delete-task-descriptor"
                                             data-image-name="${taskUpload.externalIdentifier}"
                                             data-href="${createLink(controller: "task", action: "deleteTaskDescriptor", id: taskUpload.id, params: params)}"
-                                            title="${message(code: "task.manage.delete.label", default: "Delete Queued Task")}"><i class="fa fa-trash"></i></button>
+                                            title="${message(code: "task.manage.delete.label", default: "Delete Queued Task")}"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>

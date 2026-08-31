@@ -94,11 +94,11 @@ class VolunteerTagLib {
         if (landingPages.size() > numberOfCustomLinksAtTopPage) {
             mb.li(class: "nav-item dropdown") {
                 a([href: "#", class:"nav-link dropdown-toggle", 'data-bs-toggle': "dropdown"]) {
-                    span(class: 'glyphicon glyphicon-camera') {
+                    span(class: 'fa fa-camera') {
                         mkp.yield("")
                     }
                     mkp.yield(' Camera Traps')
-                    span(class: "glyphicon glyphicon-chevron-down")
+                    span(class: "fa fa-chevron-down")
                 }
                 mb.ul(class: 'dropdown-menu profile-links nav-cameratrap-menu') {
                     buildLandingPage()
@@ -300,7 +300,7 @@ class VolunteerTagLib {
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
-            def attributes = [href:'#', class:"btn btn-default btn-xs fieldHelp", title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:"btn btn-secondary btn-xs fieldHelp", title:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.tooltipPosition = attrs.tooltipPosition
             }
@@ -340,7 +340,7 @@ class VolunteerTagLib {
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
-            def attributes = [href:'javascript:void(0)', class:'btn btn-default btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
+            def attributes = [href:'javascript:void(0)', class:'btn btn-secondary btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
             if (attrs.tooltipPosition) {
                 attributes.qtipMy = attrs.tooltipPosition
             }
@@ -591,7 +591,7 @@ class VolunteerTagLib {
                         for (int i = 0; i < crumbList?.size(); i++) {
                             def item = crumbList[i]
                             li {
-                                span(class:'glyphicon glyphicon-menu-right') {
+                                span(class:'fa fa-angle-right') {
                                     mkp.yield(' ')
                                 }
                                 a(href: item.link) {
@@ -601,7 +601,7 @@ class VolunteerTagLib {
                         }
                     }
                     li(class:'active') {
-                        span(class:'glyphicon glyphicon-menu-right') {
+                        span(class:'fa fa-angle-right') {
                             mkp.yield(' ')
                         }
                         mkp.yield(crumbLabel)
@@ -639,9 +639,9 @@ class VolunteerTagLib {
     def readStatusIcon = { attrs, body ->
         def unReadList = taskService.getUnreadValidatedTasks(attrs.project, userService.currentUser?.userId)
         if (attrs.taskId in (unReadList)) {
-            out << '<span class="glyphicon glyphicon-envelope"  style="color:#000192"></span>'
+            out << '<span class="fa fa-envelope"  style="color:#000192"></span>'
         } else {
-            out << '<span class="glyphicon glyphicon-ok"></span>'
+            out << '<span class="fa fa-check"></span>'
         }
     }
 

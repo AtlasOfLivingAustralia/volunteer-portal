@@ -15,7 +15,7 @@
 
         <div class="form-group">
             <div class="col-md-12 text-center">
-                <button id="btnCancelUploadImages" class="btn btn-default">Cancel</button>
+                <button id="btnCancelUploadImages" class="btn btn-secondary">Cancel</button>
                 <button id="btnUploadImages" class="btn btn-primary">Stage images</button>
             </div>
         </div>

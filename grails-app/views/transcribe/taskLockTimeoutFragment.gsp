@@ -10,7 +10,7 @@
 
     <div class="text-center">
         <button type="button" id="btnDefaultSaveTask" class="btn btn-primary">Close task</button>
-        <button type="button" id="btnIdleCancelModal" class="btn btn-default">Continue working</button>
+        <button type="button" id="btnIdleCancelModal" class="btn btn-secondary">Continue working</button>
     </div>
     <br/>
 

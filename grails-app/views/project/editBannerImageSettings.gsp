@@ -33,7 +33,7 @@
 
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredImage">Expedition Image</label>
+        <label class="form-label col-md-3" for="featuredImage">Expedition Image</label>
 
         <div class="col-md-9">
             <input type="file" data-filename-placement="inside" name="featuredImage" id="featuredImage"/>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="featuredImageCopyright">Image copyright text</label>
+        <label class="form-label col-md-3" for="featuredImageCopyright">Image copyright text</label>
 
         <div class="col-md-6">
             <g:textField name="featuredImageCopyright" class="form-control"

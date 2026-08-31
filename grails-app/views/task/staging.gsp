@@ -28,8 +28,8 @@
 </cl:headerContent>
 
 <div class="container task-staging">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
                     <h4><span class="numberCircle">1</span>&nbsp;Upload Task Files</h4>
@@ -109,7 +109,7 @@
 
             <div class="row">
                 <div class="col-md-3" style="text-align: center">
-                    <button id="btnSelectImages" class="btn btn-default">Select files</button>
+                    <button id="btnSelectImages" class="btn btn-secondary">Select files</button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
@@ -118,7 +118,7 @@
                         <a href="${dataFileUrl}">View data file</a>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-default"
+                        <button class="btn btn-secondary"
                                 id="btnUploadDataFile"
                             <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
                                 >
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
-                    <button class="btnAddFieldDefinition btn btn-default"
+                    <button class="btnAddFieldDefinition btn btn-secondary"
                         <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
                         >
                         <i class="fa fa-plus"></i> Add column</button>
@@ -167,14 +167,14 @@
     <div data-key="{{filename}}">
       <p>{{filename}} uploading</p>
       <div class="progress">
-        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">{{progress}}%</span></div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100"><span class="visually-hidden">{{progress}}%</span></div>
       </div>
     </div>
   {{/currentFiles}}
   </div>
   <div class="col-sm-12">
     <div class="progress">
-      <div class="progress-bar{{#remaining}} progress-bar-striped active{{/remaining}}" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%"><span class="sr-only">{{progress}}%</span></div>
+      <div class="progress-bar{{#remaining}} progress-bar-striped active{{/remaining}}" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%"><span class="visually-hidden">{{progress}}%</span></div>
     </div>
   </div>
 </div>

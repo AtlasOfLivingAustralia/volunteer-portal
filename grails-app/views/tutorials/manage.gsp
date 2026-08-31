@@ -51,8 +51,8 @@
     </cl:ifAdmin>
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <p>
                 This page is your expedition management console. It lists all expeditions within your institution, displaying
                 information such as active and archive status and disk usage.<br/>
@@ -60,7 +60,7 @@
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">
-                <div class="panel panel-default panel-body">
+                <div class="card card-body">
                     <p>
                         This tool provides useful information about the tutorial and allows you to perform a number of
                         functions on your tutorial.
@@ -88,8 +88,8 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <g:if test="${!params.migrate}">
             <div class="row">
                 <div class="col-md-4">
@@ -110,17 +110,15 @@
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Tutorial Name..."/>
-                            <span class="input-group-btn">
-                                <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                </button>
-                            </span>
+                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-2">
-                    <a class="btn btn-default bs3"
+                    <a class="btn btn-secondary bs3"
                        href="${createLink(controller: 'tutorials', action: 'manage', params: [reset: true])}">Reset</a>
                 </div>
 
@@ -177,10 +175,10 @@
                                 <td style="white-space: nowrap;">
                                 <!-- Toggle Status -->
                                     <g:if test="${!tutorial.isActive}">
-                                        <a class="btn btn-xs btn-default toggle-tutorial-status" alt="Activate" title="Activate Tutorial"><i class="fa fa-toggle-off"></i></a>
+                                        <a class="btn btn-xs btn-outline-secondary toggle-tutorial-status" alt="Activate" title="Activate Tutorial"><i class="fa fa-toggle-off"></i></a>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-default toggle-tutorial-status" alt="Deactivate" title="Deactivate Tutorial"><i class="fa fa-toggle-on"></i></a>
+                                        <a class="btn btn-xs btn-outline-secondary toggle-tutorial-status" alt="Deactivate" title="Deactivate Tutorial"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
                                 <!-- Edit -->
@@ -191,7 +189,7 @@
                                         </g:if>
                                     </cl:ifSiteAdmin>
                                     <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">
-                                        <span class="btn btn-xs btn-default edit-tutorial">
+                                        <span class="btn btn-xs btn-outline-secondary edit-tutorial">
                                             <i class="fa fa-pencil"></i>
                                         </span>
                                     </g:link>
@@ -200,7 +198,7 @@
                                     <button role="button" class="btn btn-danger btn-xs delete-tutorial"
                                             data-tutorial-name="${tutorial.name}"
                                             data-href="${createLink(controller: "tutorials", action: "delete", id: tutorial.id)}"
-                                            title="Delete Tutorial"><i class="fa fa-trash"></i></button>
+                                            title="Delete Tutorial"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>

@@ -29,7 +29,7 @@
     <div class="text-center">
         <g:set var="buttonCaption" value="${isValidator ? 'Save partial validation' : 'Save task'}"/>
         <button type="button" id="btnDefaultSaveTask" class="btn btn-primary">${buttonCaption}</button>
-        <button type="button" id="btnIdleCancelModal" class="btn btn-default">Continue working</button>
+        <button type="button" id="btnIdleCancelModal" class="btn btn-secondary">Continue working</button>
     </div>
     <br/>
 

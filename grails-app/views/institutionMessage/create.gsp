@@ -25,8 +25,8 @@
     %>
 </cl:headerContent>
 <div id="create-institution" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:form action="save" class="form-horizontal">

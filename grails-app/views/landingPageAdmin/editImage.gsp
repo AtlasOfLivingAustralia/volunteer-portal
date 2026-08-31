@@ -35,7 +35,7 @@
             </div>
 
             <div class="display-inline-block">
-                <g:submitButton name="clear-hero" class="clear-hero btn btn-default"
+                <g:submitButton name="clear-hero" class="clear-hero btn btn-secondary"
                                 value="${message(code: 'default.button.reset.label', default: 'Reset')}"/>
             </div>
         </div>

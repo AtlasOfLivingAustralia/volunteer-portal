@@ -7,7 +7,7 @@
 </style>
 
 <div class="form-group">
-    <label class="control-label col-md-3" for="institution">
+    <label class="form-label col-md-3" for="institution">
         <g:message code="institution.label" default="Institution"/>
     </label>
     <div class="col-md-6" style="padding-top: 0.5em;">
@@ -15,7 +15,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="createdBy">
+    <label class="form-label col-md-3" for="createdBy">
         <g:message code="institutionMessage.createdBy.label" default="Created By"/>
     </label>
     <div class="col-md-6" style="padding-top: 0.5em;">
@@ -23,7 +23,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="recipient">
+    <label class="form-label col-md-3" for="recipient">
         <g:message code="institutionMessage.recipient.label" default="Recipient"/>
     </label>
     <div class="col-md-6" style="padding-top: 0.5em;">
@@ -49,7 +49,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="dateCreated">
+    <label class="form-label col-md-3" for="dateCreated">
         <g:message code="institutionMessage.dateCreated.label" default="Created By"/>
     </label>
     <div class="col-md-6" style="padding-top: 0.5em;">
@@ -58,7 +58,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="includeContact" class="control-label col-md-3">
+    <label for="includeContact" class="form-label col-md-3">
         <g:message code="institutionMessage.includeContact.label" default="Include Institution Contact" /><br />
         <small id="includeContactHelp" class="form-text text-muted"><g:message code="institutionMessage.includeContact.help" default="Include Contact Details in Message" /></small>
     </label>
@@ -70,7 +70,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="subject">
+    <label class="form-label col-md-3" for="subject">
         <g:message code="institutionMessage.subject.label" default="Subject"/>
     </label>
     <div class="col-md-6" style="padding-top: 0.5em;">
@@ -78,7 +78,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label class="control-label col-md-3" for="body">
+    <label class="form-label col-md-3" for="body">
         <g:message code="institutionMessage.body.label" default="Message Body"/>
     </label>
     <div class="col-md-9" style="margin-top: 0.5em; margin-bottom: 2em;">

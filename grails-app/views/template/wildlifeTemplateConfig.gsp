@@ -33,7 +33,7 @@
 <div class="container" ng-app="wildlifespottertemplateconfig" ng-controller="TemplateConfigController as tcc">
     <div class="row">
         <div class="col-sm-12">
-            <button class="btn btn-primary" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
+            <button class="btn btn-outline-primary" ng-click="tcc.save()"><i class="fa fa-save"></i> Save</button>
         </div>
     </div>
 
@@ -41,44 +41,44 @@
         <div class="col-sm-12">
             <h1>
                 Categories
-                <button class="btn btn-mini btn-primary" ng-click="tcc.addCategory()"><i class="fa fa-plus"></i>
+                <button class="btn btn-mini btn-outline-primary" ng-click="tcc.addCategory()"><i class="fa fa-plus"></i>
                 </button>
-                <button class="btn btn-mini btn-primary" ng-click="tcc.minimizeAll(tcc.categoryUiStatus)"
+                <button class="btn btn-mini btn-outline-primary" ng-click="tcc.minimizeAll(tcc.categoryUiStatus)"
                         title="Minimize all"><i class="fa fa-window-minimize"></i></button>
-                <button class="btn btn-mini btn-primary" ngf-select="tcc.uploadCategoryJSON($file)"
+                <button class="btn btn-mini btn-outline-primary" ngf-select="tcc.uploadCategoryJSON($file)"
                         title="Upload Categories as JSON"><i class="fa fa-upload"></i></button>
-                <button class="btn btn-mini btn-primary" ng-click="tcc.downloadCategoryJSON()"
+                <button class="btn btn-mini btn-outline-primary" ng-click="tcc.downloadCategoryJSON()"
                         title="Download Categories as JSON"><i class="fa fa-download"></i></button>
             </h1>
 
-            <div class="panel panel-default" ng-repeat="c in tcc.model.categories">
-                <div class="panel-heading pointer"
+            <div class="card" ng-repeat="c in tcc.model.categories">
+                <div class="card-header pointer"
                      ng-click="tcc.categoryUiStatus[$index].minimized = !tcc.categoryUiStatus[$index].minimized">
                     <div class="float-end">
                         <div class="btn-group btn-group-xs" role="group" aria-label="Category options">
-                            <button class="btn btn-default"
+                            <button class="btn btn-outline-secondary"
                                     ng-click="tcc.moveCategoryUp($index); $event.stopPropagation();"><i
                                     class="fa fa-arrow-up"></i></button>
-                            <button class="btn btn-default"
+                            <button class="btn btn-outline-secondary"
                                     ng-click="tcc.moveCategoryDown($index); $event.stopPropagation();"><i
                                     class="fa fa-arrow-down"></i></button>
-                            <button ng-if="!tcc.categoryUiStatus[$index].minimized" class="btn btn-default"
+                            <button ng-if="!tcc.categoryUiStatus[$index].minimized" class="btn btn-outline-secondary"
                                     ng-click="tcc.categoryUiStatus[$index].minimized = true; $event.stopPropagation();"><i
                                     class="fa fa-window-minimize"></i></button>
-                            <button ng-if="tcc.categoryUiStatus[$index].minimized" class="btn btn-default"
+                            <button ng-if="tcc.categoryUiStatus[$index].minimized" class="btn btn-outline-secondary"
                                     ng-click="tcc.categoryUiStatus[$index].minimized = false; $event.stopPropagation();"><i
                                     class="fa fa-window-maximize"></i></button>
                         </div>
                         <button class="btn btn-danger btn-xs"
                                 ng-click="tcc.removeCategory($index); $event.stopPropagation();"><i
-                                class="fa fa-trash"></i></button>
+                                class="fa fa-times"></i></button>
                     </div>
 
-                    <h2 class="panel-title" ng-bind="c.name || 'New category'"></h2>
+                    <h2 class="card-title" ng-bind="c.name || 'New category'"></h2>
                 </div>
 
                 <div class="minimizable" ng-show="!tcc.categoryUiStatus[$index].minimized">
-                    <div class="panel-body">
+                    <div class="card-body">
                         <form>
                             <div class="form-group">
                                 <label>Name</label>
@@ -113,12 +113,12 @@
                                 <button class="btn btn-mini btn-primary" type="file"
                                         ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><i
                                         class="fa fa-upload"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(c.entries,$index)"><i
+                                <button class="btn btn-mini btn-outline-secondary" ng-click="tcc.moveUp(c.entries,$index)"><i
                                         class="fa fa-arrow-up"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(c.entries,$index)"><i
+                                <button class="btn btn-mini btn-outline-secondary" ng-click="tcc.moveDown(c.entries,$index)"><i
                                         class="fa fa-arrow-down"></i></button>
                                 <button class="btn btn-mini btn-danger" ng-click="tcc.removeEntry(c,$index)"><i
-                                        class="fa fa-trash"></i></button>
+                                        class="fa fa-times"></i></button>
                             </td>
                         </tr>
                         </tbody>
@@ -144,34 +144,34 @@
                         title="Download CSV of animals"><i class="fa fa-download"></i></button>
             </h1>
 
-            <div class="panel panel-default" ng-repeat="a in tcc.model.animals">
-                <div class="panel-heading pointer"
+            <div class="card" ng-repeat="a in tcc.model.animals">
+                <div class="card-header pointer"
                      ng-click="tcc.animalUiStatus[$index].minimized = !tcc.animalUiStatus[$index].minimized">
                     <div class="float-end">
                         <div class="btn-group btn-group-xs" role="group" aria-label="Animal options">
-                            <button class="btn btn-default"
+                            <button class="btn btn-outline-secondary"
                                     ng-click="tcc.moveAnimalUp($index); $event.stopPropagation();"><i
                                     class="fa fa-arrow-up"></i></button>
-                            <button class="btn btn-default"
+                            <button class="btn btn-outline-secondary"
                                     ng-click="tcc.moveAnimalDown($index); $event.stopPropagation();"><i
                                     class="fa fa-arrow-down"></i></button>
-                            <button ng-if="!tcc.animalUiStatus[$index].minimized" class="btn btn-default"
+                            <button ng-if="!tcc.animalUiStatus[$index].minimized" class="btn btn-outline-secondary"
                                     ng-click="tcc.animalUiStatus[$index].minimized = true; $event.stopPropagation();"><i
                                     class="fa fa-window-minimize"></i></button>
-                            <button ng-if="tcc.animalUiStatus[$index].minimized" class="btn btn-default"
+                            <button ng-if="tcc.animalUiStatus[$index].minimized" class="btn btn-outline-secondary"
                                     ng-click="tcc.animalUiStatus[$index].minimized = false; $event.stopPropagation();"><i
                                     class="fa fa-window-maximize"></i></button>
                         </div>
                         <button class="btn btn-danger btn-xs"
                                 ng-click="tcc.removeAnimal($index); $event.stopPropagation()"><i
-                                class="fa fa-trash"></i></button>
+                                class="fa fa-times"></i></button>
                     </div>
 
-                    <h2 class="panel-title" ng-bind="tcc.fullName(a) || 'New animal'"></h2>
+                    <h2 class="card-title" ng-bind="tcc.fullName(a) || 'New animal'"></h2>
                 </div>
 
                 <div class="minimizable" ng-show="!tcc.animalUiStatus[$index].minimized">
-                    <div class="panel-body">
+                    <div class="card-body">
                         <form>
                             <div class="form-group">
                                 <label>Common Name</label>
@@ -205,9 +205,9 @@
                         <tr>
                             <th>Image</th>
                             <th>
-                                <button class="btn btn-mini btn-primary" ng-click="tcc.addBlankImage(a)"><i
+                                <button class="btn btn-mini btn-outline-primary" ng-click="tcc.addBlankImage(a)"><i
                                         class="fa fa-plus"></i></button>
-                                <button class="btn btn-mini btn-primary" type="file"
+                                <button class="btn btn-mini btn-outline-primary" type="file"
                                         ngf-select="tcc.addManyImages(a,null,$files)" ngf-multiple="true"
                                         ngf-accept="'image/*'" title="Upload multiple images for this animal"><i
                                         class="fa fa-upload"></i></button>
@@ -221,15 +221,15 @@
 %{--                            </td>--}%
                             <td ngf-drop="tcc.addImage(a.images,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
                             <td>
-                                <button class="btn btn-mini btn-primary" type="file"
+                                <button class="btn btn-mini btn-outline-primary" type="file"
                                         ngf-select="tcc.addImage(a.images,$index,$files)" ngf-accept="'image/*'"><i
                                         class="fa fa-upload"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveUp(a.images,$index)"><i
+                                <button class="btn btn-mini btn-outline-secondary" ng-click="tcc.moveUp(a.images,$index)"><i
                                         class="fa fa-arrow-up"></i></button>
-                                <button class="btn btn-mini btn-default" ng-click="tcc.moveDown(a.images,$index)"><i
+                                <button class="btn btn-mini btn-outline-secondary" ng-click="tcc.moveDown(a.images,$index)"><i
                                         class="fa fa-arrow-down"></i></button>
                                 <button class="btn btn-mini btn-danger" ng-click="tcc.removeImage(a,$index)"><i
-                                        class="fa fa-trash"></i></button>
+                                        class="fa fa-times"></i></button>
                             </td>
                         </tr>
                         </tbody>

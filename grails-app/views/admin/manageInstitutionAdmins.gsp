@@ -17,8 +17,8 @@
 </cl:headerContent>
 
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h3>Add new Institution Admin</h3>
             <p>
                 Select the institution and enter the user's name or email address. The system will search for a users
@@ -35,11 +35,11 @@
                 </div>
                 <div class="col-md-4">
                     <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search user..." value="${displayName}" required autocomplete="new-password"/>
-                    <i id="ajax-spinner" class="fa fa-cog fa-spin hidden"></i>
+                    <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
                 <div class="col-md-3">
-                    <input type="submit" class="save btn btn-default" id="addButton"
+                    <input type="submit" class="save btn btn-secondary" id="addButton"
                            value="${message(code: 'default.button.add.label', default: 'Add')}"/>
                 </div>
             </div>
@@ -47,8 +47,8 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div id="maintain-message">
 
             </div>

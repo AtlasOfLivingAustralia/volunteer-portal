@@ -24,14 +24,14 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-12">
                             <h4>Ineligible Honour Board users <asset:image src="spinner.gif" height="16px" width="16px"
-                                                            id="ajax-spinner" class="hidden"/></h4>
+                                                            id="ajax-spinner" class="d-none"/></h4>
                             <hr/>
                         </div>
                     <hr/>
@@ -94,11 +94,11 @@
         }, 'displayName');
 
         function showSpinner() {
-            $('#ajax-spinner').removeClass('hidden');
+            $('#ajax-spinner').removeClass('d-none');
         }
 
         function hideSpinner() {
-            $('#ajax-spinner').addClass('hidden');
+            $('#ajax-spinner').addClass('d-none');
         }
 
         function onDeleteClick(e) {

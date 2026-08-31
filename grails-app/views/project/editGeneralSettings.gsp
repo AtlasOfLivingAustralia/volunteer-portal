@@ -42,20 +42,20 @@
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_GENERAL}" />
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="institutionId">Expedition institution</label>
+        <label class="form-label col-md-3" for="institutionId">Expedition institution</label>
         <div class="col-md-6">
         <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
           optionKey="id"
           value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
-        <div id="institution-link-icon" class="col-md-3 control-label text-start">
+        <div id="institution-link-icon" class="col-md-3 form-label text-start">
             <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
                 action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="name">Expedition name</label>
+        <label class="form-label col-md-3" for="name">Expedition name</label>
 
         <div class="col-md-6">
             <g:textField class="form-control" name="name" value="${projectInstance.name}"/>
@@ -63,7 +63,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="shortDescription">Short description</label>
+        <label class="form-label col-md-3" for="shortDescription">Short description</label>
 
         <div class="col-md-6">
             %{-- <g:textField class="form-control" maxlength="500" name="shortDescription" value="${projectInstance.shortDescription}"/> --}%
@@ -73,7 +73,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="description">Long description</label>
+        <label class="form-label col-md-3" for="description">Long description</label>
 
         <div class="col-md-9">
             <g:textArea name="description" class="mce form-control" rows="10" value="${projectInstance?.description}" />
@@ -81,7 +81,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="template">Template</label>
+        <label class="form-label col-md-3" for="template">Template</label>
 
         <div class="col-md-6">
             <select name="template" id="template" class="form-control">
@@ -90,11 +90,11 @@
         </div>
 
         <div class="col-md-3">
-            <a class="btn btn-xs btn-default" title="Edit Template" style="margin: 5px;"
+            <a class="btn btn-xs btn-outline-secondary" title="Edit Template" style="margin: 5px;"
                href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">
                 <i class="fa fa-pencil"></i>
             </a>
-            <a class="btn btn-xs btn-default" title="View All Templates"
+            <a class="btn btn-xs btn-outline-secondary" title="View All Templates"
                href="${createLink(controller: 'template', action: 'list')}">
                 <i class="fa fa-list"></i>
             </a>
@@ -102,7 +102,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="projectType">Expedition type</label>
+        <label class="form-label col-md-3" for="projectType">Expedition type</label>
 
         <div class="col-md-6">
             <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
@@ -112,14 +112,14 @@
 
         <div class="multipleTranscriptionsSupport">
             <div class="form-group">
-                <label class="control-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
+                <label class="form-label col-md-3" for="transcriptionsPerTask">Number of Transcriptions</label>
 
                 <div class="col-md-6">
                     <g:textField class="form-control" name="transcriptionsPerTask" value="${projectInstance.transcriptionsPerTask}"/>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
+                <label class="form-label col-md-3" for="thresholdMatchingTranscriptions">Threshold Of Matching Transcriptions (Auto Validation)</label>
 
                 <div class="col-md-6">
                     <g:textField class="form-control" name="thresholdMatchingTranscriptions" value="${projectInstance.thresholdMatchingTranscriptions}"/>
@@ -128,7 +128,7 @@
         </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3" for="label">Tags</label>
+        <label class="form-label col-md-3" for="label">Tags</label>
 
         <div class="col-md-6">
             <input autocomplete="off" type="text" id="label" class="form-control typeahead"/>

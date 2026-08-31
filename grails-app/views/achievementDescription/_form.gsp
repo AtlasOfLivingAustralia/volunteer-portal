@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
-    <label class="control-label col-md-3" for="name">
+    <label class="form-label col-md-3" for="name">
         <g:message code="achievementDescription.name.label" default="Name"/>
     </label>
 
@@ -10,7 +10,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'has-error')} required">
-    <label class="control-label col-md-3" for="description">
+    <label class="form-label col-md-3" for="description">
         <g:message code="achievementDescription.description.label" default="Description"/>    </label>
 
     <div class="col-md-6">
@@ -20,7 +20,7 @@
 </div>
 
 <div class="form-group required">
-    <label class="control-label col-md-3" for="type">
+    <label class="form-label col-md-3" for="type">
         <g:message code="achievementDescription.type.label" default="Type"/>    </label>
 
     <div class="col-md-6">
@@ -30,7 +30,7 @@
 </div>
 
 <div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'searchQuery', 'has-error')}">
-    <label class="control-label col-md-3" for="searchQuery">
+    <label class="form-label col-md-3" for="searchQuery">
         <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>    </label>
 
     <div class="col-md-9">
@@ -40,7 +40,7 @@
 </div>
 
 <div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'count', 'has-error')}">
-    <label class="control-label col-md-3" for="count">
+    <label class="form-label col-md-3" for="count">
         <g:message code="achievementDescription.count.label" default="Count"/>    </label>
 
     <div class="col-md-6">
@@ -50,7 +50,7 @@
 </div>
 
 <div class="form-group agType ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationQuery', 'has-error')}">
-    <label class="control-label col-md-3" for="aggregationQuery">
+    <label class="form-label col-md-3" for="aggregationQuery">
         <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query"/>    </label>
 
     <div class="col-md-9">
@@ -60,9 +60,9 @@
 </div>
 
 <div class="form-group grType ${hasErrors(bean: achievementDescriptionInstance, field: 'code', 'has-error')}">
-    <label class="control-label col-md-3" for="code">
+    <label class="form-label col-md-3" for="code">
         <g:message code="achievementDescription.badge.label" default="Code"/>
-        <span class="hidden required-indicator">*</span>
+        <span class="d-none required-indicator">*</span>
     </label>
 
     <div class="col-md-9">
@@ -71,7 +71,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'has-error')}">
-    <label class="control-label col-md-3" for="badge">
+    <label class="form-label col-md-3" for="badge">
         <g:message code="achievementDescription.badge.label" default="Badge"/>
     </label>
 
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<div id="upload-progress" class="fieldcontain hidden">
+<div id="upload-progress" class="fieldcontain d-none">
     <div class="progress progress-striped active">
         <div class="bar" style="width: 0%;"></div>
     </div>
@@ -122,8 +122,8 @@ jQuery(function($) {
     function toggleGroovyFields(on) { toggleFields('.grType', on) }
 
     function toggleFields(selector, on) {
-        $(selector).toggleClass('required', on).toggleClass('hidden', !on);
-        $(selector + ' span.required-indicator').toggleClass('hidden', !on);
+        $(selector).toggleClass('required', on).toggleClass('d-none', !on);
+        $(selector + ' span.required-indicator').toggleClass('d-none', !on);
         //$(selector + ' input, ' + selector + ' textarea').prop('required', on);
         //else $(selector + ' input').removeProp('required');
     }
@@ -199,12 +199,12 @@ jQuery(function($) {
 
         event.target.innerHTML = 'Uploading...';
         r.done(function( data, textStatus, jqXHR ) {
-            $('#upload-progress').addClass('hidden');
+            $('#upload-progress').addClass('d-none');
             $('#badge').val(data.filename).trigger('change');
         });
 
         r.fail(function ( jqXHR, textStatus, errorThrown ) {
-            $('#upload-progress').addClass('hidden');
+            $('#upload-progress').addClass('d-none');
             alert("Upload failed :(");
             console.log(errorThrown);
         });
@@ -217,7 +217,7 @@ jQuery(function($) {
         xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
-                $('#upload-progress').removeClass('hidden');
+                $('#upload-progress').removeClass('d-none');
                 $('#upload-progress bar').width(percentComplete*100+"%");
             }
         }, false);

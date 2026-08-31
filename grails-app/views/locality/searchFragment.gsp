@@ -37,7 +37,7 @@
         </div>
 
         <div class="span1" style="vertical-align: middle">
-            <a href="#" class="btn btn-default btn-xs fieldHelp"
+            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
                title="If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality."><i
                     class="fa fa-question help-container"></i></a>
         </div>

@@ -39,18 +39,16 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="Search by Value" />
-                            <span class="input-group-btn">
-                                <button class="btn btn-info btn-lg" type="button" onclick="doSearch();">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                </button>
-                            </span>
+                            <button class="btn btn-info btn-lg" type="button" onclick="doSearch();">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </div>
                     </div>
 

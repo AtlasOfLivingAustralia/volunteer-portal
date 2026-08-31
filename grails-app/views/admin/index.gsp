@@ -29,8 +29,8 @@
         </small>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
 
@@ -185,20 +185,20 @@
                             </td>
                             <td>Admin Reports</td>
                         </tr>
-                        <tr>
-                            <td>Admin reports</td>
-                            <td>
-                                <cl:ifSiteAdmin>
-                                <a class="btn btn-admin btn-primary bs3"
-                                   title="Users and their various counts and last activity etc..."
-                                   href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}">User report</a>
-                                <a class="btn btn-admin btn-primary bs3" title="A summary of recent user activity"
-                                   href="${createLink(controller: 'admin', action: 'currentUsers')}">Current users</a>
-                                </cl:ifSiteAdmin>
-                                <a class="btn btn-admin btn-primary bs3" title="List of all expeditions and their statistics"
-                                   href="${createLink(controller: 'admin', action: 'projectSummaryReport')}">Expedition Summary Report</a>
-                            </td>
-                        </tr>
+%{--                        <tr>--}%
+%{--                            <td>Admin reports</td>--}%
+%{--                            <td>--}%
+%{--                                <cl:ifSiteAdmin>--}%
+%{--                                <a class="btn btn-admin btn-primary bs3"--}%
+%{--                                   title="Users and their various counts and last activity etc..."--}%
+%{--                                   href="${createLink(controller: 'ajax', action: 'userReport', params: [wt: 'csv'])}">User report</a>--}%
+%{--                                <a class="btn btn-admin btn-primary bs3" title="A summary of recent user activity"--}%
+%{--                                   href="${createLink(controller: 'admin', action: 'currentUsers')}">Current users</a>--}%
+%{--                                </cl:ifSiteAdmin>--}%
+%{--                                <a class="btn btn-admin btn-primary bs3" title="List of all expeditions and their statistics"--}%
+%{--                                   href="${createLink(controller: 'admin', action: 'projectSummaryReport')}">Expedition Summary Report</a>--}%
+%{--                            </td>--}%
+%{--                        </tr>--}%
                         </tbody>
                     </table>
 

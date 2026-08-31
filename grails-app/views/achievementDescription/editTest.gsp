@@ -44,10 +44,10 @@
         <div class="well">
             <h4>Check User</h4>
             <div class="form-group">
-                <label class="control-label col-md-3" for="user">
+                <label class="form-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>
                     <asset:image src="spinner.gif" height="16px" width="16px" id="ajax-spinner"
-                           class="hidden"/>
+                           class="d-none"/>
                 </label>
 
                 <div class="col-md-6">
@@ -58,7 +58,7 @@
 
             <div class="form-group">
                 <div class="col-md-offset-3 col-md-9">
-                    <input type="submit" class="save btn btn-default" id="testButton"
+                    <input type="submit" class="save btn btn-secondary" id="testButton"
                            value="${message(code: 'default.button.test.label', default: 'Test')}"/>
                 </div>
             </div>

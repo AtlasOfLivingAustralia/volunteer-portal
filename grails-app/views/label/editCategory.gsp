@@ -53,13 +53,13 @@
 
 <div class="container" role="main">
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
                     <g:form controller="label" action="updateCategory" class="form-horizontal" method="POST">
                     <div class="form-group">
-                        <label class="control-label col-md-2" for="name">
+                        <label class="form-label col-md-2" for="name">
                             Category Name:
                         </label>
                         <div class="col-md-4" style="vertical-align: middle;">
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                         <div class="form-group">
-                            <label class="control-label col-md-2" for="name">
+                            <label class="form-label col-md-2" for="name">
                                 Tag Colour:
                             </label>
                             <div class="col-md-4" style="vertical-align: middle;">
@@ -84,7 +84,7 @@
                                           noSelection="['':'- Select a Tag Colour -']"
                                           value="${labelCategory?.labelColour}"/>
                             </div>
-                            <div class="control-label col-md-1" id="example-tag-display">
+                            <div class="form-label col-md-1" id="example-tag-display">
                                 <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
                                 <span class="label label-${labelColourClass}" id="example-tag">Example Tag</span>
                             </div>
@@ -113,15 +113,15 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h4>${labelCategory.name} ${entityNamePlural}</h4>
 
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
                     <g:form controller="label" action="saveNewLabel" class="form-horizontal" method="POST">
                         <div class="form-group">
-                            <label class="control-label col-md-2" for="value">
+                            <label class="form-label col-md-2" for="value">
                                 Add ${entityName}:
                             </label>
                             <div class="col-md-4">
@@ -169,12 +169,12 @@
                                 <td class="col-md-2" style="text-align: center;">
                                     <g:set var="isEditable" value="${(!isProtected || (isProtected && !label.isDefault))}"/>
                                     <g:if test="${(isEditable)}">
-                                        <i class="fa fa-times label-button cancel-label-button" contenteditable="false"
+                                        <i class="fa fa-ban label-button cancel-label-button" contenteditable="false"
                                            title="${message(code: 'default.button.cancel.label', default: 'Cancel')}"></i>
                                         <i class="fa fa-save label-button save-label-button" contenteditable="false"
                                            title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
 
-                                        <i class="fa fa-trash label-button delete-label-button" contenteditable="false"
+                                        <i class="fa fa-times label-button delete-label-button" contenteditable="false"
                                            data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}"
                                            title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
                                         <i class="fa fa-pencil label-button edit-label-button" contenteditable="false"
@@ -214,7 +214,7 @@
                 <div id="view-label-list"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" id="btn-close-view-labels">OK</button>
+                <button class="btn btn-secondary" id="btn-close-view-labels">OK</button>
             </div>
         </div>
     </div>
@@ -232,7 +232,7 @@
                     <p>Select the new category for this ${message(code: 'default.label.label', default: 'Tag')}.</p>
                     <div class="col-md-12" style="margin-left: 5px;">
                         <div class="form-group">
-                            <label class="control-label col-md-4" for="newCategory">
+                            <label class="form-label col-md-4" for="newCategory">
                                 New Category:
                             </label>
                             <div class="col-md-8" style="vertical-align: middle;">
@@ -250,8 +250,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" id="btn-save-change-cat">Save</button>
-                <button class="btn btn-default" id="btn-close-change-cat">Cancel</button>
+                <button class="btn btn-secondary" id="btn-save-change-cat">Save</button>
+                <button class="btn btn-secondary" id="btn-close-change-cat">Cancel</button>
             </div>
         </div>
     </div>
@@ -330,7 +330,7 @@ $(function($) {
         var labelId = $(this).data('label-id');
         var href = "${createLink(controller: 'label', action: 'labelUsage')}?id=" + labelId;
         $('#view-label-name').html(labelName);
-        $('#view-label-list').html("<i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i><span class='sr-only'>Loading...</span>");
+        $('#view-label-list').html("<i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i><span class='visually-hidden'>Loading...</span>");
 
         $.get(href, function(data) {
             var $div = $('<div>');

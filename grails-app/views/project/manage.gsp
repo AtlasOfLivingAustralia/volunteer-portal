@@ -22,8 +22,8 @@
     </cl:ifAdmin>
 </cl:headerContent>
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <p>
                 This page is your expedition management console. It lists all expeditions within your institution, displaying
                 information such as active and archive status and disk usage.<br/>
@@ -31,7 +31,7 @@
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">
-                <div class="panel panel-default panel-body">
+                <div class="card card-body">
                     <p>
                         This tool provides useful information about the expedition and allows you to perform a number of
                         functions on your expedition.
@@ -67,8 +67,8 @@
         </div>
     </div>
     <cl:ifSiteAdmin>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h4>Disk Usage Statistics*</h4>
             <table class="table table-condensed">
                 <tr>
@@ -94,8 +94,8 @@
         </div>
     </div>
     </cl:ifSiteAdmin>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
 
@@ -115,11 +115,9 @@
                     <div class="custom-search-input body">
                         <div class="input-group">
                             <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Expedition Name..."/>
-                            <span class="input-group-btn">
                                 <button id="btnSearch" class="btn btn-info btn-lg" type="button">
-                                    <i class="glyphicon glyphicon-search"></i>
+                                    <i class="fa fa-search"></i>
                                 </button>
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -191,26 +189,26 @@
                                     <!-- Toggle Status -->
                                     <g:if test="${projectInstance.project.inactive}">
                                         <g:if test="${projectInstance.project.archived}">
-                                            <button role="button" class="btn btn-default btn-xs"
+                                            <button role="button" class="btn btn-outline-secondary btn-xs"
                                                     title="You cannot activate an archived expedition." disabled><i class="fa fa-toggle-off"></i></button>
                                         </g:if>
                                         <g:else>
-                                            <a class="btn btn-xs btn-default toggle-project-status" alt="Activate" title="Activate Expedition"><i class="fa fa-toggle-off"></i></a>
+                                            <a class="btn btn-xs btn-outline-secondary toggle-project-status" alt="Activate" title="Activate Expedition"><i class="fa fa-toggle-off"></i></a>
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-default toggle-project-status" alt="Deactivate" title="Deactivate Expedition"><i class="fa fa-toggle-on"></i></a>
+                                        <a class="btn btn-xs btn-outline-secondary toggle-project-status" alt="Deactivate" title="Deactivate Expedition"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
                                     <!-- Export -->
-                                    <a class="btn btn-xs btn-default export-project" alt="Export" title="Export Expedition (all tasks)"><i class="fa fa-table"></i></a>
+                                    <a class="btn btn-xs btn-outline-secondary export-project" alt="Export" title="Export Expedition (all tasks)"><i class="fa fa-table"></i></a>
 
                                     <!-- Clone -->
-                                    <a class="btn btn-xs btn-default clone-project" alt="Clone" title="Clone Expedition"><i class="fa fa-clone"></i></a>
+                                    <a class="btn btn-xs btn-outline-secondary clone-project" alt="Clone" title="Clone Expedition"><i class="fa fa-clone"></i></a>
 
                                     <!-- Download Archive -->
                                     <g:if test="${!projectInstance.project.archived}">
-                                        <button role="button" class="btn btn-default btn-xs download-archive"
+                                        <button role="button" class="btn btn-outline-secondary btn-xs download-archive"
                                                 data-project-id="${projectInstance.project.id}"
                                                 data-href="${createLink(controller: "project", action: "downloadImageArchive", id: projectInstance.project.id, params: params)}"
                                                 title="Download Task Images">
@@ -218,7 +216,7 @@
                                         </button>
                                     </g:if>
                                     <g:else>
-                                        <button role="button" class="btn btn-default btn-xs download-archive"
+                                        <button role="button" class="btn btn-outline-secondary btn-xs download-archive"
                                                 title="You cannot download images from an archived expedition." disabled><i class="fa fa-download"></i></button>
                                     </g:else>
 
@@ -227,11 +225,11 @@
                                         <button role="button" class="btn btn-danger btn-xs archive-project"
                                                 data-project-name="${projectInstance.project.name}"
                                                 data-href="${createLink(controller: "project", action: "archive", id: projectInstance.project.id, params: params)}"
-                                                title="Archive Expedition"><i class="fa fa-trash"></i></button>
+                                                title="Archive Expedition"><i class="fa fa-times"></i></button>
                                     </g:if>
                                     <g:else>
-                                        <button role="button" class="btn btn-default btn-xs download-archive"
-                                                title="This expedition has already been archived." disabled><i class="fa fa-trash"></i></button>
+                                        <button role="button" class="btn btn-outline-secondary btn-xs download-archive"
+                                                title="This expedition has already been archived." disabled><i class="fa fa-times"></i></button>
                                     </g:else>
 %{--                                    </g:form>--}%
                                 </td>

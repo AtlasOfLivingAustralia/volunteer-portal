@@ -4,7 +4,7 @@
         <h3>Staged <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> (${images.size()})
 
             <div class="btn-group float-end">
-                <a class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Actions
                     <span class="caret"></span>
                 </a>
@@ -23,7 +23,7 @@
                     <li class="divider"></li>
                     <li>
                         <a href="#" id="btnClearStagingArea"><i
-                                class="fa fa-trash"></i>&nbsp;Delete all <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else></a>
+                                class="fa fa-times"></i>&nbsp;Delete all <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else></a>
                     </li>
                 </ul>
             </div>
@@ -50,7 +50,7 @@
                             <div class="small">
                                 <span style="font-weight: normal">( ${field.fieldDefinitionType}: <b>${field.format}</b> - </span>
 
-                                <button class="btnEditField btn btn-xs btn-default" title="Edit column definition">
+                                <button class="btnEditField btn btn-xs btn-outline-secondary" title="Edit column definition">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <g:if test="${field.fieldName != 'externalIdentifier'}">

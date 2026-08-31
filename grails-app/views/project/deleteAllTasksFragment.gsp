@@ -12,17 +12,17 @@
     <div class="form-horizontal">
         <div class="control-group">
             <div class="controls">
-                <button class="btn btn-default" id="btnCancelDeleteAllTasks">Cancel</button>
+                <button class="btn btn-secondary" id="btnCancelDeleteAllTasks">Cancel</button>
                 <button class="btn btn-primary" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
             </div>
         </div>
     </div>
     </div>
 
-    <div id="progress" class="hidden">
+    <div id="progress" class="d-none">
         <div class="progress">
             <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0;">
-                <span class="sr-only">0% Complete</span>
+                <span class="visually-hidden">0% Complete</span>
             </div>
         </div>
 
@@ -54,8 +54,8 @@
         $this.disabled = true;
         $.post(url).done(function (data, status, xhr) {
             digivolNotifications.addMessageListener('deleteTasks', messageHandler);
-            $progress.removeClass('hidden');
-            $confirm.addClass('hidden');
+            $progress.removeClass('d-none');
+            $confirm.addClass('d-none');
         }).fail(function(xhr, status, error) {
            console.log("Couldn't delete tasks", status, error);
            alert("Couldn't delete tasks");
@@ -84,7 +84,7 @@
             // console.log("pct: " + pct);
             $bar.attr('aria-valuenow', pct);
             $bar.css('width', pct + '%');
-            $bar.find('.sr-only').text(pct + '% Complete');
+            $bar.find('.visually-hidden').text(pct + '% Complete');
 
             if (data.complete) {
                 digivolNotifications.removeMessageListener('deleteTasks', messageHandler);

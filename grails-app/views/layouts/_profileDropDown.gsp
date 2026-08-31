@@ -1,5 +1,5 @@
 <ul class="dropdown-menu">
-    <li class="hidden-xs">
+    <li class="d-none d-sm-block">
         <div class="navbar-login logged-in">
             <div class="row">
                 <div class="col-2 col-lg-3">
@@ -19,14 +19,14 @@
             </div>
         </div>
     </li>
-    <li class="divider hidden-xs"></li>
+    <li class="divider d-none d-sm-block"></li>
     <li>
         <div class="navbar-login navbar-login-session">
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="profile-links">
                         <li><a href="${cl.urlAppend(base: grailsApplication.config.getProperty('userDetails.url', String), path: 'my-profile')}" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
-                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="hidden unread-count label label-danger label-as-badge"></span></a></li>
+                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="d-none unread-count badge bg-danger rounded-pill"></span></a></li>
                         <li><a href="${g.createLink(uri: '/logout')}" class="">Logout</a></li>
                     </ul>
                 </div>

@@ -18,8 +18,8 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${templateInstance}">
@@ -29,14 +29,14 @@
                     </g:hasErrors>
                     <g:form class="form form-horizontal" action="save">
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
-                            <label for="name" class="col-md-2 control-label"><g:message code="template.name.label" default="Name"/></label>
+                            <label for="name" class="col-md-2 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
                                 <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                         </div>
 
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
-                            <label for="viewName" class="col-md-2 control-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                            <label for="viewName" class="col-md-2 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <g:if test="${availableViews}">
                                     <g:select from="${availableViews}" name="viewName" class="form-control"

@@ -50,8 +50,8 @@
 
     </div>
 
-    <div class="panel panel-default transcribeSection">
-        <div class="panel-body">
+    <div class="card transcribeSection">
+        <div class="card-body">
             <div class="row">
             <div class="col-md-3">
                 <div class="row">
@@ -90,7 +90,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <a href="#" class="btn btn-default btn-xs fieldHelp" tooltipPosition="bottomLeft"
+                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" tooltipPosition="bottomLeft"
                            title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
                                 class="fa fa-question help-container"></i></a>
                     </div>
@@ -123,7 +123,7 @@
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {
-            $(this).addClass("btn btn-default").attr("target", "tutorialWindow");
+            $(this).addClass("btn btn-outline-secondary").attr("target", "tutorialWindow");
         });
     });
 

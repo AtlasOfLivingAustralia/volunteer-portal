@@ -20,8 +20,8 @@
 </cl:headerContent>
 
 <div class="container" role="main">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <g:hasErrors bean="${achievementDescriptionInstance}">
                 <div class="errors">
                     <ul class="errors" role="alert">

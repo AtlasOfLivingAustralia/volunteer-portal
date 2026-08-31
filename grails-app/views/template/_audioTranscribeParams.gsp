@@ -32,7 +32,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-md-3 control-label" for="jumpNTasks"><g:message code="template.wildlifeSpotter.jump.label"
+    <label class="col-md-3 form-label" for="jumpNTasks"><g:message code="template.wildlifeSpotter.jump.label"
                                                              default="Number of tasks to jump on save / skip"/></label>
 
     <div class="col-md-6">

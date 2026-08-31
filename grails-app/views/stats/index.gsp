@@ -40,9 +40,9 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>DigiVol Volunteers</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>DigiVol Volunteers</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingVolunteerData"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingVolunteerData">
                                     <table width="100%">
@@ -69,14 +69,14 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Historical Honourboard</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Historical Honourboard</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingHonourBoard"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingHonourBoard">
                                     <div tablechart data="statsCtrl.getHistoricalHonourBoard()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.historicalHonourBoard, 'historicalHonourBoard')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.historicalHonourBoard, 'historicalHonourBoard')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
@@ -84,88 +84,88 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Active Transcribers</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Active Transcribers</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingActiveTranscribers"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingActiveTranscribers">
                                     <div tablechart data="statsCtrl.getActiveTranscribers()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.activeTranscribers, 'activeTranscribers')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.activeTranscribers, 'activeTranscribers')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Day</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Transcriptions By Day</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingTranscriptionsByDay"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingTranscriptionsByDay">
                                     <div barchart data="statsCtrl.getTranscriptionsByDay()" title="" width="100%" height="350" yaxis="Transcriptions count"
                                          xaxis="Day" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByDay, 'transcriptionsByDay')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByDay, 'transcriptionsByDay')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Day</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Validations By Day</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingValidationsByDay"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingValidationsByDay">
                                     <div barchart data="statsCtrl.getValidationsByDay()" title="" width="100%" height="350" yaxis="Validations count"
                                          xaxis="Day" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByDay, 'validationsByDay')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByDay, 'validationsByDay')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Volunteer And Expedition</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Transcriptions By Volunteer And Expedition</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingTranscriptionsByVolunteerProject"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingTranscriptionsByVolunteerProject">
                                     <div tablechart data="statsCtrl.getTranscriptionsByVolunteerAndProject()" title="" width="100%" height="100%" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByVolunteerAndProject, 'transcriptionsByVolunteerAndProject')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByVolunteerAndProject, 'transcriptionsByVolunteerAndProject')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Hourly Contributions</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Hourly Contributions</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingHourlyContributions"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingHourlyContributions">
                                     <div linechart data="statsCtrl.getHourlyContributions()" title="" width="100%" height="350" xaxis="Hour"
                                          yaxis="Contributions" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.hourlyContributions, 'hourlyContributions')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.hourlyContributions, 'hourlyContributions')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Average Transcription Time by Expedition Type</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Average Transcription Time by Expedition Type</h4></div>
+                            <div class="card-body">
                                 <span data-ng-if="statsCtrl.loadingTimeByProjectType"><cl:spinner/></span>
                                 <span data-ng-if="!statsCtrl.loadingTimeByProjectType">
                                     <div barchart data="statsCtrl.getTranscriptionTimeByProjectType()" title="" width="100%" height="350" xaxis="Project Type"
                                          yaxis="Transcription Time (sec)" searchdate="{{statsCtrl.searchDate}}"></div>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionTimeByProjectType, 'transcriptionTimeByProjectType')">
-                                        <span class="glyphicon glyphicon-download-alt"></span> Download
+                                    <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionTimeByProjectType, 'transcriptionTimeByProjectType')">
+                                        <span class="fa fa-download"></span> Download
                                     </button>
                                 </span>
                             </div>
@@ -177,9 +177,9 @@
             <uib-tab heading="Reports by Month" select="statsCtrl.loadMonthlyStats()">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Month</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Transcriptions By Month</h4></div>
+                            <div class="card-body">
                                 <div id="transcriptionsByMonth">
                                     <div ng-show="statsCtrl.transcriptionsByMonth.loaded" google-chart chart="statsCtrl.transcriptionsByMonth" style="height: 400px; width: 100%" ></div>
                                     <div ng-show="!statsCtrl.transcriptionsByMonth.loaded"><cl:spinner /></div>
@@ -188,9 +188,9 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Month</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Validations By Month</h4></div>
+                            <div class="card-body">
                                 <div id="validationsByMonth">
                                     <div ng-show="statsCtrl.validationsByMonth.loaded" google-chart chart="statsCtrl.validationsByMonth" style="height: 400px; width: 100%" ></div>
                                     <div ng-show="!statsCtrl.validationsByMonth.loaded"><cl:spinner /></div>
@@ -204,37 +204,37 @@
             <uib-tab heading="Reports by Institution">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Institution</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Transcriptions By Institution</h4></div>
+                            <div class="card-body">
                                 <div tablechart data="statsCtrl.getTranscriptionsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Number of Transcriptions"></div>
-                                <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitution, 'transcriptionsByInstitution')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitution, 'transcriptionsByInstitution')">
+                                    <span class="fa fa-download"></span> Download
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Validations By Institution</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Validations By Institution</h4></div>
+                            <div class="card-body">
                                 <div tablechart data="statsCtrl.getValidationsByInstitution()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Number of Validations"></div>
-                                <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByInstitution, 'validationsByInstitution')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.validationsByInstitution, 'validationsByInstitution')">
+                                    <span class="fa fa-download"></span> Download
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Transcriptions By Institution By Month</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Transcriptions By Institution By Month</h4></div>
+                            <div class="card-body">
                                 <div tablechart data="statsCtrl.getTranscriptionsByInstitutionByMonth()" title="" width="100%" height="100%" xaxis="Institution"
                                      yaxis="Month"></div>
-                                <button type="button" class="btn btn-default btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitutionByMonth, 'transcriptionsByInstitutionByMonth')">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Download
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="statsCtrl.exportToCSV(statsCtrl.transcriptionsByInstitutionByMonth, 'transcriptionsByInstitutionByMonth')">
+                                    <span class="fa fa-download"></span> Download
                                 </button>
                             </div>
                         </div>
@@ -246,9 +246,9 @@
             <uib-tab heading="Downloads">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h4>Institution Data Downloads</h4></div>
-                            <div class="panel-body">
+                        <div class="card">
+                            <div class="card-header"><h4>Institution Data Downloads</h4></div>
+                            <div class="card-body">
                                 <p>Below is a list of the Institutions you have been assigned Institution Admin. Clicking on a link will download a CSV
                                 of all task data for that institution.<br />
                                 Data includes:
@@ -276,9 +276,9 @@
 <div class="form-inline">
     <div class="form-group">
         <label>From:
-            <div class="input-group">
+            <div class="input-group mb-3">
                 <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="fromDate" ng-model="$ctrl.startDate" is-open="$ctrl.fromDatePopupOpened" />
-                <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.fromDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
+                <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.fromDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
             </div>
         </label>
     </div>
@@ -286,7 +286,7 @@
         <label>To:
             <div class="input-group">
                 <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
-                <span class="input-group-btn"><button type="button" class="btn btn-default" ng-click="$ctrl.toDatePopupOpened = true"><i class="glyphicon glyphicon-calendar"></i></button></span>
+                <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.toDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
             </div>
         </label>
     </div>

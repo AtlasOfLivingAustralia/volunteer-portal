@@ -45,8 +45,8 @@
     %>
 </cl:headerContent>
 <div id="edit-news-item" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${newsItem}">
@@ -64,14 +64,14 @@
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="update" id="${newsItem?.id}" class="form-horizontal" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="title">Title*</label>
+                            <label class="form-label col-md-3" for="title">Title*</label>
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="60" name="title" id="title" value="${newsItem?.title}" required="required"/>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="content">Content*</label>
+                            <label class="form-label col-md-3" for="content">Content*</label>
 
                             <div class="col-md-6">
                                 <g:textArea name="content" id="content" class="mce form-control" rows="10" value="${newsItem?.content}" />
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="isActive">Is Active</label>
+                            <label class="form-label col-md-3" for="isActive">Is Active</label>
                             <div class="col-md-6">
                                 <g:set var="initIsActive" value="${newsItem?.isActive}"/>
                                 <g:checkBox name="isActive" id="isActive" class="form-control" checked="${initIsActive}"/>
@@ -87,22 +87,22 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
+                            <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
                             <div class="input-group col-md-3">
                                 <g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy') ?: ''}"/>
                                 <input type="text" class="form-control datepicker form-control" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${dateExpiresPicker ?: ''}"/>
                                 <div class="input-group-addon">
-                                    <span class="glyphicon glyphicon-th"></span>
+                                    <span class="fa fa-th-large"></span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
-                            <label class="control-label col-md-3" for="newsItemThumb">Image Thumbnail</label>
+                            <label class="form-label col-md-3" for="newsItemThumb">Image Thumbnail</label>
                             <div class="col-md-6 news-image-row">
 
-                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid control-label" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid form-label" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
                                 <button role="button" class="btn btn-danger btn-xs news-image-remove-btn"
                                         data-href="${createLink(controller: "newsItem", action: "clearImage", id: newsItem.id)}"
                                         title="Clear Image"><i class="fa fa-trash"></i></button>
@@ -110,7 +110,7 @@
                             </cl:ifNewsItemHasThumb>
 
                             <cl:ifNewsItemHasNoImage newsItemId="${newsItem.id}">
-                            <label class="control-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
+                            <label class="form-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
 
                             <div class="col-md-6">
                                 <input type="file" class="form-control" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>

@@ -5,7 +5,7 @@
 
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
 <g:if test="${!disableStats}">
-    <div class="panel panel-default volunteer-stats">
+    <div class="card volunteer-stats">
         <!-- Default panel contents -->
         <h2 class="heading">${instName} Stats
             <cl:ifSiteAdmin><g:link controller="user" action="adminList" class="float-end"><i class="fa fa-users fa-sm"></i></g:link></cl:ifSiteAdmin>
@@ -29,7 +29,7 @@
     </div><!-- Volunteer Stats Ends Here -->
 </g:if>
 <g:if test="${!disableHonourBoard}">
-    <div class="panel panel-default leaderboard">
+    <div class="card leaderboard">
         <!-- Default panel contents -->
         <h2 class="heading"><g:message code="honour.board.label" /> <g:link controller="leaderBoard" action="describeBadges" class="float-end"><i class="fa fa-trophy fa-sm"></i></g:link></h2>
         <!-- Table -->

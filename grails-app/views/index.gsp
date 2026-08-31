@@ -41,9 +41,8 @@
         <h2><g:message code="index.subheading" /></h2>
 
         <div class="cta-primary">
-            <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" /> <span
-                    class="glyphicon glyphicon-arrow-down"></span></a>  <a class="btn btn-lg btn-hollow"
-                                                                           href="#learnMore"><g:message code="index.cta.learnMore" /></a>
+            <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" /><span class="fa fa-arrow-down"></span></a>
+            <a class="btn btn-lg btn-hollow" href="#learnMore"><g:message code="index.cta.learnMore" /></a>
         </div>
 
         <div class="row">
@@ -60,33 +59,33 @@
         <h2 class="heading"><g:message code="index.whatyoudo.title" /></h2>
 
         <div class="row">
-            <div class="col-sm-1 col-xs-4">
+            <div class="col-sm-1 col-4">
                 <asset:image src="iconLabels.png" class="img-fluid"/>
             </div>
 
-            <div class="col-sm-3 col-xs-8">
+            <div class="col-sm-3 col-8">
                 <h3><g:message code="index.whatyoudo.specimens.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.specimens.body" /></p>
                 <g:link controller="project" action="list" params="[mode: params.mode, tag: 'specimens']"><g:message code="index.whatyoudo.specimens.linkLabel" /></g:link>
             </div>
 
-            <div class="col-sm-1 col-xs-4">
+            <div class="col-sm-1 col-4">
                 <asset:image src="iconNotes.png" class="img-fluid"/>
             </div>
 
-            <div class="col-sm-3 col-xs-8">
+            <div class="col-sm-3 col-8">
                 <h3><g:message code="index.whatyoudo.fieldjournals.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.fieldjournals.body" /></p>
                 <g:link controller="project" action="list" params="[mode: params.mode, tag: 'fieldnotes']"><g:message code="index.whatyoudo.fieldjournals.linkLabel" /></g:link>
             </div>
 
-            <div class="col-sm-1 col-xs-4">
+            <div class="col-sm-1 col-4">
                 <asset:image src="iconWild.png" class="img-fluid"/>
             </div>
 
-            <div class="col-sm-3 col-xs-8">
+            <div class="col-sm-3 col-8">
                 <h3><g:message code="index.whatyoudo.cameratraps.title" /></h3>
 
                 <p><g:message code="index.whatyoudo.cameratraps.body" /></p>
@@ -162,10 +161,10 @@
                 </h3>
                 <g:link controller="project" action="list" params="[mode: params.mode, tag: potdSummary.iconLabel]"
                         class="not-a-badge"><span
-                        class="glyphicon glyphicon-tag icon-flipped"></span>${potdSummary.iconLabel}</g:link><g:link
+                        class="fa fa-tag icon-flipped"></span>${potdSummary.iconLabel}</g:link><g:link
                     controller="institution" action="index" id="${frontPage.projectOfTheDay?.institutionId}"
                     class="not-a-badge"><span
-                        class="glyphicon glyphicon glyphicon-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
+                        class="fa fa-bookmark icon-flipped"></span>${frontPage.projectOfTheDay?.institutionName}</g:link>
 
                 <div id="parent">
                     ${raw(frontPage.projectOfTheDay?.description)}

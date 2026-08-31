@@ -18,8 +18,8 @@
         %>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${picklistInstance}">
@@ -29,14 +29,14 @@
                     </g:hasErrors>
                     <g:form action="save" class="form-horizontal">
                         <div class="form-group ${hasErrors(bean: picklistInstance, field: 'name', 'has-error')}">
-                            <label class="control-label col-md-2" for="name"><g:message code="picklist.name.label" default="Name"/></label>
+                            <label class="form-label col-md-2" for="name"><g:message code="picklist.name.label" default="Name"/></label>
                             <div class="col-md-4">
                                 <g:select name="name" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
                             </div>
                         </div>
 
                         <div class="form-group ${hasErrors(bean: picklistInstance, field: 'fieldTypeClassifier', 'has-error')}">
-                            <label class="control-label col-md-2" for="fieldTypeClassifier"><g:message
+                            <label class="form-label col-md-2" for="fieldTypeClassifier"><g:message
                                     code="picklist.fieldTypeClassifier.label" default="Classifier"/></label>
 
                             <div class="col-md-4">

@@ -22,11 +22,11 @@
                         <div class="col-sm-12">
                             <div class="thumbnail row-style">
                                 <div class="row">
-                                    <div class="col-xs-3">
+                                    <div class="col-3">
                                         <a name="${b.name}"><img class="img-fluid" src="${cl.achievementBadgeUrl(achievement:  b)}"></a>
                                     </div>
 
-                                    <div class="col-xs-9">
+                                    <div class="col-9">
 
                                         <div class="caption">
                                             <h4>${b.name}</h4>
@@ -39,7 +39,7 @@
 
                             </div>
                         </div>
-                        %{--<div class="col-xs-12 col-sm-6 col-md-4">--}%
+                        %{--<div class="col-12 col-sm-6 col-md-4">--}%
                             %{--<div class="thumbnail">--}%
                                 %{--<a href="#"><img src="${cl.achievementBadgeUrl(achievement:  b)}"></a>--}%
                                 %{--<div class="caption">--}%

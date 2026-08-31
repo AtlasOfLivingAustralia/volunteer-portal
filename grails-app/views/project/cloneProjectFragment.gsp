@@ -17,12 +17,12 @@
     </div>
 
     <div class="form-group">
-        <label for="newName" class="control-label">New expedition name:</label>
+        <label for="newName" class="form-label">New expedition name:</label>
         <g:textField name="newName" id="expeditionName" class="form-control" value="Copy of ${project?.name}"/>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" id="btnCancelCloneProject">Cancel</button>
+        <button type="button" class="btn btn-secondary" id="btnCancelCloneProject">Cancel</button>
         <g:submitButton class="btn btn-success" id="btnCopyProject" name="Clone Expedition" />
     </div>
 </g:form>

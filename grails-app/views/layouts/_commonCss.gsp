@@ -29,6 +29,7 @@
 
     body .navbar,
     body.digivol .navbar,
+    body .btn-primary,
     .pagination > .active > span,
     .pagination > .active > span:hover {
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;

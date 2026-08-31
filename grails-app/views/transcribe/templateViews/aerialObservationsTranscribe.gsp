@@ -25,8 +25,8 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
+                    <div class="card">
+                        <div class="card-body">
                             <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
                                 <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
                                     <g:imageViewer multimedia="${multimedia}" hideControls="${true}"/>
@@ -45,8 +45,8 @@
                    value="${TemplateField.findByFieldTypeAndTemplate(DarwinCoreField.sightingCount, template)}"/>
             <g:set var="fieldList"
                    value="${TemplateField.findAllByCategoryAndTemplate(FieldCategory.dataset, template, [sort: 'displayOrder'])}"/>
-            <div class="panel panel-default transcribeSection">
-                <div class="panel-body">
+            <div class="card transcribeSection">
+                <div class="card-body">
                     <g:render template="/transcribe/dynamicDatasetRows"
                               model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
                 </div>

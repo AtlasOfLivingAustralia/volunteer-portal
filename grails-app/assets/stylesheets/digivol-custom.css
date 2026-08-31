@@ -196,7 +196,8 @@ table.task-table {
     margin-bottom: 20px;
 }
 
-.admin .container .panel {
+.admin .container .panel,
+.admin .container .card {
     margin: 2em 0;
 }
 
@@ -225,8 +226,17 @@ table.task-table {
     margin-top: 1.5em;
 }
 
-.admin .form-control {
-    height: 34px;
+/*.admin .form-control {*/
+/*    height: 34px;*/
+/*}*/
+
+.input-group > .form-control {
+    height: auto;
+}
+
+.input-group {
+    height: 38px;
+    padding: 6px 12px;
 }
 
 .admin .modal input {

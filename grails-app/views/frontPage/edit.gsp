@@ -21,8 +21,8 @@
             ]
         %>
     </cl:headerContent>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${frontPage}">
@@ -32,7 +32,7 @@
                     </g:hasErrors>
                     <g:form action="save" class="form-horizontal">
                         <div class="form-group">
-                            <label for="randomProjectOfTheDay" class="control-label col-md-3">
+                            <label for="randomProjectOfTheDay" class="form-label col-md-3">
                                 <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Project for the day" />
                             </label>
                             <div class="col-md-6">
@@ -40,7 +40,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="projectOfTheDay" class="control-label col-md-3">
+                            <label for="projectOfTheDay" class="form-label col-md-3">
                                 <g:message code="frontPage.projectOfTheDay.label"
                                     default="Project of the day"/></label>
                             <div class="col-md-6">
@@ -51,24 +51,24 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-default" id="btnFindProject">Find an expedition</button>
+                                <button class="btn btn-secondary" id="btnFindProject">Find an expedition</button>
                                 <g:link class="btn btn-success" action="edit" controller="project"
                                         id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
                             </div>
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}>
-                            <label for="systemMessage" class="control-label col-md-3"><g:message code="frontPage.systemMessage.label"
+                            <label for="systemMessage" class="form-label col-md-3"><g:message code="frontPage.systemMessage.label"
                                                                                             default="System message"/></label>
                             <div class="col-md-6">
                                 <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
                                 <span class="float-end label label-default count_message" id="count_message"></span>
-                                <span class="help-block">(Displayed on every page)</span>
+                                <span class="form-text">(Displayed on every page)</span>
                             </div>
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'showAchievements', 'has-error')}>
-                            <label for="useGlobalNewsItem" class="control-label col-md-3"><g:message code="frontPage.showAchievements.label"
+                            <label for="useGlobalNewsItem" class="form-label col-md-3"><g:message code="frontPage.showAchievements.label"
                                                                                                      default="Show achievements on User stats page"/></label>
                             <div class="col-md-6">
                                 <g:checkBox name="showAchievements" class="form-control" value="${frontPage.showAchievements}"/>
@@ -76,7 +76,7 @@
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'has-error')}>
-                            <label for="enableTaskComments" class="control-label col-md-3"><g:message code="frontPage.enableTaskComments.label"
+                            <label for="enableTaskComments" class="form-label col-md-3"><g:message code="frontPage.enableTaskComments.label"
                                                                                                      default="Enable task commenting"/></label>
                             <div class="col-md-6">
                                 <g:checkBox name="enableTaskComments" class="form-control" value="${frontPage.enableTaskComments}"/>
@@ -84,7 +84,7 @@
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}>
-                            <label for="enableForum" class="control-label col-md-3"><g:message code="frontPage.enableForum.label"
+                            <label for="enableForum" class="form-label col-md-3"><g:message code="frontPage.enableForum.label"
                                                                                                       default="Enable the ${message(code: "default.application.name")} Forum"/></label>
                             <div class="col-md-6">
                                 <g:checkBox name="enableForum" class="form-control" value="${frontPage.enableForum}"/>
@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'has-error')}>
-                            <label for="numberOfContributors" class="control-label col-md-3"><g:message code="frontPage.numberOfContributors.label"
+                            <label for="numberOfContributors" class="form-label col-md-3"><g:message code="frontPage.numberOfContributors.label"
                                                                                                default="The number of contributors to show on the front page"/></label>
                             <div class="col-md-6">
                                 <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${frontPage.numberOfContributors}"/>
@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="form-group ${hasErrors(bean: frontPage, field: 'attributionText', 'has-error')}">
-                            <label for="heroImageAttribution" class="control-label col-md-3">
+                            <label for="heroImageAttribution" class="form-label col-md-3">
                                 <g:message code="frontPage.heroImageAttribution" default="Hero Image Attribution Text" />
                             </label>
                             <div class="col-md-6">
@@ -121,16 +121,16 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Hero Image</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Hero Image</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12 hero-image">
                     <g:uploadForm id="hero-image-form" controller="frontPage" action="uploadHeroImage" method="post">
                         <div class="form-group">
-                            <label for="heroImage" class="control-label col-md-3">
+                            <label for="heroImage" class="form-label col-md-3">
                                 <g:message code="frontPage.heroImage.label" default="Hero Image" />
                             </label>
                             <div class="col-md-6">
@@ -147,7 +147,7 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="save-hero" class="save-hero btn btn-primary"
                                                 value="${message(code: 'default.button.save.label', default: 'Save')}"/>
-                                <g:submitButton name="clear-hero" class="clear-hero btn btn-default"
+                                <g:submitButton name="clear-hero" class="clear-hero btn btn-secondary"
                                                 value="${message(code: 'default.button.reset.label', default: 'Reset')}"/>
                             </div>
                         </div>
@@ -157,11 +157,11 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Institution using Digivol Logos</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Institution using Digivol Logos</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row" id="logos">
             </div>
             <div class="row">
@@ -176,13 +176,13 @@
     </div>
 </div>
 <script id="logo-item" type="x-tmpl-mustache">
-<div class="col-md-3 col-sm-4 col-xs-6">
+<div class="col-md-3 col-sm-4 col-6">
     <div class="thumbnail">
       <img style="max-height: 80px;"
         src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}"
         alt="${grailsApplication.config.getProperty('server.url')}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}">
       <div class="caption">
-        <p><button class="btn btn-danger delete-logo" data-idx="{{idx}}"><i class="fa fa-trash"></i></button></p>
+        <p><button class="btn btn-danger delete-logo" data-idx="{{idx}}"><i class="fa fa-times"></i></button></p>
       </div>
     </div>
 </div>

@@ -113,7 +113,7 @@
             <div class="filter-nav filter-nav--mt-3">
                 <div class="filter-nav__label task-history-nav__filter-label">
                     Filter by:
-                    <span class="btn btn-default btn-xs fieldHelp"
+                    <span class="btn btn-outline-secondary btn-xs fieldHelp"
                           title="<markdown:renderHtml>Select a filter to view your tasks. Transcribed and Validated
                           tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks'
                           will also clear filters.</markdown:renderHtml>">
@@ -158,7 +158,7 @@
 %{--                                  title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>--}%
                 <s:sortableColumn tag="th" property="status" class="td--2/12"
                                   title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}">
-                    <span class="btn btn-default btn-xs fieldHelp"
+                    <span class="btn btn-outline-secondary btn-xs fieldHelp"
                        title="<markdown:renderHtml>The current status of the task. Shows 'Transcribed by me' or
                        'Validated by me' if you were the last to action the task, otherwise just the current status.</markdown:renderHtml>">
                         <span class="help-container"><i class="fa fa-question"></i></span>

@@ -32,8 +32,8 @@
     %>
 </cl:headerContent>
 <div id="create-institution" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${institutionMessageInstance}">
@@ -71,8 +71,8 @@
     </div>
 
 <g:if test="${institutionMessageInstance.approved}">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <h4>Recipients</h4>
             <p>
                 This message was sent to the following
@@ -132,7 +132,7 @@
         });
 
         function getRecipientData(recipientType) {
-            $('.loading-recipient').removeClass('hidden');
+            $('.loading-recipient').removeClass('d-none');
             if (recipientType === 'user') {
                 getUserList();
             } else if (recipientType === 'project') {
@@ -208,7 +208,7 @@
             }
 
             $('#recipient').selectpicker('refresh');
-            $('.loading-recipient').addClass('hidden');
+            $('.loading-recipient').addClass('d-none');
         }
 
         function getUserList() {

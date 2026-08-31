@@ -21,7 +21,7 @@
     </thead>
 </table>
 
-<div class="panel-body">
+<div class="card-body">
     <div class="row">
         <g:each in="${taskInstanceList}" status="i" var="taskInstance">
             <g:set var="lastView" value="${lockedMap[taskInstance.id]}"/>
@@ -80,15 +80,15 @@
                         </g:else>
 
                         <g:if test="${lastView}">
-                            <i class="glyphicon glyphicon-lock lastViewedTask float-end" title="Locked by ${lastView.userId}"
+                            <i class="fa fa-lock lastViewedTask float-end" title="Locked by ${lastView.userId}"
                                viewedTaskId="${lastView.id}"></i>
                         </g:if>
                         </div> %{-- End of thumbnail div --}%
                     </div>
                 </div>
             </div>
-            <g:if test="${(i+1) % 6 == 0}"><div class="clearfix visible-md-block visible-lg-block"></div></g:if>
-            <g:if test="${(i+1) % 3 == 0}"><div class="clearfix visible-sm-block"></div></g:if>
+            <g:if test="${(i+1) % 6 == 0}"><div class="d-none d-md-block d-lg-none"></div></g:if>
+            <g:if test="${(i+1) % 3 == 0}"><div class="d-none d-sm-block d-md-none"></div></g:if>
         </g:each>
     </div>
 </div>

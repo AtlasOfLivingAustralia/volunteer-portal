@@ -99,41 +99,6 @@ class ForumController {
     }
 
     /**
-     * Prepares the view for editing a topic.
-     * @return a map with the topic, task instance, and project instance.
-     */
-    def editTopic() {
-        def topic = ForumTopic.get(params.int("topicId"))
-
-        if (topic == null) {
-            flash.message = "Topic id missing or topic not found!"
-            redirect(action:'index')
-            return
-        }
-
-        Project projectInstance = null
-        Task taskInstance = null
-        def allowed = false
-        if (topic.instanceOf(ProjectForumTopic)) {
-            projectInstance = (topic as ProjectForumTopic).project
-            allowed = userService.isForumModerator(projectInstance)
-        } else if (topic.instanceOf(TaskForumTopic)) {
-            taskInstance = (topic as TaskForumTopic).task
-            allowed = userService.isForumModerator(taskInstance.project)
-        } else {
-            allowed = userService.isForumModerator(null)
-        }
-
-        if (!allowed) {
-            flash.message = "You do not have sufficient privileges to edit this topic"
-            redirect(action: 'redirectTopicParent', id: topic.id)
-            return
-        }
-
-        [topic:topic, taskInstance: taskInstance, projectInstance: projectInstance]
-    }
-
-    /**
      * Redirects to the parent of the topic.
      * @return redirect to the parent topic.
      */

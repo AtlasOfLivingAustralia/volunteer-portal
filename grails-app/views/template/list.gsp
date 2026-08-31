@@ -30,15 +30,15 @@
         </div>
     </cl:headerContent>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <p>
                 This tool allows Administrators to manage the templates for transcriptions in expeditions. <br/>
                 <a data-bs-toggle="collapse" href="#collapseInformation" aria-expanded="false"
                    aria-controls="collapseInformation">Click here for more information</a>.
             </p>
             <div class="collapse" id="collapseInformation">
-                <div class="panel panel-default panel-body">
+                <div class="card card-body">
                     <p>
                         <b>Global Templates:</b><br/>
                         Global Templates (marked with the <i class="fa fa-globe" title="Global Template"></i> icon) are read-only
@@ -63,8 +63,8 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
                     <g:select class="form-control" name="institution" id="institution" from="${Institution.listApproved(sort: 'name', order: 'asc')}"
@@ -92,8 +92,8 @@
                               value="${params?.status}" noSelection="['':'- View ALL templates -']" />
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-default bs3" id="apply-filter">Apply</button>
-                    <a class="btn btn-default bs3"
+                    <button type="button" class="btn btn-secondary bs3" id="apply-filter">Apply</button>
+                    <a class="btn btn-secondary bs3"
                        href="${createLink(controller: 'template', action: 'list')}">Reset</a>
                 </div>
             </div>
@@ -142,17 +142,17 @@
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td style="white-space: nowrap;">
-                                    <a class="btn btn-xs btn-default btnCloneTemplate" alt="Clone" title="Clone Template"><i class="fa fa-clone"></i></a>
+                                    <a class="btn btn-xs btn-outline-secondary btnCloneTemplate" alt="Clone" title="Clone Template"><i class="fa fa-clone"></i></a>
                             <g:if test="${templateListItem.canEdit}">
-                                    <a class="btn btn-xs btn-default" alt="Edit" title="Edit"
+                                    <a class="btn btn-xs btn-outline-secondary" alt="Edit" title="Edit"
                                        href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                             </g:if>
                             <g:else>
-                                    <button class="btn btn-xs btn-default" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
                             </g:else>
-                                    <a class="btn btn-xs btn-default" alt="Preview Template" title="Preview Template"
+                                    <a class="btn btn-xs btn-outline-secondary" alt="Preview Template" title="Preview Template"
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
                                         <i class="fa fa-tv"></i>
                                     </a>

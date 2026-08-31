@@ -13,7 +13,7 @@
     <content tag="pageTitle">General Settings</content>
     <content tag="adminButtonBar">
         <g:if test="${institutionInstance?.isApproved}">
-            <a class="btn btn-default" href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
+            <a class="btn btn-secondary" href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                     class="icon-eye-open"></i> View client page</a>
         </g:if>
     </content>
@@ -63,7 +63,7 @@
                 </div>
 
                 <div>
-                <button class="btn btn-default" type="button" id="btnUploadLogoImage">Upload logo</button>
+                <button class="btn btn-secondary" type="button" id="btnUploadLogoImage">Upload logo</button>
                 <cl:ifInstitutionHasLogo institution="${institutionInstance}">
                     <a href="${createLink(action: 'clearLogoImage', id: institutionInstance.id)}"
                        class="btn btn-danger">Clear logo</a>

@@ -34,8 +34,8 @@
     %>
 </cl:headerContent>
 <div id="create-tutorial" class="container">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <g:hasErrors bean="${tutorial}">
@@ -57,7 +57,7 @@
                     <g:form action="save" class="form-horizontal" enctype="multipart/form-data">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="institutionId">Institution*</label>
+                            <label class="form-label col-md-3" for="institutionId">Institution*</label>
                             <div class="col-md-6">
                             <cl:ifSiteAdmin>
                                 <g:select class="form-control" name="institutionId" id="institutionId" from="${institutionList}"
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="name">Tutorial name*</label>
+                            <label class="form-label col-md-3" for="name">Tutorial name*</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="130" name="name" id="name" value="${params?.name}" required="required"/>
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="description">Description</label>
+                            <label class="form-label col-md-3" for="description">Description</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="description" maxlength="255" id="description" value="${params?.description}" />
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-md-3" for="tutorialFile">Upload Tutorial File</label>
+                            <label class="form-label col-md-3" for="tutorialFile">Upload Tutorial File</label>
 
                             <div class="col-md-6">
                                 <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile" required="required"/>

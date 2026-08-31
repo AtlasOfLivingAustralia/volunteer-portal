@@ -24,7 +24,7 @@
 
     <div class="form-group">
         <div class="text-center">
-            <button class="btn btn-default" id="btnCancelDataFileUpload">Cancel</button>
+            <button class="btn btn-secondary" id="btnCancelDataFileUpload">Cancel</button>
             <g:submitButton class="btn btn-primary" name="Upload Data File"/>
         </div>
     </div>
