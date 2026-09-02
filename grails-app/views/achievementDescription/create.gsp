@@ -45,7 +45,7 @@
     </div>
 </div>
 <asset:javascript src="codemirror/codemirror-groovy-js-sublime" asset-defer=""/>
-<asset:javascript src="bootstrap-file-input.js" asset-defer=""/>
+<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
     $(function() {
         // Initialize input type file

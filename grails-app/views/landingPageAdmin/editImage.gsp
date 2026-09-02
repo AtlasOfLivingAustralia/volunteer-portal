@@ -44,12 +44,15 @@
 
 </div>
 
-</body>
+
 
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript" asset-defer="">
 
     $(function() {
+        // Initialize input type file
+        $('input[type=file]').bootstrapFileInput();
+
         $('#heroImage').change(function(e){
             // submit the forms after the file is selected
             e.target.form.submit();
