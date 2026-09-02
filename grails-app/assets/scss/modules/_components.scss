@@ -1031,3 +1031,16 @@ select[type="text"]:focus,
 		flex-direction: column;
 	}
 }
+
+/* Alerts/Toast */
+.toast-header {
+	background-color: $toast-header-bg;
+}
+
+.toast-body {
+	background-color: $toast-body-bg;
+	a {
+		font-size: $font-size-small;
+		text-decoration: none;
+	}
+}
