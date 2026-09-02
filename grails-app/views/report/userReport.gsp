@@ -5,7 +5,7 @@
     <meta name="layout" content="digivol-reporting"/>
     <title><g:message code="admin.user.report.label" default="User Reporting"/></title>
     <asset:stylesheet src="bootstrap-select.css" />
-    <asset:stylesheet src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <style>
     .label-button {
         cursor: pointer;
@@ -67,7 +67,7 @@
             <label for="dateSelect" class="col-md-3 form-label">Date Range*</label>
             <div class="col-md-8 input-daterange input-group" id="datepicker">
                 <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" />
-                <span class="input-group-addon">to</span>
+                <span class="input-group-text">to</span>
                 <input type="text" class="input-sm col-sm-3 form-control" value="${defaultEndDate}" name="dateEnd" />
             </div>
         </div>

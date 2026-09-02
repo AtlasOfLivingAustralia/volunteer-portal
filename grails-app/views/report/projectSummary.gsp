@@ -5,8 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-reporting"/>
     <title><g:message code="admin.project.summary.label" default="Project Summary Report"/></title>
-    <asset:stylesheet src="bootstrap-select.css" />
-    <asset:stylesheet src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
 </head>
 
 <body class="admin">

@@ -21,7 +21,7 @@
     }
     </style>
 
-    <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
 </head>
 
 <body class="admin">
@@ -80,7 +80,7 @@
                             <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
                             <div class="input-group col-md-3">
                                 <input type="text" class="form-control datepicker form-control" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${params?.dateExpiresPicker ?: ''}"/>
-                                <div class="input-group-addon">
+                                <div class="input-group-text">
                                     <span class="fa fa-th-large"></span>
                                 </div>
                             </div>
@@ -121,6 +121,11 @@ $(document).ready(function() {
         todayHighlight: true,
         startDate: "${defaultStartDate}",
         endDate: "${defaultEndDate}"
+    });
+
+    // Ensure addon click opens picker in BS5 markup
+    $('.input-group-text').on('click', function () {
+      $(this).closest('.input-group').find('.datepicker').datepicker('show');
     });
 });
 </asset:script>

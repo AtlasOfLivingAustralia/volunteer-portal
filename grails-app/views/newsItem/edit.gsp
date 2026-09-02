@@ -32,7 +32,7 @@
     }
     </style>
 
-    <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
 </head>
 
 <body class="admin">
@@ -91,9 +91,9 @@
                             <div class="input-group col-md-3">
                                 <g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy') ?: ''}"/>
                                 <input type="text" class="form-control datepicker form-control" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${dateExpiresPicker ?: ''}"/>
-                                <div class="input-group-addon">
+                                <span class="input-group-text">
                                     <span class="fa fa-th-large"></span>
-                                </div>
+                                </span>
                             </div>
                         </div>
 
@@ -142,7 +142,16 @@
             orientation: "top auto",
             todayHighlight: true,
             startDate: "${defaultStartDate}",
-            endDate: "${defaultEndDate}"
+            endDate: "${defaultEndDate}",
+            templates: {
+                leftArrow: '&laquo;',
+                rightArrow: '&raquo;'
+            }
+        });
+
+        // Ensure addon click opens picker in BS5 markup
+        $('.input-group-text').on('click', function () {
+          $(this).closest('.input-group').find('.datepicker').datepicker('show');
         });
 
     <cl:ifNewsItemHasNoImage newsItemId="${newsItem.id}">
