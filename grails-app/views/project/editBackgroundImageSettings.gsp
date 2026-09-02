@@ -62,7 +62,7 @@
         <div class="col-md-6">
             <div class="input-group colpick" data-format="rgba">
                 <g:textField name="backgroundImageOverlayColour" class="form-control" value="${projectInstance?.backgroundImageOverlayColour}"/>
-                <span class="input-group-addon"><i></i></span>
+                <span class="input-group-text"><i></i></span>
             </div>
         </div>
         <div class="col-md-3">
@@ -97,7 +97,7 @@
             });
         });
 
-        $('.colpick').colorpicker();
+        $('.colpick').colorpicker({ component: '.input-group-text' });
         bvp.bindTooltips('.fieldHelp');
         $('#setDefaultOverlay').click(function() {
             $('#backgroundImageOverlayColour').parent('.colpick').colorpicker('setValue', 'rgba(0,0,0,0.5)');

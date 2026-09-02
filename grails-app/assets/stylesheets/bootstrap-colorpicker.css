@@ -1,4 +1,24 @@
 /*= encoding UTF-8
  *  assume bootstrap
  *= require compile/bootstrap-colorpicker/2.3/css/bootstrap-colorpicker.css
+ *= require_self
  */
+
+/* Bootstrap 5 compatibility items */
+.input-group.colpick .input-group-text {
+    min-width: 2.25rem;
+    justify-content: center;
+}
+
+.input-group.colpick .input-group-text i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+    background-clip: padding-box;
+}
+
+.input-group.colpick .input-group-text i {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}

@@ -102,7 +102,7 @@
     <div class="col-md-6">
         <div class="input-group colpick" data-format="hex">
             <g:textField name="themeColour" class="form-control" value="${institutionInstance?.themeColour}"/>
-            <span class="input-group-addon"><i></i></span>
+            <span class="input-group-text"><i></i></span>
         </div>
     </div>
 </div>
@@ -133,7 +133,7 @@
 <asset:javascript src="tinymce-simple" asset-defer=""/>
 <asset:script>
     jQuery(function ($) {
-        $('.colpick').colorpicker();
+        $('.colpick').colorpicker({ component: '.input-group-text' });
     });
 
 
