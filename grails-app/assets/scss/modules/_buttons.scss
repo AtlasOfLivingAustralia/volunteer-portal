@@ -2,8 +2,8 @@
 	//border: transparent;
 	//border-radius: 10px;
 	padding: 0.125rem 0.5rem;
-  	&.btn-default {
-	  border: 1px solid $btn-default-border;
+  	&.btn-secondary {
+	  border: 1px solid $btn-secondary-border;
 	}
 	&:hover, &:focus, &:active, &:active:focus {
 		box-shadow: none;

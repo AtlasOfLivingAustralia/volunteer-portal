@@ -165,12 +165,12 @@ table .sorted.asc a:before {
     position:absolute;
 }
 
-table .btn-default {
+table .btn-secondary {
     border: solid 1px #ccc;
     background-color: #fff;
 }
 
-table .btn-default:hover {
+table .btn-secondary:hover {
     background-color: #e6e6e6;
 }
 
@@ -205,12 +205,12 @@ table.task-table {
     vertical-align: middle;
 }
 
-.admin .btn-default {
+.admin .btn-secondary {
     border: solid 1px #ccc;
     background-color: #fff;
 }
 
-.admin .btn-default:hover {
+.admin .btn-secondary:hover {
     background-color: #e6e6e6;
 }
 
@@ -265,7 +265,7 @@ table.task-table {
     margin-top: 0;
 }
 
-.admin .control-label.text-left {
+.admin .form-label.text-start {
     text-align: left !important;
 }
 
@@ -323,12 +323,12 @@ table.task-table {
     overflow-y: scroll
 }
 
-.forum .btn-default {
+.forum .btn-secondary {
     border: solid 1px #ccc;
     background-color: #fff;
 }
 
-.forum .btn-default:hover {
+.forum .btn-secondary:hover {
     background-color: #e6e6e6;
 }
 
@@ -446,11 +446,11 @@ a.fieldHelp {
     vertical-align: top;
 }
 
-.form-control.required .control-label {
+.form-control.required .form-label {
     font-weight: bold;
 }
 
-.form-group.required .control-label:after {
+.form-group.required .form-label:after {
     content:"*";
 }
 
@@ -479,7 +479,7 @@ a.fieldHelp {
 
 /* end notifications */
 
-.label-as-badge {
+.badge {
     border-radius: 1em;
 }
 

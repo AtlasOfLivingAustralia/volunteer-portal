@@ -1,4 +1,4 @@
-<nav class="navbar navbar-light bg-light navbar-fixed-top">
+<nav class="navbar navbar-light bg-light fixed-top">
     <div class="expedition-tab">
         <div class="container">
             <div class="row">

@@ -6,7 +6,7 @@
     This user has no roles currently. Click 'Add role' to create a new role
 </g:if>
 
-<div class="panel">
+<div class="card">
     <table class="table table-hover table-striped sortable">
         <thead>
         <tr>

@@ -187,7 +187,7 @@ angular.module('ui.bootstrap.accordion', ['ui.bootstrap.collapse'])
       accordionCtrl.addGroup(scope);
 
       scope.openClass = attrs.openClass || 'panel-open';
-      scope.panelClass = attrs.panelClass || 'panel-default';
+      scope.panelClass = attrs.panelClass || 'card';
       scope.$watch('isOpen', function(value) {
         element.toggleClass(scope.openClass, !!value);
         if (value) {
@@ -6919,14 +6919,14 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.debounce', 'ui.bootstrap
 
 angular.module("uib/template/accordion/accordion-group.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("uib/template/accordion/accordion-group.html",
-    "<div class=\"panel\" ng-class=\"panelClass || 'panel-default'\">\n" +
-    "  <div role=\"tab\" id=\"{{::headingId}}\" aria-selected=\"{{isOpen}}\" class=\"panel-heading\" ng-keypress=\"toggleOpen($event)\">\n" +
-    "    <h4 class=\"panel-title\">\n" +
+    "<div class=\"panel\" ng-class=\"panelClass || 'card'\">\n" +
+    "  <div role=\"tab\" id=\"{{::headingId}}\" aria-selected=\"{{isOpen}}\" class=\"card-header\" ng-keypress=\"toggleOpen($event)\">\n" +
+    "    <h4 class=\"card-title\">\n" +
     "      <a role=\"button\" data-toggle=\"collapse\" href aria-expanded=\"{{isOpen}}\" aria-controls=\"{{::panelId}}\" tabindex=\"0\" class=\"accordion-toggle\" ng-click=\"toggleOpen()\" uib-accordion-transclude=\"heading\"><span uib-accordion-header ng-class=\"{'text-muted': isDisabled}\">{{heading}}</span></a>\n" +
     "    </h4>\n" +
     "  </div>\n" +
     "  <div id=\"{{::panelId}}\" aria-labelledby=\"{{::headingId}}\" aria-hidden=\"{{!isOpen}}\" role=\"tabpanel\" class=\"panel-collapse collapse\" uib-collapse=\"!isOpen\">\n" +
-    "    <div class=\"panel-body\" ng-transclude></div>\n" +
+    "    <div class=\"card-body\" ng-transclude></div>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -6942,7 +6942,7 @@ angular.module("uib/template/alert/alert.html", []).run(["$templateCache", funct
     "<div class=\"alert\" ng-class=\"['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]\" role=\"alert\">\n" +
     "    <button ng-show=\"closeable\" type=\"button\" class=\"close\" ng-click=\"close({$event: $event})\">\n" +
     "        <span aria-hidden=\"true\">&times;</span>\n" +
-    "        <span class=\"sr-only\">Close</span>\n" +
+    "        <span class=\"visually-hidden\">Close</span>\n" +
     "    </button>\n" +
     "    <div ng-transclude></div>\n" +
     "</div>\n" +
@@ -6955,15 +6955,15 @@ angular.module("uib/template/carousel/carousel.html", []).run(["$templateCache",
     "  <div class=\"carousel-inner\" ng-transclude></div>\n" +
     "  <a role=\"button\" href class=\"left carousel-control\" ng-click=\"prev()\" ng-class=\"{ disabled: isPrevDisabled() }\" ng-show=\"slides.length > 1\">\n" +
     "    <span aria-hidden=\"true\" class=\"glyphicon glyphicon-chevron-left\"></span>\n" +
-    "    <span class=\"sr-only\">previous</span>\n" +
+    "    <span class=\"visually-hidden\">previous</span>\n" +
     "  </a>\n" +
     "  <a role=\"button\" href class=\"right carousel-control\" ng-click=\"next()\" ng-class=\"{ disabled: isNextDisabled() }\" ng-show=\"slides.length > 1\">\n" +
     "    <span aria-hidden=\"true\" class=\"glyphicon glyphicon-chevron-right\"></span>\n" +
-    "    <span class=\"sr-only\">next</span>\n" +
+    "    <span class=\"visually-hidden\">next</span>\n" +
     "  </a>\n" +
     "  <ol class=\"carousel-indicators\" ng-show=\"slides.length > 1\">\n" +
     "    <li ng-repeat=\"slide in slides | orderBy:indexOfSlide track by $index\" ng-class=\"{ active: isActive(slide) }\" ng-click=\"select(slide)\">\n" +
-    "      <span class=\"sr-only\">slide {{ $index + 1 }} of {{ slides.length }}<span ng-if=\"isActive(slide)\">, currently active</span></span>\n" +
+    "      <span class=\"visually-hidden\">slide {{ $index + 1 }} of {{ slides.length }}<span ng-if=\"isActive(slide)\">, currently active</span></span>\n" +
     "    </li>\n" +
     "  </ol>\n" +
     "</div>\n" +
@@ -6993,9 +6993,9 @@ angular.module("uib/template/datepicker/day.html", []).run(["$templateCache", fu
     "<table class=\"uib-daypicker\" role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
     "    <tr>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-left uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
-    "      <th colspan=\"{{::5 + showWeeks}}\"><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-default btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-right uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-start uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
+    "      <th colspan=\"{{::5 + showWeeks}}\"><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-secondary btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-end uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
     "    </tr>\n" +
     "    <tr>\n" +
     "      <th ng-if=\"showWeeks\" class=\"text-center\"></th>\n" +
@@ -7008,7 +7008,7 @@ angular.module("uib/template/datepicker/day.html", []).run(["$templateCache", fu
     "      <td ng-repeat=\"dt in row\" class=\"uib-day text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
     "        ng-class=\"::dt.customClass\">\n" +
-    "        <button type=\"button\" class=\"btn btn-default btn-sm\"\n" +
+    "        <button type=\"button\" class=\"btn btn-secondary btn-sm\"\n" +
     "          uib-is-class=\"\n" +
     "            'btn-info' for selectedDt,\n" +
     "            'active' for activeDt\n" +
@@ -7028,9 +7028,9 @@ angular.module("uib/template/datepicker/month.html", []).run(["$templateCache", 
     "<table class=\"uib-monthpicker\" role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
     "    <tr>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-left uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
-    "      <th><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-default btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-right uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-start uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
+    "      <th><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-secondary btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-end uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
     "    </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
@@ -7038,7 +7038,7 @@ angular.module("uib/template/datepicker/month.html", []).run(["$templateCache", 
     "      <td ng-repeat=\"dt in row\" class=\"uib-month text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
     "        ng-class=\"::dt.customClass\">\n" +
-    "        <button type=\"button\" class=\"btn btn-default\"\n" +
+    "        <button type=\"button\" class=\"btn btn-secondary\"\n" +
     "          uib-is-class=\"\n" +
     "            'btn-info' for selectedDt,\n" +
     "            'active' for activeDt\n" +
@@ -7058,9 +7058,9 @@ angular.module("uib/template/datepicker/year.html", []).run(["$templateCache", f
     "<table class=\"uib-yearpicker\" role=\"grid\" aria-labelledby=\"{{::uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "  <thead>\n" +
     "    <tr>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-left uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
-    "      <th colspan=\"{{::columns - 2}}\"><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-default btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
-    "      <th><button type=\"button\" class=\"btn btn-default btn-sm pull-right uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-start uib-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
+    "      <th colspan=\"{{::columns - 2}}\"><button id=\"{{::uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-secondary btn-sm uib-title\" ng-click=\"toggleMode()\" ng-disabled=\"datepickerMode === maxMode\" tabindex=\"-1\"><strong>{{title}}</strong></button></th>\n" +
+    "      <th><button type=\"button\" class=\"btn btn-secondary btn-sm text-end uib-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
     "    </tr>\n" +
     "  </thead>\n" +
     "  <tbody>\n" +
@@ -7068,7 +7068,7 @@ angular.module("uib/template/datepicker/year.html", []).run(["$templateCache", f
     "      <td ng-repeat=\"dt in row\" class=\"uib-year text-center\" role=\"gridcell\"\n" +
     "        id=\"{{::dt.uid}}\"\n" +
     "        ng-class=\"::dt.customClass\">\n" +
-    "        <button type=\"button\" class=\"btn btn-default\"\n" +
+    "        <button type=\"button\" class=\"btn btn-secondary\"\n" +
     "          uib-is-class=\"\n" +
     "            'btn-info' for selectedDt,\n" +
     "            'active' for activeDt\n" +
@@ -7089,11 +7089,11 @@ angular.module("uib/template/datepickerPopup/popup.html", []).run(["$templateCac
     "  <ul class=\"uib-datepicker-popup dropdown-menu uib-position-measure\" dropdown-nested ng-if=\"isOpen\" ng-keydown=\"keydown($event)\" ng-click=\"$event.stopPropagation()\">\n" +
     "    <li ng-transclude></li>\n" +
     "    <li ng-if=\"showButtonBar\" class=\"uib-button-bar\">\n" +
-    "      <span class=\"btn-group pull-left\">\n" +
+    "      <span class=\"btn-group float-start\">\n" +
     "        <button type=\"button\" class=\"btn btn-sm btn-info uib-datepicker-current\" ng-click=\"select('today', $event)\" ng-disabled=\"isDisabled('today')\">{{ getText('current') }}</button>\n" +
     "        <button type=\"button\" class=\"btn btn-sm btn-danger uib-clear\" ng-click=\"select(null, $event)\">{{ getText('clear') }}</button>\n" +
     "      </span>\n" +
-    "      <button type=\"button\" class=\"btn btn-sm btn-success pull-right uib-close\" ng-click=\"close($event)\">{{ getText('close') }}</button>\n" +
+    "      <button type=\"button\" class=\"btn btn-sm btn-success float-end uib-close\" ng-click=\"close($event)\">{{ getText('close') }}</button>\n" +
     "    </li>\n" +
     "  </ul>\n" +
     "</div>\n" +
@@ -7252,7 +7252,7 @@ angular.module("uib/template/progressbar/progressbar.html", []).run(["$templateC
 angular.module("uib/template/rating/rating.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("uib/template/rating/rating.html",
     "<span ng-mouseleave=\"reset()\" ng-keydown=\"onKeydown($event)\" tabindex=\"0\" role=\"slider\" aria-valuemin=\"0\" aria-valuemax=\"{{range.length}}\" aria-valuenow=\"{{value}}\" aria-valuetext=\"{{title}}\">\n" +
-    "    <span ng-repeat-start=\"r in range track by $index\" class=\"sr-only\">({{ $index < value ? '*' : ' ' }})</span>\n" +
+    "    <span ng-repeat-start=\"r in range track by $index\" class=\"visually-hidden\">({{ $index < value ? '*' : ' ' }})</span>\n" +
     "    <i ng-repeat-end ng-mouseenter=\"enter($index + 1)\" ng-click=\"rate($index + 1)\" class=\"glyphicon\" ng-class=\"$index < value && (r.stateOn || 'glyphicon-star') || (r.stateOff || 'glyphicon-star-empty')\" ng-attr-title=\"{{r.title}}\"></i>\n" +
     "</span>\n" +
     "");
@@ -7305,7 +7305,7 @@ angular.module("uib/template/timepicker/timepicker.html", []).run(["$templateCac
     "      <td class=\"form-group uib-time seconds\" ng-class=\"{'has-error': invalidSeconds}\" ng-show=\"showSeconds\">\n" +
     "        <input type=\"text\" placeholder=\"SS\" ng-model=\"seconds\" ng-change=\"updateSeconds()\" class=\"form-control text-center\" ng-readonly=\"readonlyInput\" maxlength=\"2\" tabindex=\"{{::tabindex}}\" ng-disabled=\"noIncrementSeconds()\" ng-blur=\"blur()\">\n" +
     "      </td>\n" +
-    "      <td ng-show=\"showMeridian\" class=\"uib-time am-pm\"><button type=\"button\" ng-class=\"{disabled: noToggleMeridian()}\" class=\"btn btn-default text-center\" ng-click=\"toggleMeridian()\" ng-disabled=\"noToggleMeridian()\" tabindex=\"{{::tabindex}}\">{{meridian}}</button></td>\n" +
+    "      <td ng-show=\"showMeridian\" class=\"uib-time am-pm\"><button type=\"button\" ng-class=\"{disabled: noToggleMeridian()}\" class=\"btn btn-secondary text-center\" ng-click=\"toggleMeridian()\" ng-disabled=\"noToggleMeridian()\" tabindex=\"{{::tabindex}}\">{{meridian}}</button></td>\n" +
     "    </tr>\n" +
     "    <tr class=\"text-center\" ng-show=\"::showSpinners\">\n" +
     "      <td class=\"uib-decrement hours\"><a ng-click=\"decrementHours()\" ng-class=\"{disabled: noDecrementHours()}\" class=\"btn btn-link\" ng-disabled=\"noDecrementHours()\" tabindex=\"{{::tabindex}}\"><span class=\"glyphicon glyphicon-chevron-down\"></span></a></td>\n" +

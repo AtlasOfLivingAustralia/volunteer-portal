@@ -87,8 +87,8 @@
   }
 }
 
-.navbar-fixed-top,
-.navbar-fixed-bottom {
+.fixed-top,
+.fixed-bottom {
   .navbar-collapse {
     max-height: $navbar-collapse-max-height;
 
@@ -135,8 +135,8 @@
 }
 
 // Fix the top/bottom navbars when screen real estate supports it
-.navbar-fixed-top,
-.navbar-fixed-bottom {
+.fixed-top,
+.fixed-bottom {
   position: fixed;
   right: 0;
   left: 0;
@@ -147,11 +147,11 @@
     border-radius: 0;
   }
 }
-.navbar-fixed-top {
+.fixed-top {
   top: 0;
   border-width: 0 0 1px;
 }
-.navbar-fixed-bottom {
+.fixed-bottom {
   bottom: 0;
   margin-bottom: 0; // override .navbar defaults
   border-width: 1px 0 0;
@@ -329,7 +329,7 @@
   @include border-top-radius(0);
 }
 // Menu position and menu caret support for dropups via extra dropup class
-.navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
+.fixed-bottom .navbar-nav > li > .dropdown-menu {
   margin-bottom: 0;
   @include border-top-radius($navbar-border-radius);
   @include border-bottom-radius(0);
@@ -394,7 +394,7 @@
 // --------------------------------------------------
 
 // Default navbar
-.navbar-default {
+.navbar-light {
   background-color: $navbar-default-bg;
   border-color: $navbar-default-border;
 
@@ -528,7 +528,7 @@
 
 // Inverse navbar
 
-.navbar-inverse {
+.navbar-dark {
   background-color: $navbar-inverse-bg;
   border-color: $navbar-inverse-border;
 
