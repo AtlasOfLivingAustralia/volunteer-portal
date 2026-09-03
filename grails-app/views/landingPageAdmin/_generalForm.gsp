@@ -1,8 +1,6 @@
 <head>
     <asset:stylesheet src="bootstrap-switch"/>
-    <asset:stylesheet src="bootstrap-select.css" />
-    <asset:javascript src="bootstrap-switch" asset-defer=""/>
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
+
 </head>
 
 <g:form action="save" class="form-horizontal" method="POST" >
@@ -63,7 +61,7 @@
 
         <div class="col-md-9">
             <g:select name="projectType" from="${projectTypes}" value="${landingPageInstance.projectType?.id}"
-                      optionValue="label" optionKey="id" class="selectpicker form-control"/>
+                      optionValue="label" optionKey="id" class="form-select"/>
         </div>
     </div>
 

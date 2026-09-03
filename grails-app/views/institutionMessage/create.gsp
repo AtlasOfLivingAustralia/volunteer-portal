@@ -6,8 +6,9 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Institution Message')}"/>
     <title><cl:pageTitle title="${g.message(code: "default.new.label", args: [entityName], default:"Create Institution Message")}" /></title>
-    <asset:stylesheet src="bootstrap-select.css" asset-defer="" />
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
+    <asset:javascript src="bvp-select.js" asset-defer="" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
     <g:set var="disableEdit" value="${false}"/>
 </head>
 
@@ -46,160 +47,54 @@
     </div>
 </div>
 
+<asset:javascript src="institution-message-recipient.js" asset-defer="" />
 <asset:script type="text/javascript">
-    $(document).ready(function() {
-        const _params = new URLSearchParams(window.location.search);
+$(document).ready(function () {
+    const params = new URLSearchParams(window.location.search);
+    const institutionId = $('.institution').val();
 
-        function initForm() {
-            $('#recipient').prop('disabled', false);
+    const initialRecipientType = (function () {
+    <g:if test="${params.projectId}">
+        $('.institution').val(${institutionId});
+        $('.recipient-type').val("${InstitutionMessage.RECIPIENT_TYPE_PROJECT}");
+        return "${InstitutionMessage.RECIPIENT_TYPE_PROJECT}";
+    </g:if>
+    <g:else>
+        if (params.get('institution')) {
+            $('.institution').val(params.get('institution'));
+        }
+        return "${institutionMessageInstance?.getRecipientType() ?: InstitutionMessage.RECIPIENT_TYPE_USER}";
+    </g:else>
+    })();
 
-        <g:if test="${params.projectId}">
-            $('.institution').val(${institutionId});
-            const recipientType = "${InstitutionMessage.RECIPIENT_TYPE_PROJECT}";
-            $('.recipient-type').val(recipientType);
-        </g:if>
-        <g:else>
-            if (getQueryStringParam('institution')) {
-                $('.institution').val(getQueryStringParam('institution'));
+    const selectedProjectIds = (function () {
+        const fromQuery = params.get('projectId');
+        if (fromQuery) return fromQuery.split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v && v !== "0"; });
+        const fromServer = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(',') : ''}";
+        return fromServer ? fromServer.split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v && v !== "0"; }) : [];
+    })();
+
+    InstitutionMessageRecipient.init({
+        recipientSelector:      "#recipient",
+        recipientContainerSelector: "#recipient-container",
+        recipientTypeSelector:  ".recipient-type",
+        institutionSelector:    ".institution",
+        loadingSelector:        ".loading-recipient",
+        initialRecipientType:   initialRecipientType,
+        selectedUserId:         ${(institutionMessageInstance?.getRecipientUser()?.id ?: 0)},
+        selectedProjectIds:     selectedProjectIds,
+        includeOptOut:          true,
+        isApproved:             false,
+        urls: {
+            users: function () {
+                return "${createLink(controller: 'institutionAdmin', action: 'getUsersForInstitution')}/" + $('.institution').val();
+            },
+            projects: function () {
+                return "${createLink(controller: 'institutionAdmin', action: 'getActiveProjectsForInstitution')}/" + $('.institution').val();
             }
-
-            const recipientType = "${institutionMessageInstance?.getRecipientType() ?: InstitutionMessage.RECIPIENT_TYPE_USER}";
-        </g:else>
-
-            // console.log("Init recipient");
-            getRecipientData(recipientType);
-            $('#recipient').selectpicker();
-        }
-
-        function getQueryStringParam(key) {
-            return _params.get(key);
-        }
-
-        initForm();
-
-        $('.recipient-type').change(function() {
-            // console.log("recipient type change");
-            $('#recipient').prop('disabled', false);
-            getRecipientData(this.value);
-        });
-
-        $('.institution').change(function() {
-            const recipientType = $('.recipient-type').val();
-            $('#recipient option:selected').prop('selected', false)
-                .val("");
-            getRecipientData(recipientType);
-        });
-
-        function getRecipientData(recipientType) {
-            $('.loading-recipient').removeClass('hidden');
-            if (recipientType === 'user') {
-                getUserList();
-            } else if (recipientType === 'project') {
-                getProjectList();
-            } else {
-                updateRecipient(recipientType, null);
-            }
-        }
-
-        function updateRecipient(type, data) {
-            let selectList = "";
-
-            if (type === 'user') {
-                // build user select
-                const selectedValue = ${(institutionMessageInstance?.getRecipientUser()?.id ?: 0)};
-                $.each(data, function(idx, u) {
-                    let selectedAttr = "";
-                    let disabledOption = "";
-                    let optOutStr = "";
-
-                    if (u.id === selectedValue) selectedAttr = " selected='selected'";
-                    if (u.optOut) {
-                        optOutStr = " (Opted Out)";
-                        disabledOption = " disabled";
-                    }
-                    selectList += "<option value='" + u.id + "'" + selectedAttr + disabledOption + ">";
-                    selectList += u.lastName + ", " + u.firstName + optOutStr;
-                    selectList += "</option>";
-                });
-
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .removeAttr("multiple")
-                    .removeAttr("data-selected-text-format")
-                    .removeAttr("data-count-selected-text")
-                    .attr('title', 'Select a recipient')
-                    .append(selectList);
-                $('#recipient').selectpicker();
-
-            } else if (type === 'project') {
-                // build project select
-                let selectedValues = "";
-                if (getQueryStringParam('projectId')) {
-                    selectedValues = getQueryStringParam('projectId');
-                } else {
-                    selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : "0"}";
-                }
-
-                // console.log("Selected Value: " + selectedValues);
-                $.each(data, function(idx, p) {
-                    selectList += "<option value='" + p.id + "'>" + p.name + "</option>";
-                });
-
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .attr("multiple", "true")
-                    .attr('title', 'Select a recipient')
-                    .append(selectList);
-
-                // Set selected attributes
-                $.each(selectedValues.split(","), function(idx, e) {
-                     $("#recipient option[value='" + e + "']").prop("selected", true);
-                });
-
-                $('#recipient').selectpicker({
-                    selectedTextFormat: 'count > 1',
-                    countSelectedText: "{0} expeditions selected"
-                });
-            } else {
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .removeAttr("multiple")
-                    .removeAttr("data-selected-text-format")
-                    .removeAttr("data-count-selected-text");
-                    //.append("<option>- Institution; no recipient required -</option>");
-                $('#recipient').attr("disabled", true);
-                $('#recipient').attr('title', "No recipient selection required");
-                $('#recipient').selectpicker();
-            }
-
-            $('#recipient').selectpicker('refresh');
-            $('.loading-recipient').addClass('hidden');
-        }
-
-        function getUserList() {
-            const institutionId = $('.institution').val();
-            const url = "${createLink(controller: 'institutionAdmin', action: 'getUsersForInstitution')}" + "/" + institutionId;
-            $.get({
-                url: url,
-                dataType: 'json'
-            }).done(function(data) {
-                //console.log(data)
-                updateRecipient('user', data);
-            });
-        }
-
-        function getProjectList() {
-            const institutionId = $('.institution').val();
-            const url = "${createLink(controller: 'institutionAdmin', action: 'getActiveProjectsForInstitution')}" + "/" + institutionId;
-            $.get({
-                url: url,
-                dataType: 'json'
-            }).done(function(data) {
-                //console.log(data)
-                updateRecipient('project', data);
-            });
         }
     });
+});
 </asset:script>
 
 </body>

@@ -6,8 +6,9 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'institutionMessage.default.label', default: 'Institution Message')}"/>
     <title><cl:pageTitle title="${g.message(code: "default.edit.label", args: [entityName], default:"Edit Institution Message")}" /></title>
-    <asset:stylesheet src="bootstrap-select.css" asset-defer="" />
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
+    <asset:javascript src="bvp-select.js" asset-defer="" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
     <g:set var="disableEdit" value="${institutionMessageInstance.approved}"/>
 
     <style type="text/css">
@@ -112,131 +113,32 @@
 </g:if>
 </div>
 
+<asset:javascript src="institution-message-recipient.js" asset-defer="" />
 <asset:script type="text/javascript">
-    $(document).ready(function() {
-    <g:if test="${!institutionMessageInstance.approved}">
-        function initRecipient() {
-            const recipientType = "${institutionMessageInstance.getRecipientType()}";
-            $('#recipient').prop('disabled', false);
-            // console.log("Init recipient");
-            getRecipientData(recipientType);
-            $('#recipient').selectpicker();
-        }
-
-        initRecipient();
-
-        $('.recipient-type').change(function() {
-            // console.log("recipient type change");
-            $('#recipient').prop('disabled', false);
-            getRecipientData(this.value);
-        });
-
-        function getRecipientData(recipientType) {
-            $('.loading-recipient').removeClass('d-none');
-            if (recipientType === 'user') {
-                getUserList();
-            } else if (recipientType === 'project') {
-                getProjectList();
-            } else {
-                updateRecipient(recipientType, null);
+$(document).ready(function () {
+<g:if test="${!institutionMessageInstance.approved}">
+    InstitutionMessageRecipient.init({
+        recipientSelector:      "#recipient",
+        recipientContainerSelector: "#recipient-container",
+        recipientTypeSelector:  ".recipient-type",
+        institutionSelector:    ".institution",
+        loadingSelector:        ".loading-recipient",
+        initialRecipientType:   "${institutionMessageInstance.getRecipientType()}",
+        selectedUserId:         ${(institutionMessageInstance?.getRecipientUser()?.id ?: 0)},
+        selectedProjectIds:     "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(',') : ''}".split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v && v !== "0"; }),
+        includeOptOut: false,
+        isApproved: ${institutionMessageInstance.approved ? 'true' : 'false'},
+        urls: {
+            users: function () {
+                return "${createLink(controller: 'institutionAdmin', action: 'getUsersForInstitution', id: institutionMessageInstance?.institution?.id)}";
+            },
+            projects: function () {
+                return "${createLink(controller: 'institutionAdmin', action: 'getActiveProjectsForInstitution', id: institutionMessageInstance?.institution?.id)}";
             }
         }
-
-        function updateRecipient(type, data) {
-            // console.log("Update recipient field");
-            let selectList = "";
-
-            if (type === 'user') {
-                // build user select
-                const selectedValue = ${(institutionMessageInstance?.getRecipientUser()?.id ?: 0)};
-                $.each(data, function(idx, u) {
-                    let selectedAttr = "";
-                    if (u.id === selectedValue) selectedAttr = " selected='selected'";
-
-                    selectList += "<option value='" + u.id + "'" + selectedAttr + ">" + u.lastName + ", " + u.firstName + "</option>";
-                });
-
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .removeAttr("multiple")
-                    .removeAttr("data-selected-text-format")
-                    .removeAttr("data-count-selected-text")
-                    .append(selectList);
-
-            <g:if test="${institutionMessageInstance.approved}">
-                $('#recipient').attr("disabled", true);
-            </g:if>
-
-                $('#recipient').selectpicker();
-
-            } else if (type === 'project') {
-                // build project select
-                const selectedValues = "${(institutionMessageInstance?.getRecipientProjectList()) ? institutionMessageInstance.getRecipientProjectList()*.id.join(",") : ""}";
-                // console.log("Selected Value: " + selectedValues);
-                $.each(data, function(idx, p) {
-                    selectList += "<option value='" + p.id + "'>" + p.name + "</option>";
-                });
-
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .attr("multiple", "true")
-                    .append(selectList);
-
-                // Set selected attributes
-                $.each(selectedValues.split(","), function(idx, e) {
-                     $("#recipient option[value='" + e + "']").prop("selected", true);
-                });
-
-            <g:if test="${institutionMessageInstance.approved}">
-                $('#recipient').attr("disabled", true);
-            </g:if>
-
-                $('#recipient').selectpicker({
-                    selectedTextFormat: 'count > 1',
-                    countSelectedText: "{0} expeditions selected"
-                });
-
-            } else {
-                $('#recipient').selectpicker('destroy');
-                $('#recipient').empty()
-                    .removeAttr("multiple")
-                    .removeAttr("data-selected-text-format")
-                    .removeAttr("data-count-selected-text")
-                    .append("<option>- Institution; no recipient required -</option>");
-                $('#recipient').attr("disabled", true);
-                $('#recipient').selectpicker();
-            }
-
-            $('#recipient').selectpicker('refresh');
-            $('.loading-recipient').addClass('d-none');
-        }
-
-        function getUserList() {
-            // console.log("Get user List");
-            const url = "${createLink(controller: 'institutionAdmin', action: 'getUsersForInstitution', id: institutionMessageInstance?.institution?.id)}";
-            $.get({
-                url: url,
-                dataType: 'json'
-            }).done(function(data) {
-                //console.log(data)
-                updateRecipient('user', data);
-            });
-        }
-
-        function getProjectList() {
-            // console.log("Get project List");
-            const url = "${createLink(controller: 'institutionAdmin', action: 'getActiveProjectsForInstitution', id: institutionMessageInstance?.institution?.id)}";
-            $.get({
-                url: url,
-                dataType: 'json'
-            }).done(function(data) {
-                //console.log(data)
-                updateRecipient('project', data);
-            });
-        }
-    </g:if>
     });
-
+</g:if>
+});
 </asset:script>
 
 </body>

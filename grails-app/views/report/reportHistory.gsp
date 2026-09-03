@@ -5,7 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-reporting"/>
     <title><g:message code="admin.user.report.label" default="User Reporting"/></title>
-    <asset:stylesheet src="bootstrap-select.css" />
 
 </head>
 

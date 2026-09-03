@@ -8,28 +8,12 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="admin.user.role.label" default="Administration - User Roles"/></title>
     <asset:stylesheet src="label-autocomplete"/>
-    <asset:stylesheet src="bootstrap-select.css" asset-defer="" />
-    <style type="text/css">
+    <style>
         table {
             font-size: 0.9em;
         }
     </style>
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
-    <asset:script type="text/javascript">
-
-        $(document).ready(function () {
-            $('.s1').hide();
-            $('.byinst').show();
-
-            $("input:radio").click(function() {
-                $('.s1').hide();
-                $('.' + $(this).attr("value")).show();
-            });
-
-            $('#byproj').selectpicker();
-        });
-
-    </asset:script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/css/tom-select.css" rel="stylesheet">
 </head>
 
 <body class="admin">
@@ -79,7 +63,7 @@
                     <div class="form-group col-md-2">
                         <label for="userRole_role">Role Type</label>
                         <g:select name="userRole_role" from="${Role.findAllByNameInList([BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR])}"
-                                  optionKey="id" class="selectpicker form-control" required="true" optionValue="name"
+                                  optionKey="id" class="form-select" required="true" optionValue="name"
                                   noSelection="['':'- Select a Role -']" />
                     </div>
                     <div class="form-group col-md-2" style="white-space: nowrap;">
@@ -97,13 +81,13 @@
                     <div class="form-group col-md-5">
                         <label>Institution/Expedition</label>
                         <div class="s1 byinst">
-                            <g:select class="form-control" name="institution" from="${institutionList}"
+                            <g:select class="form-select" name="institution" from="${institutionList}"
                                       optionKey="id" id="byinst" data-live-search="true"
                                       value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                         </div>
                         <div class="s1 byproj">
                             <g:select name="project" from="${projectList}" id="byproj"
-                                      optionKey="id" class="form-control selectpicker"
+                                      optionKey="id" class=""
                                       optionValue="featuredLabel" data-live-search="true"
                                       noSelection="${['': '- Select an Expedition -']}" />
                         </div>
@@ -156,7 +140,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <g:select class="form-control" name="institution" id="institution" from="${institutionList}"
+                    <g:select class="form-select" name="institution" id="institution" from="${institutionList}"
                               optionKey="id"
                               value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
                 </div>
@@ -229,12 +213,35 @@
         </div>
     </div>
 </div>
-</body>
 
+<asset:javascript src="bvp-select.js" asset-defer="" />
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
 <asset:javascript src="label-autocomplete" asset-defer=""/>
-<asset:script type="text/javascript">
+<asset:script type="text/javascript"  asset-defer="">
 $(function($) {
     var url = "${createLink(controller: 'user', action: 'listUsersForJson')}";
+
+    $('.s1').hide();
+    $('.byinst').show();
+
+    $("input:radio").click(function() {
+        $('.s1').hide();
+        $('.' + $(this).attr("value")).show();
+    });
+
+    function projectSelectOptions() {
+        const base = {
+            create: false,
+            persist: false,
+            allowEmptyOption: true,
+            searchField: ['text'],
+            placeholder: 'Select an Expedition...'
+        };
+
+        return base;
+    }
+
+    bvpSelect.init('#byproj', projectSelectOptions());
 
     labelAutocomplete("#user", url, '#ajax-spinner', function(item) {
         $('#userId').val(item.userId);

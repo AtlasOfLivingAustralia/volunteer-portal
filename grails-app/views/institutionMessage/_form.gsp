@@ -56,16 +56,17 @@
         <g:message code="institutionMessage.recipient.label" default="Recipient"/>
     </label>
     <div class="col-md-6">
-        <div class="clearfix loading-recipient d-none">
-            <div class="loader float-right" role="status">
+        <div class="clearfix loading-recipient d-none hidden">
+            <div class="loader" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+        <span id="recipient-container" class="d-none hidden">
         <select name="recipient"
-                class="form-control selectpicker"
                 data-live-search="true"
                 title="Select a recipient"
                 id="recipient"></select>
+        </span>
     </div>
 </div>
 <div class="form-group">

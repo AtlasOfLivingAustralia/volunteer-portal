@@ -126,15 +126,9 @@ class InstitutionMessageService {
      */
     def deleteRecipients(long messageId) {
         try {
-            MessageRecipient.withNewSession { Session session ->
+            MessageRecipient.withNewTransaction {
                 InstitutionMessage iMessage = InstitutionMessage.get(messageId)
-                def recipients = MessageRecipient.findAllByMessage(iMessage)
-
-                recipients.each {
-                    it.delete()
-                }
-
-                session.flush()
+                MessageRecipient.findAllByMessage(iMessage)*.delete()
             }
         } catch (Exception e) {
             log.error("Error encountered deleting recipients", e)

@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-reporting"/>
     <title><g:message code="admin.user.report.label" default="User Reporting"/></title>
-    <asset:stylesheet src="bootstrap-select.css" />
+
     <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <style>
     .label-button {

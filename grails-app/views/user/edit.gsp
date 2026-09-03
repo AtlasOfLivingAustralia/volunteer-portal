@@ -6,9 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
-    <asset:stylesheet src="bootstrap-select.css" />
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
-
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/css/tom-select.css" rel="stylesheet">
     <style>
         .roles-table {
             font-size: 1rem;
@@ -43,7 +41,9 @@
                         <g:hiddenField name="id" value="${userInstance?.id}"/>
 
                         <div class="form-group">
-                            <label for="displayName" class="form-label col-md-3"><g:message code="user.displayName.label" default="Name"/></label>
+                            <label for="displayName" class="form-label col-md-3"><g:message
+                                    code="user.displayName.label" default="Name"/></label>
+
                             <div class="col-md-6">
                                 <g:textField name="displayName" class="form-control" disabled="disabled"
                                              value="${fieldValue(bean: userInstance, field: 'displayName')}"/>
@@ -54,6 +54,7 @@
                             <label for="transcribedCount" class="form-label col-md-3">
                                 <g:message code="user.transcribedCount.label" default="Transcribed Count"/>
                             </label>
+
                             <div class="col-md-6">
                                 <g:textField name="transcribedCount" class="form-control"
                                              value="${fieldValue(bean: userInstance, field: 'transcribedCount')}"/>
@@ -64,6 +65,7 @@
                             <label for="validatedCount" class="form-label col-md-3">
                                 <g:message code="user.validatedCount.label" default="Validated Count"/>
                             </label>
+
                             <div class="col-md-6">
                                 <g:textField name="validatedCount" class="form-control"
                                              value="${fieldValue(bean: userInstance, field: 'validatedCount')}"/>
@@ -74,6 +76,7 @@
                             <label for="userId" class="form-label col-md-3">
                                 <g:message code="user.userId.label" default="User Id"/>
                             </label>
+
                             <div class="col-md-6">
                                 <g:textField name="transcribedCount" class="form-control" disabled="disabled"
                                              value="${fieldValue(bean: userInstance, field: 'userId')}"/>
@@ -84,6 +87,7 @@
                             <label for="email" class="form-label col-md-3">
                                 <g:message code="user.email.label" default="Email Address"/>
                             </label>
+
                             <div class="col-md-6">
                                 <g:textField name="email" class="form-control"
                                              value="${fieldValue(bean: userInstance, field: 'email')}"/>
@@ -101,87 +105,108 @@
                         </div>
                     </g:form>
 
-                        <div class="well form-horizontal" style="padding: 10px !important;">
-                            <div class="form-group">
-                                <label for="roles" class="form-label col-md-3">
-                                    <g:message code="user.roles.label" default="Roles"/>
-                                    <a class="btn btn-link"
-                                       href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
-                                       title="Edit User Roles">
-                                        <i class="fa fa-users" style="font-size: 1.2em;"></i>
-                                    </a>
-                                </label>
+                    <div class="well form-horizontal" style="padding: 10px !important;">
+                        <div class="form-group">
+                            <label for="roles" class="form-label col-md-3">
+                                <g:message code="user.roles.label" default="Roles"/>
+                                <a class="btn btn-link"
+                                   href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
+                                   title="Edit User Roles">
+                                    <i class="fa fa-users" style="font-size: 1.2em;"></i>
+                                </a>
+                            </label>
 
-                                <div class="col-md-6">
-                                    <div class="table-responsive roles-table">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th><g:message code="user.role.name.label" default="Role Name"/></th>
-                                                    <th><g:message code="user.role.scope.label" default="Institution/Project"/></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <g:each var="roleInfo" in="${roles}">
-                                                    <tr>
-                                                        <td>${roleInfo.role}</td>
-                                                        <td>
-                                                            ${roleInfo.scope}
-                                                            <g:if test="${!roleInfo.scope}">
-                                                                <g:message code="user.role.site-wide.label" default="Site-wide"/>
-                                                            </g:if>
-                                                        </td>
-                                                    </tr>
-                                                </g:each>
-                                                <g:if test="${roles.isEmpty()}">
-                                                    <tr>
-                                                        <td colspan="2"><g:message code="user.roles.none.label" default="No roles assigned"/></td>
-                                                    </tr>
-                                                </g:if>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <div class="col-md-6">
+                                <div class="table-responsive roles-table">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th><g:message code="user.role.name.label" default="Role Name"/></th>
+                                            <th><g:message code="user.role.scope.label"
+                                                           default="Institution/Project"/></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <g:each var="roleInfo" in="${roles}">
+                                            <tr>
+                                                <td>${roleInfo.role}</td>
+                                                <td>
+                                                    ${roleInfo.scope}
+                                                    <g:if test="${!roleInfo.scope}">
+                                                        <g:message code="user.role.site-wide.label"
+                                                                   default="Site-wide"/>
+                                                    </g:if>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                        <g:if test="${roles.isEmpty()}">
+                                            <tr>
+                                                <td colspan="2"><g:message code="user.roles.none.label"
+                                                                           default="No roles assigned"/></td>
+                                            </tr>
+                                        </g:if>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
 
-                        <div class="well" style="padding: 10px !important;">
-                            <g:form method="post" class="form-horizontal">
-                                <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}" />
+                    <div class="well" style="padding: 10px !important;">
+                        <g:form method="post" class="form-horizontal">
+                            <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}"/>
                             <div class="form-group">
                                 <label for="label" class="form-label col-md-3">
                                     <g:message code="user.labels.label" default="Tags"/>
                                 </label>
+
                                 <div class="col-md-3">
-                                    <g:select name="tag" from="${userLabelList}" optionKey="id" class="selectpicker form-control"
-                                              noSelection="['':'- Select a Tag -']"
-                                              optionValue="value" data-live-search="true"/>
+                                    <g:select name="tag" from="${userLabelList}" optionKey="id"
+                                              noSelection="['': '- Select a Tag -']"
+                                              optionValue="value" data-live-search="true" id="tag-select"/>
                                     <div id="labels" style="padding-top: 10px;">
-                                    <g:each in="${userInstance.labels}" var="l">
-                                        <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
-                                        <span class="label label-${labelClassName}"> ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
-                                    </g:each>
+                                        <g:each in="${userInstance.labels}" var="l">
+                                            <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+                                            <span class="label label-${labelClassName}">${l.value} <i
+                                                    class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
+                                            </span>
+                                        </g:each>
                                     </div>
                                 </div>
+
                                 <div class="col-md-3">
                                     <g:actionSubmit class="save btn btn-primary" action="addUserLabel"
                                                     value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/>
                                 </div>
                             </div>
-                            </g:form>
-                        </div>
-
+                        </g:form>
                     </div>
 
-
                 </div>
+
             </div>
         </div>
     </div>
 </div>
+<asset:javascript src="bvp-select.js" asset-defer="" />
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
 <asset:script type="text/javascript" asset-defer="">
 $(function() {
+    function projectSelectOptions() {
+        const base = {
+            create: false,
+            persist: false,
+            allowEmptyOption: true,
+            searchField: ['text'],
+            placeholder: 'Select a tag...'
+        };
+
+        return base;
+    }
+
+    bvpSelect.init('#tag-select', projectSelectOptions());
+
     function onDeleteLabelClick (e) {
         e.preventDefault();
         var userId = $('#add-label-user-id').val();

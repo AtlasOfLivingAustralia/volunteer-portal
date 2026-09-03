@@ -4,8 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="digivol-landingPage"/>
     <title><g:message code="landingPageAdmin.label" default="Landing Page Configuration"/></title>
-    <asset:stylesheet src="bootstrap-select.css" />
-    <asset:javascript src="bootstrap-select.js" asset-defer="" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/css/tom-select.css" rel="stylesheet">
 </head>
 
 <body class="admin">
@@ -18,21 +17,22 @@
 
     <table class="table">
         <thead>
-
+        <tr>
             <th><span>
                 Select a Category filter for tags
-                <g:select name="tagCategory" from="${labelCats}" class="selectpicker form-control" noSelection="${['all': '--- All Categories ---']}"/>
+                <g:select name="tagCategory" from="${labelCats}" class="form-select"
+                          noSelection="${['all': '--- All Categories ---']}"/>
             </span></th>
             <th><span>
                 Select Tag
-                <g:select name="tag" from="${labels}" optionKey="id" class="selectpicker form-control"
+                <g:select name="tag" from="${labels}" optionKey="id"
                           optionValue="value" data-live-search="true"/></span></th>
-            <th/>
+            <th></th>
 
             <th><g:actionSubmit class="save btn btn-primary" action="saveProjectLabels"
-                            value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/></th>
+                                value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/></th>
+        </tr>
         </thead>
-
     </table>
 
     <div id="labels">
@@ -43,9 +43,24 @@
         </g:each>
     </div>
 </g:form>
-
+<asset:javascript src="bvp-select.js" asset-defer="" />
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
 <asset:script type="text/javascript" asset-defer="">
     $(function() {
+        function tagSelectOptions() {
+                const base = {
+                create: false,
+                persist: false,
+                allowEmptyOption: true,
+                searchField: ['text'],
+                placeholder: 'Select a tag...'
+            };
+
+            return base;
+        }
+
+        bvpSelect.init('#tag', tagSelectOptions());
+
         $("#tagCategory").change(function() {
             var selectedCategory = $(this).children("option:selected").val();
              $.ajax({
@@ -57,13 +72,14 @@
                 success: function (data) {
 
                    if (data) {
+                       bvpSelect.destroy('#tag');
                        $('#tag option').remove();
                        for (var o in data) {
                             if (data[o].value !== undefined) {
                                 $('#tag').append('<option value="' + data[o].id + '">' + ("" + data[o].value) + '</option>');
                             }
                         }
-                       $('#tag').selectpicker('refresh');
+                       bvpSelect.refresh('#tag');
                    }
 
                 },
