@@ -2,7 +2,6 @@
 <g:applyLayout name="${grailsApplication.config.getProperty('ala.skin', String)}">
 <head>
     <title><cl:pageTitle title="Edit Landing Page ${landingPageInstance?.title}"/></title>
-    <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
 </head>
 
@@ -55,8 +54,5 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-switch" asset-defer="" />
-%{--<asset:javascript src="bootbox" asset-defer="" />--}%
-%{--<asset:javascript src="tinymce-simple" asset-defer=""/>--}%
 </body>
 </g:applyLayout>

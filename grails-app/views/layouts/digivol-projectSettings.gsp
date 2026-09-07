@@ -1,7 +1,6 @@
 <g:applyLayout name="${grailsApplication.config.getProperty('ala.skin', String)}">
 <head>
     <title><cl:pageTitle title="Edit Expedition ${projectInstance?.name}"/></title>
-    <asset:stylesheet src="bootstrap-switch"/>
     <g:layoutHead/>
     <content tag="primaryColour">${projectInstance.institution?.themeColour}</content>
 </head>
@@ -113,7 +112,6 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-switch" asset-defer="" />
 <asset:javascript src="tinymce-simple" asset-defer="" />
 <asset:script type="text/javascript">
     $(document).ready(function () {

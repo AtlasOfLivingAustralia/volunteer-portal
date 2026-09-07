@@ -25,11 +25,12 @@
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_MAP}" />
 
     <div class="form-group">
-        <label for="showMap" class="checkbox col-md-6">
+        <label for="showMap" class="col-md-6">
             Show the map on the expedition landing page
         </label>
         <div class="col-md-6">
-            <g:checkBox name="showMap"
+            <div class="form-check form-switch" style="font-size: 1.5rem;">
+                <g:checkBox name="showMap" class="form-check-input" role="switch"
                         checked="${projectInstance.showMap}"/>
         </div>
     </div>
@@ -83,17 +84,10 @@
     var mapListenerActive = true;
 
     $(document).ready(function () {
-
-        $('#showMap').bootstrapSwitch({
-            size: "small",
-            onText: "yes",
-            offText: "no"
-        });
-
         bvp.bindTooltips();
         bvp.suppressEnterSubmit();
 
-        $('#showMap').on('switchChange.bootstrapSwitch', function (event, state) {
+        $(document).on('change', '#showMap', function () {
             $("#updateForm").submit();
         });
 

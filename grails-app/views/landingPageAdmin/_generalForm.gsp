@@ -1,8 +1,3 @@
-<head>
-    <asset:stylesheet src="bootstrap-switch"/>
-
-</head>
-
 <g:form action="save" class="form-horizontal" method="POST" >
     <g:hiddenField name="id" value="${landingPageInstance?.id}" />
 
@@ -38,14 +33,6 @@
         </div>
     </div>
 
-    %{--<div class="form-group" ${hasErrors(bean: landingPage, field: 'numberOfContributors', 'has-error')}>
-        <label for="numberOfContributors" class="form-label col-md-3"><g:message code="landingPage.numberOfContributors.label"
-                                                                           default="The number of contributors to show on the landing page"/></label>
-        <div class="col-md-6">
-            <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${landingPage.numberOfContributors}"/>
-        </div>
-    </div>--}%
-
    <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'imageAttribution', 'has-error')}">
        <label for="imageAttribution" class="form-label col-md-3">
            <g:message code="landingPage.imageAttribution" default="Image Attribution Text" />
@@ -69,26 +56,9 @@
         <div class="col-md-offset-3 col-md-9">
             <g:actionSubmit class="save btn btn-primary" action="save"
                             value="${message(code: 'default.button.save.label', default: 'Save')}"/>
-           %{-- <g:submitButton name="save" class="save btn btn-primary"
-                        value="${message(code: 'default.button.save.label', default: 'Save')}"/>--}%
         </div>
     </div>
 
 </g:form>
 
 <asset:javascript src="tinymce-simple" asset-defer=""/>
-
-<asset:script type="text/javascript" asset-defer="">
-    $(function() {
-
-        $("[name='enabled']").bootstrapSwitch({
-            size: "small",
-            onText: "Enabled",
-            offText: "Disabled"
-        });
-    });
-
-</asset:script>
-
-</body>
-</html>

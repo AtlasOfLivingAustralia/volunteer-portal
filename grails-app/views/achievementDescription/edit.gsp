@@ -12,12 +12,12 @@
 <content tag="pageTitle">General Settings</content>
 
 <content tag="adminButtonBar">
-    <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete"
-            id="${achievementDescriptionInstance?.id}" method="delete">
-        <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
-    </g:form>
+
     <form class="form-inline" style="display: inline-block;">
-        <g:checkBox name="enabled" checked="${achievementDescriptionInstance?.enabled}"/>
+        <div class="form-check form-switch" style="font-size: 1.5rem;">
+            <label class="form-check-label" id="switchLgLabel" for="switchLg">${achievementDescriptionInstance?.enabled ? 'Enabled' : 'Disabled'}</label>
+            <input class="form-check-input" type="checkbox" name="enabled" role="switch" id="switchLg" ${achievementDescriptionInstance?.enabled ? 'checked="checked"' : ''}>
+        </div>
     </form>
 </content>
 
@@ -43,6 +43,10 @@
             </div>
         </div>
     </g:form>
+    <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete"
+            id="${achievementDescriptionInstance?.id}" method="delete">
+        <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
+    </g:form>
 </div>
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="codemirror/codemirror-groovy-js-sublime.js" asset-defer="" />
@@ -61,8 +65,10 @@
             });
         });
 
-        $("[name='enabled']").bootstrapSwitch().on('switchChange.bootstrapSwitch', function(event, state) {
-            var p = $.ajax({
+        $(document).on('change', "[name='enabled']", function (event) {
+            // Get checkbox state
+            const state = $(event.target).prop('checked');
+            let p = $.ajax({
                 type: 'POST',
                 headers: {
                     Accept : "application/json"
@@ -74,9 +80,12 @@
                 dataType: 'json'
             });
 
+            p.success(function (data, textStatus, jqXHR) {
+                $('#switchLgLabel').text(state ? 'Enabled' : 'Disabled');
+            });
+
             p.fail(function ( jqXHR, textStatus, errorThrown ) {
                 alert("Could not enable badge :(  Please refresh and try again.");
-                $(event.target).bootstrapSwitch('state', !state, true);
                 console.log(errorThrown);
             });
         });

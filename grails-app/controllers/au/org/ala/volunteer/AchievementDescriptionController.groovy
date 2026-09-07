@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import au.org.ala.web.AlaSecured
 import grails.converters.JSON
+import groovy.util.logging.Slf4j
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -9,6 +10,7 @@ import static grails.async.Promises.*
 import static org.springframework.http.HttpStatus.*
 import grails.gorm.transactions.Transactional
 
+@Slf4j
 @AlaSecured(value="ROLE_VP_ADMIN", redirectController = "index", redirectAction="notPermitted")
 class AchievementDescriptionController {
 
@@ -285,6 +287,7 @@ class AchievementDescriptionController {
     def enable(AchievementDescription achievementDescriptionInstance) {
         def enabledParam = params.boolean('enabled') ?: false
         achievementDescriptionInstance.enabled = enabledParam
+        log.debug("Setting enabled to ${enabledParam} for achievement ${achievementDescriptionInstance.id}")
         achievementDescriptionInstance.save(flush: true)
         render status: NO_CONTENT.value()
     }
