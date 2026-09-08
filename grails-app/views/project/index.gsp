@@ -377,9 +377,8 @@ function showTutorialModal() {
 function showIconSelector() {
     bvp.showModal({
         url: "${createLink(action: 'projectLeaderIconSelectorFragment', id: projectInstance.id)}",
-                    width:800,
-                    height:500,
-                    title: 'Select Expedition Leader Icon'
+        size: 'large',
+        title: 'Select Expedition Leader Icon'
     });
 }
 

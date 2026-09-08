@@ -498,8 +498,6 @@
     function showPreviousTaskBrowser() {
         bvp.showModal({
             url: "${raw(createLink(controller: 'task', action: 'taskBrowserFragment', params: [projectId: taskInstance?.project?.id, taskId: taskInstance?.id]))}",
-            width:700,
-            height:600,
             hideHeader: false,
             size: 'large',
             title: 'Previously transcribed tasks'

@@ -300,8 +300,7 @@
         var contentUrl = "${createLink(controller: 'locality', action: 'searchFragment', params: [taskId: taskInstance.id])}&verbatimLocality=" + encodeURIComponent(verbatimLocality);
         bvp.showModal({
             url: contentUrl,
-            width:800,
-            height:650,
+            size: 'large',
             title: 'Find Existing Collecting Event'
         });
     }
@@ -317,8 +316,7 @@
 
             bvp.showModal({
                 url: contentUrl,
-                width:800,
-                height:650,
+                size: 'extra-large',
                 hideHeader: false,
                 title: 'Find Existing Collecting Event',
                 onShown: function() {

@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <asset:stylesheet src="jquery-ui"/>
     <asset:stylesheet src="qtip"/>
 </head>
 
@@ -92,30 +91,41 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div id="dialog" title="Move field to position" style="display: none">
-        <g:hiddenField name="dialogFieldId" id="dialogFieldId"/>
-        <table style="width: 100%">
-            <tr>
-                <td><strong>Old&nbsp;position:</strong></td>
-                <td><g:textField name="oldPosition" id="oldPosition" disabled="true" size="10"/></td>
-            </tr>
-            <tr>
-                <td><strong>New&nbsp;position (Order):</strong></td>
-                <td><g:textField name="newPosition" id="newPosition" size="10"/></td>
-            </tr>
-        </table>
-
-        <div style="margin-top: 15px">
-            <button class="btn" id="btnCancelMove">Cancel</button>
-            <button class="btn" id="btnApplyMove">Move Field</button>
+<div class="modal fade" id="moveFieldModal" tabindex="-1" aria-labelledby="moveFieldModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveFieldModalLabel">Move field to position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <g:hiddenField name="dialogFieldId" id="dialogFieldId"/>
+                <div class="mb-3 row">
+                    <label for="oldPosition" class="col-sm-6 col-form-label">Old position:</label>
+                    <div class="col-sm-6">
+                        <g:textField name="oldPosition" id="oldPosition" disabled="true" class="form-control"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="newPosition" class="col-sm-6 col-form-label">New position (Order):</label>
+                    <div class="col-sm-6">
+                        <g:textField name="newPosition" id="newPosition" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnApplyMove">Move Field</button>
+            </div>
         </div>
     </div>
 </div>
-<asset:javascript src="jquery-ui" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="qtip" asset-defer=""/>
+
 <asset:script type="text/javascript">
 
     $(document).ready(function() {
@@ -136,19 +146,16 @@
             }
         });
 
+        var moveFieldModal = new bootstrap.Modal(document.getElementById('moveFieldModal'));
+
         $(".btnMoveFieldAnywhere").click(function(e) {
             e.preventDefault();
             var fieldId = $(this).parents("[fieldId]").attr('fieldId');
             if (fieldId) {
                 $("#oldPosition").val($(this).parents("[fieldOrder]").attr("fieldOrder"));
                 $("#dialogFieldId").val(fieldId);
-                $("#dialog").dialog( "open" );
+                moveFieldModal.show();
             }
-        });
-
-        $("#btnCancelMove").click(function(e) {
-            e.preventDefault();
-            $("#dialog").dialog( "close" );
         });
 
         $("#btnApplyMove").click(function(e) {
@@ -156,13 +163,6 @@
             var fieldId = $("#dialogFieldId").val();
             var newPosition = $("#newPosition").val();
             window.location.href = "${createLink(controller: 'template', action: 'moveFieldToPosition', id: templateInstance.id)}?fieldId=" + fieldId + "&newOrder=" + newPosition
-        });
-
-        $( "#dialog" ).dialog({
-            minHeight: 200,
-            minWidth: 400,
-            resizable: false,
-            autoOpen: false
         });
 
         $("#btnCleanUpOrdering").click(function(e) {

@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
-    <asset:stylesheet src="jquery-ui"/>
+
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style type="text/css">
 
@@ -178,7 +178,7 @@
         </div>
     </div>
 </div>
-<asset:javascript src="jquery-ui" asset-defer=""/>
+
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:script type="text/javascript">
     $(function() {

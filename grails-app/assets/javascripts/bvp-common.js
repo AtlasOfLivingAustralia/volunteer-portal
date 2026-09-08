@@ -1,79 +1,80 @@
-var bvp = {};
+let bvp = {};
 
 (function(lib) {
 
-    var noop = function() {};
+    const noop = function() {};
 
+    /**
+     * Wrapper function for Bootbox Modals.
+     * THIS STILL DEPENDS ON jQuery and Bootbox being loaded in the page.
+     * TODO: Replace with Bootstrap 5 native modals
+     * @param options Any custom properties for the modal dialog.
+     */
     lib.showModal = function(options) {
 
-        var opts = {
-            backdrop: options.backdrop ? options.backdrop : true,
-            keyboard: options.keyboard ? options.keyboard: true,
-            url: options.url ? options.url : false,
-            id: options.id ? options.id : 'myModal',
-            height: options.height ? options.height : 500,
-            width: options.width ? options.width : 600,
-            size: options.size ? options.size : null,
-            className: options.className ? options.className : null,
-            title: options.title ? options.title : 'Modal Title',
-            hideHeader: options.hideHeader ? options.hideHeader : false,
+        let opts = {
+            backdrop: options.backdrop !== undefined ? options.backdrop : 'static',
+            animate: options.animate !== undefined ? options.animate : true,
+            centerVertical: options.centerVertical !== undefined ? options.centerVertical : true,
+            url: options.url !== undefined ? options.url : false,
+            id: options.id !== undefined ? options.id : 'myModal',
+            size: options.size !== undefined ? options.size : null,
+            className: options.className !== undefined ? options.className : null,
+            title: options.title !== undefined ? options.title : 'Modal Title',
             onClosing: options.onClosing || noop,
             onClose: options.onClose || noop,
             onShowing: options.onShowing || noop,
             onShown: options.onShown || noop,
-            buttons: options.buttons ? options.buttons : null
+            buttons: options.buttons !== undefined ? options.buttons : null
         };
 
-        $.get(opts.url, function(html) {
-            var dialog = bootbox.dialog({
-                message: html,
-                title: options.title,
-                backdrop: options.backdrop,
-                onEscape: true,
-                buttons: options.buttons,
-                size: opts.size,
-                className: opts.className
-            });
+        if (opts.url !== undefined && opts.url !== false) {
+            $.get(opts.url, function (html) {
+                let dialog = bootbox.dialog({
+                    id: opts.id,
+                    animate: opts.animate,
+                    message: html,
+                    title: opts.title,
+                    backdrop: opts.backdrop,
+                    centerVertical: opts.centerVertical,
+                    onEscape: true,
+                    buttons: opts.buttons,
+                    size: opts.size,
+                    className: opts.className,
+                    show: false
+                });
 
-            //Fixes event handling when using bootbox for dialogs
-            dialog.on('hidden.bs.modal', function(e) {
-                opts.onClose();
-                // Pop this modal off the history stack. Will only work on browsers that support window history
-                if (window.history && window.history.pushState) {
-                    var current = window.history.state;
-                    if (current && current["bvp-modal"]) {
-                        window.history.back(1);
-                    }
-                }
-            });
-
-            dialog.on('hide.bs.modal', function(e) {
-               if (opts.onClosing) {
-                   opts.onClosing();
-               }
-            });
-
-            dialog.on('show.bs.modal', function(e) {
-               if (opts.onShowing) {
-                   opts.onShowing();
-               }
-            });
-
-            dialog.on('shown.bs.modal', function(e) {
-                if (opts.onShown) {
+                // Fixes event handling when using bootbox for dialogs
+                dialog.on('show.bs.modal', function () {
+                    opts.onShowing();
+                });
+                dialog.on('shown.bs.modal', function () {
                     opts.onShown();
-                }
+                });
+                dialog.on('hide.bs.modal', function () {
+                    opts.onClosing();
+                });
+                dialog.on('hidden.bs.modal', function () {
+                    opts.onClose();
+                    if (window.history && window.history.pushState) {
+                        const current = window.history.state;
+                        if (current && current["bvp-modal"]) {
+                            window.history.back();
+                        }
+                    }
+                });
+
+                dialog.modal('show');
             });
-        });
 
-        // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate
-        if (window.history && window.history.pushState) {
-            window.history.pushState({'bvp-modal':opts.url}, opts.title);
-            window.onpopstate = function(event) {
-                lib.hideModal();
-            };
+            // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate
+            if (window.history && window.history.pushState) {
+                window.history.pushState({'bvp-modal': opts.url}, opts.title);
+                window.onpopstate = function (event) {
+                    lib.hideModal();
+                };
+            }
         }
-
     };
 
     lib.hideModal = function() {
@@ -107,7 +108,7 @@ var bvp = {};
     };
     
     lib.round = function(n, places) {
-        var factor = 10 * places;
+        let factor = 10 ^ places;
         return Math.round(n * factor) / factor;
     };
 
@@ -119,31 +120,29 @@ var bvp = {};
         if (!width) {
             width = '500px';
         }
-        // Context sensitive help popups
+        // Context-sensitive help popups
         $(selector).each(function() {
-
-
-            var tooltipPosition = $(this).attr("tooltipPosition");
+            let tooltipPosition = $(this).attr("tooltipPosition");
             if (!tooltipPosition) {
                 tooltipPosition = "bottomRight";
             }
 
-            var targetPosition = $(this).attr("targetPosition");
+            let targetPosition = $(this).attr("targetPosition");
             if (!targetPosition) {
                 targetPosition = "topMiddle";
             }
-            var tipPosition = $(this).attr("tipPosition");
+            let tipPosition = $(this).attr("tipPosition");
             if (!tipPosition) {
                 tipPosition = true;  // auto position the speech bubble marker
             }
 
-            var elemWidth = $(this).attr("width");
+            let elemWidth = $(this).attr("width");
             if (elemWidth) {
                 width = elemWidth.toString() + 'px';
             }
 
-            var styleClasses = ['qtip-bootstrap'];
-            var customClass = $(this).attr("customClass");
+            let styleClasses = ['qtip-bootstrap'];
+            let customClass = $(this).attr("customClass");
             if (customClass) {
                 styleClasses.push(customClass);
             }
@@ -159,10 +158,9 @@ var bvp = {};
                 },
                 style: {
                     width: width,
-                    classes: styleClasses.join(' '),
+                    classes: styleClasses.join(' ')
                 }
-            }).bind('click', function(e){ e.preventDefault(); return false; });
-
+            }).on('click', function(e){ e.preventDefault(); return false; });
         });
     };
 
@@ -172,16 +170,27 @@ var bvp = {};
             event = $(jqButton).attr("event");
         }
 
-        var form = $(jqButton).closest("form");
+        let form = $(jqButton).closest("form");
         if (form.length && event) {
-            form.append("<input type='hidden' name='_eventId_" + event + "' />");
-            form.submit();
+            // Remove any event field that might exist first
+            const eventInputName = "_eventId_" + event;
+            let existingEventInput = $(form).find('input[name="' + eventInputName + '"]');
+            if (existingEventInput) {
+                existingEventInput.remove();
+            }
+
+            // Replace this with DOM jquery
+            let eventInput = document.createElement("input");
+            eventInput.type = "hidden";
+            eventInput.name = eventInputName;
+            form[0].appendChild(eventInput);
+            form[0].submit();
         }
     };
 
     lib.suppressEnterSubmit = function() {
         $("input[type=text]").keypress(function(e) {
-            if (e.keyCode == 13) {
+            if (e.keyCode === 13) {
                 e.preventDefault();
             }
         });
@@ -189,8 +198,8 @@ var bvp = {};
 
     lib.disableBackspace = function() {
         $(document).keydown(function(e) {
-            var elid = $(document.activeElement).is('input[type=text], textarea');
-            if (e.keyCode === 8 && !elid) {
+            let isTextInputOrTextarea = $(document.activeElement).is('input[type=text], textarea');
+            if (e.keyCode === 8 && !isTextInputOrTextarea) {
                 e.preventDefault();
                 return false;
             }
@@ -198,13 +207,13 @@ var bvp = {};
     };
 
     lib.selectProjectId = function(callback) {
-        var options = {
+        let options = {
             title: "Find an Expedition",
             url: BVP_JS_URLS.selectProjectFragment,
-            width: 800,
+            size: 'large',
             onClosing: function() {
                 if (callback) {
-                    var projectId = $("#selectedProjectId").val();
+                    let projectId = $("#selectedProjectId").val();
                     if (projectId) {
                         callback(projectId);
                     }
@@ -213,9 +222,7 @@ var bvp = {};
         };
 
         lib.showModal(options);
-    }
-
-
+    };
 })(bvp);
 
 
