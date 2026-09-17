@@ -8,7 +8,7 @@
                       value="${fieldDefinition?.fieldDefinitionType}"/>
         </div>
         <div class="col-md-3">
-            <cl:helpText tooltipPosition="topLeft" tipPosition="bottomRight" width="1000">
+            <cl:helpText position="left" customClass="upload-images-tooltip">
                 <ul>
                     <li><code>NameRegex</code> extracts part of the filename out using a <em>regular expression</em> and a capturing group.
                     </li>

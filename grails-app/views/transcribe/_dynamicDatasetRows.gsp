@@ -34,101 +34,108 @@
 </style>
 
 <asset:script>
-    var entries = [
+    let entries = [
     <g:each in="${0..numItems}" var="i">
         [
         <g:each in="${fieldList}" var="field" status="fieldIndex">
             <g:set var="fieldLabel" value="${field.label ?: field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
             <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\')}"/>
-            <g:set var="fieldHelpText" value="${field.helpText}"/>
-            {'name':'${fieldName.encodeAsJavaScript()}', 'label':'${fieldLabel.encodeAsJavaScript()}', 'fieldType':'${field.type?.toString().encodeAsJavaScript()}', 'helpText': "${fieldHelpText.encodeAsJavaScript()}", 'value': "${fieldValue.encodeAsJavaScript()}", layoutClass:"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"}
-            <g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+%{--            <g:set var="fieldHelpText" value="${field.helpText}"/>--}%
+            <g:set var="helpMarkup"><g:if test="${field.helpText}"><cl:helpText placement="${fieldIndex == 0 ? 'left' : 'auto'}">${field.helpText}</cl:helpText></g:if></g:set>
+%{--            {'name':'${fieldName.encodeAsJavaScript()}', 'label':'${fieldLabel.encodeAsJavaScript()}', 'fieldType':'${field.type?.toString().encodeAsJavaScript()}', 'helpText': "${fieldHelpText.encodeAsJavaScript()}", 'value': "${fieldValue.encodeAsJavaScript()}", layoutClass:"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"}--}%
+            {
+                "name": "${fieldName.encodeAsJavaScript()}",
+                "label": "${fieldLabel.encodeAsJavaScript()}",
+                "fieldType": "${field.type?.toString()?.encodeAsJavaScript()}",
+                "helpHtml": "${helpMarkup.toString().trim().encodeAsJavaScript()}",
+                "value": "${fieldValue.encodeAsJavaScript()}",
+                "layoutClass":"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"
+            }<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ]<g:if test="${i < numItems}">,</g:if>
     </g:each>
     ];
 
     function toDecimalDegrees(deg, min, sec, dir) {
-      var total = deg + (min / 60.0) + (sec / 3600.0);
-      if (dir == 'W' || dir == 'S') { total *= -1 }
-      return total;
+        let total = deg + (min / 60.0) + (sec / 3600.0);
+        if (dir === 'W' || dir === 'S') { total *= -1 }
+        return total;
     }
 
     function decimalToDegrees(dec) {
-      if (dec == null || dec == '') return dec;
-      return Math.floor(Math.abs(dec));
+        if (dec == null || dec === '') return dec;
+        return Math.floor(Math.abs(dec));
     }
 
     function decimalToMinutes(dec) {
-      if (dec == null || dec == '') return dec;
-      return Math.floor((Math.abs(dec) * 60) % 60);
+        if (dec == null || dec === '') return dec;
+        return Math.floor((Math.abs(dec) * 60) % 60);
     }
 
     function decimalToSeconds(dec) {
-      if (dec == null || dec == '') return dec;
-      return bvp.round((Math.abs(dec) * 3600) % 60, 5);
+        if (dec == null || dec === '') return dec;
+        return bvp.round((Math.abs(dec) * 3600) % 60, 5);
     }
-
 
     function renderEntries() {
         try {
-            var htmlStr ="";
-            var itemCount = 0;
-            for (entryIndex in entries) {
+            let htmlStr = "";
+            let itemCount = 0;
+            for (let entryIndex in entries) {
                 if (entryIndex > 0) {
                   htmlStr += "<hr/>";
                 }
                 htmlStr += '<div class="form-inline">';
-                var fieldCount = 0;
-                for (fieldIndex in entries[entryIndex]) {
-                    var e = entries[entryIndex][fieldIndex];
-                    var name = "recordValues." + entryIndex + "." + e.name;
-                    if (fieldIndex == 0) {
-                      htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
+                let fieldCount = 0;
+                for (let fieldIndex in entries[entryIndex]) {
+                    let e = entries[entryIndex][fieldIndex];
+                    let name = "recordValues." + entryIndex + "." + e.name;
+                    if (fieldIndex === 0) {
+                        htmlStr += '<strong>' + (parseInt(entryIndex) + 1) + '.</strong>&nbsp;';
                     }
 
                     htmlStr += '<div class="form-group">';
-
                     htmlStr += '<label for="' + name + '">' + e.label;
-                    if (e.helpText) {
-                      htmlStr += '<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount == 0 ? 'tooltipPosition="bottomLeft" targetPosition="topRight"' : '') + '><i class="fa fa-question help-container"></i></a>';
-                    }
+                    // if (e.helpText) {
+                    //     htmlStr += '<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount === 0 ? 'placement="left"' : '') + '><i class="fa fa-question help-container"></i></a>';
+                    // }
+                    htmlStr += e.helpHtml;
                     htmlStr += '</label> ';
 
-                    if (e.fieldType == 'textarea') {
-                      htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
-                    } else if (e.fieldType == 'latLong') {
-                      htmlStr += '<input type="text" id="'+name+'-degrees" name="'+name+'.degrees" placeholder="D" class="' + e.name + ' degrees form-control latlon" value="' + decimalToDegrees(e.value) + '" data-field="'+name+'" />';
-                      htmlStr += '<input type="text" id="'+name+'-minutes" name="'+name+'.minutes" placeholder="M" class="' + e.name + ' minutes form-control latlon" value="' + decimalToMinutes(e.value) + '" data-field="'+name+'" />';
-                      htmlStr += '<input type="text" id="'+name+'-seconds" name="'+name+'.seconds" placeholder="S" class="' + e.name + ' seconds form-control latlon" value="' + decimalToSeconds(e.value) + '" data-field="'+name+'" />';%{--validationRule="${field.validationRule}"--}%
-                      var directionFrom;
-                      var direction;
-                      if ((e.name).match(/lat/i)) {
-                        direction = e.value < 0 ? 'S' : 'N';
-                        directionFrom = ['N', 'S'];
-                      } else {
-                        direction = e.value < 0 ? 'W' : 'E';
-                        directionFrom = ['E', 'W'];
-                      }
-                      htmlStr += '<select class="form-control direction latlon" id="'+name+'-direction" name="'+name+'.direction" data-field="'+name+'">';
-                      for (var i=0; i < directionFrom.length; ++i) {
-                        htmlStr += '<option value="'+directionFrom[i]+'" ';
-                        if (direction == directionFrom[i]) {
-                          htmlStr += 'selected';
+                    if (e.fieldType === 'textarea') {
+                        htmlStr += '<textarea name="' + name + '" rows="2" id="' + name + '" class="' + e.name + ' form-control">' + e.value + '</textarea>';
+                    } else if (e.fieldType === 'latLong') {
+                        htmlStr += '<input type="text" id="'+name+'-degrees" name="'+name+'.degrees" placeholder="D" class="' + e.name + ' degrees form-control latlon" value="' + decimalToDegrees(e.value) + '" data-field="'+name+'" />';
+                        htmlStr += '<input type="text" id="'+name+'-minutes" name="'+name+'.minutes" placeholder="M" class="' + e.name + ' minutes form-control latlon" value="' + decimalToMinutes(e.value) + '" data-field="'+name+'" />';
+                        htmlStr += '<input type="text" id="'+name+'-seconds" name="'+name+'.seconds" placeholder="S" class="' + e.name + ' seconds form-control latlon" value="' + decimalToSeconds(e.value) + '" data-field="'+name+'" />';%{--validationRule="${field.validationRule}"--}%
+                        let directionFrom;
+                        let direction;
+                        if ((e.name).match(/lat/i)) {
+                            direction = e.value < 0 ? 'S' : 'N';
+                            directionFrom = ['N', 'S'];
+                        } else {
+                            direction = e.value < 0 ? 'W' : 'E';
+                            directionFrom = ['E', 'W'];
                         }
-                        htmlStr += '>'+directionFrom[i]+'</option>';
-                      }
-                      htmlStr += '</select><input type="hidden" name="' + name + '" value="' + e.value + '" id="' + name + '" />';
+                        htmlStr += '<select class="form-control direction latlon" id="'+name+'-direction" name="'+name+'.direction" data-field="'+name+'">';
+                        for (let i = 0; i < directionFrom.length; ++i) {
+                            htmlStr += '<option value="'+directionFrom[i]+'" ';
+                            if (direction === directionFrom[i]) {
+                                htmlStr += 'selected';
+                            }
+                            htmlStr += '>'+directionFrom[i]+'</option>';
+                        }
+                        htmlStr += '</select><input type="hidden" name="' + name + '" value="' + e.value + '" id="' + name + '" />';
                     } else {
-                      htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + ' form-control"/>';
+                        htmlStr += '<input type="text" name="' + name + '" value="' + e.value + '" id="' + name + '" class="' + e.name + ' form-control"/>';
                     }
 
                     htmlStr += '</div> ';
                     fieldCount++;
                 }
                 if (entryIndex > 0) {
-                htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="fa fa-remove"></span> Delete </button>';
+                    htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="fa fa-remove"></span> Delete </button>';
                 }
                 htmlStr += "</div>";
                 itemCount++;
@@ -142,9 +149,9 @@
     }
 
     function syncEntries() {
-        for (entryIndex in entries) {
-            for (fieldIndex in entries[entryIndex]) {
-                var e = entries[entryIndex][fieldIndex];
+        for (let entryIndex in entries) {
+            for (let fieldIndex in entries[entryIndex]) {
+                let e = entries[entryIndex][fieldIndex];
                 e.value = $('#recordValues\\.' + entryIndex + '\\.' + e.name).val();
             }
         }
@@ -154,58 +161,64 @@
         try {
             // first we need to save any edits to the entry list
             syncEntries();
-            var entry = [
+            let entry = [
     <g:each in="${fieldList}" var="field" status="fieldIndex">
         <g:set var="fieldLabel" value="${field.label ?: field.fieldType.label}"/>
         <g:set var="fieldName" value="${field.fieldType.name()}"/>
-        <g:set var="fieldHelpText" value="${field.helpText}"/>
-        {name:'${fieldName}', label:'${fieldLabel}', helpText: "${fieldHelpText}", fieldType:'${field.type?.toString()}', value: '', layoutClass: '${field.layoutClass ?: 'span1'}'}<g:if
-            test="${fieldIndex < fieldList.size() - 1}">,</g:if>
+%{--        <g:set var="fieldHelpText" value="${field.helpText}"/>--}%
+        <g:set var="helpMarkup"><g:if test="${field.helpText}"><cl:helpText placement="${fieldIndex == 0 ? 'left' : 'auto'}">${field.helpText}</cl:helpText></g:if></g:set>
+                {
+                    "name": "${fieldName.encodeAsJavaScript()}",
+                    "label": "${fieldLabel.encodeAsJavaScript()}",
+                    "fieldType": "${field.type?.toString()?.encodeAsJavaScript()}",
+                    "helpHtml": "${helpMarkup.toString().trim().encodeAsJavaScript()}",
+                    "value": "",
+                    "layoutClass":"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"
+                }<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
     </g:each>
-    ];
-    entries.push(entry);
-    renderEntries();
-} catch (e) {
-    alert(e)
-}
-}
+            ];
+            entries.push(entry);
+            renderEntries();
+        } catch (e) {
+            alert(e)
+        }
+    }
 
-function deleteEntry(index) {
-syncEntries();
-if (index > 0 && index <= entries.length) {
-    entries.splice(index, 1);
-    renderEntries();
-}
-return false;
-}
-
-$(document).ready(function() {
-
-// prevent enter key submitting form
-$(window).keydown(function(event) {
-    if (event.keyCode == 13 && event.target.nodeName != "TEXTAREA") {
-        event.preventDefault();
+    function deleteEntry(index) {
+        syncEntries();
+        if (index > 0 && index <= entries.length) {
+            entries.splice(index, 1);
+            renderEntries();
+        }
         return false;
     }
-});
 
-$('#observationFields').on('change', '.form-control.latlon', function(e) {
-  var $this = $(e.target);
-  var field = bvp.escapeIdPart($this.data('field'));
-  var $field = $('#' + field);
-  var deg = parseFloat($('#'+field+'-degrees').val()) || 0;
-  var min = parseFloat($('#'+field+'-minutes').val()) || 0;
-  var sec = parseFloat($('#'+field+'-seconds').val()) || 0;
-  var dir = $('#'+field+'-direction').val();
-  $field.val(toDecimalDegrees(deg,min,sec,dir));
-});
+    $(document).ready(function() {
+    // prevent enter key submitting form
+        $(window).keydown(function(event) {
+            if (event.keyCode === 13 && event.target.nodeName !== "TEXTAREA") {
+                event.preventDefault();
+                return false;
+            }
+        });
 
-$("#btnAddRow").click(function(e) {
-    e.preventDefault();
-    addEntry();
-});
+        $('#observationFields').on('change', '.form-control.latlon', function(e) {
+            let $this = $(e.target);
+            let field = bvp.escapeIdPart($this.data('field'));
+            let $field = $('#' + field);
+            let deg = parseFloat($('#'+field+'-degrees').val()) || 0;
+            let min = parseFloat($('#'+field+'-minutes').val()) || 0;
+            let sec = parseFloat($('#'+field+'-seconds').val()) || 0;
+            let dir = $('#'+field+'-direction').val();
+            $field.val(toDecimalDegrees(deg, min, sec, dir));
+        });
 
-renderEntries();
-});
+        $("#btnAddRow").click(function(e) {
+            e.preventDefault();
+            addEntry();
+        });
+
+        renderEntries();
+    });
 
 </asset:script>

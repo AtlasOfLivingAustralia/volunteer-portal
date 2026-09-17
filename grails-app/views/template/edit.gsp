@@ -101,12 +101,10 @@
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="supportMultipleTranscriptions"
-                                                checked="${templateInstance.supportMultipleTranscriptions}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                                   title="<g:message code="template.multipletanscriptions.helptext"
-                                                                     default="Ignored for Specimen and Fieldnote Expedition types."/>">
-                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
+                                    <g:checkBox name="supportMultipleTranscriptions" checked="${templateInstance.supportMultipleTranscriptions}"/> &nbsp;&nbsp;
+                                    <cl:helpText>
+                                        <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
+                                    </cl:helpText>
                                 </div>
                             </div>
                         </div>
@@ -119,12 +117,10 @@
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="isGlobal"
-                                                checked="${templateInstance.isGlobal}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                                   title="<g:message code="template.globaltemplate.helptext"
-                                                                     default="A global template is available to all institutions."/>">
-                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
+                                    <g:checkBox name="isGlobal" checked="${templateInstance.isGlobal}"/>&nbsp;&nbsp;
+                                    <cl:helpText>
+                                        <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
+                                    </cl:helpText>
                                 </div>
                             </div>
                         </div>
@@ -136,12 +132,10 @@
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="isHidden"
-                                                checked="${templateInstance.isHidden}"/>
-                                    &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                                   title="<g:message code="template.hidden.helptext"
-                                                                     default="Hide this template from all users."/>">
-                                    <span class="help-container"><i class="fa fa-question"></i></span></a>
+                                    <g:checkBox name="isHidden" checked="${templateInstance.isHidden}"/>&nbsp;&nbsp;
+                                    <cl:helpText>
+                                        <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
+                                    </cl:helpText>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +198,6 @@
 </div>
 
 <asset:javascript src="underscore" asset-defer=""/>
-<asset:javascript src="qtip" asset-defer=""/>
 <asset:script type="text/javascript">
 
     $(document).ready(function() {
@@ -313,22 +306,10 @@
         }).change();
 
         function updateHelpTips() {
-            // Context sensitive help popups
-            $("a.fieldHelp").each(function() {
-                var self = this;
-                $(self).qtip({
-                    content: $(self).attr('title'),
-                    position: {
-                        at: "top left",
-                        my: "bottom right"
-                    },
-                    style: {
-                        classes: 'qtip-bootstrap'
-                    }
-                }).bind('click', function(e) { e.preventDefault(); return false; });
-            });
+            bvp.bindTooltips();
         }
 
+        updateHelpTips();
     });
 
 </asset:script>

@@ -2,6 +2,7 @@ package au.org.ala.volunteer
 
 import com.google.common.base.Stopwatch
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 
 //import java.util.concurrent.TimeUnit
 
@@ -16,6 +17,7 @@ class ValidateController {
     private static final int SAVE_TYPE_BACKGROUND = 1
     private static final int SAVE_TYPE_PROGRESS = 2
 
+    @Transactional
     def task() {
         def task = Task.get(params.long('id'))
         def currentUser = userService.currentUserId
@@ -40,6 +42,7 @@ class ValidateController {
             def isReadonly = false
 
             def project = Project.findById(task.project.id)
+            project.tutorials?.size()
             Template template = Template.findById(project.template.id)
             log.debug("Loading task for validation - project: [${project?.id}], task: [${task.id}], user: [${currentUser}]")
 

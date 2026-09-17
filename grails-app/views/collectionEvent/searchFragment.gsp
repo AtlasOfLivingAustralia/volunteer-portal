@@ -114,12 +114,12 @@
     }
 
     var event_map;
-    event_map = new GMaps({
-        div: '#event_map',
-        lat: -34.397,
-        lng: 150.644,
-        zoom: 10
-    });
+    // event_map = new GMaps({
+    //     div: '#event_map',
+    //     lat: -34.397,
+    //     lng: 150.644,
+    //     zoom: 10
+    // });
 
     doSearch();
 

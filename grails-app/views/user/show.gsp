@@ -16,7 +16,6 @@
 
     <asset:stylesheet src="notebook-reset.css"/>
     <asset:stylesheet src="notebook-2.css"/>
-    <asset:stylesheet src="qtip"/>
 
     <style>
         .btn {
@@ -113,12 +112,15 @@
             <div class="filter-nav filter-nav--mt-3">
                 <div class="filter-nav__label task-history-nav__filter-label">
                     Filter by:
-                    <span class="btn btn-outline-secondary btn-xs fieldHelp"
-                          title="<markdown:renderHtml>Select a filter to view your tasks. Transcribed and Validated
-                          tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks'
-                          will also clear filters.</markdown:renderHtml>">
-                        <span class="help-container"><i class="fa fa-question"></i></span>
-                    </span>
+                    <cl:helpText>
+                        Select a filter to view your tasks. Transcribed and Validated tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks' will also clear filters.
+                    </cl:helpText>
+%{--                    <span class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                          title="<markdown:renderHtml>Select a filter to view your tasks. Transcribed and Validated--}%
+%{--                          tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks'--}%
+%{--                          will also clear filters.</markdown:renderHtml>">--}%
+%{--                        <span class="help-container"><i class="fa fa-question"></i></span>--}%
+%{--                    </span>--}%
                 </div>
                 <ul class="task-history-nav__list">
                     <g:if test="${userInstance.userId == currentUser}">
@@ -158,11 +160,14 @@
 %{--                                  title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>--}%
                 <s:sortableColumn tag="th" property="status" class="td--2/12"
                                   title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}">
-                    <span class="btn btn-outline-secondary btn-xs fieldHelp"
-                       title="<markdown:renderHtml>The current status of the task. Shows 'Transcribed by me' or
-                       'Validated by me' if you were the last to action the task, otherwise just the current status.</markdown:renderHtml>">
-                        <span class="help-container"><i class="fa fa-question"></i></span>
-                    </span>
+                    <cl:helpText>
+                        The current status of the task. Shows 'Transcribed by me' or 'Validated by me' if you were the last to action the task, otherwise just the current status.
+                    </cl:helpText>
+%{--                    <span class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                       title="<markdown:renderHtml>The current status of the task. Shows 'Transcribed by me' or--}%
+%{--                       'Validated by me' if you were the last to action the task, otherwise just the current status.</markdown:renderHtml>">--}%
+%{--                        <span class="help-container"><i class="fa fa-question"></i></span>--}%
+%{--                    </span>--}%
                 </s:sortableColumn>
                 <th class="td--1/12">${message(code: 'notebook.tasklist.tableAction.label', default: 'Action')}</th>
             </tr>
@@ -252,24 +257,10 @@
 </main>
 
 
-<asset:javascript src="qtip" asset-defer=""/>
 <asset:script type="text/javascript">
     $(document).ready(function () {
-        // Initialise qTip tooltips
-        $("span.fieldHelp").each(function() {
-            var self = this;
-            $(self).qtip({
-                content: $(self).attr('title'),
-                position: {
-                    at: "top left",
-                    my: "bottom right",
-                    viewport: $(window)
-                },
-                style: {
-                    classes: 'qtip-bootstrap'
-                }
-            }).bind('click', function(e) { e.preventDefault(); return false; });
-        });
+        // Initialise tooltips
+        bvp.bindTooltips("");
     });
 </asset:script>
 </body>

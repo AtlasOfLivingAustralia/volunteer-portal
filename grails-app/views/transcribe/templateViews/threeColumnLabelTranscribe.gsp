@@ -60,7 +60,7 @@
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                             <span class="float-end">
-                                <g:fieldHelp field="${allTextField}" tooltipPosition="bottomLeft"/>
+                                <g:fieldHelp field="${allTextField}" placement="left"/>
                             </span>
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
                             <g:textArea class="form-control" validationRule="${allTextField?.validationRule}"
@@ -90,9 +90,12 @@
                     </div>
 
                     <div class="col-md-2">
-                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" tooltipPosition="bottomLeft"
-                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i
-                                class="fa fa-question help-container"></i></a>
+                        <cl:helpText placement="left">
+                            Clicking this button will allow you to select a previously transcribed task to copy values from
+                        </cl:helpText>
+%{--                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" placement="left"--}%
+%{--                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i--}%
+%{--                                class="fa fa-question help-container"></i></a>--}%
                     </div>
                 </div>
             </div>

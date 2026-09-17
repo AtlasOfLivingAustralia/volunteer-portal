@@ -41,10 +41,10 @@
                     <p>
                         In addition to task files, you can also upload auxiliary data files that can contain additional data that should
                         be attached to individual tasks (e.g. OCR text)
-                        <cl:helpText markdown="${false}" tooltipPosition="bottomLeft" tipPosition="bottomLeft" customClass="upload-images-tooltip">
+                        <cl:helpText markdown="${false}" placement="left" customClass="upload-images-tooltip">
                             <p>
                                 Image filenames should be of the form <code>&lt;filename&gt;.jpg</code>
-                                <b/>
+                                <br/>
                                 Example: image01.jpg
                             </p>
 
@@ -202,7 +202,7 @@
 
     $(document).ready(function () {
 
-        bvp.bindTooltips("a.fieldHelp", 650);
+        bvp.bindTooltips("a.fieldHelp");
 
         $(".btnAddFieldDefinition").click(function(e) {
             e.preventDefault();

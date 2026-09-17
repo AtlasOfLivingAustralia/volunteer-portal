@@ -77,8 +77,7 @@ class TranscribeTagLib {
      * @attr labelClass
      * @attr valueClass
      * @attr field Optional, if the template already has the field object, no need to look up from it's name.
-     * @attr helpTargetPosition Optional, the target position for the qtip help pop up
-     * @attr helpTooltipPosition Optional, the tooltip position for the qtip help pop up
+     * @attr placement Optional, the placement for the tooltip help pop up
      */
     def renderFieldBootstrap = { attrs, body ->
 
@@ -88,8 +87,7 @@ class TranscribeTagLib {
         def valueClass = attrs.valueClass ?: "col-md-12"
         def rowClass = attrs.rowClass ?: "row"
         def recordIdx = attrs.recordIdx ?: 0
-        def helpTargetPosition = attrs.helpTargetPosition
-        def helpTooltipPosition = attrs.helpTooltipPosition
+        def placement = attrs.placement ?: 'auto'
 
         if (!task) {
             return
@@ -102,7 +100,7 @@ class TranscribeTagLib {
         }
 
         def mb = new MarkupBuilder(out)
-        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass, helpTargetPosition, helpTooltipPosition)
+        renderFieldBootstrapImpl(mb, field, task, recordValues, recordIdx, labelClass, valueClass, attrs, rowClass, placement)
     }
 
     private String getFieldLabel(TemplateField field) {
@@ -113,7 +111,7 @@ class TranscribeTagLib {
         }
     }
 
-    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row", String helpTargetPosition = null, String helpTooltipPosition = null) {
+    private void renderFieldBootstrapImpl(MarkupBuilder mb, TemplateField field, Task task, recordValues, int recordIdx, String labelClass, String valueClass, Map attrs, String rowClass = "row", String placement = 'auto') {
 
         if (!task || !field) {
             return
@@ -150,7 +148,7 @@ class TranscribeTagLib {
                             mkp.yieldUnescaped(widgetHtml)
                         }
                         div(class:'col-md-2') {
-                            renderFieldHelp(mb, field, helpTargetPosition, helpTooltipPosition)
+                            renderFieldHelp(mb, field, placement)
                         }
                     }
                 }
@@ -706,18 +704,22 @@ class TranscribeTagLib {
 
     def fieldHelp = { attrs, body ->
         def field = attrs.field as TemplateField
-        def tooltipPosition = attrs.tooltipPosition
-        def targetPosition = attrs.targetPosition
-        renderFieldHelp(new MarkupBuilder(out), field, targetPosition, tooltipPosition)
+        def placement = attrs.placement as String
+        def customClass = attrs.customClass as String
+        renderFieldHelp(new MarkupBuilder(out), field, placement, customClass)
     }
 
-    private renderFieldHelp(MarkupBuilder mb, TemplateField field, String targetPosition = null, String tooltipPosition = null) {
+    private renderFieldHelp(MarkupBuilder mb, TemplateField field, String placement = 'auto', String customClass = null) {
         if (field && field.helpText) {
-            //def helpText = markdownService.markdown(field.helpText)
             def helpText = markdownService.renderMarkdown(field.helpText)
-            mb.a(href:'#', class:'btn btn-outline-secondary btn-xs fieldHelp', title:helpText, tabindex: "-1", targetPosition: targetPosition, tooltipPosition: tooltipPosition) {
-                i(class:'fa fa-question help-container') {
-                    mkp.yieldUnescaped('')
+            def attributes = [href:'#', class:'btn btn-outline-secondary btn-xs fieldHelp', title:helpText, tabindex: "-1"]
+            if (placement) attributes['placement'] = placement
+            if (customClass) attributes['customClass'] = customClass
+            mb.a(attributes) {
+                span(class: 'help-container') {
+                    i(class: 'fa fa-question') {
+                        mkp.yieldUnescaped('')
+                    }
                 }
             }
         } else {

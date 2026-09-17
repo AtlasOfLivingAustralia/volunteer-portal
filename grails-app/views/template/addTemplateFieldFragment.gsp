@@ -94,5 +94,7 @@
         bvp.hideModal();
     });
 
+    bvp.bindTooltips();
+
 </script>
 

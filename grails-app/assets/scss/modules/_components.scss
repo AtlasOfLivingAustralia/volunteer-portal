@@ -1044,3 +1044,47 @@ select[type="text"]:focus,
 		text-decoration: none;
 	}
 }
+
+/* Tooltips */
+$tooltip-widths: (
+	'sm': 200px,
+	'md': 350px,
+	'lg': 500px,
+	'xl': 700px
+);
+
+@each $name, $width in $tooltip-widths {
+	.tooltip-w-#{$name} .tooltip-inner {
+		max-width: $width;
+		width: $width;
+	}
+}
+
+.upload-images-tooltip {
+	min-width: 700px;
+
+	.tooltip-inner {
+		width: 700px;
+		max-width: 700px !important;
+		text-align: left;
+		padding-top: 1rem;
+		padding-left: 1rem;
+	}
+}
+
+.tooltip-custom-text-left {
+	.tooltip-inner {
+		text-align: left;
+	}
+}
+
+.tooltip-inner {
+	p {
+		margin-top: 0.1rem !important;
+		margin-bottom: 0.1rem !important;
+	}
+}
+
+a.fieldHelp {
+	margin-left: 0.5rem;
+}

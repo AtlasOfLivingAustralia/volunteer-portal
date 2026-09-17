@@ -35,10 +35,13 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">
-                                            <i class="fa fa-question help-container"></i>
-                                        </a>
+                                        <cl:helpText>
+                                            Clicking this button will allow you to select a previously transcribed task to copy values from
+                                        </cl:helpText>
+%{--                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">--}%
+%{--                                            <i class="fa fa-question help-container"></i>--}%
+%{--                                        </a>--}%
                                     </div>
                                 </td>
                             </tr>

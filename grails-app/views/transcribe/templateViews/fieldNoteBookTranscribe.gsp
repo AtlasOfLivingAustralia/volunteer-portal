@@ -68,10 +68,13 @@
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the left hand page into this box as it appears</span>
-                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
-                               tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
-                            </a>
+                            <cl:helpText placement="left">
+                                ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
+                            </cl:helpText>
+%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'--}%
+%{--                               palcement="left"><i class="fa fa-question help-container"></i>--}%
+%{--                            </a>--}%
                             <button class="btn btn-outline-secondary btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="fa fa-expand"></i></button>
                         </div>
@@ -93,9 +96,12 @@
                             <g:set var="allTextField"
                                    value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe all text from the right hand page into this box as it appears</span>
-                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'><i
-                                    class="fa fa-question help-container"></i></a>
+                            <cl:helpText placement="left">
+                                ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
+                            </cl:helpText>
+%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}' placement="left"><i--}%
+%{--                                    class="fa fa-question help-container"></i></a>--}%
                             <button class="btn btn-outline-secondary btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="fa fa-expand"></i></button>
                         </div>
@@ -121,10 +127,14 @@
                                value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
                         <div class="col-md-12">
                             <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'
-                               tooltipPosition="bottomLeft" targetPosition="topRight"><i class="fa fa-question help-container"></i>
-                            </a>
+                            <cl:helpText placement="left">
+                                ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
+                            </cl:helpText>
+%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'--}%
+%{--                               placement="left">--}%
+%{--                                <i class="fa fa-question help-container"></i>--}%
+%{--                            </a>--}%
                         </div>
                         <div class="col-md-12">
                             <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"

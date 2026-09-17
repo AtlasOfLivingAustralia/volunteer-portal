@@ -8,7 +8,7 @@
 <g:set var="collectionEventInsitutionCode"
        value="${taskInstance?.project?.collectionEventLookupCollectionCode ?: taskInstance?.project.featuredOwner}"/>
 
-%{--<asset:javascript src="gmaps" asset-defer=""/>--}%
+<asset:javascript src="gmaps" asset-defer=""/>
 
 <div class="container-fluid">
     <div class="row">
@@ -43,7 +43,10 @@
                         <span>
                             <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
                                     style="">Copy values from a previous task</button>
-                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>
+                            <cl:helpText>
+                                Clicking this button will allow you to select a previously transcribed task to copy values from
+                            </cl:helpText>
+%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>--}%
                         </span>
 
                         <div style="display: none;">
@@ -67,9 +70,12 @@
 
                         <div class="col-md-12" style="margin-top: 5px">
                             All text
-                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                               title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i
-                                    class="fa fa-question help-container"></i></a>
+                            <cl:helpText>
+                                ${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}
+                            </cl:helpText>
+%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i--}%
+%{--                                    class="fa fa-question help-container"></i></a>--}%
                         </div>
 
                         <div class="col-md-12">
@@ -93,9 +99,13 @@
                         </div>
 
                         <div class="col-md-12" style="margin-top: 5px">
-                            Verbatim Locality <a href='#' class='btn btn-outline-secondary btn-xs fieldHelp'
-                                                 title='Enter (or cut and paste from the box above) the locality information into this box'><i
-                                    class='fa fa-question help-container'></i></a>
+                            Verbatim Locality
+                            <cl:helpText>
+                                Enter (or cut and paste from the box above) the locality information into this box
+                            </cl:helpText>
+%{--                            <a href='#' class='btn btn-outline-secondary btn-xs fieldHelp'--}%
+%{--                                                 title='Enter (or cut and paste from the box above) the locality information into this box'><i--}%
+%{--                                    class='fa fa-question help-container'></i></a>--}%
                         </div>
 
                         <div class="col-md-12">

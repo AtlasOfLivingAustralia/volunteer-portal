@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-    <asset:stylesheet src="qtip"/>
 </head>
 
 <body class="admin">
@@ -71,17 +70,15 @@
                                 <td>${field.category}</td>
                                 <td class="text-center">
                                     <g:if test="${field.helpText}">
-                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                           title="<markdown:renderHtml>${field.helpText}</markdown:renderHtml>"><span
-                                                class="help-container"><i class="fa fa-question"></i> </span></a>
+                                        <cl:helpText>${field.helpText}</cl:helpText>
                                     </g:if>
                                 </td>
                                 <td class="text-center flex-nowrap">
-                                    <button class="btn btn-xs btn-outline-secondary btnEditField imageButton"><i class="fa fa-pencil"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldDown"><i class="fa fa-arrow-down"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldUp"><i class="fa fa-arrow-up"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldAnywhere"><i class="fa fa-arrows"></i></button>
-                                    <button class="btn btn-xs btnDeleteField btn-danger"><i class="fa fa-times"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnEditField imageButton" title="Edit Field"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldDown" title="Move Field Down"><i class="fa fa-arrow-down"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldUp" title="Move Field Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldAnywhere" title="Move Field Anywhere"><i class="fa fa-arrows"></i></button>
+                                    <button class="btn btn-xs btnDeleteField btn-danger" title="Delete Field"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>
@@ -124,7 +121,6 @@
 </div>
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:javascript src="qtip" asset-defer=""/>
 
 <asset:script type="text/javascript">
 
@@ -216,20 +212,7 @@
             }
         });
 
-        // Context sensitive help popups
-        $("a.fieldHelp").each(function() {
-            var self = this;
-            $(self).qtip({
-                content: $(self).attr('title'),
-                position: {
-                    at: "top left",
-                    my: "bottom right"
-                },
-                style: {
-                    classes: 'qtip-bootstrap'
-                }
-            }).bind('click', function(e) { e.preventDefault(); return false; });
-        });
+        bvp.bindTooltips("a.fieldHelp");
 
         // Initialize input type file
         $('input[type=file]').bootstrapFileInput();

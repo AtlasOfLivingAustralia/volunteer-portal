@@ -154,5 +154,12 @@
         </div>
     </div>
 </div>
+
+<asset:script type="text/javascript">
+    // Bind tooltips when document is ready (non-jQuery):
+    bvp.bindTooltips();
+
+</asset:script>
+
 </body>
 </html>

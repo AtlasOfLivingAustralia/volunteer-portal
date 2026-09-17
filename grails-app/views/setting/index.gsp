@@ -50,15 +50,11 @@
                             <tr settingKey="${setting.key}">
                                 <td>
                                     ${setting.key}
-                                    <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                                       title="<g:message code="settings.description.${key}"
-                                                         default="${setting.description}"/>">
-                                        <span class="help-container"><i class="fa fa-question"></i></span>
-                                    </a>
+                                    <cl:helpText>
+                                        <g:message code="settings.description.${key}" default="${setting.description}"/>
+                                    </cl:helpText>
                                 </td>
-%{--                                <td>${setting.defaultValue}</td>--}%
-                                <td><strong>${values[setting] instanceof org.grails.web.json.JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
-%{--                                <td>${setting.description}</td>--}%
+                                <td><strong>${values[setting] instanceof JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
                                 <td><button class="btn btn-secondary btnEditSetting">Edit</button></td>
                             </tr>
                         </g:each>
@@ -83,7 +79,12 @@
     </div>
 </div>
 
+<asset:script type="text/javascript">
 
+    $(document).ready(function() {
+        bvp.bindTooltips();
+    });
+</asset:script>
 
 </body>
 </html>

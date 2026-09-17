@@ -2,7 +2,6 @@
 *= encoding UTF-8
 *= require compile/bootstrap-5.0.2/css/bootstrap.css
 *= require compile/font-awesome-4.7.0/css/font-awesome.css
-*= require qtip
 *= require digivol-notifications
 *= require main
 *= require digivol-custom

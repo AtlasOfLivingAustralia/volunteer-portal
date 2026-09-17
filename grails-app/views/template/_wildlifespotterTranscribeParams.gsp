@@ -34,11 +34,15 @@
 
 <div class="form-group">
     <label class="col-md-3 form-label" for="autoValidationType">
-        <g:message code="template.autoValidationType.label" default="System Validation Type"/>
-        &nbsp;&nbsp;<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"
-                       title="<g:message code="template.autoValidationType.helptext"
-                                         default="Select the field combination that the System will use for comparison when auto-validating."/>">
-        <span class="help-container"><i class="fa fa-question"></i></span></a>
+        <g:message code="template.autoValidationType.label" default="System Validation Type"/>&nbsp;&nbsp;
+        <cl:helpText>
+            <g:message code="template.autoValidationType.helptext"
+                       default="Select the field combination that the System will use for comparison when auto-validating."/>
+        </cl:helpText>
+%{--        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
+%{--                       title="<g:message code="template.autoValidationType.helptext"--}%
+%{--                                         default="Select the field combination that the System will use for comparison when auto-validating."/>">--}%
+%{--        <span class="help-container"><i class="fa fa-question"></i></span></a>--}%
     </label>
     <div class="col-md-6">
         <g:select class="form-control"

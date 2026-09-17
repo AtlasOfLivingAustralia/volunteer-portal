@@ -98,10 +98,11 @@
         });
 
         $('.colpick').colorpicker({ component: '.input-group-text' });
-        bvp.bindTooltips('.fieldHelp');
         $('#setDefaultOverlay').click(function() {
             $('#backgroundImageOverlayColour').parent('.colpick').colorpicker('setValue', 'rgba(0,0,0,0.5)');
         });
+
+        bvp.bindTooltips();
     });
 </asset:script>
 

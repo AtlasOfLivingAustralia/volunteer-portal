@@ -362,20 +362,20 @@
     });
 
     $('input#address').keypress(function (e) {
-      if (e.which == 13) {
+      if (e.which === 13) {
         codeAddress();
       }
     });
 
     // Catch Coordinate Uncertainty select (mapping tool) change
     $('.coordinatePrecision, #infoUncert').change(function (e) {
-      var rad = parseInt($(this).val());
+      let rad = parseInt($(this).val());
       circle.setRadius(rad);
       updateMarkerPosition(marker.getPosition());
     });
 
     function init() {
-      var $modal = $('#mapWidgets').parents('.modal');
+      let $modal = $('#mapWidgets').parents('.modal');
       if ($modal.length > 0) {
         $modal.on('shown.bs.modal', function () {
           initializeGeolocateTool();
@@ -393,8 +393,6 @@
     else {
       $(window).on('digivol.gmapsReady', init);
     }
-
-    bvp.bindTooltips("a.geolocateHelp.fieldHelp", 600);
 
   }); // End document.ready
 

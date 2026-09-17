@@ -84,7 +84,6 @@
     var mapListenerActive = true;
 
     $(document).ready(function () {
-        bvp.bindTooltips();
         bvp.suppressEnterSubmit();
 
         $(document).on('change', '#showMap', function () {

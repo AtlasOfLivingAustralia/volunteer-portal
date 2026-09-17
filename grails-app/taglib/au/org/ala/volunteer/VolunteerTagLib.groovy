@@ -289,81 +289,43 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr markdown defaults to true, will invoke the markdown service
-     * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     * @attr width
+     * @attr placement (one of 'top', 'bottom', 'left', 'right', 'auto' (default))
+     * @attr customClass optional custom class to add to the help button
+     * @attr html allows HTML to be displayed in the help text, defaults to true
+     * @attr sanitize allows HTML to be sanitized, defaults to true. If html is true, sanitize will be ignored (set to true)
      */
     def helpText = { attrs, body ->
         def mb = new MarkupBuilder(out)
         def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
-            def attributes = [href:'#', class:"btn btn-secondary btn-xs fieldHelp", title:helpText, tabindex: "-1"]
-            if (attrs.tooltipPosition) {
-                attributes.tooltipPosition = attrs.tooltipPosition
-            }
-            if (attrs.tipPosition) {
-                attributes.tipPosition = attrs.tipPosition
-            }
-            if (attrs.targetPosition) {
-                attributes.targetPosition = attrs.targetPosition
-            }
 
-            if (attrs.width) {
-                attributes.width = attrs.width
+            def attributes = [href:'#', class:"btn btn-outline-secondary btn-xs fieldHelp", title:helpText, tabindex: "-1"]
+            if (attrs.placement) {
+                attributes.placement = attrs.placement
             }
 
             if (attrs.customClass) {
                 attributes.customClass = attrs.customClass
             }
 
-            mb.a(attributes) {
-                span(class:'fa fa-question help-container') {
-                    mkp.yieldUnescaped('')
+            if (attrs.html) {
+                attributes.html = attrs.html
+            }
+            if (attrs.sanitize) {
+                if (attrs.html == true) {
+                    log.warn("helpText tag: html is true, so sanitize will be ignored")
+                    attributes.sanitize = true
+                } else {
+                    attributes.sanitize = attrs.sanitize
                 }
             }
-        } else {
-            mb.mkp.yieldUnescaped("&nbsp;")
-        }
-    }
-
-    /**
-     * @attr markdown defaults to true, will invoke the markdown service
-     * @attr tooltipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     * @atrr tipPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     * @attr targetPosition (one of 'topLeft, 'topMiddle', 'topRight', 'bottomLeft', 'bottomMiddle', 'bottomRight')
-     */
-    def ngHelpText = { attrs, body ->
-        def mb = new MarkupBuilder(out)
-        def helpText = (body() as String)?.trim()?.replaceAll("[\r\n]", "")
-        if (helpText) {
-            helpText = markdownService.renderMarkdown(helpText)
-            def attributes = [href:'javascript:void(0)', class:'btn btn-secondary btn-xs fieldHelp', qtip:helpText, tabindex: "-1"]
-            if (attrs.tooltipPosition) {
-                attributes.qtipMy = attrs.tooltipPosition
-            }
-            if (attrs.tipPosition) {
-                attributes.qtipAt = attrs.tipPosition
-            }
-            if (attrs.targetPosition) {
-                attributes.targetPosition = attrs.targetPosition
-            }
-
-            if (attrs.classes) {
-                attributes.'qtip-class' = attrs.classes
-            } else {
-                attributes.'qtip-class' = 'qtip-bootstrap'
-            }
-
-            if (attrs.width) {
-                attributes.width = attrs.width
-            }
 
             mb.a(attributes) {
-                i(class:'fa fa-question help-container') {
-                    mkp.yieldUnescaped('')
+                span(class:'help-container') {
+                    i(class:'fa fa-question') {
+                        mkp.yieldUnescaped('')
+                    }
                 }
             }
         } else {
@@ -380,78 +342,6 @@ class VolunteerTagLib {
         if (attrs.date) {
             out << "<p class='lastUpdated'>last updated: ${attrs.date}</p>"
         }
-    }
-
-    // Renders a nav bar as an unordered list
-    /**
-     *
-     */
-    //TODO This is hideous and it should disappear after applying the new skin
-    def navbar = { attrs, body ->
-
-        def selected = null
-
-        if (attrs.containsKey('selected')) {
-            selected = attrs.selected as String
-        }
-
-        def items = [:]
-
-        items << [bvp:[link: createLink(uri: '/'), title: message(code:'default.application.name', default:'DigiVol')]]
-        items << [expeditions: [link: createLink(controller: 'project', action: 'list'), title: 'Expeditions']]
-        def institutionsEnabled = settingsService.getSetting(SettingDefinition.InstitutionsEnabled)
-
-        if (institutionsEnabled) {
-            items << [institutions:[link: createLink(controller: 'institution', action:'list'), title: 'Institutions']]
-        }
-
-        items << [tutorials: [link: createLink(controller: 'tutorials'), title: 'Tutorials']]
-        if (FrontPage.instance().enableForum) {
-            items << [forum:[link: createLink(controller: 'forum'), title: 'Forum']]
-        }
-
-        def dashboardEnabled = settingsService.getSetting(SettingDefinition.EnableMyNotebook)
-        if (dashboardEnabled) {
-            def isLoggedIn = authService.userId != null
-            if (isLoggedIn || userService.currentUser) {
-                items << [userDashboard: [link: createLink(controller:'user', action:'notebook'), title:"My Notebook"]]
-            }
-        }
-
-        items << [contact: [link: createLink(controller: 'contact'), title: 'Contact Us']]
-        items << [getinvolved:[link: createLink(controller: 'getInvolved'), title:"How can I volunteer?"]]
-        items << [aboutbvp: [link: createLink(controller: 'about'), title: "About ${message(code:'default.application.name')}"]]
-        if (isAdmin()) {
-            items << [bvpadmin: [link: createLink(controller: 'admin'), title: "Admin", icon:'icon-cog icon-white']]
-        }
-
-        def mb = new MarkupBuilder(out)
-        mb.div(class:'navbar navbar-static-top', id:"nav-site") {
-            div(class:'navbar-inner') {
-                div(class:'container') {
-                    div(class:'nav-collapse collapse') {
-                        ul(class:'nav') {
-                            for (def key : items.keySet()) {
-                                def item = items[key]
-                                mb.li(class:'nav-' + key + (selected == key ? ' active' : '')) {
-                                    a(href:item.link, id: 'bvpmenuitem-' + key) {
-                                        if (item.icon) {
-                                            i(class: item.icon) {
-                                                mkp.yieldUnescaped("&nbsp;")
-                                            }
-                                            mkp.yieldUnescaped("&nbsp;")
-                                        }
-                                        mkp.yield(item.title)
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-
     }
 
     def messages = { attrs, body ->

@@ -112,55 +112,37 @@ let bvp = {};
         return Math.round(n * factor) / factor;
     };
 
-    lib.bindTooltips = function(selector, width) {
+    const TOOLTIP_WIDTH_CLASSES = [
+        { maxLength: 120, className: 'tooltip-w-sm' },
+        { maxLength: 300, className: 'tooltip-w-md' },
+        { maxLength: 600, className: 'tooltip-w-lg' }
+    ];
 
-        if (!selector) {
-            selector = ".fieldHelp";
-        }
-        if (!width) {
-            width = '500px';
-        }
-        // Context-sensitive help popups
-        $(selector).each(function() {
-            let tooltipPosition = $(this).attr("tooltipPosition");
-            if (!tooltipPosition) {
-                tooltipPosition = "bottomRight";
-            }
+    function tooltipWidthClass(html) {
+        const text = new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
+        const bucket = TOOLTIP_WIDTH_CLASSES.find(function (b) { return text.length <= b.maxLength; });
+        return bucket ? bucket.className : 'tooltip-w-xl';
+    }
 
-            let targetPosition = $(this).attr("targetPosition");
-            if (!targetPosition) {
-                targetPosition = "topMiddle";
+    lib.bindTooltips = function (selector) {
+        document.querySelectorAll(selector || '.fieldHelp').forEach(function (el) {
+            if (bootstrap.Tooltip.getInstance(el)) {
+                return;
             }
-            let tipPosition = $(this).attr("tipPosition");
-            if (!tipPosition) {
-                tipPosition = true;  // auto position the speech bubble marker
+            const title = el.getAttribute('title') || '';
+            const widthClass = tooltipWidthClass(title);
+            let customClass = [widthClass, el.getAttribute('customClass')]
+            // If width is lg or xl, add customClass left align.
+            if (widthClass === 'tooltip-w-lg' || widthClass === 'tooltip-w-xl') {
+                customClass.push('tooltip-custom-text-left');
             }
-
-            let elemWidth = $(this).attr("width");
-            if (elemWidth) {
-                width = elemWidth.toString() + 'px';
-            }
-
-            let styleClasses = ['qtip-bootstrap'];
-            let customClass = $(this).attr("customClass");
-            if (customClass) {
-                styleClasses.push(customClass);
-            }
-
-            $(this).qtip({
-                tip: true,
-                position: {
-                    my: tooltipPosition,
-                    at: targetPosition
-                },
-                hide: {
-                  fixed: true
-                },
-                style: {
-                    width: width,
-                    classes: styleClasses.join(' ')
-                }
-            }).on('click', function(e){ e.preventDefault(); return false; });
+            new bootstrap.Tooltip(el, {
+                html: true,
+                placement: el.getAttribute('placement') || 'auto',
+                customClass: customClass.filter(Boolean).join(' '),
+                sanitize: true
+            });
+            el.addEventListener('click', function (e) { e.preventDefault(); });
         });
     };
 
