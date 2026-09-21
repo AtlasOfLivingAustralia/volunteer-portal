@@ -640,6 +640,7 @@ h2.body-heading {
 
 	}
 }
+
 .transcription-controls {
 	text-align: right;
 	button {
@@ -648,6 +649,7 @@ h2.body-heading {
 		}
 	}
 }
+
 .media-container {
 	border-radius: 5px;
 	border: 1px solid $divider-grey;
@@ -667,6 +669,7 @@ h2.body-heading {
 		display: block;
 	}
 }
+
 legend {
 	margin-left: 15px;
 	border-bottom: none;
@@ -676,20 +679,23 @@ legend {
 	color: $black;
 	font-weight: 500;
 }
+
 form {
 	label {
 		font-weight: 400;
 		color: $black;
 	}
 }
+
 .form-group {
 	margin-bottom: 5px;
 }
+
 .form-control {
-	height: 25px;  /* FIX THIS in form standardisation*/
 	padding: 5px 8px;
 	//margin-bottom: 5px;
 }
+
 .transcription-actions {
 	padding: 30px 0;
 	.btn {
