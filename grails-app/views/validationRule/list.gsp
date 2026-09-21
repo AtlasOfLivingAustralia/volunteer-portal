@@ -47,11 +47,11 @@
                                 <td>${rule.description}</td>
                                 <td>${rule.message}</td>
                                 <td style="width: 90px;">
+                                    <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
+                                       class="btn btn-sm btn-outline-secondary" title="Edit rule '${rule.name}"><i class="fa fa-pencil"></i></a>
                                     <a href="${createLink(controller: 'validationRule', action: 'delete', id: rule.id)}"
                                        class="btn btn-sm btn-danger delete-button" title="Delete rule '${rule.name}"><i
                                             class="fa fa-remove"></i></a>
-                                    <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
-                                       class="btn btn-sm btn-outline-secondary" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                         </g:each>
