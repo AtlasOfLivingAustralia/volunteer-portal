@@ -7,10 +7,6 @@
     <title><g:message code="wildlifeSpotter.template.label" default="Audio Template Configuration"/></title>
     <asset:stylesheet href="inline-player.css" />
     <style>
-    .form-control {
-        height: 32px;
-    }
-
     .pointer {
         cursor: pointer;
     }

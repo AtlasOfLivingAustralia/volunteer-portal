@@ -223,10 +223,6 @@ table.task-table {
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
 }
 
-.admin textarea.form-control {
-    height: auto;
-}
-
 .admin .grails-date select {
     display: inline-block;
 }
@@ -310,14 +306,6 @@ table.task-table {
     background-color: #f6f6f6;
     padding-top: 2em;
     padding-left: 1em;
-}
-
-.forum .form-control {
-    min-height: 34px;
-}
-
-.forum select.form-control {
-    height: 34px;
 }
 
 .forum input.form-control:focus {
