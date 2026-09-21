@@ -32,6 +32,7 @@
             <div class="form-check form-switch form-switch-lg">
                 <g:checkBox name="showMap" class="form-check-input" role="switch"
                         checked="${projectInstance.showMap}"/>
+            </div>
         </div>
     </div>
 
