@@ -93,26 +93,26 @@
     %{-- Validated/Review --}%
     <g:if test="${taskInstance.fullyValidatedBy}">
         <g:if test="${taskInstance.isValid}">
-                <a class="btn btn-small" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
-                    <i class="fa fa-2x fa-eye" title="Review"></i>
+                <a class="btn btn-sm btn-outline-secondary" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-eye" title="Review"></i>
                 </a>
         </g:if>
         <g:else>
-                <a class="btn btn-small" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
-                    <i class="fa fa-2x fa-check-square-o" title="Complete Validation"></i>
+                <a class="btn btn-sm btn-outline-secondary" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-check" title="Complete Validation"></i>
                 </a>
         </g:else>
     </g:if>
     %{-- Transcribed --}%
     <g:elseif test="${taskInstance.isFullyTranscribed}">
-                <a class="btn btn-small" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
-                    <i class="fa fa-2x fa-check-square-o" title="Validate"></i>
+                <a class="btn btn-sm btn-outline-secondary" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-check" title="Validate"></i>
                 </a>
     </g:elseif>
     %{-- Not Transcribed --}%
     <g:else>
-                <a class="btn btn-small" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'transcribe', action: 'task', id: taskInstance.id)}">
-                    <i class="fa fa-2x fa-pencil-square-o" title="Transcribe"></i>
+                <a class="btn btn-sm btn-outline-secondary" ${disableLink} href="${disableLink ? '#' : createLink(controller: 'transcribe', action: 'task', id: taskInstance.id)}">
+                    <i class="fa fa-pencil" title="Transcribe"></i>
                 </a>
     </g:else>
             </td>

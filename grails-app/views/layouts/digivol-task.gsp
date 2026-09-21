@@ -107,15 +107,15 @@
         <div class="col-sm-7 col-12 transcription-controls">
 
             <div class="btn-group" role="group" aria-label="Transcription controls">
-                <button type="button" class="btn btn-secondary" id="showNextFromProject" data-skip="true" data-container="body"
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="showNextFromProject" data-skip="true" data-container="body"
                         title="Skip to the next image">Skip</button>
-                <vpf:taskTopicButton task="${taskInstance}" class="btn btn-secondary"/>
+                <vpf:taskTopicButton task="${taskInstance}" class="btn btn-sm btn-outline-secondary"/>
                 <g:if test="${taskInstance?.project?.tutorialLinks || taskInstance?.project?.tutorials?.size() > 0}">
-                    <g:link class="btn btn-secondary" controller="project" action="index" id="${taskInstance?.project?.id}"
+                    <g:link class="btn btn-sm btn-outline-secondary" controller="project" action="index" id="${taskInstance?.project?.id}"
                             target="_blank" params="${[showTutorial: true]}">View Tutorials</g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="btn btn-secondary" controller="tutorials" action="groupList" params="${[institution: taskInstance?.project?.institution?.id]}" target="_blank">View Tutorials</g:link>
+                    <g:link class="btn btn-sm btn-outline-secondary" controller="tutorials" action="groupList" params="${[institution: taskInstance?.project?.institution?.id]}" target="_blank">View Tutorials</g:link>
                 </g:else>
             </div>
 
@@ -223,9 +223,9 @@
                                 </p>
 
                                 <div>
-                                    <button id="btnValidateSubmitInvalid" class="btn btn-secondary bvp-submit-button">${okCaption}</button>
+                                    <button id="btnValidateSubmitInvalid" class="btn btn-sm btn-outline-secondary bvp-submit-button">${okCaption}</button>
                                     <button id="btnWarningCancelSubmission"
-                                            class="btn btn-primary bvp-submit-button">${cancelCaption}</button>
+                                            class="btn btn-sm btn-primary bvp-submit-button">${cancelCaption}</button>
                                 </div>
                             </div>
                         </div>
@@ -237,12 +237,12 @@
                                     <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button">
                                         ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                     </button>
-                                    <button type="button" id="btnDontValidate" class="btn btn-secondary bvp-submit-button">
+                                    <button type="button" id="btnDontValidate" class="btn btn-outline-secondary bvp-submit-button">
                                         ${message(code: 'default.button.dont.validate.label', default: 'Save partial validation')}
                                     </button>
-                                    <button type="button" class="btn btn-secondary bvp-submit-button"
+                                    <button type="button" class="btn btn-outline-secondary bvp-submit-button"
                                             id="showNextFromProject" data-skip="true">Skip</button>
-                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-outline-secondary"/>
                                     <g:if test="${validator}">
                                         <a href="${createLink(controller: "task", action: "projectAdmin", id: taskInstance?.project?.id, params: params.clone())}"/>
                                     </g:if>
@@ -251,10 +251,10 @@
                                     <button type="button" id="btnSave"
                                             class="btn btn-primary bvp-submit-button">${message(code: 'default.button.save.label', default: 'Submit for validation')}</button>
                                     <button type="button" id="btnSavePartial"
-                                            class="btn btn-secondary bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
-                                    <button type="button" class="btn btn-secondary bvp-submit-button"
+                                            class="btn btn-outline-secondary bvp-submit-button">${message(code: 'default.button.save.partial.label', default: 'Save unfinished record')}</button>
+                                    <button type="button" class="btn btn-outline-secondary bvp-submit-button"
                                             id="showNextFromProject" data-skip="true">Skip</button>
-                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-info"/>
+                                    <vpf:taskTopicButton task="${taskInstance}" class="btn-outline-secondary"/>
                                 </g:else>
                             </div>
                         </div>

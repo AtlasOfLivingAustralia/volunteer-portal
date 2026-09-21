@@ -65,8 +65,8 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button type="button" class="btn btn-mini"><i class="fa fa-arrow-up"></i></button>
-                                <button type="button" class="btn btn-mini"><i class="fa fa-arrow-down"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-up"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-down"></i></button>
                             </div>
                         </td>
                     </tr>

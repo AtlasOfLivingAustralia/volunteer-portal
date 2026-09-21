@@ -286,7 +286,7 @@
         <label>To:
             <div class="input-group">
                 <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
-                <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.toDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="$ctrl.toDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
             </div>
         </label>
     </div>
@@ -304,7 +304,7 @@
             </div>
         </label>
     </div>
-    <button class="search btn btn-primary" ng-click="$ctrl.confirm()">Search</button>
+    <button class="search btn btn-sm btn-primary" ng-click="$ctrl.confirm()">Search</button>
 </div>
 </script>
 <g:render template="/common/angularBootstrapTabSet" />

@@ -23,9 +23,6 @@
             padding-top: 1rem;
         }
 
-        .btn {
-            border-radius: 4px !important;
-        }
     </style>
 </head>
 
@@ -130,7 +127,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9 tutorial-button-row">
                                 <g:if test="${!migrate}">
-                                <g:submitButton name="edit" class="save btn btn-primary tutorial-upload"
+                                <g:submitButton name="edit" class="save btn btn-sm btn-primary tutorial-upload"
                                                 value="${message(code: 'default.button.update.label', default: 'Save')}"/>
                                 </g:if>
                             </div>
@@ -182,7 +179,7 @@
                 <g:if test="${migrate}">
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-9 tutorial-button-row">
-                            <g:submitButton name="edit" class="save btn btn-primary tutorial-upload"
+                            <g:submitButton name="edit" class="save btn btn-sm btn-primary tutorial-upload"
                                             value="${message(code: 'default.button.update.label', default: 'Save')}"/>
                     </div>
                 </div>

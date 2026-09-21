@@ -48,7 +48,7 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search by name or email..."/>
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                         href="${createLink(controller: 'user', action: 'adminList')}">Reset</a>
                 </div>
             </div>

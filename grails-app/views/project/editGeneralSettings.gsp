@@ -90,11 +90,11 @@
         </div>
 
         <div class="col-md-3">
-            <a class="btn btn-xs btn-outline-secondary" title="Edit Template" style="margin: 5px;"
+            <a class="btn btn-sm btn-outline-secondary" title="Edit Template" style="margin: 5px;"
                href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">
                 <i class="fa fa-pencil"></i>
             </a>
-            <a class="btn btn-xs btn-outline-secondary" title="View All Templates"
+            <a class="btn btn-sm btn-outline-secondary" title="View All Templates"
                href="${createLink(controller: 'template', action: 'list')}">
                 <i class="fa fa-list"></i>
             </a>

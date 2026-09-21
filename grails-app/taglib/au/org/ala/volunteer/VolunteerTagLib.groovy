@@ -300,7 +300,7 @@ class VolunteerTagLib {
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
 
-            def attributes = [href:'#', class:"btn btn-outline-secondary btn-xs fieldHelp", title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
             if (attrs.placement) {
                 attributes.placement = attrs.placement
             }
@@ -471,33 +471,34 @@ class VolunteerTagLib {
             }
 
             if (!attrs.hideCrumbs) {
-                mb.ul(class: 'breadcrumb-list') {
-                    li {
-                        a(href:createLink(uri:'/')) {
-                            mkp.yield(message(code:'default.home.label'))
+                mb.nav('aria-label': 'breadcrumb') {
+                    mb.ul(class: 'breadcrumb-list') {
+                        li {
+                            a(href: createLink(uri: '/')) {
+                                mkp.yield(message(code: 'default.home.label'))
+                            }
                         }
-                    }
-                    if (crumbList) {
-                        for (int i = 0; i < crumbList?.size(); i++) {
-                            def item = crumbList[i]
-                            li {
-                                span(class:'fa fa-angle-right') {
-                                    mkp.yield(' ')
-                                }
-                                a(href: item.link) {
-                                    mkp.yield(item.label)
+                        if (crumbList) {
+                            for (int i = 0; i < crumbList?.size(); i++) {
+                                def item = crumbList[i]
+                                li {
+                                    span(class: 'fa fa-angle-right') {
+                                        mkp.yield(' ')
+                                    }
+                                    a(href: item.link) {
+                                        mkp.yield(item.label)
+                                    }
                                 }
                             }
                         }
-                    }
-                    li(class:'active') {
-                        span(class:'fa fa-angle-right') {
-                            mkp.yield(' ')
+                        li(class: 'active') {
+                            span(class: 'fa fa-angle-right') {
+                                mkp.yield(' ')
+                            }
+                            mkp.yield(crumbLabel)
                         }
-                        mkp.yield(crumbLabel)
                     }
                 }
-
             }
 
 

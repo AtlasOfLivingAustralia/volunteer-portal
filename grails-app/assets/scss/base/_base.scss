@@ -17,15 +17,23 @@ p.intro {
 
 a {
 	color: $link-color;
-	&:hover {
-		text-decoration: none;
+	text-decoration: none;
+
+	&:hover, &:focus {
+		color: $link-hover-color;
 	}
-	&:focus {
-  		outline: none;
-  	}
+
+	&:focus-visible {
+		outline: 2px solid $btn-primary-bg;
+		outline-offset: 2px;
+	}
 }
 
-
+// Links inside body copy need a non-colour affordance: $link-color has only
+// 1.1:1 luminance contrast against $body-copy (WCAG 1.4.1).
+p a:not(.btn) {
+	text-decoration: underline;
+}
 
 @media (max-width: 1200px) {
 	body.expedition-landing {

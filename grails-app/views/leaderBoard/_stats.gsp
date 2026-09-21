@@ -158,7 +158,7 @@
                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}">
                     <a data-ng-if="additionalTranscribedThumbs(contributor) > 0" data-ng-href="{{userProfileUrl(contributor)}}"><span>+{{additionalTranscribedThumbs(contributor)}}</span>More</a>
                 </div>
-                <a class="btn btn-link btn-xs join" role="button"
+                <a class="btn btn-link btn-sm join" role="button"
                    data-ng-href="{{projectUrl(contributor)}}"><g:message code="join.expedition.label" /> »</a>
             </div>
         </li>
@@ -176,7 +176,7 @@
                 <div class="transcribed-thumbs">
                     <img data-ng-src="{{contributor.thumbnailUrl}}">
                 </div>
-                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
+                <a class="btn btn-link btn-sm join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
             </div>
         </li>
     </ul>
@@ -203,7 +203,7 @@
                 <div class="transcribed-thumbs">
                     <img data-ng-src="{{contributor.thumbnailUrl}}">
                 </div>
-                <a class="btn btn-link btn-xs join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
+                <a class="btn btn-link btn-sm join" data-ng-href="{{contributor.topicUrl}}" role="button"><g:message code="join.discussion.label" /> »</a>
             </div>
         </li>
 

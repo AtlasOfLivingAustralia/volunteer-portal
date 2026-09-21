@@ -51,10 +51,6 @@
                 <div class="col-sm-8">
                     <div class="row">
                         <div class="col-sm-6">
-                            %{--<h2 class="heading">--}%
-                                %{--Camera Trap Expeditions--}%
-                                %{--<div class="subheading">Showing <g:formatNumber number="${filteredProjectsCount}" type="number"/> expeditions</div>--}%
-                            %{--</h2>--}%
                             <g:if test="${params.q}">
                                 Expeditions matching:
                                     <span class="tag currentFilter">
@@ -70,19 +66,19 @@
                             <div class="card-filter">
                                 <div class="btn-group float-end" role="group" aria-label="...">
                                     <a href="${createLink(mapping: 'landingPage', params: queryStringParams + [mode: 'grid'])}"
-                                       class="btn btn-outline-secondary btn-xs ${params.mode != 'grid' ? '' : 'active'}">
+                                       class="btn btn-outline-secondary btn-sm ${params.mode != 'grid' ? '' : 'active'}">
                                         <i class="fa fa-th-large "></i>
                                     </a>
                                     <a href="${createLink(mapping: 'landingPage', params: queryStringParams)}"
-                                       class="btn btn-outline-secondary btn-xs ${params.mode == 'grid' ? '' : 'active'}">
+                                       class="btn btn-outline-secondary btn-sm ${params.mode == 'grid' ? '' : 'active'}">
                                         <i class="fa fa-th-list"></i>
                                     </a>
                                 </div>
 
                                 <div class="custom-search-input body">
                                     <div class="input-group">
-                                        <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search"/>
-                                        <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                        <input type="text" id="searchbox" class="form-control" placeholder="Search e.g. Bivalve"/>
+                                        <button id="btnSearch" class="btn" type="button">
                                             <i class="fa fa-search"></i>
                                         </button>
                                     </div>
@@ -98,18 +94,20 @@
                             <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                             <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                            <div class="btn-group float-end hide" style="padding-right: 10px">
-                                <g:each in="${ProjectStatusFilterType.values()}" var="mode">
-                                    <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
-                                    <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
-                                </g:each>
+                            <div class="btn-group float-end d-none" role="group" aria-label="Filter by status" style="padding-right: 10px">
+                            <g:each in="${ProjectStatusFilterType.values()}" var="mode">
+                                <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
+                                <g:set var="isActive" value="${statusFilterMode.toString() == mode?.toString()}" />
+                                <a href="${href}" class="btn btn-sm btn-outline-secondary ${isActive ? 'active' : ''}" ${isActive ? 'aria-current="true"' : ''}>${mode.description}</a>
+                            </g:each>
                             </div>
 
                             <cl:ifAdmin>
-                                <div class="btn-group float-end" style="padding-right: 10px; margin-bottom: 10px; margin-top: -10px;">
+                                <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px; margin-top: -20px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
-                                        <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                        <g:set var="isActive" value="${activeFilterMode.toString() == mode?.toString()}" />
+                                        <a href="${href}" class="btn btn-sm btn-outline-secondary ${isActive ? 'active' : ''}" ${isActive ? 'aria-current="true"' : ''}>${mode.description}</a>
                                     </g:each>
                                 </div>
                             </cl:ifAdmin>

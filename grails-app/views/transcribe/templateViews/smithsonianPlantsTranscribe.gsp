@@ -35,16 +35,12 @@
                     </ul>
 
                     <span>
-                        <button type="button" class="btn btn-small btn-info btnCopyFromPreviousTask"
+                        <button type="button" class="btn btn-sm btn-outline-secondary btnCopyFromPreviousTask"
                                 href="#task_selector"
                                 style="">Copy values from a previous task</button>
                         <cl:helpText>
                             Clicking this button will allow you to select a previously transcribed task to copy values from
                         </cl:helpText>
-%{--                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">--}%
-%{--                            <i class="fa fa-question help-container"></i>--}%
-%{--                        </a>--}%
                     </span>
 
                     <div style="display: none;">
@@ -66,10 +62,6 @@
                 <cl:helpText>
                     ${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}
                 </cl:helpText>
-%{--                <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                   title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'>--}%
-%{--                    <i class="fa fa-question help-container"></i>--}%
-%{--                </a>--}%
                 <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>

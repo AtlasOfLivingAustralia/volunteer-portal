@@ -45,8 +45,8 @@
                 <div class="col-md-12">
                     <div class="custom-search-input body">
                         <div class="input-group">
-                            <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control input-lg" placeholder="Search by Value" />
-                            <button class="btn btn-info btn-lg" type="button" onclick="doSearch();">
+                            <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control" placeholder="Search by Value" />
+                            <button class="btn" type="button" onclick="doSearch();">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>

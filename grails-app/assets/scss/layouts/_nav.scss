@@ -22,6 +22,7 @@
 	}
 }
 
+// icon glyph size, not text — see typography conventions
 .digivol-logo {
 	font-size: 0.5rem;
 }
@@ -33,7 +34,7 @@
 }
 
 .nav-cameratrap-menu {
-	font-size: $font-size-base;
+	font-size: $font-size-sm;
 	padding: 10px !important;
 	width: 300px;
 }
@@ -132,7 +133,7 @@ ul.profile-links {
 	margin: 0;
 
 	li {
-		font-size: $font-size-base;
+		font-size: $font-size-sm;
 		a {
 			color: $link-color;
 			display: block;
@@ -143,7 +144,7 @@ ul.profile-links {
 }
 
 .profile-email {
-	font-size: $font-size-small;
+	font-size: $font-size-xs;
 	// italtic
 	font-style: italic;
 }
@@ -161,6 +162,8 @@ ul.profile-links {
 
 /* Navbar Search */
 .custom-search-input {
+	display: flex;
+	align-items: center;      // don't inherit the navbar's stretch
 	border: solid 1px #E4E4E4;
 	border-radius: 10px;
 	width: 220px;
@@ -169,8 +172,20 @@ ul.profile-links {
 	background-color: white;
 	order: 2;
 
+	form {
+		flex: 1 1 auto;
+		width: 100%;
+		margin: 0;
+	}
+
+	.input-group {
+		flex-wrap: nowrap;
+		align-items: stretch;
+		width: 100%;
+	}
+
 	input[placeholder] {
-		font-size: 12px;
+		font-size: $font-size-xs;
 	}
 
 	&.body {
@@ -186,44 +201,27 @@ ul.profile-links {
 	}
 }
 
-.custom-search-input .input-group .form-control.header-search-input {
-	margin-bottom: 0 !important;
-}
-
 .custom-search-input input {
 	border: 0;
 	box-shadow: none;
 	height: 35px;
 	background-color: transparent;
+	flex: 1 1 auto;
+	min-width: 0;          // let it shrink instead of forcing the button wider
 }
 
 .custom-search-input button {
-	margin: 2px 0 0 0;
+	flex: 0 0 auto;        // stop the button from absorbing spare width
+	margin: 0;
+	display: flex;
+	align-items: center;
 	background: none;
 	box-shadow: none;
 	border: 0;
+	border-left: solid 1px #ccc;
+	border-radius: 0 !important;      // kills the curved left divider
 	color: #666666;
 	padding: 0 8px 0 10px;
-	border-left: solid 1px #ccc;
-}
-
-.custom-search-input button.btn.btn-info {
-	&:hover, &:focus, &:active {
-		border: 0;
-		box-shadow: none;
-		outline: none;
-		border-left: solid 1px #ccc;
-		background-color: white;
-		color: #666;
-	}
-
-	&:hover {
-		color: $black;
-	}
-}
-
-.custom-search-input .glyphicon-search{
-	font-size: 16px;
 }
 
 .breadcrumb-list {
@@ -233,11 +231,14 @@ ul.profile-links {
 
 	li {
 		display: inline-block;
-		.glyphicon {
+
+		.fa {
 			margin-right: 5px;
-			color: #ddd;
+			margin-left: 5px;
+			color: #ccc;
 		}
 	}
+
 	li.active {
 		font-weight: 500;
 		color: $black;
@@ -255,7 +256,7 @@ ul.profile-links {
 .nav-tabs>li>a {
 	padding: 15px 30px !important;
 	text-transform: none;
-	font-size: 14px;
+	font-size: $font-size-sm;
 	margin-top: 0;
 	color: #777 !important;
 }

@@ -39,8 +39,8 @@
             <div class="custom-search-input">
                 <g:form controller="project" action="list" method="GET" >
                     <div class="input-group">
-                        <g:textField name="q" class="form-control input-lg header-search-input" placeholder="Search e.g. Bivalve" />
-                        <button class="btn btn-info btn-lg" id="header-search" type="submit">
+                        <g:textField name="q" class="form-control header-search-input" placeholder="Search e.g. Bivalve" />
+                        <button class="btn" id="header-search" type="submit">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>

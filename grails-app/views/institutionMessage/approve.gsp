@@ -23,7 +23,7 @@
         %>
 
         <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#">
+            <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
                 <span class="caret"></span>
             </a>
@@ -111,9 +111,9 @@
                                         <i class="fa fa-clock-o" title="Not Approved"></i>
                                     </td>
                                     <td style="text-wrap: none">
-                                        <a class="btn btn-xs btn-secondary" title="Edit/Approve Message"
+                                        <a class="btn btn-sm btn-outline-secondary" title="Edit/Approve Message"
                                             href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
-                                        <a class="btn btn-xs btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
+                                        <a class="btn btn-sm btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>
                             </g:each>

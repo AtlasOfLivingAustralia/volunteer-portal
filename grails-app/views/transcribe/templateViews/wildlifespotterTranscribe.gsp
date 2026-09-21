@@ -82,7 +82,7 @@
                                             </div>
                                             <g:each var="cat" in="${wsParams?.categories}" status="i">
                                                 <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
@@ -258,11 +258,11 @@
                         </span>
                     </td>
                     <td class="col-md-1" style="border-top: 0;">
-                        <button type="button" class="btn btn-outline-secondary btn-xs animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                             <span class="visually-hidden">Increase count by 1</span>
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-xs animalCount animalCountMinus" title="Decrease count by 1" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm animalCount animalCountMinus" title="Decrease count by 1" tabindex="-1">
                             <i class="fa fa-minus" aria-hidden="true"></i>
                             <span class="visually-hidden">Decrease count by 1</span>
                         </button>
@@ -270,12 +270,12 @@
                     </g:if>
                     <td class="col-md-2" style="border-top: 0;">
                         <button type="button"
-                                class="btn btn-outline-secondary btn-xs editCommentButton"
+                                class="btn btn-outline-secondary btn-sm editCommentButton"
                                 title="Add a comment">
                             <i class="fa fa-commenting" tabindex="-1"></i>
                             <span class="visually-hidden">Add a comment</span>
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-xs animalDelete" title="Delete selection" tabindex="-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm animalDelete" title="Delete selection" tabindex="-1">
                             <i aria-hidden="true" class="fa fa-trash"></i>
                             <span class="visually-hidden">Delete selection</span>
                         </button>

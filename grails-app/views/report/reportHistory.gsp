@@ -27,7 +27,7 @@
                       noSelection="['':'- Filter by Report -']" />
         </div>
         <div class="col-md-3">
-            <a class="btn btn-secondary bs3"
+            <a class="btn btn-sm btn-outline-secondary"
                href="${createLink(controller: 'report', action: 'reportHistory')}">Reset</a>
         </div>
     </div>

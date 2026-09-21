@@ -20,8 +20,8 @@
         ]
     %>
 
-    <a class="btn btn-success" href="${createLink(action: "create")}">
-        Add News Item
+    <a class="btn btn-primary" href="${createLink(action: "create")}">
+        <i class="fa fa-plus"></i> Add News Item
     </a>
 
 </cl:headerContent>
@@ -37,8 +37,8 @@
                 <div class="col-md-4">
                     <div class="custom-search-input body">
                         <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search News Items..."/>
-                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search News Items..."/>
+                            <button id="btnSearch" class="btn" type="button">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                        href="${createLink(controller: 'newsItem', action: 'manage')}">Reset</a>
                 </div>
 
@@ -108,21 +108,21 @@
                                 <td style="white-space: nowrap;">
                                 <!-- Toggle Status -->
                                     <g:if test="${!newsItem.isActive}">
-                                        <a class="btn btn-xs btn-outline-secondary toggle-news-item-status" alt="Activate" title="Activate News Item"><i class="fa fa-toggle-off"></i></a>
+                                        <a class="btn btn-sm btn-outline-secondary toggle-news-item-status" alt="Activate" title="Activate News Item"><i class="fa fa-toggle-off"></i></a>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-outline-secondary toggle-news-item-status" alt="Deactivate" title="Deactivate News Item"><i class="fa fa-toggle-on"></i></a>
+                                        <a class="btn btn-sm btn-outline-secondary toggle-news-item-status" alt="Deactivate" title="Deactivate News Item"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
                                 <!-- Edit -->
                                     <g:link action="edit" id="${newsItem.id}" title="Edit News Item" alt="Edit">
-                                        <span class="btn btn-xs btn-outline-secondary edit-news-item">
+                                        <span class="btn btn-sm btn-outline-secondary edit-news-item">
                                             <i class="fa fa-pencil"></i>
                                         </span>
                                     </g:link>
 
                                 <!-- Delete -->
-                                    <button role="button" class="btn btn-danger btn-xs delete-news-item"
+                                    <button role="button" class="btn btn-sm btn-danger delete-news-item"
                                             data-news-item-title="${newsItem.title}"
                                             data-href="${createLink(controller: "newsItem", action: "delete", id: newsItem.id)}"
                                             title="Delete News Item"><i class="fa fa-trash"></i></button>

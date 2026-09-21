@@ -368,32 +368,29 @@ body.museumvictoria .transcription-actions .btn.btn-next {
 /* Import Modules */
 .btn {
   border: transparent;
-  border-radius: 30px; }
-  .btn:hover, .btn:focus, .btn:active, .btn:active:focus {
-    box-shadow: none;
-    outline: none; }
+  border-radius: 30px;
+}
+
+.btn:hover, .btn:focus, .btn:active, .btn:active:focus {
+  box-shadow: none;
+  outline: none;
+}
 
 .btn-lg {
-  padding: 10px 40px; }
+  padding: 10px 40px;
+}
 
 .a-feature .btn-primary {
-  margin-top: 10px; }
-  .a-feature .btn-primary:hover {
-    color: #ccc; }
-  .a-feature .btn-primary.btn-complete {
-    background-color: #333; }
+  margin-top: 10px;
+}
 
-.btn-hollow {
-  border: 1px solid #ddd;
-  color: #ddd; }
-  .btn-hollow:hover {
-    color: white;
-    border: 1px solid #ffffff; }
-  .btn-hollow.grey {
-    color: #696969;
-    border: 1px solid #dedede; }
-    .btn-hollow.grey:hover {
-      border-color: #aaa; }
+.a-feature .btn-primary:hover {
+  color: #ccc;
+}
+
+.a-feature .btn-primary.btn-complete {
+  background-color: #333;
+}
 
 .btn-load {
   width: 100%;
@@ -414,146 +411,233 @@ body.museumvictoria .transcription-actions .btn.btn-next {
 
 .a-feature {
   margin-bottom: 0;
-  padding: 15% 0 10% 0; }
-  .a-feature.home {
-    color: white;
-    background: url(../img/feature-digivol-b.jpg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    padding-bottom: 0%; }
-  .a-feature.institution {
-    background-color: #fff;
-    padding: 6% 0 0 0; }
-    .a-feature.institution h1, .a-feature.institution h2 {
-      color: #222; }
-    .a-feature.institution .contact {
-      margin-top: 20px; }
-    .a-feature.institution .progress-legend {
-      font-size: 14px;
-      line-height: 18px; }
-  .a-feature.simple-header {
-    background-color: #fff;
-    padding: 5% 0 5% 0; }
-    .a-feature.simple-header h1, .a-feature.simple-header h2 {
-      color: #222; }
-  .a-feature.expedition {
-    background-color: #fff;
-    padding: 60px 0 0 0;
-    background: url(../img/feature-expedition.jpg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover; }
-    .a-feature.expedition .logo-holder {
-      width: 90px;
-      height: 90px;
-      padding: 15px;
-      line-height: 60px;
-      background-color: white;
-      border-radius: 4px;
-      display: table-cell;
-      vertical-align: middle; }
-      .a-feature.expedition .logo-holder img {
-        max-height: 60px;
-        max-width: 60px; }
-    .a-feature.expedition p {
-      color: #eee; }
-    .a-feature.expedition a.forum-link {
-      color: #bbb;
-      display: block;
-      text-decoration: none; }
-      .a-feature.expedition a.forum-link:hover {
-        color: #fff; }
-    .a-feature.expedition h1, .a-feature.expedition h2 {
-      color: white; }
-    .a-feature.expedition .progress-summary {
-      border-top: 1px solid #444;
-      margin-top: 0; }
-      .a-feature.expedition .progress-summary h3 {
-        color: white; }
-    .a-feature.expedition .progress-legend {
-      color: white;
-      font-size: 14px;
-      line-height: 18px; }
-  .a-feature.expedition.old {
-    background-color: #fff;
-    padding: 60px 0 0 0;
-    background-image: none; }
-    .a-feature.expedition.old p {
-      color: #696969; }
-    .a-feature.expedition.old a.forum-link {
-      color: #2B779A; }
-      .a-feature.expedition.old a.forum-link:hover {
-        color: #fff; }
-    .a-feature.expedition.old h1, .a-feature.expedition.old h2 {
-      color: #222; }
-    .a-feature.expedition.old .progress-summary {
-      border-top: 1px solid #eee;
-      margin-top: 8%; }
-      .a-feature.expedition.old .progress-summary h3 {
-        color: #222; }
-    .a-feature.expedition.old .progress-legend {
-      color: #222;
-      font-size: 14px;
-      line-height: 18px; }
-    .a-feature.expedition.old .thumb-old {
-      margin-top: 30px; }
-    .a-feature.expedition.old a.forum-link {
-      color: #2B779A; }
-      .a-feature.expedition.old a.forum-link:hover {
-        color: #337ab7; }
-  .a-feature h1 {
-    font-size: 35px; }
-  .a-feature h2 {
-    font-weight: 400;
-    font-size: 22px;
-    margin: 10px 0 20px 0; }
-  .a-feature h3 {
-    font-size: 14px;
-    margin-top: 20px;
-    line-height: 18px;
-    font-weight: 400;
-    color: #222; }
-    .a-feature h3 b {
-      font-weight: 600;
-      display: block;
-      margin: 0; }
-  .a-feature p.section-description {
-    font-size: 20px;
-    line-height: 26px; }
-  .a-feature .btn-primary {
-    margin-right: 10px;
-    margin-bottom: 10px; }
-  .a-feature .cta-primary {
-    margin-top: 10px;
-    margin-bottom: 20px; }
-  .a-feature .image-origin {
-    padding-top: 10%;
-    padding-bottom: 20px;
-    color: #bbb;
-    text-align: right;
-    font-style: italic;
-    font-size: 12px; }
+  padding: 15% 0 10% 0;
+}
+
+.a-feature.home {
+  color: white;
+  background: url(../img/feature-digivol-b.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  padding-bottom: 0%;
+}
+
+.a-feature.institution {
+  background-color: #fff;
+  padding: 6% 0 0 0;
+}
+
+.a-feature.institution h1, .a-feature.institution h2 {
+  color: #222;
+}
+
+.a-feature.institution .contact {
+  margin-top: 20px;
+}
+
+.a-feature.institution .progress-legend {
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.a-feature.simple-header {
+  background-color: #fff;
+  padding: 5% 0 5% 0;
+}
+
+.a-feature.simple-header h1, .a-feature.simple-header h2 {
+  color: #222;
+}
+
+.a-feature.expedition {
+  background-color: #fff;
+  padding: 60px 0 0 0;
+  background: url(../img/feature-expedition.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.a-feature.expedition .logo-holder {
+  width: 90px;
+  height: 90px;
+  padding: 15px;
+  line-height: 60px;
+  background-color: white;
+  border-radius: 4px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.a-feature.expedition .logo-holder img {
+  max-height: 60px;
+  max-width: 60px;
+}
+
+.a-feature.expedition p {
+  color: #eee;
+}
+
+.a-feature.expedition a.forum-link {
+  color: #bbb;
+  display: block;
+  text-decoration: none;
+}
+
+.a-feature.expedition a.forum-link:hover {
+  color: #fff;
+}
+
+.a-feature.expedition h1, .a-feature.expedition h2 {
+  color: white;
+}
+
+.a-feature.expedition .progress-summary {
+  border-top: 1px solid #444;
+  margin-top: 0;
+}
+
+.a-feature.expedition .progress-summary h3 {
+  color: white;
+}
+
+.a-feature.expedition .progress-legend {
+  color: white;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.a-feature.expedition.old {
+  background-color: #fff;
+  padding: 60px 0 0 0;
+  background-image: none;
+}
+
+.a-feature.expedition.old p {
+  color: #696969;
+}
+
+.a-feature.expedition.old a.forum-link {
+  color: #2B779A;
+}
+
+.a-feature.expedition.old a.forum-link:hover {
+  color: #fff;
+}
+
+.a-feature.expedition.old h1, .a-feature.expedition.old h2 {
+  color: #222;
+}
+
+.a-feature.expedition.old .progress-summary {
+  border-top: 1px solid #eee;
+  margin-top: 8%;
+}
+
+.a-feature.expedition.old .progress-summary h3 {
+  color: #222;
+}
+
+.a-feature.expedition.old .progress-legend {
+  color: #222;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.a-feature.expedition.old .thumb-old {
+  margin-top: 30px;
+}
+
+.a-feature.expedition.old a.forum-link {
+  color: #2B779A;
+}
+
+.a-feature.expedition.old a.forum-link:hover {
+  color: #337ab7;
+}
+
+.a-feature h1 {
+  font-size: 35px;
+}
+
+.a-feature h2 {
+  font-weight: 400;
+  font-size: 22px;
+  margin: 10px 0 20px 0;
+}
+
+.a-feature h3 {
+  font-size: 14px;
+  margin-top: 20px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #222;
+}
+
+.a-feature h3 b {
+  font-weight: 600;
+  display: block;
+  margin: 0;
+}
+
+.a-feature p.section-description {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.a-feature .btn-primary {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.a-feature .cta-primary {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.a-feature .image-origin {
+  padding-top: 10%;
+  padding-bottom: 20px;
+  color: #bbb;
+  text-align: right;
+  font-style: italic;
+  font-size: 12px;
+}
 
 @media (min-width: 768px) {
   .a-feature.expedition {
-    padding-top: 8%; }
+    padding-top: 8%;
+  }
+
   .a-feature h1 {
-    font-size: 55px; }
+    font-size: 55px;
+  }
+
   .a-feature h2 {
-    font-size: 26px; }
+    font-size: 26px;
+  }
+
   .a-feature h3 {
     font-size: 26px;
     margin-top: 0;
-    line-height: 36px; }
+    line-height: 36px;
+  }
+
   .a-feature.simple-header h1 {
-    font-size: 45px; }
+    font-size: 45px;
+  }
+
   .a-feature.profile-summary h2 {
     font-size: 26px;
     line-height: 36px;
-    margin: 0; } }
+    margin: 0;
+  }
+}
+
+
 /* Cards */
 .thumbnail {
   padding: 0;
@@ -566,80 +650,120 @@ body.museumvictoria .transcription-actions .btn.btn-next {
   -webkit-transition: border .2s ease-in-out;
   -o-transition: border .2s ease-in-out;
   transition: border .2s ease-in-out;
-  box-shadow: 0px 1px 0px #eee; }
-  .thumbnail h4 a {
-    color: #222; }
-    .thumbnail h4 a:hover {
-      text-decoration: none;
-      color: black; }
-  .thumbnail .caption {
-    padding: 25px; }
-    .thumbnail .caption p {
-      color: #696969; }
-  .thumbnail img {
-    border-radius: 4px 4px 0 0; }
-  .thumbnail.institution a {
-    display: block;
-    min-height: 250px;
-    line-height: 50px;
-    padding-top: 90px; }
-  .thumbnail.institution img {
-    max-width: 180px;
-    max-height: 100px;
-    margin: auto; }
-  .thumbnail.row-style {
-    margin-bottom: 15px; }
-    .thumbnail.row-style img {
-      border-radius: 4px;
-      margin: 25px; }
-    .thumbnail.row-style .caption {
-      padding: 25px; }
+  box-shadow: 0px 1px 0px #eee;
+}
+
+.thumbnail h4 a {
+  color: #222;
+}
+
+.thumbnail h4 a:hover {
+  text-decoration: none;
+  color: black;
+}
+
+.thumbnail .caption {
+  padding: 25px;
+}
+
+.thumbnail .caption p {
+  color: #696969;
+}
+
+.thumbnail img {
+  border-radius: 4px 4px 0 0;
+}
+
+.thumbnail.institution a {
+  display: block;
+  min-height: 250px;
+  line-height: 50px;
+  padding-top: 90px;
+}
+
+.thumbnail.institution img {
+  max-width: 180px;
+  max-height: 100px;
+  margin: auto;
+}
+
+.thumbnail.row-style {
+  margin-bottom: 15px;
+}
+
+.thumbnail.row-style img {
+  border-radius: 4px;
+  margin: 25px;
+}
+
+.thumbnail.row-style .caption {
+  padding: 25px;
+}
 
 @media (max-width: 1200px) {
   .thumbnail {
-    min-height: 480px; } }
+    min-height: 480px;
+  }
+}
+
 .label {
   position: absolute;
   top: 25px;
   left: 45px;
   border-radius: 2px;
   padding: 7px 10px 5px 10px;
-  display: none; }
+  display: none;
+}
 
 .progress {
   height: 12px;
-  border-radius: 25px; }
-  .progress .progress-bar-success {
-    background-color: rgba(213, 80, 42, 0.5); }
-  .progress .progress-bar-transcribed {
-    background-color: #d5502a; }
+  border-radius: 25px;
+}
+
+.progress .progress-bar-success {
+  background-color: rgba(213, 80, 42, 0.5);
+}
+
+.progress .progress-bar-transcribed {
+  background-color: #d5502a;
+}
 
 .progress-summary {
   border-top: 1px solid #eee;
   padding: 30px 0 20px 0;
-  margin-top: 8%; }
+  margin-top: 8%;
+}
 
 .expeditionListAnchor {
-  margin-top: 50px; }
+  margin-top: 50px;
+}
 
 .thumbnail .progress {
-  height: 8px; }
+  height: 8px;
+}
 
 .card-filter {
-  margin-top: -12px; }
-  .card-filter .btn-group, .card-filter .custom-search-input {
-    margin-bottom: 20px; }
+  margin-top: -12px;
+}
+
+.card-filter .btn-group, .card-filter .custom-search-input {
+  margin-bottom: 20px;
+}
 
 .institution-logo-main {
   max-width: 200px;
-  margin: 0 auto; }
+  margin: 0 auto;
+}
 
 .expedition-progress .progress-legend {
   font-size: 11px;
   line-height: 12px;
-  color: #333; }
-  .expedition-progress .progress-legend b {
-    display: block; }
+  color: #333;
+}
+
+.expedition-progress .progress-legend b {
+  display: block;
+}
 
 .key {
   display: inline-block;
@@ -648,17 +772,25 @@ body.museumvictoria .transcription-actions .btn.btn-next {
   border-radius: 10px;
   border: 1px solid #eee;
   margin: 0 5px 10px 0;
-  float: left; }
-  .key.validated {
-    background-color: #e1eca0; }
-  .key.transcribed {
-    background-color: #d5502a; }
-  .key.volunteers {
-    background-color: #f6f6f6; }
+  float: left;
+}
+
+.key.validated {
+  background-color: #e1eca0;
+}
+
+.key.transcribed {
+  background-color: #d5502a;
+}
+
+.key.volunteers {
+  background-color: #f6f6f6;
+}
 
 .pie-legend .key {
   display: block;
-  float: none; }
+  float: none;
+}
 
 h2.heading, .modal h5, .pre-header {
   text-transform: uppercase;

@@ -39,10 +39,6 @@ class IndexController {
         render(view: "/index", model: ['frontPage': frontPage, featuredProjects: featuredProjects, potdSummary: potdSummary, newsItem: newsItem] )
     }
 
-    def leaderBoardFragment() {
-        [:]
-    }
-
     def stats(long institutionId, long projectId, String projectType) {
         List<String> tags = params.list('tags') ?: []
         def maxContributors = (params.maxContributors as Integer) ?: 5

@@ -42,19 +42,19 @@
         <div class="row" style="margin-bottom: 10px">
 
             <div class="col-sm-9" id="journalPageButtons">
-                <button class="btn btn-secondary btn-small" id="showPreviousJournalPage"
+                <button class="btn btn-sm btn-outline-secondary" id="showPreviousJournalPage"
                         title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <asset:image src="left_arrow.png"/> show previous
+                    <i class="fa fa-arrow-left"></i> Show previous
                 </button>
-                <button class="btn btn-secondary btn-small" id="showNextJournalPage"
+                <button class="btn btn-sm btn-outline-secondary" id="showNextJournalPage"
                         title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    show next <asset:image src="right_arrow.png"/>
+                    Show next <i class="fa fa-arrow-right"></i>
                 </button>
-                <button class="btn btn-secondary btn-small" id="rotateImage" title="Rotate the page 180 degrees">
-                    Rotate&nbsp;<asset:image src="rotate.png"/>
+                <button class="btn btn-sm btn-outline-secondary" id="rotateImage" title="Rotate the page 180 degrees">
+                    Rotate&nbsp;<i class="fa fa-rotate-right"></i>
                 </button>
-                <button class="btn btn-secondary btn-small" id="closeWindow" title="Close this window">
-                    Close
+                <button class="btn btn-sm btn-secondary" id="closeWindow" title="Close this window">
+                    <i class="fa fa-times"></i> Close
                 </button>
             </div>
 

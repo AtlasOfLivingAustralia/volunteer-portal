@@ -16,7 +16,7 @@
 
     </table>
 
-    <button id="btnCloseViewedTask" class="btn">Close</button>
+    <button id="btnCloseViewedTask" class="btn btn-sm btn-secondary">Close</button>
 
 </g:if>
 

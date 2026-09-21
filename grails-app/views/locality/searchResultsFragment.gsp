@@ -7,7 +7,7 @@
                 <tr>
                     <td colspan="2" class="locality">${locality.locality}</td>
                     <td class="buttonCell">
-                        <button class="btn selectLocalityButton" localityId="${locality.id}"
+                        <button class="btn btn-sm btn-primary selectLocalityButton" localityId="${locality.id}"
                                 title="Use this locality">Select&nbsp;locality</button>
                     </td>
                 </tr>

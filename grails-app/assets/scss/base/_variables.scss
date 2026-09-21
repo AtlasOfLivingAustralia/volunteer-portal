@@ -9,8 +9,32 @@ $body-copy-on-black: #999;
 $divider-grey: #eee;
 $validated-color: #e1eca0;
 $link-color: #2B779A;
+$link-hover-color: #23527C;
 
 $smithsonian-color: #0097d4;
 $museumvictoria-color: #6e9a35;
+
+/* Button palette — provisional, pending design sign-off (Phase 8) */
+
+$btn-primary-bg:            $link-color;  // #2B779A
+$btn-primary-hover-bg:      #33a6cc;
+$btn-primary-active-bg:     #007299;
+
+$btn-neutral-border:        #ccc;
+
+/* Typography — base size pending design sign-off (Phase 8) */
+
+$font-size-root:      100%;        // respects browser setting; 16px default
+$font-size-body:      0.875rem;    // 14px — current app baseline
+
+$font-size-xs:        0.75rem;     // 12px
+$font-size-sm:        0.875rem;    // 14px
+$font-size-md:        1rem;        // 16px
+$font-size-lg:        1.125rem;    // 18px
+$font-size-xl:        1.375rem;    // 22px
+$font-size-2xl:       1.625rem;    // 26px
+$font-size-3xl:       2.1875rem;   // 35px
+$font-size-4xl:       2.8125rem;   // 45px
+$font-size-5xl:       3.4375rem;   // 55px
 
 

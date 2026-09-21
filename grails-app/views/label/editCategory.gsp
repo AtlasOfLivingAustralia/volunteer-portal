@@ -21,10 +21,6 @@
             font-size: 1.2em;
         }
 
-        .btn {
-            border-radius: 5px;
-        }
-
         .save-label-button, .cancel-label-button {
             display: none;
         }
@@ -91,7 +87,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4">
-                                <input type="submit" class="save btn btn-primary" id="addButton"
+                                <input type="submit" class="save btn btn-sm btn-primary" id="addButton"
                                        value="${message(code: 'default.button.add.label', default: 'Save')}"/>
                             </div>
                         </div>
@@ -130,7 +126,7 @@
                                        required/>
                                 <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
                             </div>
-                            <input type="submit" class="save btn btn-primary" id="addLabelButton"
+                            <input type="submit" class="save btn btn-sm btn-primary" id="addLabelButton"
                                    value="${message(code: 'default.button.add.label', default: 'Add')}"/>
                         </div>
                     </g:form>

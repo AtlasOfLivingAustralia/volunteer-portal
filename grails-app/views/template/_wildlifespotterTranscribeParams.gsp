@@ -39,10 +39,6 @@
             <g:message code="template.autoValidationType.helptext"
                        default="Select the field combination that the System will use for comparison when auto-validating."/>
         </cl:helpText>
-%{--        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                       title="<g:message code="template.autoValidationType.helptext"--}%
-%{--                                         default="Select the field combination that the System will use for comparison when auto-validating."/>">--}%
-%{--        <span class="help-container"><i class="fa fa-question"></i></span></a>--}%
     </label>
     <div class="col-md-6">
         <g:select class="form-control"
@@ -64,6 +60,6 @@
 
 <div class="form-group">
     <div class="col-md-offset-3 col-md-9" style="padding-bottom: 5px;">
-        <g:link class="btn btn-primary" controller="template" action="wildlifeTemplateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
+        <g:link class="btn btn-sm btn-outline-secondary" controller="template" action="wildlifeTemplateConfig" id="${templateInstance.id}">Configure Wildlife Spotter Entries</g:link>
     </div>
 </div>

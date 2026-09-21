@@ -20,7 +20,7 @@
 
     <cl:ifSiteAdmin>
         <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#">
+            <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
                 <span class="caret"></span>
             </a>
@@ -81,11 +81,11 @@
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <a class="btn btn-xs btn-secondary"
+                                        <a class="btn btn-sm btn-outline-secondary"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
                                         <cl:ifSiteAdmin>
-                                                <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                                                <a class="btn btn-sm btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                                         </cl:ifSiteAdmin>
                                     </g:form>
                                 </td>
@@ -108,7 +108,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
 
                 <h3>Quick Create Institution</h3>
             </div>

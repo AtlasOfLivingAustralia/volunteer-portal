@@ -36,15 +36,11 @@
                         </ul>
 
                         <span>
-                            <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
+                            <button type="button" class="btn btn-sm btn-outline-secondary btnCopyFromPreviousTask" href="#task_selector"
                                     style="">Copy values from a previous task</button>
                             <cl:helpText>
                                 Clicking this button will allow you to select a previously transcribed task to copy values from
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                               title="Clicking this button will allow you to select a previously transcribed task to copy values from">--}%
-%{--                                <i class="fa fa-question help-container"></i>--}%
-%{--                            </a>--}%
                         </span>
 
                         <div style="display: none;">
@@ -66,10 +62,6 @@
                     <cl:helpText>
                         ${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}
                     </cl:helpText>
-%{--                    <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                       title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'>--}%
-%{--                        <i class="fa fa-question help-container"></i>--}%
-%{--                    </a>--}%
                     <g:textArea class="col-md-12" name="recordValues.0.occurrenceRemarks"
                                 value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                                 rows="6" cols="42"/>
@@ -152,7 +144,9 @@
     <g:renderFieldCategorySection category="${FieldCategory.location}" task="${taskInstance}"
                                   recordValues="${recordValues}" title="Interpreted Location"
                                   description="Use the mapping tool before attempting to enter values manually">
-        <button type="button" class="btn btn-small btn-info" id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnGeolocate">
+            <asset:image src="digivol-map-marker.svg" class="btn-icon-svg" alt=""/> Mapping tool
+        </button>
     </g:renderFieldCategorySection>
 
     <g:renderFieldCategorySection category="${FieldCategory.miscellaneous}" task="${taskInstance}"

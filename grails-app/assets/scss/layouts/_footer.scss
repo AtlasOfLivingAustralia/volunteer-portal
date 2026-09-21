@@ -23,7 +23,7 @@ section#footer {
 		margin-bottom: 30px;
 	}
 	h3 {
-		font-size: 15px;
+		font-size: $font-size-md;
 		margin: 0 0 10px 0;
 	}
 	ul {
@@ -40,7 +40,6 @@ section#footer {
 	}
 	a:hover {
 		color: #eee;
-		text-decoration: none;
 	}
     a.btn-lg {
     	background-color: #000;

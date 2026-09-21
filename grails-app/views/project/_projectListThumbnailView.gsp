@@ -5,15 +5,15 @@
             <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
             <div class="expedition-thumb-settings-btn-group">
                 <div class="btn-group ">
-                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle " data-bs-toggle="dropdown" href="#">
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle " data-bs-toggle="dropdown" href="#">
                         <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="icon-cog icon-white"></i>&nbsp;<g:message code="expedition.settings.label" /></a>
+                            <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="fa fa-cog"></i>&nbsp;<g:message code="expedition.settings.label" /></a>
                         </li>
                         <li>
-                            <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="icon-wrench icon-white"></i>&nbsp;<g:message code="expedition.administration.label" /></a>
+                            <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="fa fa-wrench"></i>&nbsp;<g:message code="expedition.administration.label" /></a>
                         </li>
                     </ul>
                 </div>

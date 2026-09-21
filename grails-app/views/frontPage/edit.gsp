@@ -33,7 +33,7 @@
                     <g:form action="save" class="form-horizontal">
                         <div class="form-group">
                             <label for="randomProjectOfTheDay" class="form-label col-md-3">
-                                <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Project for the day" />
+                                <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Expedition for the day" />
                             </label>
                             <div class="col-md-6">
                                 <g:checkBox name="randomProjectOfTheDay" class="form-control" id="randomProjectToggle" style="margin-top: 9px;" value="${frontPage.randomProjectOfTheDay}" />
@@ -42,18 +42,20 @@
                         <div class="form-group">
                             <label for="projectOfTheDay" class="form-label col-md-3">
                                 <g:message code="frontPage.projectOfTheDay.label"
-                                    default="Project of the day"/></label>
+                                    default="Expedition of the day"/></label>
                             <div class="col-md-6">
                                 <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
-                                    <option value="">- Select a Project -</option>
+                                    <option value="">- Select an Expedition -</option>
                                     <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
                                                              selectedProject="${frontPage.projectOfTheDay?.id}" />
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <button class="btn btn-secondary" id="btnFindProject">Find an expedition</button>
-                                <g:link class="btn btn-success" action="edit" controller="project"
-                                        id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;project</g:link>
+                                <g:link class="btn btn-sm btn-outline-secondary" action="edit" controller="project"
+                                        id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;selected expedition</g:link>
+
+                                <button class="btn btn-sm btn-outline-secondary" id="btnFindProject">Find an expedition</button>
+
                             </div>
                         </div>
 
@@ -147,8 +149,10 @@
                             <div class="col-md-offset-3 col-md-9">
                                 <g:submitButton name="save-hero" class="save-hero btn btn-primary"
                                                 value="${message(code: 'default.button.save.label', default: 'Save')}"/>
-                                <g:submitButton name="clear-hero" class="clear-hero btn btn-secondary"
-                                                value="${message(code: 'default.button.reset.label', default: 'Reset')}"/>
+                        <g:if test="${frontPage.heroImage}">
+                                <g:submitButton name="clear-hero" class="clear-hero btn btn-outline-danger"
+                                                value="${message(code: 'frontpage.edit.heroimage.reset.label', default: 'Remove Image')}"/>
+                        </g:if>
                             </div>
                         </div>
 
@@ -159,18 +163,20 @@
     </div>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Institution using Digivol Logos</h3>
+            <h3 class="card-title">Institutions using Digivol Logos</h3>
         </div>
         <div class="card-body">
             <div class="row" id="logos">
             </div>
             <div class="row">
+                <g:uploadForm controller="frontPage" action="addLogoImage">
                 <div class="col-sm-12 logos">
-                    <g:uploadForm controller="frontPage" action="addLogoImage">
-                        <input id="uploadLogo" name="uploadLogo" type="file" multiple />
-                        <g:submitButton name="Upload logos" class="btn btn-primary"/>
-                    </g:uploadForm>
+                    <input id="uploadLogo" name="uploadLogo" type="file" multiple />
                 </div>
+                <div class="col-sm-12">
+                    <g:submitButton name="Upload logos" class="btn btn-primary"/>
+                </div>
+                </g:uploadForm>
             </div>
         </div>
     </div>

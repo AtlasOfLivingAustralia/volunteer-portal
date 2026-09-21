@@ -31,7 +31,7 @@
 
 
             <div class="btn-group">
-                <a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Tools
                     <span class="caret"></span>
                 </a>
@@ -78,8 +78,6 @@
                     <li><a href="#" id="btnExportValidated"><i class="fa fa-download"></i>&nbsp;Export validated tasks</a></li>
                 </ul>
             </div>
-%{--        <g:link style="color: white" class="btn btn-info" controller="user" action="myStats"--}%
-%{--                id="${userInstance.id}" params="${['projectId': projectInstance.id]}">My Stats</g:link>--}%
     </cl:headerContent>
 <div class="container" role="main">
     <div class="card">
@@ -112,7 +110,7 @@
                                id="projectAdminSearch" value="${params.q}"
                                placeholder="Search tasks..."
                                size="60"/>
-                        <button class="btn btn-small btn-primary" id="searchButton">
+                        <button class="btn btn-sm btn-primary" id="searchButton">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -124,15 +122,15 @@
 
                 </div>
                 <div class="col-md-2">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                         href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Reset</a>
                 </div>
                 <div class="col-md-2">
                     <div class="btn-group btn-group-sm float-end">
-                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-outline-secondary ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-sm btn-outline-secondary ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
                             <i class="fa fa-th-list"></i>
                         </g:link>
-                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-outline-secondary ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-sm btn-outline-secondary ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
                             <i class="fa fa-th"></i>
                         </g:link>
                     </div>

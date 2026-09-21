@@ -24,10 +24,8 @@
         <label class="form-label col-md-5">Upload images and create new tasks</label>
 
         <div class="col-md-6">
-            %{--<a class="btn" href="${createLink(controller: 'task', action: 'load', id: projectInstance.id)}">Load tasks (CSV File)...</a>--}%
-            <a id="btnTaskStaging" class="btn btn-secondary"
+            <a id="btnTaskStaging" class="btn btn-sm btn-primary"
                href="${createLink(controller: 'task', action: 'staging', params: [projectId: projectInstance.id])}">Load Tasks (Image Staging)</a>
-
         </div>
     </div>
 
@@ -36,7 +34,7 @@
         <label class="form-label col-md-5">View task load progress</label>
 
         <div class="col-md-6">
-            <a class="btn btn-secondary"
+            <a class="btn btn-sm btn-outline-secondary"
                href="${createLink(controller: 'project', action: 'loadProgress', id: projectInstance.id)}">View progress</a>
         </div>
     </div>
@@ -46,7 +44,7 @@
         <label class="form-label col-md-5">Attach new data to existing tasks</label>
 
         <div class="col-md-6" title="${currentlyLoading ? 'Tasks are currently loading, please wait for existing staged tasks to load before staging more tasks' : ''}">
-            <a class="btn btn-secondary${currentlyLoading ? ' disabled' : ''}"
+            <a class="btn btn-sm btn-outline-secondary${currentlyLoading ? ' disabled' : ''}"
                href="${createLink(controller: 'task', action: 'loadTaskData', params: [projectId: projectInstance.id])}">Load Task Data</a>
         </div>
     </div>
@@ -56,8 +54,8 @@
         <label class="form-label col-md-5">Permanently remove all tasks and their images</label>
 
         <div class="col-md-6">
-            <button id="btnDeleteAllTasks" class="btn btn-danger"><i
-                    class="icon-trash icon-white"></i>&nbsp;Delete All Tasks</button>
+            <button id="btnDeleteAllTasks" class="btn btn-sm btn-danger"><i
+                    class="fa fa-times"></i>&nbsp;Delete All Tasks</button>
         </div>
     </div>
 

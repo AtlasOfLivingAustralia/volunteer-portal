@@ -36,9 +36,9 @@
                                           value="${params.picklistId}"/>
                             </div>
                             <div class="col-md-6">
-                                <a class="btn btn-secondary"
+                                <a class="btn btn-sm btn-outline-secondary"
                                    href="${createLink(controller: 'picklist', action: 'create')}">Create new picklist</a>
-                                <a class="btn btn-secondary"
+                                <a class="btn btn-sm btn-outline-secondary"
                                    href="${createLink(controller: 'picklist', action: 'list')}">Show all picklists</a>
                             </div>
                         </div>
@@ -53,12 +53,13 @@
                                           value="${institutionCode}"/>
                             </div>
                             <div class="col-md-6">
-                                <button id="btnAddCollectionCode" type="button" class="btn btn-success"><i
-                                        class="icon-plus icon-white"></i>&nbsp;Add collection code</button>
-                                <g:actionSubmit class="btn btn-secondary" name="download.picklist"
+                                <button id="btnAddCollectionCode" type="button" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-plus"></i>&nbsp;Add collection code
+                                </button>
+                                <g:actionSubmit class="btn btn-sm btn-outline-secondary" name="download.picklist"
                                                 value="${message(code: 'download.picklist.label', default: 'Download items as CSV')}"
                                                 action="download"/>
-                                <g:actionSubmit class="btn btn-secondary" name="load.textarea"
+                                <g:actionSubmit class="btn btn-sm btn-outline-secondary" name="load.textarea"
                                                 value="${message(code: 'loadtextarea.label', default: 'Load items into text area')}"
                                                 action="loadcsv"/>
                             </div>
@@ -77,18 +78,17 @@
                             <div class="col-md-offset-2 col-md-10">
                                 <g:actionSubmit id="upload-picklist-button"
                                                 disabled="${(picklistData?.getBytes('UTF-8')?.length ?: 0) > (grailsApplication.config.getProperty('bvp.maxPostSize', Long) ?: 2097152)}"
-                                                class="btn btn-primary" name="upload.picklist"
+                                                class="btn btn-sm btn-primary" name="upload.picklist"
                                                 value="${message(code: 'upload.picklist.label', default: 'Upload')}"
                                                 action="uploadCsvData"/>
-                                <a href="#picklistModal" id="upload-picklist-file" role="button" class="btn btn-secondary"
+                                <a href="#picklistModal" id="upload-picklist-file" role="button" class="btn btn-sm btn-outline-secondary"
                                    data-bs-toggle="modal">${message(code: 'upload.bulkpicklist.label', default: 'Upload CSV File')}</a>
-                                <button id="sort-button" type="button" class="btn btn-secondary" title="Sort list"><i class="fa fa-arrow-down"></i>
+                                <button id="sort-button" type="button" class="btn btn-sm btn-outline-secondary" title="Sort list"><i class="fa fa-arrow-down"></i>
                                 </button>
-                                <button id="reverse-button" type="button" class="btn btn-secondary" title="Reverse list order"><i
+                                <button id="reverse-button" type="button" class="btn btn-sm btn-outline-secondary" title="Reverse list order"><i
                                         class="fa fa-refresh"></i></button>
                             </div>
                         </div>
-                    %{--<g:link elementId="img-picklist-button" class="btn btn-link" controller="picklist" action="images"><g:message code="picklist.button.view.as.images" default="View as images"/></g:link>--}%
                     </g:form>
 
                 </div>
@@ -104,7 +104,7 @@
                 <g:uploadForm class="form-horizontal" action="uploadCsvFile">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <div class="modal-header">
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
 
                         <h3 id="picklistModalLabel">Upload picklist file</h3>
                     </div>
@@ -139,8 +139,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal" aria-hidden="true">Close</button>
-                        <input class="btn btn-primary" type="submit"/>
+                        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal" aria-hidden="true">Close</button>
+                        <input class="btn btn-sm btn-primary" type="submit"/>
                     </div>
                 </g:uploadForm>
             </div>

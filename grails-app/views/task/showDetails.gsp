@@ -80,17 +80,17 @@
                         </g:else>
 
                         <div class="col-sm-12" style="padding-top: 0.5em; padding-left: 0px;">
-                        <a class="btn btn-secondary btn-small"
+                        <a class="btn btn-sm btn-outline-secondary"
                            href="${createLink(action: 'show', id: taskInstance?.id)}">Transcribe/Validate Task</a>
                         <cl:ifAdmin>
                             <g:if test="${taskInstance?.project.requiredNumberOfTranscriptions > 1}">
-                                <a class="btn btn-small btn-warning disabled">Reset transcribed status</a>
-                                <a class="btn btn-small btn-warning disabled">Reset validated status</a>
+                                <a class="btn btn-sm btn-warning disabled">Reset transcribed status</a>
+                                <a class="btn btn-sm btn-warning disabled">Reset validated status</a>
                             </g:if>
                             <g:else>
-                                <a class="btn btn-small btn-warning"
+                                <a class="btn btn-sm btn-warning"
                                    href="${createLink(action: 'resetTranscribedStatus', id: taskInstance?.id)}">Reset transcribed status</a>
-                                <a class="btn btn-small btn-warning"
+                                <a class="btn btn-sm btn-warning"
                                    href="${createLink(action: 'resetValidatedStatus', id: taskInstance?.id)}">Reset validated status</a>
                             </g:else>
                         </cl:ifAdmin>

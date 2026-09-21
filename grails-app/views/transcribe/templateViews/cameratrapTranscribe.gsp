@@ -42,9 +42,9 @@
                         <div id="ct-questions-nav" class="stepwizard">
                             <div class="stepwizard-row">
                                 <div class="stepwizard-step">
-                                    <button type="button" class="btn btn-circle btn-outline-secondary ${validator ? '' : 'active'}" data-bs-target="#ct-landing" data-bs-toggle="nav">1</button>
-                                    <button type="button" class="btn btn-circle btn-outline-secondary" data-bs-target="#ct-animals-present" data-bs-toggle="nav">2</button>
-                                    <button type="button" class="btn btn-circle btn-outline-secondary ${validator ? 'active' : ''}" data-bs-target="#ct-animals-summary" data-bs-toggle="nav">3</button>
+                                    <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${validator ? '' : 'active'}" data-bs-target="#ct-landing" data-bs-toggle="nav">1</button>
+                                    <button type="button" class="btn btn-sm btn-circle btn-outline-secondary" data-bs-target="#ct-animals-present" data-bs-toggle="nav">2</button>
+                                    <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${validator ? 'active' : ''}" data-bs-target="#ct-animals-summary" data-bs-toggle="nav">3</button>
                                 </div>
                             </div>
                         </div>
@@ -91,28 +91,28 @@
                                     <div class="col-sm-12">
                                         <div class="btn-toolbar">
                                             <div id="ct-animals-btn-group" class="btn-group btn-group-sm" data-bs-toggle="buttons">
-                                                <label class="btn btn-secondary active">
+                                                <label class="btn btn-sm btn-secondary active">
                                                     <input type="radio" name="options" id="ct-btn-all" class="btn-animal-filter" autocomplete="off" data-filter-tag="" checked>All
                                                 </label>
-                                                <label class="btn btn-secondary">
+                                                <label class="btn btn-sm btn-secondary">
                                                     <input type="radio" name="options" id="ct-sm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="small mammals (<500g)">Small Mammals
                                                 </label>
-                                                <label class="btn btn-secondary">
+                                                <label class="btn btn-sm btn-secondary">
                                                     <input type="radio" name="options" id="ct-mm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="medium mammals (0.5-5kg)">Medium Mammals
                                                 </label>
-                                                <label class="btn btn-secondary">
+                                                <label class="btn btn-sm btn-secondary">
                                                     <input type="radio" name="options" id="ct-lm-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="large mammals (>5kg)">Large Mammals
                                                 </label>
-                                                <label class="btn btn-secondary">
+                                                <label class="btn btn-sm btn-secondary">
                                                     <input type="radio" name="options" id="ct-reptiles-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="reptiles">Reptiles
                                                 </label>
-                                                <label class="btn btn-secondary">
+                                                <label class="btn btn-sm btn-secondary">
                                                     <input type="radio" name="options" id="ct-birds-btn" class="btn-animal-filter" autocomplete="off" data-filter-tag="birds">Birds
                                                 </label>
                                             </div>
 
                                             <div class="btn-group btn-group-sm">
-                                                <button type="button" id="ct-other-btn" class="btn btn-secondary btn-sm"
+                                                <button type="button" id="ct-other-btn" class="btn btn-sm btn-secondary"
                                                         data-bs-toggle="button">Other</button>
                                             </div>
 
@@ -123,16 +123,16 @@
                                             </div>
 
                                             <div id="ct-sort-btn-group" class="btn-group btn-group-sm" data-bs-toggle="buttons">
-                                                <label class="btn btn-outline-secondary active" title="${message(code: 'default.button.default.sort.label', default: 'Default order')}" data-container="body">
+                                                <label class="btn btn-sm btn-outline-secondary active" title="${message(code: 'default.button.default.sort.label', default: 'Default order')}" data-container="body">
                                                     <input type="radio" name="options" id="button-sort-initial" autocomplete="off" data-sort-fn="initial" checked><i class="fa fa-random"></i>
                                                 </label>
-                                                <label class="btn btn-outline-secondary" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-container="body">
+                                                <label class="btn btn-sm btn-outline-secondary" title="${message(code: 'default.button.alpha.sort.label', default: 'Sort alphabetically')}" data-container="body">
                                                     <input type="radio" name="options" id="button-sort-alpha" autocomplete="off" data-sort-fn="alpha" checked><i class="fa fa-sort-alpha-asc"></i>
                                                 </label>
-                                                <label class="btn btn-outline-secondary" title="${message(code: 'default.button.popularity.sort.label', default: 'Sort by most common in expedition')}" data-container="body">
+                                                <label class="btn btn-sm btn-outline-secondary" title="${message(code: 'default.button.popularity.sort.label', default: 'Sort by most common in expedition')}" data-container="body">
                                                     <input type="radio" name="options" id="button-sort-pop" autocomplete="off" data-sort-fn="common" checked><i class="fa fa-sort-numeric-asc"></i>
                                                 </label>
-                                                <label class="btn btn-outline-secondary" title="${message(code: 'default.button.mychoices.sort.label', default: 'Sort by my previous choices')}" data-container="body">
+                                                <label class="btn btn-sm btn-outline-secondary" title="${message(code: 'default.button.mychoices.sort.label', default: 'Sort by my previous choices')}" data-container="body">
                                                     <input type="radio" name="options" id="button-sort-mychoices" autocomplete="off" data-sort-fn="previous" checked><i class="fa fa-sort-amount-desc"></i>
                                                 </label>
                                             </div>
@@ -284,15 +284,15 @@
 
                     <div class="text-end" style="margin-top: 20px; margin-bottom: 20px;">
                         <button type="button" id="btnNext"
-                                class="btn btn-primary btn-lg ${validator ? 'd-none' : ''}">${message(code: 'default.button.next.label', default: 'Next Step')} <i
+                                class="btn btn-primary ${validator ? 'd-none' : ''}">${message(code: 'default.button.next.label', default: 'Next Step')} <i
                                 class="fa fa-chevron-right"></i></button>
                         <g:if test="${!validator}">
                             <button type="button" id="btnSave"
-                                    class="btn btn-primary btn-lg bvp-submit-button d-none">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
+                                    class="btn btn-primary bvp-submit-button d-none">${message(code: 'default.button.save.short.label', default: 'Submit')}</button>
                         </g:if>
                         <g:else>
                             <button type="button" id="btnValidate"
-                                    class="btn btn-success btn-lg bvp-submit-button ${validator ? '' : 'd-none'}">
+                                    class="btn btn-success bvp-submit-button ${validator ? '' : 'd-none'}">
                                 ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                             </button>
                         </g:else>

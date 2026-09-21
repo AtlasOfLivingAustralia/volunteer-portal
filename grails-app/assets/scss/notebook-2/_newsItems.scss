@@ -110,7 +110,6 @@ main {
   color: white;
   border-radius: 15px;
   background-color: variables-and-mixins.$digivol-orange;
-  text-decoration: none;
 
   @media screen and (min-width: variables-and-mixins.$screen-lg) {
     min-height: 150px;
@@ -152,7 +151,6 @@ main {
 .featured-news-list__news-excerpt {
   padding-top: variables-and-mixins.$space-4;
   font-size: variables-and-mixins.$text-xl;
-  text-decoration: none;
 }
 
 // Table

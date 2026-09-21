@@ -101,7 +101,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <input type="submit" class="save btn btn-primary" id="addButton"
+                        <input type="submit" class="save btn btn-sm btn-primary" id="addButton"
                                value="${message(code: 'default.button.add.label', default: 'Save')}"/>
                     </div>
                 </div>
@@ -153,8 +153,8 @@
                     <i id="ajax-filter-spinner" class="fa fa-cog fa-spin d-none"></i>
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-secondary bs3" id="apply-filter">Apply</button>
-                    <a class="btn btn-secondary bs3"
+                    <button type="button" class="btn btn-sm btn-secondary" id="apply-filter">Apply</button>
+                    <a class="btn btn-sm btn-outline-secondary"
                        href="${createLink(controller: 'admin', action: 'manageUserRoles')}">Reset</a>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                                 <td style="white-space: nowrap;">${userRole.createdBy?.displayName}</td>
                                 <td style="white-space: nowrap;"><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td>
-                                    <button class="btn btn-danger deleteRole"
+                                    <button class="btn btn-sm btn-danger deleteRole"
                                             userRoleId="${userRole.id}">
                                         <i class="fa fa-times" title="Delete Role from User"></i>
                                     </button>

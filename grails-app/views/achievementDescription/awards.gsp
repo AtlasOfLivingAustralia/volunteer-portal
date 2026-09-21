@@ -46,7 +46,7 @@
                 <td>${award.userNotified}</td>
                 <td class="eligible-column"><i class="fa fa-cog fa-spin ajax-spinner"></i></td>
                 <td class="text-center">
-                    <button class="btn btn-xs btn-danger rmAward"><i class="fa fa-times"></i></button>
+                    <button class="btn btn-sm btn-danger rmAward"><i class="fa fa-times"></i></button>
                 </td>
             </tr>
         </g:each>

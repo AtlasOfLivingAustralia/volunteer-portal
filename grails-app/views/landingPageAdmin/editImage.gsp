@@ -29,13 +29,13 @@
 
             <br>
 
-            <div class="file btn btn-info btn-file">
+            <div class="file btn btn-sm btn-primary btn-file">
                 Select File
                 <input id="heroImage" name="heroImage" type="file" />
             </div>
 
             <div class="display-inline-block">
-                <g:submitButton name="clear-hero" class="clear-hero btn btn-secondary"
+                <g:submitButton name="clear-hero" class="clear-hero btn btn-sm btn-outline-secondary"
                                 value="${message(code: 'default.button.reset.label', default: 'Reset')}"/>
             </div>
         </div>

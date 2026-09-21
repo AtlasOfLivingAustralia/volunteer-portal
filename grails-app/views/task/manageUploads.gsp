@@ -55,8 +55,8 @@
                 <div class="col-md-6">
                     <div class="custom-search-input body">
                         <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Expedition Name..."/>
-                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search Expedition Name..."/>
+                            <button id="btnSearch" class="btn" type="button">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -115,17 +115,17 @@
                                 <td class="row-centered">${taskUpload.retriesRemaining}</td>
                                 <td><g:formatDate date="${taskUpload.dateUpdated}" format="dd/MM/yyyy HH:mm:ss"/></td>
                                 <td class="text-nowrap">
-                                    <button role="button" class="btn btn-warning btn-xs action-button task-error-count"
+                                    <button role="button" class="btn btn-sm btn-warning action-button task-error-count"
                                             data-task-id="${taskUpload.id}"
                                             data-href="${createLink(controller: "task", action: "taskDescriptorErrors", id: taskUpload.id)}"
                                             data-external-id="${taskUpload.externalIdentifier}"
                                             title="${message(code: "task.manage.view.errors.label", default: "View Upload Errors")}">${taskUpload.errorCount}</button>
 
-                                    <button role="button" class="btn btn-xs action-button reset-task-descriptor"
+                                    <button role="button" class="btn btn-sm action-button reset-task-descriptor"
                                         data-href="${createLink(controller: "task", action: "resetTaskDescriptorRetries", id: taskUpload.id, params: params)}"
                                         title="${message(code: "task.manage.resetRetries.label", default: "Reset Retries")}"><i class="fa fa-refresh"></i></button>
 
-                                    <button role="button" class="btn btn-danger btn-xs action-button delete-task-descriptor"
+                                    <button role="button" class="btn btn-sm btn-danger action-button delete-task-descriptor"
                                             data-image-name="${taskUpload.externalIdentifier}"
                                             data-href="${createLink(controller: "task", action: "deleteTaskDescriptor", id: taskUpload.id, params: params)}"
                                             title="${message(code: "task.manage.delete.label", default: "Delete Queued Task")}"><i class="fa fa-times"></i></button>
@@ -136,7 +136,7 @@
                     </table>
 
                     <div class="col-md-4">
-                        <button role="button" class="btn btn-primary" id="btnDeleteAllTasks"
+                        <button role="button" class="btn btn-danger" id="btnDeleteAllTasks"
                             data-href="${createLink(controller: 'task', action: 'deleteTaskDescriptorList', params: params)}">Delete All Listed Tasks</button>
                     </div>
 
@@ -158,7 +158,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Task Descriptor Errors</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -286,7 +286,7 @@ jQuery(function($) {
             readMoreText: 'Show',
             readLessText: 'Hide',
             readMoreBtnPosition: 'after',
-            readMoreBtnAdditionalClasses: 'btn btn-hollow grey btn-sm'
+            readMoreBtnAdditionalClasses: 'btn btn-sm btn-outline-secondary'
         });
     }
 

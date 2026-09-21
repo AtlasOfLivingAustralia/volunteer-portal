@@ -41,12 +41,11 @@
                         </ul>
 
                         <span>
-                            <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
+                            <button type="button" class="btn btn-sm btn-outline-secondary btnCopyFromPreviousTask" href="#task_selector"
                                     style="">Copy values from a previous task</button>
                             <cl:helpText>
                                 Clicking this button will allow you to select a previously transcribed task to copy values from
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i class="help-container fa fa-question"></i></a>--}%
                         </span>
 
                         <div style="display: none;">
@@ -73,9 +72,6 @@
                             <cl:helpText>
                                 ${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears in the labels"}'><i--}%
-%{--                                    class="fa fa-question help-container"></i></a>--}%
                         </div>
 
                         <div class="col-md-12">
@@ -86,15 +82,15 @@
                         </div>
 
                         <div class="col-md-12">
-                            <button type="button" class="insert-symbol-button" symbol="&deg;"
+                            <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&deg;"
                                     title="Insert a degree symbol"></button>
-                            <button type="button" class="insert-symbol-button" symbol="&#39;"
+                            <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#39;"
                                     title="Insert an apostrophe (minutes) symbol"></button>
-                            <button type="button" class="insert-symbol-button" symbol="&quot;"
+                            <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&quot;"
                                     title="Insert a quote (seconds) symbol"></button>
-                            <button type="button" class="insert-symbol-button" symbol="&#x2642;"
+                            <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#x2642;"
                                     title="Insert the male gender symbol"></button>
-                            <button type="button" class="insert-symbol-button" symbol="&#x2640;"
+                            <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#x2640;"
                                     title="Insert the female gender symbol"></button>
                         </div>
 
@@ -103,9 +99,6 @@
                             <cl:helpText>
                                 Enter (or cut and paste from the box above) the locality information into this box
                             </cl:helpText>
-%{--                            <a href='#' class='btn btn-outline-secondary btn-xs fieldHelp'--}%
-%{--                                                 title='Enter (or cut and paste from the box above) the locality information into this box'><i--}%
-%{--                                    class='fa fa-question help-container'></i></a>--}%
                         </div>
 
                         <div class="col-md-12">
@@ -186,7 +179,7 @@
                     </div>
 
                     <div class="col-md-6 collectionEventSection">
-                        <strong>a.</strong>&nbsp; <button type="button" class="btn btn-secondary"
+                        <strong>a.</strong>&nbsp; <button type="button" class="btn btn-sm btn-outline-secondary"
                                                           id="show_collection_event_selector">Find existing collection event</button>
                     </div>
 
@@ -208,7 +201,7 @@
 
                     <div class="row">
                         <div class="col-md-6 col-md-offset-2">
-                            <strong>i.</strong>&nbsp;<button type="button" class="btn btn-secondary"
+                            <strong>i.</strong>&nbsp;<button type="button" class="btn btn-sm btn-outline-secondary"
                                                              id="showLocalitySelector">Find existing locality</button>&nbsp;<strong>OR</strong>
                         </div>
 
@@ -227,8 +220,9 @@
 
                     <div class="row" style="margin-bottom: 10px">
                         <div class="col-md-10 col-md-offset-2">
-                            <button type="button" class="btn btn-small btn-info"
-                                    id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
+                            <button type="button" class="btn btn-sm btn-sm btn-outline-secondary" id="btnGeolocate">
+                                <asset:image src="digivol-map-marker.svg" class="btn-icon-svg" alt=""/> Mapping tool
+                            </button>
                         </div>
                     </div>
 

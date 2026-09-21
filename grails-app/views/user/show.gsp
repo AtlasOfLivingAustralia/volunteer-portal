@@ -115,12 +115,6 @@
                     <cl:helpText>
                         Select a filter to view your tasks. Transcribed and Validated tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks' will also clear filters.
                     </cl:helpText>
-%{--                    <span class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                          title="<markdown:renderHtml>Select a filter to view your tasks. Transcribed and Validated--}%
-%{--                          tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks'--}%
-%{--                          will also clear filters.</markdown:renderHtml>">--}%
-%{--                        <span class="help-container"><i class="fa fa-question"></i></span>--}%
-%{--                    </span>--}%
                 </div>
                 <ul class="task-history-nav__list">
                     <g:if test="${userInstance.userId == currentUser}">
@@ -132,10 +126,9 @@
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All tasks</span></g:link></li>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed ${perspective}</span></g:link></li>
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated ${perspective}">Validated ${perspective}</span></g:link></li>
-%{--                    <li class="filter-nav__list-item">|</li>--}%
-                    <g:if test="${userInstance.userId == currentUser}">
+                <g:if test="${userInstance.userId == currentUser}">
                     <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks saved for later ${perspective}">Saved for later</span></g:link></li>
-                    </g:if>
+                </g:if>
                 </ul>
             </div>
             <div class="task-history-pagination-nav">
@@ -156,18 +149,11 @@
                                   title="${message(code: 'project.name.label', default: 'Expedition')}" params="${[filter: params.filter]}"/>
                 <g:sortableColumn property="dateTranscribed" class="td--2/12"
                                   title="${message(code: 'task.dateFullyTranscribed.label', default: 'Transcribed')}" params="${[filter: params.filter]}"/>
-%{--                <g:sortableColumn property="status" class="td--2/12"--}%
-%{--                                  title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}"/>--}%
                 <s:sortableColumn tag="th" property="status" class="td--2/12"
                                   title="${message(code: 'task.isValid.label', default: 'Status')}" params="${[filter: params.filter]}">
                     <cl:helpText>
                         The current status of the task. Shows 'Transcribed by me' or 'Validated by me' if you were the last to action the task, otherwise just the current status.
                     </cl:helpText>
-%{--                    <span class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                       title="<markdown:renderHtml>The current status of the task. Shows 'Transcribed by me' or--}%
-%{--                       'Validated by me' if you were the last to action the task, otherwise just the current status.</markdown:renderHtml>">--}%
-%{--                        <span class="help-container"><i class="fa fa-question"></i></span>--}%
-%{--                    </span>--}%
                 </s:sortableColumn>
                 <th class="td--1/12">${message(code: 'notebook.tasklist.tableAction.label', default: 'Action')}</th>
             </tr>
@@ -208,7 +194,7 @@
 %{--                    // display show task button--}%
                     <g:if test="${row.isFullyTranscribed && (row.fullyTranscribedBy == currentUser || row.isValidator)}">
                         <!-- show task -->
-                        <a class="btn btn-small" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
+                        <a class="btn btn-sm btn-outline-secondary" href="${createLink(controller: 'task', action: 'show', id: row.task_id)}">
                             <i class="fa fa-eye task-action-icon" title="View task"></i>
                         </a>
                     </g:if>
@@ -225,7 +211,7 @@
                             <g:set var="validateButtonLabel" value="Validate" />
                         </g:else>
                         <!-- validate task -->
-                        <a class="btn btn-small" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
+                        <a class="btn btn-sm btn-outline-secondary" href="${createLink(controller: 'validate', action: 'task', id: row.task_id)}">
                             <i class="fa fa-check-square-o task-action-icon" title="${validateButtonLabel}"></i>
                         </a>
                     </g:if>
@@ -233,7 +219,7 @@
 %{--                    // If task is not fully transcribed--}%
 %{--                    // display transcribe button--}%
                     <g:if test="${!row.isFullyTranscribed}">
-                        <a class="btn btn-small" href="${createLink(controller: 'transcribe', action: 'task', id: row.task_id)}">
+                        <a class="btn btn-sm btn-outline-secondary" href="${createLink(controller: 'transcribe', action: 'task', id: row.task_id)}">
                             <i class="fa fa-pencil-square-o task-action-icon" title="Transcribe"></i>
                         </a>
                     </g:if>
@@ -255,7 +241,6 @@
     </section>
     </g:if>
 </main>
-
 
 <asset:script type="text/javascript">
     $(document).ready(function () {

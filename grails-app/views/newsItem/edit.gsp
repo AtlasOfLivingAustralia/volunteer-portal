@@ -103,7 +103,7 @@
                             <div class="col-md-6 news-image-row">
 
                                 <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid form-label" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
-                                <button role="button" class="btn btn-danger btn-xs news-image-remove-btn"
+                                <button role="button" class="btn btn-danger btn-sm news-image-remove-btn"
                                         data-href="${createLink(controller: "newsItem", action: "clearImage", id: newsItem.id)}"
                                         title="Clear Image"><i class="fa fa-trash"></i></button>
                             </div>

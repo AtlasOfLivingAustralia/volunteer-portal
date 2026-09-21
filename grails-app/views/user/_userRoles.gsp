@@ -25,9 +25,9 @@
                 </td>
                 <td width="50%">
                     ${userRole.project?.featuredLabel}</td>
-                <td witdth="20%">
+                <td width="20%">
                     <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
-                        <i class="icon-remove icon-white"></i>&nbsp;Delete
+                        <i class="fa fa-times"></i>&nbsp;Delete
                     </button>
                 </td>
 

@@ -27,16 +27,16 @@
                         <h4>Upload a csv data file for field values</h4>
                         <g:if test="${hasDataFile}">
                             A data file has been uploaded for this expedition.
-                            <a class="button"
-                               href="${createLink(action: 'clearTaskDataFile', params: [projectId: projectInstance.id])}">Clear data file</a>
+                            <a class="btn btn-sm btn-danger"
+                               href="${createLink(action: 'clearTaskDataFile', params: [projectId: projectInstance.id])}">Remove data file</a>
                             &nbsp;
-                            <a href="${dataFileUrl}">View data file</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="${dataFileUrl}">View data file</a>
                         </g:if>
                         <g:else>
                             <g:form controller="task" action="uploadTaskDataFile" method="post" enctype="multipart/form-data">
                                 <input type="file" name="dataFile" id="dataFile"  data-filename-placement="inside"/>
                                 <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                                <g:submitButton class="btn btn-success" name="Upload Data File"/>
+                                <g:submitButton class="btn btn-sm btn-secondary" name="Upload Data File"/>
                             </g:form>
                         </g:else>
                     </div>
@@ -46,8 +46,9 @@
                     <div id="fieldValuesSection" class="section">
 
                         <h4>
-                            Task Data to load preview <a class="btn btn-primary"
-                                                         href="${createLink(action: 'processTaskDataLoad', params: [projectId: projectInstance.id])}">Load Task Data</a>
+                            Task Data to load preview <br/>
+                            <a class="btn btn-sm btn-primary"
+                                href="${createLink(action: 'processTaskDataLoad', params: [projectId: projectInstance.id])}">Load Task Data into Expedition</a>
                         </h4>
                         <table class="table table-striped table-hover">
                             <thead>

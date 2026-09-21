@@ -1,81 +1,55 @@
 .btn {
-	//border: transparent;
-	//border-radius: 10px;
-	padding: 0.125rem 0.5rem;
-	min-width: 32px;
-  	&.btn-secondary {
-	  border: 1px solid $btn-secondary-border;
-	}
 	&:hover, &:focus, &:active, &:active:focus {
 		box-shadow: none;
-		outline: none;
 	}
-}
-.btn-lg {
-	padding: 10px 40px;
-}
-.a-feature {
-	.btn-primary {
-		&:hover {
-			color: #ccc;
-		}
-		&.btn-complete{
-			background-color: #333;
-		}
-		margin-top: 10px;
 
+	&:focus-visible {
+		outline: 2px solid $btn-primary-bg;
+		outline-offset: 2px;
 	}
-}
-.btn-hollow {
-	border: 1px solid #ddd;
-	color: #ddd;
-	&:hover {
-		color: white;
-		border: 1px solid #ffffff;
-	}
-	&.grey {
-		color: $body-copy;
-		border: 1px solid #dedede;
-		&:hover {
-			border-color: #aaa;
-		}
-	}
-}
-.btn-load {
-	width: 100%;
-	padding: 15px 0;
-}
-.btn-group {
-	&.btn-group-sm {
-	  .btn {
-		border-radius: 10px;
-		padding: 5px 10px;
-	  }
-	}
-	&.btn-group-xs {
-	  .btn {
-		border-radius: 10px;
-		padding: 1px 5px;
-	  }
-	}
-	.btn {
-		padding: 10px 20px;
-	}
-}
-.btn:focus {
-  outline: none;
 }
 
-.input-group > .btn {
-	margin-left: 0.5px !important;
+.btn-icon-svg {
+	height: 1.5em;
+	width: auto;
+	vertical-align: -0.425em;
+	padding-right: 0.3rem;
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
-	background: #33a6cc;
+// DigiVol primary. Overrides Bootstrap 5's precompiled .btn-primary, which
+// cannot be configured via Sass variables (bootstrap.css is vendored, not built).
+.btn-primary {
+	background-color: $btn-primary-bg;
+	border-color: $btn-primary-bg;
+
+	&:hover, &:focus {
+		background-color: $btn-primary-hover-bg;
+		border-color: $btn-primary-hover-bg;
+	}
+
+	&:active, &.active, &.show {
+		background-color: $btn-primary-active-bg;
+		border-color: $btn-primary-active-bg;
+		box-shadow: none;
+	}
+
+	&:disabled, &.disabled {
+		background-color: $btn-primary-bg;
+		border-color: $btn-primary-bg;
+	}
 }
- 
-.btn-primary:active, .btn-primary.active {
-	background: #007299;
-	box-shadow: none;
+
+.btn-admin-menu {
+	width: 200px;
+}
+
+.btn-circle {
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	padding: 6px 0;
+	font-size: $font-size-xs;
+	line-height: 1.428571429;
+	border-radius: 15px;
 }
 

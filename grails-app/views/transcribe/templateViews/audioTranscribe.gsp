@@ -76,8 +76,8 @@
                                                        placeholder="${message(code: 'default.input.keywordSearch.placeholder', default: "Search by keyword")}">
                                             </div>
                                             <g:each var="cat" in="${wsParams.categories}" status="i">
-                                                <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
+                                                <div class="btn-group btn-group-sm category-filter">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name} <span class="caret"></span></button>
                                                     <ul class="dropdown-menu">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
@@ -95,9 +95,9 @@
 
                                                 </div>
                                             </g:each>
-                                            <div class="btn-group float-end" role="group" aria-label="...">
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-outline-secondary btn-xs ${params.mode == 'list' ? '' : 'active'}"><i class="fa fa-th-large"></i></a>
-                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-outline-secondary btn-xs ${params.mode != 'list' ? '' : 'active'}"><i class="fa fa-th-list"></i></a>
+                                            <div class="btn-group btn-group-sm float-end" role="group" aria-label="...">
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-sm btn-outline-secondary ${params.mode == 'list' ? '' : 'active'}"><i class="fa fa-th-large"></i></a>
+                                                <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-sm btn-outline-secondary ${params.mode != 'list' ? '' : 'active'}"><i class="fa fa-th-list"></i></a>
                                             </div>
                                         </div>
                                         <div id="ct-animals-no-filter">
@@ -233,9 +233,9 @@
                     <div>
                         <div class="classificationRow">
                             <div class="animalName">{{name}} <i>({{scientificName}})</i></div>
-                            <button type="button" class="btn btn-mini btn-outline-secondary animalDelete float-end" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="visually-hidden">Delete selection</span></button>
-                            <button type="button" aria-expanded="false" class="btn btn-link saveCommentButton float-end" tabindex="-1" style="display:none;">Save Comment</button>
-                            <button type="button" aria-expanded="false" class="btn btn-link editCommentButton float-end" tabindex="-1">Add Comment</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary animalDelete float-end" tabindex="-1"><i aria-hidden="true" class="fa fa-close"></i><span class="visually-hidden">Delete selection</span></button>
+                            <button type="button" aria-expanded="false" class="btn btn-sm btn-outline-secondary saveCommentButton float-end" tabindex="-1" style="display:none;">Save Comment</button>
+                            <button type="button" aria-expanded="false" class="btn btn-sm btn-outline-secondary editCommentButton float-end" tabindex="-1">Add Comment</button>
                         </div>
                         <div class="classificationComments">{{comment}}</div>
                         <div class="editClassificationComments" style="display: none;"><label class="visually-hidden">Comment on the {{name}} you found</label><textarea id="{{index}}-comment" class="form-control" rows="1">{{comment}}</textarea></div>
@@ -287,7 +287,9 @@
                         {{#animal.audio}}
                         %{-- do a list, then put URL in data attr or something. Write JS method to pull URL from attr and load wavesurfer... --}%
                         <div class="row" style="padding-bottom: 0.5em;">
-                            <div class="col-sm-1"><a class="btn btn-next audio-sample-detail-play" data-action-play="{{hash}}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
+                            <div class="col-sm-1">
+                                <a class="btn btn-link audio-sample-detail-play" data-action-play="{{hash}}"><i class="fa fa-2x fa-play-circle-o"></i></a>
+                            </div>
                             <div class="col-sm-4 audio-sample-detail" style="border-radius: 4px; border: 1px solid #ddd;"
                                  data-play-link="{{hash}}"
                                  data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="{{hash}}" format="{{ext}}" template="true"/>'></div>

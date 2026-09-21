@@ -48,7 +48,7 @@
             <p><strong>Upload CSV</strong></p>
             <g:if test="${flash.message}">
                 <div class="alert">
-                    <button type="button" class="close" data-bs-dismiss="alert">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
                     ${flash.message}
                 </div>
             </g:if>
@@ -114,8 +114,8 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button type="button" class="btn btn-mini"><i class="fa fa-arrow-up"></i></button>
-                                <button type="button" class="btn btn-mini"><i class="fa fa-arrow-down"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-up"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-down"></i></button>
                             </div>
                         </td>
                     </tr>

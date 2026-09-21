@@ -40,11 +40,11 @@
 <body class="digivol expedition-landing">
 
 <cl:hasProjectBackgroundImage project="${projectInstance}">
-    <g:set var="oldClass" value="" />
+    <g:set var="oldClass" value="light" />
     <g:set var="divClass" value="" />
 </cl:hasProjectBackgroundImage>
 <cl:hasNoProjectBackgroundImage project="${projectInstance}">
-    <g:set var="oldClass" value="grey" />
+    <g:set var="oldClass" value="secondary" />
     <g:set var="divClass" value="old" />
 </cl:hasNoProjectBackgroundImage>
 
@@ -70,7 +70,7 @@
                     <g:if test="${percentComplete < 100}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="fa fa-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks || projectInstance.tutorials.size() > 0}">
-                            <a href="#tutorial" class="btn btn-lg btn-hollow ${oldClass} tutorial">Tutorial Information</a>
+                            <a href="#tutorial" class="btn btn-lg btn-outline-${oldClass} tutorial">Tutorial Information</a>
                             <div id="tutorialContent" class="d-none">
                                 <g:if test="${projectInstance.tutorialLinks}">
                                 <h4>Expedition Tutorial Information</h4>
@@ -102,8 +102,8 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <a class="btn btn-primary btn-lg btn-complete" disabled="disabled" href="#" role="button">Expedition complete <span class="fa fa-check"></span></a>
-                        <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType.name?:'' ])}" class="btn btn-lg btn-hollow ${oldClass} ">See similar expeditions</a>
+                        <a class="btn btn-success btn-lg disabled" href="#" aria-disabled="true" role="button" tabindex="-1">Expedition complete <span class="fa fa-check"></span></a>
+                        <a href="${g.createLink(controller:"project", action:"list", params: [tag: projectInstance.projectType.name?:'' ])}" class="btn btn-lg btn-outline-${oldClass}">See similar expeditions</a>
                     </g:else>
 
                 </div>
@@ -116,15 +116,12 @@
                 <div class="projectActionLinks" >
                     <cl:isLoggedIn>
                         <cl:ifInstitutionAdmin project="${projectInstance}">
-                            <g:link class="btn btn-warning " controller="task"
-                                    action="projectAdmin" id="${projectInstance.id}">Admin</g:link>&nbsp;
-                            <g:link class="btn btn-warning " controller="project"
-                                    action="edit" id="${projectInstance.id}"><i
-                                    class="icon-cog icon-white"></i> Settings</g:link>&nbsp;
+                            <g:link class="btn btn-outline-secondary" controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-table"></i> Task Admin</g:link>&nbsp;
+                            <g:link class="btn btn-outline-secondary" controller="project" action="edit" id="${projectInstance.id}"><i class="fa fa-cog"></i> Settings</g:link>&nbsp;
                         </cl:ifInstitutionAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">
-                        <g:link class="btn btn-secondary btn-hollow grey" controller="task" action="projectAdmin"
+                        <g:link class="btn btn-secondary" controller="task" action="projectAdmin"
                                 id="${projectInstance.id}">Validate tasks</g:link>
                     </cl:ifValidator>
                 </div>
@@ -348,7 +345,7 @@ $(document).ready(function () {
         readMoreText: 'Read more',
         readLessText: 'Read less',
         readMoreBtnPosition: 'after',
-        readMoreBtnAdditionalClasses: 'btn btn-hollow grey btn-sm'
+        readMoreBtnAdditionalClasses: 'btn btn-sm btn-outline-secondary'
     });
 
     // Show tutorial modal if content is present

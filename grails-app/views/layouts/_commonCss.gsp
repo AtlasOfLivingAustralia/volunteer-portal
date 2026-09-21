@@ -10,16 +10,10 @@
     body .navbar .navbar-brand:hover,
     body .navbar .navbar-brand:focus,
     body .navbar .navbar-brand:active,
-    body .btn-primary,
-    body .btn-primary:hover,
-    body .btn-primary:focus,
-    body .btn-primary:active,
-    body .btn-primary.active,
     .progress .progress-bar-transcribed,
     .key.transcribed,
     .pagination > .active > span,
     .pagination > .active > span:hover,
-    .transcription-actions .btn.btn-next,
     .transcription-branding .institution-logo-main {
         background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
     }
@@ -29,7 +23,6 @@
 
     body .navbar,
     body.digivol .navbar,
-    body .btn-primary,
     .pagination > .active > span,
     .pagination > .active > span:hover {
         border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;

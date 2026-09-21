@@ -1,4 +1,16 @@
-body {
-  font-size: $font-size-base;
-  font-family: $font-family-base;
+html {
+  font-size: $font-size-root;
 }
+
+body {
+  font-size: $font-size-body;
+}
+
+// Heading scale. Sized for a 14px body ($font-size-body); h1 is ~1.9x body.
+// Display/hero headings opt in explicitly — see .a-feature in _components.scss.
+h1 { font-size: $font-size-2xl; }   // 26px
+h2 { font-size: $font-size-xl; }    // 22px
+h3 { font-size: $font-size-lg; }    // 18px
+h4 { font-size: $font-size-md; }    // 16px
+h5 { font-size: $font-size-sm; }    // 14px
+h6 { font-size: $font-size-xs; }    // 12px

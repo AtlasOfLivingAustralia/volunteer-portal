@@ -18,7 +18,9 @@
             ]
         %>
 
-        <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-success">Create a new Picklist</a>
+        <a href="${createLink(controller: 'picklist', action: 'create')}" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Create a new Picklist
+        </a>
     </cl:headerContent>
 
     <div class="card">
@@ -40,8 +42,8 @@
                                 <td><g:link action="show"
                                             id="${picklistInstance.id}">${picklistInstance.id}</g:link></td>
                                 <td>${picklistInstance.uiLabel}</td>
-                                <td><g:link class="btn btn-secondary" controller="picklist" action="show"
-                                            id="${picklistInstance.id}">View</g:link></td>
+                                <td><g:link class="btn btn-sm btn-outline-secondary" controller="picklist" action="show" title="View Picklist"
+                                            id="${picklistInstance.id}"><i class="fa fa-eye"></i></g:link></td>
                             </tr>
                         </g:each>
                         </tbody>

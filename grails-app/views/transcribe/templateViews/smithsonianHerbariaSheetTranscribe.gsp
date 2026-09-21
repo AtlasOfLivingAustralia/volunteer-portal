@@ -29,7 +29,7 @@
                                 </td>
                                 <td style="text-align: right">
                                     <div class="col-md-10">
-                                        <button type="button" class="btn btn-info btnCopyFromPreviousTask"
+                                        <button type="button" class="btn btn-sm btn-outline-secondary btnCopyFromPreviousTask"
                                                 href="#task_selector"
                                                 style="">Copy from previous task</button>
                                     </div>
@@ -38,10 +38,6 @@
                                         <cl:helpText>
                                             Clicking this button will allow you to select a previously transcribed task to copy values from
                                         </cl:helpText>
-%{--                                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                                           title="Clicking this button will allow you to select a previously transcribed task to copy values from">--}%
-%{--                                            <i class="fa fa-question help-container"></i>--}%
-%{--                                        </a>--}%
                                     </div>
                                 </td>
                             </tr>

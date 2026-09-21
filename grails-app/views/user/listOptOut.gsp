@@ -32,7 +32,7 @@
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
                 <div class="col-md-1">
-                    <input type="submit" class="save btn btn-secondary" id="addButton"
+                    <input type="submit" class="save btn btn-sm btn-primary" id="addButton"
                            value="${message(code: 'default.button.add.label', default: 'Add')}"/>
                 </div>
             </div>
@@ -69,7 +69,7 @@
 
                                 <td>
                                 <!-- Delete Record -->
-                                    <button role="button" class="btn btn-danger btn-xs delete-optout"
+                                    <button role="button" class="btn btn-danger btn-sm delete-optout"
                                             data-user-name="${userOptOut.user.displayName}"
                                             data-href="${createLink(controller: "user", action: "deleteOptOut", id: userOptOut.id, params: params)}"
                                             title="Delete opt-out request"><i class="fa fa-times"></i></button>

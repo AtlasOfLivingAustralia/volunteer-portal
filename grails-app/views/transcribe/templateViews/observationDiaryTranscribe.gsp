@@ -8,16 +8,18 @@
 <div class="row">
     <div class="col-md-12">
         <span id="journalPageButtons">
-            <button type="button" class="btn btn-small" id="showPreviousJournalPage"
-                    title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                    src="left_arrow.png" /> show previous journal page</button>
-            <button type="button" class="btn btn-small" id="showNextJournalPage"
-                    title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
-                    <asset:image src="right_arrow.png" /></button>
-            <button type="button" class="btn btn-small" id="rotateImage"
-                    title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
-                    style="vertical-align: middle; margin: 0 !important;"
-                    src="rotate.png" /></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="showPreviousJournalPage"
+                    title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
+                <i class="fa fa-arrow-left"></i> Show previous journal page
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="showNextJournalPage"
+                    title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
+                Show next journal page <i class="fa fa-arrow-right"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="rotateImage"
+                    title="Rotate the page 180 degrees">
+                Rotate <i class="fa fa-rotate-right"></i>
+            </button>
         </span>
     </div>
 </div>

@@ -47,7 +47,7 @@
     <cl:ifSiteAdmin>
         </div>
         <div class="col-sm-2">
-            <a class="btn btn-primary" href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage</a>
+            <a class="btn btn-secondary" href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage</a>
     </cl:ifSiteAdmin>
 </cl:headerContent>
 
@@ -84,8 +84,8 @@
                         <div class="card-filter">
                             <div class="custom-search-input body">
                                 <div class="input-group">
-                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
-                                    <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                    <input type="text" id="searchbox" class="form-control" placeholder="Search e.g. Bivalve"/>
+                                    <button id="btnSearch" class="btn" type="button">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </div>
@@ -99,9 +99,9 @@
                         <div class="thumbnail institution">
                             <div class="institution-settings-btn">
                                 <cl:ifInstitutionAdmin institution="${inst}">
-                                    <a class="btn btn-warning btn-sm float-end" title="Settings" data-bs-toggle="tooltip"
-                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}"><i
-                                            class="fa fa-cog"></i></a>
+                                    <a class="btn btn-outline-secondary btn-sm float-end" title="Settings" data-bs-toggle="tooltip" href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}">
+                                        <i class="fa fa-cog"></i>
+                                    </a>
                                 </cl:ifInstitutionAdmin>
                             </div>
                             <div class="logo-centre">

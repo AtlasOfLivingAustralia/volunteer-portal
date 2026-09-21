@@ -41,6 +41,6 @@
 </div>
 <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-        <g:link class="btn btn-primary" controller="template" action="spotterTemplateConfig" id="${templateInstance.id}">Configure Audio Entries</g:link>
+        <g:link class="btn btn-sm btn-outline-secondary" controller="template" action="spotterTemplateConfig" id="${templateInstance.id}">Configure Audio Entries</g:link>
     </div>
 </div>

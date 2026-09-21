@@ -24,7 +24,7 @@
 <div class="container">
     <div class="card">
         <div class="card-body">
-            <a id="migrate-button" class="btn btn-success" href="javascript:void(0)">Migrate Selected</a>
+            <a id="migrate-button" class="btn btn-primary" href="javascript:void(0)">Migrate Selected</a>
             <div id="list-institution" class="content scaffold-list table-responsive" role="main">
                 <table class="table table-striped table-hover">
                     <thead>

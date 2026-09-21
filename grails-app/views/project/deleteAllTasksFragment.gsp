@@ -13,7 +13,7 @@
         <div class="control-group">
             <div class="controls">
                 <button class="btn btn-secondary" id="btnCancelDeleteAllTasks">Cancel</button>
-                <button class="btn btn-primary" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
+                <button class="btn btn-danger" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
             </div>
         </div>
     </div>

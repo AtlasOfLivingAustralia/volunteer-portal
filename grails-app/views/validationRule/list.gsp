@@ -15,8 +15,9 @@
                     [link: createLink(controller: 'admin', action: 'index'), label: 'Administration'],
             ]
         %>
-        <a href="${createLink(action: 'addRule')}" class="btn btn-success"><i
-                class="icon-plus icon-white"></i>&nbsp;Add new rule</a>
+        <a href="${createLink(action: 'addRule')}" class="btn btn-primary">
+            <i class="fa fa-plus"></i>&nbsp;Add new rule
+        </a>
     </cl:headerContent>
     <div class="card">
         <div class="card-body">
@@ -47,10 +48,10 @@
                                 <td>${rule.message}</td>
                                 <td style="width: 90px;">
                                     <a href="${createLink(controller: 'validationRule', action: 'delete', id: rule.id)}"
-                                       class="btn btn-xs btn-danger delete-button" title="Delete rule '${rule.name}"><i
+                                       class="btn btn-sm btn-danger delete-button" title="Delete rule '${rule.name}"><i
                                             class="fa fa-remove"></i></a>
                                     <a href="${createLink(controller: 'validationRule', action: 'edit', id: rule.id)}"
-                                       class="btn btn-secondary btn-xs" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
+                                       class="btn btn-sm btn-outline-secondary" title="Edit rule '${rule.name}"><i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                         </g:each>

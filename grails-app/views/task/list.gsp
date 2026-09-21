@@ -50,7 +50,7 @@
                                id="projectAdminSearch" value="${params.q}"
                                placeholder="Search tasks..."
                                size="60"/>
-                        <button class="btn btn-small btn-primary" id="searchButton">
+                        <button class="btn btn-sm btn-primary" id="searchButton">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -62,15 +62,15 @@
 
                 </div>
                 <div class="col-md-2">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                        href="${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}">Reset</a>
                 </div>
                 <div class="col-md-2">
                     <div class="btn-group btn-group-sm float-end">
-                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-outline-secondary ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" class="btn btn-sm btn-outline-secondary ${params.mode != 'thumbs' ? 'active' : ''}" title="View task list">
                             <i class="fa fa-th-list"></i>
                         </g:link>
-                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-outline-secondary ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
+                        <g:link action="projectAdmin" id="${projectInstance.id}" params="[mode: 'thumbs', max: 48]" class="btn btn-sm btn-outline-secondary ${params.mode == 'thumbs' ? 'active' : ''}" title="View task thumbnails">
                             <i class="fa fa-th-large"></i>
                         </g:link>
                     </div>
@@ -95,16 +95,12 @@
                                               title="${message(code: 'task.externalIdentifier.label', default: 'Image ID')}"
                                               params="${[q: params.q]}"/>
 
-%{--                            <g:each in="${extraFields}"--}%
-%{--                                    var="field"><th>${field.key?.capitalize().replaceAll(~/([a-z])([A-Z])/, '$1 $2')}</th></g:each>--}%
-
                             <th><span class=""><g:message code="transcription.fullyTranscribedBy.label" default="Fully Transcribed By" /></span></th>
 
                             <g:sortableColumn property="isValid" title="${message(code: 'task.isValid.label', default: 'Status')}"
                                               params="${[q: params.q]}" style="text-align: center;"/>
 
                             <th style="text-align: center;">Action</th>
-                            %{--<th>debug</th>--}%
 
                         </tr>
                         </thead>
@@ -116,10 +112,6 @@
                                             id="${taskInstance.id}">${taskInstance.id}</g:link></td>
 
                                 <td>${fieldValue(bean: taskInstance, field: "externalIdentifier")}</td>
-
-%{--                                <g:each in="${extraFields}" var="field"><td>${field.value[i]?.value}</td></g:each>--}%
-
-                            %{--<td>${taskInstance.fullyTranscribedBy?.replaceAll(/@.*/, "...")}</td>--}%
 
                                 <td>
                                     <g:set var="transcribers" value="${taskInstance.transcriptions*.fullyTranscribedBy}" />
@@ -143,12 +135,14 @@
 
                                 <td style="text-align: center;">
                                     <g:if test="${taskInstance.isFullyTranscribed}">
-                                        <g:link class="btn btn-sm btn-info" controller="task" action="show"
-                                                id="${taskInstance.id}">View</g:link>
+                                        <g:link class="btn btn-sm btn-outline-secondary" controller="task" action="show"
+                                                id="${taskInstance.id}"><i class="fa fa-eye"></i></g:link>
                                     </g:if>
                                     <g:else>
-                                        <button class="btn btn-sm btn-secondary"
-                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">Transcribe</button>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                onclick="location.href = '${createLink(controller:'transcribe', action:'task', id:taskInstance.id)}'">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
                                     </g:else>
                                 </td>
 

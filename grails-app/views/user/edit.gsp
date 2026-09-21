@@ -109,7 +109,7 @@
                         <div class="form-group">
                             <label for="roles" class="form-label col-md-3">
                                 <g:message code="user.roles.label" default="Roles"/>
-                                <a class="btn btn-link"
+                                <a class="btn btn-sm btn-outline-secondary"
                                    href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
                                    title="Edit User Roles">
                                     <i class="fa fa-users" style="font-size: 1.2em;"></i>
@@ -176,7 +176,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <g:actionSubmit class="save btn btn-primary" action="addUserLabel"
+                                    <g:actionSubmit class="save btn btn-sm btn-primary" action="addUserLabel"
                                                     value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/>
                                 </div>
                             </div>

@@ -69,16 +69,14 @@
             </g:if>
             <p style="margin-top: 20px;"><%=institutionInstance.description%></p>
             <div class="cta-primary ">
-                <a class="btn btn-primary btn-lg" href="#expeditionList" role="button">See our expeditions
+                <a class="btn btn-primary" href="#expeditionList" role="button">See our expeditions
                     <span class="fa fa-arrow-down"></span></a>
-                <a class="btn btn-lg btn-hollow grey d-none">Learn more</a>
+
                 <cl:ifAdmin>
-                    <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
-                            controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i
-                            class="fa fa-cog icon-white"></i>&nbsp;Settings</g:link>&nbsp;
-                    <g:link style="margin-right: 5px; color: white" class="btn btn-lg btn-warning pull-rightZ"
-                            controller="admin" action="manageUserRoles" params="${[institution: institutionInstance?.id]}"><i
-                            class="fa fa-user"></i>&nbsp;User Permissions</g:link>&nbsp;
+                    <g:link style="margin-right: 5px;" class="btn btn-sm btn-outline-secondary"
+                            controller="institutionAdmin" action="edit" id="${institutionInstance.id}"><i class="fa fa-cog"></i>&nbsp;Settings</g:link>&nbsp;
+                    <g:link style="margin-right: 5px;" class="btn btn-sm btn-outline-secondary"
+                            controller="admin" action="manageUserRoles" params="${[institution: institutionInstance?.id]}"><i class="fa fa-user"></i>&nbsp;User Permissions</g:link>&nbsp;
                 </cl:ifAdmin>
             </div>
         </div>
@@ -157,14 +155,14 @@
                     <div class="col-sm-6">
                         <div class="card-filter">
                             <div class="btn-group float-end" role="group" aria-label="...">
-                                <a href="?mode=" class="btn btn-outline-secondary btn-xs ${params.mode != 'list' ? 'active' : ''}"><i class="fa fa-th-large"></i></a>
-                                <a href="?mode=list" class="btn btn-outline-secondary btn-xs ${params.mode == 'list' ? 'active' : ''}"><i class="fa fa-th-list"></i></a>
+                                <a href="?mode=" class="btn btn-outline-secondary btn-sm ${params.mode != 'list' ? 'active' : ''}"><i class="fa fa-th-large"></i></a>
+                                <a href="?mode=list" class="btn btn-outline-secondary btn-sm ${params.mode == 'list' ? 'active' : ''}"><i class="fa fa-th-list"></i></a>
                             </div>
 
                             <div class="custom-search-input body">
                                 <div class="input-group">
-                                    <input type="text" id="searchbox" class="form-control input-lg" placeholder="Search e.g. Bivalve"/>
-                                    <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                                    <input type="text" id="searchbox" class="form-control" placeholder="Search e.g. Bivalve"/>
+                                    <button id="btnSearch" class="btn" type="button">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </div>
@@ -180,18 +178,20 @@
                         <g:set var="activeFilterMode" value="${ params.activeFilter ?: ProjectActiveFilterType.showAll}" />
                         <g:set var="urlParams" value="${[sort: params.sort ?: "", order: params.order ?: "", offset: 0, q: params.q ?: "", mode: params.mode ?: "", statusFilter:statusFilterMode, activeFilter: activeFilterMode]}" />
 
-                        <div class="btn-group float-end hide" style="padding-right: 10px">
-                            <g:each in="${ProjectStatusFilterType.values()}" var="mode">
-                                <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
-                                <a href="${href}" class="btn btn-small ${statusFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
-                            </g:each>
+                        <div class="btn-group float-end d-none" aria-label="Filter by status" style="padding-right: 10px">
+                        <g:each in="${ProjectStatusFilterType.values()}" var="mode">
+                            <g:set var="href" value="?${(urlParams + [statusFilter: mode]).collect { it }.join('&')}" />
+                            <g:set var="isActive" value="${statusFilterMode.toString() == mode?.toString()}" />
+                            <a href="${href}" class="btn btn-sm btn-outline-secondary ${isActive ? 'active' : ''}" ${isActive ? 'aria-current="true"' : ''}>${mode.description}</a>
+                        </g:each>
                         </div>
 
                         <cl:ifAdmin>
-                            <div class="btn-group float-end" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
+                            <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
                                 <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                     <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
-                                    <a href="${href}" class="btn btn-warning btn-small ${activeFilterMode == mode?.toString() ? "active" : ""}">${mode.description}</a>
+                                    <g:set var="isActive" value="${activeFilterMode.toString() == mode?.toString()}" />
+                                    <a href="${href}" class="btn btn-outline-secondary btn-sm ${isActive ? 'active' : ''}" ${isActive ? 'aria-current="true"' : ''}>${mode.description}</a>
                                 </g:each>
                             </div>
                         </cl:ifAdmin>

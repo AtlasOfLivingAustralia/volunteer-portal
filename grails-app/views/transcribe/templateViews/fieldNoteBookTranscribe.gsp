@@ -17,24 +17,26 @@
         <div class="col-md-12">
             <div class="btn-toolbar" id="journalPageButtons">
                 <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-outline-secondary" id="showPreviousJournalPage"
-                            title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}><asset:image
-                        src="left_arrow.png" /> show previous journal page</button>
-                <button type="button" class="btn btn-outline-secondary" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>show next journal page
-                        <asset:image src="right_arrow.png" /></button>
-                <button type="button" class="btn btn-outline-secondary" id="rotateImage"
-                        title="Rotate the page 180 degrees">Rotate&nbsp;<asset:image
-                        style="vertical-align: middle; margin: 0 !important;"
-                        src="rotate.png" /></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="showPreviousJournalPage"
+                            title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
+                        <i class="fa fa-arrow-left"></i> Show previous journal page
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="showNextJournalPage"
+                            title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
+                        Show next journal page <i class="fa fa-arrow-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="rotateImage"
+                            title="Rotate the page 180 degrees">
+                        Rotate <i class="fa fa-rotate-right"></i>
+                    </button>
                 </div>
 
                 <div class="btn-group btn-group-sm float-end">
-                    <button type="button" class="btn btn-outline-secondary fontSizeButton" title="Small sized fonts"
+                    <button type="button" class="btn btn-sm btn-outline-secondary fontSizeButton" title="Small sized fonts"
                             style="font-size: 12px">A</button>
-                    <button type="button" class="btn btn-outline-secondary fontSizeButton" title="Medium sized fonts"
+                    <button type="button" class="btn btn-sm btn-outline-secondary fontSizeButton" title="Medium sized fonts"
                             style="font-size: 15px">A</button>
-                    <button type="button" class="btn btn-outline-secondary fontSizeButton" title="Large sized fonts"
+                    <button type="button" class="btn btn-sm btn-outline-secondary fontSizeButton" title="Large sized fonts"
                             style="font-size: 18px">A</button>
 
                 </div>
@@ -71,11 +73,7 @@
                             <cl:helpText placement="left">
                                 ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'--}%
-%{--                               palcement="left"><i class="fa fa-question help-container"></i>--}%
-%{--                            </a>--}%
-                            <button class="btn btn-outline-secondary btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
+                            <button class="btn btn-outline-secondary btn-sm float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="fa fa-expand"></i></button>
                         </div>
                         <div class="col-md-12">
@@ -99,10 +97,7 @@
                             <cl:helpText placement="left">
                                 ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}' placement="left"><i--}%
-%{--                                    class="fa fa-question help-container"></i></a>--}%
-                            <button class="btn btn-outline-secondary btn-mini float-end textAreaResizeButton" style="margin-bottom: 3px"><i
+                            <button class="btn btn-outline-secondary btn-sm float-end textAreaResizeButton" style="margin-bottom: 3px"><i
                                     class="fa fa-expand"></i></button>
                         </div>
 
@@ -130,11 +125,6 @@
                             <cl:helpText placement="left">
                                 ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
                             </cl:helpText>
-%{--                            <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp"--}%
-%{--                               title='${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}'--}%
-%{--                               placement="left">--}%
-%{--                                <i class="fa fa-question help-container"></i>--}%
-%{--                            </a>--}%
                         </div>
                         <div class="col-md-12">
                             <g:textArea class="form-control occurrenceRemarks" name="recordValues.0.occurrenceRemarks"

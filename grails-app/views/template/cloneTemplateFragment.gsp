@@ -10,7 +10,7 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="btnCancelCloneTemplate">Cancel</button>
-        <g:submitButton class="btn btn-success" id="btnCopyTemplate" name="clone">Clone template</g:submitButton>
+        <g:submitButton class="btn btn-primary" id="btnCopyTemplate" name="clone">Clone template</g:submitButton>
     </div>
 </g:form>
 

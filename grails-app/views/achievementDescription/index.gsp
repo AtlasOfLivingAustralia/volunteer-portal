@@ -16,8 +16,9 @@
 
     %>
 
-    <a class="btn btn-success" href="${createLink(action: "create")}"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Badge</a>
+    <a class="btn btn-primary" href="${createLink(action: "create")}">
+        <i class="fa fa-plus"></i>&nbsp;Add Badge
+    </a>
 </cl:headerContent>
 <div class="container" role="main">
     <div class="card">

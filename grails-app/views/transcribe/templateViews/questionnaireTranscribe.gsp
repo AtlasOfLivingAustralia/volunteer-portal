@@ -26,9 +26,9 @@
                         <span>Steps</span>
                         <g:each in="${fieldList}" var="f" status="st">
                             <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>
-                            <button type="button" class="btn btn-circle btn-secondary ${isActive}" data-target="#qaCarousel" data-slide-to="${st}">${st + 1}</button>
+                            <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${isActive}" data-target="#qaCarousel" data-slide-to="${st}">${st + 1}</button>
                         </g:each>
-                        <button type="button" class="btn btn-circle btn-secondary ${validator ? 'active' : ''}"
+                        <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${validator ? 'active' : ''}"
                                                                     title="${message(code: 'questionnarie.summary.button.tooltip', default: 'Click any time to view and submit your choices')}"
                                                                     data-container="body" data-target="#qaCarousel"
                                                                     data-slide-to="${fieldList.size()}">${fieldList.size() + 1}</button>
@@ -96,19 +96,19 @@
                 <div class="col-12">
 
                     <div class="transcription-actions">
-                        <button id="carousel-control-right" type="button" class="btn btn-outline-secondary float-end btn-next qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
+                        <button id="carousel-control-right" type="button" class="btn btn-outline-secondary float-end qt-next">Next <i class="fa fa-chevron-right fa-sm"></i></button>
                         <g:if test="${validator}">
                             <div class="btn-group float-end">
-                                <button type="button" id="btnValidate" class="btn btn-secondary btn-next bvp-submit-button">
+                                <button type="button" id="btnValidate" class="btn btn-success bvp-submit-button">
                                     ${message(code: 'default.button.validate.label', default: 'Submit validation')}
                                 </button>
-                                <button type="button" id="btnDontValidate" class="btn btn-secondary btn-next bvp-submit-button">
+                                <button type="button" id="btnDontValidate" class="btn btn-outline-secondary bvp-submit-button">
                                     ${message(code: 'default.button.dont.validate.label', default: 'Save partial validation')}
                                 </button>
                             </div>
                         </g:if>
                         <g:else>
-                            <button id="btnSave" type="button" class="btn btn-outline-secondary float-end btn-next bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
+                            <button id="btnSave" type="button" class="btn btn-primary float-end bvp-submit-button" style="display: none">Submit <i class="fa fa-chevron-right fa-sm"></i></button>
                             <button id="btnSavePartial" type="button" class="btn btn-outline-secondary float-end">Save <i class="fa fa-check fa-sm"></i></button>
                         </g:else>
                         <button type="button" class="btn btn-outline-secondary float-start qt-previous"><i class="fa fa-chevron-left fa-sm"></i> Back</button>
@@ -126,7 +126,7 @@
     </div>
 
 <script id="template-validation-badge" type="x-tmpl-mustache">
-    <span class="badge badge-{{badgeType}}" title="{{title}}"><i class="icon-{{iconType}} icon-white"></i></span>
+    <span class="badge badge-{{badgeType}}" title="{{title}}"><i class="fa fa-{{iconType}}"></i></span>
 </script>
 
 <script id="image-select-display" type="x-tmpl-mustache">
@@ -254,7 +254,7 @@
               var $parent = $('#validation-'+id);
               var isError = error.type === 'Error';
               var badgeType =  isError ? 'important' : 'warning';
-              var iconType = "remove";
+              var iconType = "times"; // remove icon
               var $badge = mu.appendTemplate($parent, "template-validation-badge", {
                 title: error.message,
                 badgeType: badgeType,

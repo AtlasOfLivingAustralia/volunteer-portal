@@ -14,8 +14,8 @@
         <div class="control-group">
             <div class="controls">
                 <g:form controller="project" action="delete" id="${projectInstance.id}">
-                    <button class="btn" id="btnCancelDeleteExpedition">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Delete expedition</button>
+                    <button class="btn btn-secondary" id="btnCancelDeleteExpedition">Cancel</button>
+                    <button class="btn btn-danger" type="submit">Delete expedition</button>
                 </g:form>
             </div>
         </div>

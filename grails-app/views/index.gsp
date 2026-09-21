@@ -42,7 +42,7 @@
 
         <div class="cta-primary">
             <a class="btn btn-primary btn-lg" href="#expeditionList" role="button"><g:message code="index.cta.getInvolved" />&nbsp;<span class="fa fa-arrow-down"></span></a>
-            <a class="btn btn-lg btn-hollow" href="#learnMore"><g:message code="index.cta.learnMore" /></a>
+            <a class="btn btn-lg btn-outline-light" href="#learnMore"><g:message code="index.cta.learnMore" /></a>
         </div>
 
         <div class="row">
@@ -114,7 +114,7 @@
                         </g:link>
                     </cl:ifNewsItemHasThumb>
                     <g:set var="newsItemUrl" value="${createLink(controller: 'newsItem', action: 'show', id: newsItem.id)}"/>
-                    ${raw(newsItem.truncateContent(200).replace('[linktag]', "<br /><a href='${newsItemUrl}' class='btn btn-hollow grey btn-sm news-item-more'>Read more...</a>"))}
+                    ${raw(newsItem.truncateContent(200).replace('[linktag]', "<br /><a href='${newsItemUrl}' class='btn btn-sm btn-outline-secondary news-item-more'>Read more...</a>"))}
                 </div>
                 <div class="index-news-nav">
                     <div class="index-news__archive-link">

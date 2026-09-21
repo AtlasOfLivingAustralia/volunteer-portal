@@ -24,10 +24,10 @@
                     <div class="well well-sm">
                         <h3>General</h3>
                         <hr/>
-                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-secondary">Mapping tool</a>
-                        <a href="${createLink(action: 'migrateProjectsToInstitutions')}"
-                           class="btn btn-secondary">Expedition-Institution migration tool</a>
-                        <g:link action="updateUsers" class="btn btn-secondary">Update users now</g:link>
+                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-sm btn-outline-secondary">Mapping tool</a>
+%{--                        <a href="${createLink(action: 'migrateProjectsToInstitutions')}"--}%
+%{--                           class="btn btn-sm btn-outline-secondary">Expedition-Institution migration tool</a>--}%
+                        <g:link action="updateUsers" class="btn btn-sm btn-outline-secondary">Update users from Auth</g:link>
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <div class="well well-sm">
                         <h3>Caches</h3>
                         <hr/>
-                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-secondary">Clear page caches</a>
-                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-secondary">Clear entity caches</a>
+                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-sm btn-outline-secondary">Clear page caches</a>
+                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-sm btn-outline-secondary">Clear entity caches</a>
                     </div>
                 </div>
             </div>
@@ -48,9 +48,12 @@
                     <div class="well" style="margin-top: 10px">
                         <h3>Full Text Index</h3>
                         <hr/>
-                        <button class="confirmation-required btn btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
+                        <div class="alert alert-warning" role="alert">
+                            These functions will overwrite the current indexes with new values. This could take some time.
+                        </div>
+                        <button class="confirmation-required btn btn-sm btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
                                 data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
-                        <button class="confirmation-required btn btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
+                        <button class="confirmation-required btn btn-sm btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
                                 data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
 
                         <div>
@@ -62,11 +65,11 @@
 
                                 <div class="form-group">
                                     <div id="set-query" class="col-sm-10">
-                                        <button id="match_all" class="btn btn-secondary btn-sm" data-query="matchAll">Match All</button>
-                                        <button id="project_name" class="btn btn-secondary btn-sm"
+                                        <button id="match_all" class="btn btn-sm btn-outline-secondary" data-query="matchAll">Match All</button>
+                                        <button id="project_name" class="btn btn-sm btn-outline-secondary"
                                                 data-query="projectName">Project Name</button>
-                                        <button id="project_id" class="btn btn-secondary btn-sm" data-query="projectId">Project Id</button>
-                                        <button id="task_id" class="btn btn-secondary btn-sm" data-query="taskId">Task Id</button>
+                                        <button id="project_id" class="btn btn-sm btn-outline-secondary" data-query="projectId">Project Id</button>
+                                        <button id="task_id" class="btn btn-sm btn-outline-secondary" data-query="taskId">Task Id</button>
                                     </div>
                                 </div>
 
@@ -115,7 +118,7 @@
 
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <g:submitButton class="btn btn-secondary" name="submitQuery" value="Run Query"/>
+                                        <g:submitButton class="btn btn-sm btn-primary" name="submitQuery" value="Run Query"/>
                                     </div>
                                 </div>
                             </fieldset>
@@ -129,7 +132,7 @@
                     <div class="well" style="margin-top: 10px">
                         <h3>S3 Configuration</h3>
                         <hr/>
-                        <button id="test-s3" class="btn btn-secondary" data-href="${createLink(action: 'testS3')}">Test S3</button>
+                        <button id="test-s3" class="btn btn-sm btn-secondary" data-href="${createLink(action: 'testS3')}">Test S3</button>
                         <span id="test-s3-spinner" class="d-none"><cl:spinner/></span>
 
                         <div id="test-s3-results" class="d-none" style="margin-top: 15px">

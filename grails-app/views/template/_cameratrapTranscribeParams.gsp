@@ -51,8 +51,8 @@
                   class="form-control"/>
     </div>
     <div class="col-md-3">
-        <button type="button" class="btn btn-primary btn-view-ct-picklist"><i
-                class="fa fa-eye"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-secondary btn-view-ct-picklist">
+            Manage Wildcount Animals</button>
     </div>
 </div>
 

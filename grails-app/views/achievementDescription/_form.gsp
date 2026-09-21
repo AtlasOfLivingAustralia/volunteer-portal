@@ -80,7 +80,7 @@
         <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
              width="140" height="140"/>
         <input type="file" id="file-select" data-filename-placement="inside"/>
-        <input type="button" id="upload-button" class="btn btn-success" value="Upload"/>
+        <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
     </div>
 </div>
 

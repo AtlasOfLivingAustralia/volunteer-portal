@@ -26,7 +26,9 @@
             ]
         %>
         <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-success">Create new template</a>
+            <a href="${createLink(action: 'create')}" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Create new template
+            </a>
         </div>
     </cl:headerContent>
 
@@ -92,8 +94,8 @@
                               value="${params?.status}" noSelection="['':'- View ALL templates -']" />
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-secondary bs3" id="apply-filter">Apply</button>
-                    <a class="btn btn-secondary bs3"
+                    <button type="button" class="btn btn-sm btn-secondary" id="apply-filter">Apply</button>
+                    <a class="btn btn-sm btn-outline-secondary"
                        href="${createLink(controller: 'template', action: 'list')}">Reset</a>
                 </div>
             </div>
@@ -142,26 +144,26 @@
                                 <td>${fieldValue(bean: templateInstance, field: "viewName")}</td>
 
                                 <td style="white-space: nowrap;">
-                                    <a class="btn btn-xs btn-outline-secondary btnCloneTemplate" alt="Clone" title="Clone Template"><i class="fa fa-clone"></i></a>
+                                    <a class="btn btn-sm btn-outline-secondary btnCloneTemplate" alt="Clone" title="Clone Template"><i class="fa fa-clone"></i></a>
                             <g:if test="${templateListItem.canEdit}">
-                                    <a class="btn btn-xs btn-outline-secondary" alt="Edit" title="Edit"
+                                    <a class="btn btn-sm btn-outline-secondary" alt="Edit" title="Edit"
                                        href="${createLink(controller: 'template', action: 'edit', id: templateInstance.id)}">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                             </g:if>
                             <g:else>
-                                    <button class="btn btn-xs btn-outline-secondary" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
                             </g:else>
-                                    <a class="btn btn-xs btn-outline-secondary" alt="Preview Template" title="Preview Template"
+                                    <a class="btn btn-sm btn-outline-secondary" alt="Preview Template" title="Preview Template"
                                        href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
                                         <i class="fa fa-tv"></i>
                                     </a>
                             <cl:ifSiteAdmin>
                             <g:if test="${templateListItem.canEdit && templateInstance.projects?.size() == 0}">
-                                    <a class="btn btn-xs btn-danger btnDeleteTemplate" data-link-count="${templateInstance.projects?.size()}" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                                    <a class="btn btn-sm btn-danger btnDeleteTemplate" data-link-count="${templateInstance.projects?.size()}" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                             </g:if>
                             <g:else>
-                                    <button class="btn btn-xs btn-danger" alt="Delete" title="You cannot delete this template" disabled><i class="fa fa-times"></i></button>
+                                    <button class="btn btn-sm btn-danger" alt="Delete" title="You cannot delete this template" disabled><i class="fa fa-times"></i></button>
                             </g:else>
                             </cl:ifSiteAdmin>
                                 </td>

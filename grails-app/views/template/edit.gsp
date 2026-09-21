@@ -38,9 +38,6 @@
                     [link: createLink(controller: 'template', action: 'list'), label: message(code: 'template.manage.label', default: "Manage Templates")]
             ]
         %>
-        <div>
-            <a href="${createLink(action: 'create')}" class="btn btn-secondary">Create new template</a>
-        </div>
     </cl:headerContent>
 
     <div class="card">
@@ -62,8 +59,8 @@
                                 <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
                             </div>
                             <div class="col-md-3">
-                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-secondary" id="btnEditFields" label="Edit Fields"/>
-                                <button class="btn btn-secondary" id="btnPreview">Preview Template</button>
+                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
+                                <button class="btn btn-sm btn-outline-secondary" id="btnPreview">Preview Template</button>
                             </div>
                         </div>
 
@@ -160,7 +157,7 @@
                             <g:message code="template.project.label"
                                        default="Projects that use this template:"/>
                             &nbsp;
-                            <button class="btn btn-xs btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
                         </label>
 
                         <div class="col-md-6">

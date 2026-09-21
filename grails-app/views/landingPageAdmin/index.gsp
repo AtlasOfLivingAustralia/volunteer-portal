@@ -16,10 +16,10 @@
 
     %>
 
-    <g:link class="btn btn-success" action="create"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Landing Page</g:link>
-    %{--<a class="btn btn-success" href="${createLink(action: "edit", params: [mode: 'create'])}"><i
-            class="icon-plus icon-white"></i>&nbsp;Add Landing Page</a>--}%
+    <g:link class="btn btn-primary" action="create">
+        <i class="fa fa-plus"></i>&nbsp;Add Landing Page
+    </g:link>
+
 </cl:headerContent>
 <div class="container" role="main">
     <div class="card">
@@ -77,11 +77,15 @@
 
                                 <td style="vertical-align: middle;">
                                     <g:form url="[action: 'delete', id: landingPage.id]" method="DELETE">
-                                        <g:actionSubmit class="btn btn-danger delete-landingPage"
-                                                        value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                                        <a class="btn btn-outline-secondary"
-                                           href="${createLink(controller: 'landingPageAdmin', action: 'edit', id: landingPage.id)}"><i
-                                                class="fa fa-edit"></i></a>
+                                        <button type="submit" name="_action_delete"
+                                                class="btn btn-sm btn-danger delete-landingPage"
+                                                title="${message(code: 'default.button.delete.label', default: 'Delete')}">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                           href="${createLink(controller: 'landingPageAdmin', action: 'edit', id: landingPage.id)}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </g:form>
                                 </td>
 

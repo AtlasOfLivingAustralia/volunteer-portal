@@ -1,6 +1,7 @@
 .a-feature {
 	margin-bottom: 0;
 	padding: 15% 0 10% 0;
+
 	&.home {
 		color: white;
 		//background: url(../img/feature-digivol-b.jpg) no-repeat center center fixed;
@@ -13,6 +14,7 @@
 		background-size: cover;
 		padding-bottom: 0%;
 	}
+
 	&.wildlifespotter {
 		color: white;
 		background-position: center;
@@ -22,6 +24,7 @@
 		-o-background-size: cover;
 		background-size: cover;
 		padding: 6% 0 0 0;
+
 		h1 {
 			text-transform: uppercase;
 			color: #CCD969;
@@ -30,12 +33,19 @@
 				border-bottom: 1px solid #94867D;
 			}
 		}
+
 		p {
-			font-size: 21px;
+			font-size: $font-size-xl;
 			line-height: 26px;
 			margin-bottom: 27px;
 		}
 	}
+
+	&.home h1,
+	&.wildlifespotter h1 {
+		font-size: $font-size-4xl;   // 35px — hero display heading
+	}
+
 	&.institution {
 		background-color: #fff;
 		padding: 6% 0 0 0;
@@ -46,10 +56,11 @@
 			margin-top: 20px;
 		}
 		.progress-legend {
-			font-size: 14px;
+			font-size: $font-size-sm;
 			line-height: 18px;
 		}	
 	}
+
 	&.simple-header {
 		background-color: #fff;
 		padding:  3% 0 3% 0;
@@ -57,6 +68,7 @@
 			color: $black;
 		}
 	}
+
 	&.expedition {
 		background-color: #fff;
 		padding: 60px 0 0 0;
@@ -68,6 +80,7 @@
 		-moz-background-size: cover;
 		-o-background-size: cover;
 		background-size: cover;
+
 		.logo-holder {
 			width: 90px;
 			height: 90px;
@@ -77,120 +90,135 @@
 			border-radius: 4px;
 			display: table-cell;
 			vertical-align: middle;
+
 			img {
 				max-height: 60px;
 				max-width: none;
 			}
 		}
+
 		p {
 			color: #eee;
 		}
+
 		a.forum-link {
 			color: #bbb;
 			display: block;
-			text-decoration: none;
+
 			&:hover {
 				color: #fff;
 			}
 		}
+
 		h1, h2 {
 			color: white;
 		}
+
 		.progress-summary {
 			border-top: 1px solid #444;
-			//margin-top: 0;
+
 			h3 {
 				color: white;
 			}
 		}
+
 		.progress-legend {
 			color: white;
-			font-size: 14px;
+			font-size: $font-size-sm;
 			line-height: 18px;
 		}		
 	}
+
 	&.expedition.old {
 		background-color: #fff;
 		padding: 60px 0 0 0;
 		background-image: none;
+
 		p {
 			color: $body-copy;
 		}
+
 		a.forum-link {
 			color: $link-color;
+
 			&:hover {
 				color: #fff;
 			}
 		}
+
 		h1, h2 {
 			color: $black;
 		}
+
 		.progress-summary {
 			border-top: 1px solid #eee;
-			//margin-top: 8%;
+
 			h3 {
 				color: $black;
 			}
 		}
+
 		.progress-legend {
 			color: $black;
-			font-size: 14px;
+			font-size: $font-size-sm;
 			line-height: 18px;
 		}
+
 		.thumb-old {
 			margin-top: 30px;
 		}
+
 		a.forum-link {
 			color: $link-color;
+
 			&:hover {
 				color: #337ab7;
 			}
 		}
 	}
-	.profile-summary {
-		h2 {
 
-		}
-	}
-	h1 {
-		font-size: 35px;
-	}
 	h2 {
 		font-weight: 400;
-		font-size: 22px;
 		margin: 10px 0 20px 0;
 	}
-	h3 {
-		font-size: 14px;
+
+	.progress-summary h3 {
+		font-size: $font-size-sm;
 		margin-top: 20px;
 		line-height: 18px;
 		font-weight: 400;
 		color: $black;
+
 		b {
 			font-weight: 600;
 			display: block;
 			margin: 0;
 		}
 	}
+
 	p.section-description {
-		font-size: 20px;
+		font-size: $font-size-lg;
 		line-height: 26px;
 	}
+
 	.btn-primary {
 		margin-right: 10px;
 		margin-bottom: 10px;
+		margin-top: 10px;
 	}
+
 	.cta-primary {
 		margin-top: 10px;
 		margin-bottom: 20px;
 	}
+
 	.image-origin {
 		padding-top: 3em;
 		padding-bottom: 0;
 		color: #bbb;
 		text-align: right;
 		font-style: italic;
-		font-size: 12px;
+		font-size: $font-size-xs;
 	}
 }
 
@@ -199,30 +227,22 @@
 		&.expedition {
 			padding-top: 8%;
 		}
-		h1 {
-			font-size: 55px;
-		}
-		h2 {
-			font-size: 26px;
-		}
-		h3 {
-			font-size: 26px;
+
+		.progress-summary h3 {
 			margin-top: 0;
 			line-height: 36px;
 		}
+
 		&.simple-header {
 			h1 {
-				font-size: 45px;
 			  margin-top: 0;
 			}
 		}
+
 		&.profile-summary {
 			h2 {
-				font-size: 26px;
 				line-height: 36px;
 				margin: 0;
-			}
-			p {
 			}
 		}
 	}
@@ -245,7 +265,6 @@
 		a {
 			color: $black;
 			&:hover {
-				text-decoration: none;
 				color: black;
 			}
 		}
@@ -308,20 +327,21 @@
 }
 
 .progress {
-	height: 12px;
-	border-radius: 25px;
 	.progress-bar-success{
 		background-color: rgba( $brand-color, .5 );
 	}
 	.progress-bar-transcribed{
 		background-color: $brand-color;
 	}
+	margin-bottom: 1rem;
 }
+
 .progress-summary {
 	border-top: 1px solid $divider-grey;
 	padding: 30px 0 20px 0;
 	margin-top: 3em;
 }
+
 .expeditionListAnchor {
 	margin-top: 50px;
 }
@@ -333,21 +353,23 @@
 	}
 	
 }
+
 .institution-logo-main {
 	max-width: 200px;
 	margin: 0 auto;
 }
-.expedition-progress {
 
+.expedition-progress {
 	.progress-legend {
-		font-size: 11px;
-		line-height: 12px;
+		font-size: $font-size-xs;
+		line-height: 1.2rem;
 		color: #333;
 		b {
 			display: block;
 		}
 	}
 }
+
 .key {
 	display: inline-block;
 	height: 10px;
@@ -356,17 +378,20 @@
 	border: 1px solid #eee;
 	margin: 0 5px 10px 0;
 	float: left;
+
 	&.validated {
 		background-color: $validated-color;
 	}
+
 	&.transcribed {
 		background-color: $brand-color;
 	}
+
 	&.volunteers {
 		background-color: $background-grey;
 	}
-	
 }
+
 .pie-legend {
 	.key {
 		display: block;
@@ -376,7 +401,7 @@
 
 @mixin h2-heading {
 	text-transform: uppercase;
-	font-size: 14px;
+	font-size: $font-size-sm;
 	letter-spacing: 2px;
 	margin-bottom: 35px;
 	margin-top: 0;
@@ -390,7 +415,7 @@ h2.heading, .pre-header {
 
 h2.body-heading {
 	text-transform: uppercase;
-	font-size: 15px;
+	font-size: $font-size-md;
 	letter-spacing: 2px;
 	margin-bottom: 15px;
 	margin-top: 20px;
@@ -405,7 +430,7 @@ h2.body-heading {
 			padding: 0;
 			background-color: transparent;
 			color: $link-color;
-			font-size: 14px;
+			font-size: $font-size-sm;
 		}
 	}
 	.media-left {
@@ -415,7 +440,7 @@ h2.body-heading {
 	}
 
 	.media-heading {
-		font-size: 14px;
+		font-size: $font-size-sm;
 		color: $black;
 		a {
 			color: $black;
@@ -440,7 +465,7 @@ h2.body-heading {
 			text-align: center;
 			margin: 0;
 			line-height: 13px;
-			font-size: 12px;
+			font-size: $font-size-xs;
 			padding-top: 4px;
 			span {
 				display: block;
@@ -448,14 +473,14 @@ h2.body-heading {
 			}
 		}
 	}
-	.btn-xs {
+	.btn-sm {
 		margin-bottom: 10px;
 		padding: 0 20px;
 	}
 	span.time {
 		display: block;
 		float: right;
-		font-size: 12px;
+		font-size: $font-size-xs;
 		color: #ccc;
 	}
 }
@@ -465,7 +490,7 @@ h2.body-heading {
 .not-a-badge {
   padding: 0;
   min-width: 10px;
-  font-size: 12px;
+  font-size: $font-size-xs;
   font-weight: bold;
   line-height: 1;
   text-align: center;
@@ -514,7 +539,7 @@ h2.body-heading {
 	}
 	span {
 		display: block;
-		font-size: 20px;
+		font-size: $font-size-lg;
 	}
 	.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
 		padding: 8px 0;
@@ -552,7 +577,6 @@ h2.body-heading {
 		font-weight: 600;
 		a {
 			color: white;
-			text-decoration: none;
 		}
 	}
 	p {
@@ -593,15 +617,6 @@ h2.body-heading {
 	position: relative;
 }
 
-.btn-circle {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 12px;
-  line-height: 1.428571429;
-  border-radius: 15px;
-}
 .branding-row {
 	margin-bottom: 30px;
 }
@@ -611,12 +626,10 @@ h2.body-heading {
 		margin-right: 20px;
 	}
 	h1 {
-		font-size: 18px;
 		margin: 0 0 5px 0;
 		color: $black;
 	}
 	h2 {
-		font-size: 14px;
 		margin: 0;
 	}
 }
@@ -659,7 +672,7 @@ legend {
 	border-bottom: none;
 	width: auto;
 	margin-bottom: 10px;
-	font-size: 18px;
+	font-size: $font-size-lg;
 	color: $black;
 	font-weight: 500;
 }
@@ -673,7 +686,7 @@ form {
 	margin-bottom: 5px;
 }
 .form-control {
-	height: 25px;
+	height: 25px;  /* FIX THIS in form standardisation*/
 	padding: 5px 8px;
 	//margin-bottom: 5px;
 }
@@ -681,14 +694,10 @@ form {
 	padding: 30px 0;
 	.btn {
 		padding: 10px 20px;
-		&.btn-next {
-				background-color: $brand-color;
-				color: #fff;
-				margin-left: 10px;
-		}
 	}
 }
 
+// icon glyph size, not text — see typography conventions
 .icon-size {
 	font-size: 87px;
 }
@@ -781,7 +790,7 @@ form {
 	h2 {
 		display: block;
 		margin: 0 0 10px 0;
-		font-size: 14px !important;
+		font-size: $font-size-sm !important;
 		text-transform: uppercase;
 		letter-spacing: 2px;
 	}
@@ -796,7 +805,6 @@ form {
 }
 .expedition-team {
 	h3 {
-		font-size: 14px;
 		color: $black;
 	}
 	ul {
@@ -830,7 +838,6 @@ form {
 }
 .expedition-forum {
 	h3 {
-		font-size: 24px;
 		font-weight: 400;
 		margin-top: 0;
 	}
@@ -842,15 +849,17 @@ form {
 		margin-bottom: 20px;
 	}
 }
+
 .input-hint {
 	cursor:pointer;
 	float: right;
 	color: #999;
-	font-size: 20px;
+	font-size: $font-size-lg;
 	&:hover {
 		color: $black;
 	}
 }
+
 .tab-pane-header {
 	margin-bottom: 20px;
 }
@@ -904,7 +913,7 @@ table thead th {
 
 /* Confirmation Form */
 .confirmation-table {
-	font-size: 12px;
+	font-size: $font-size-xs;
 	thead, tbody {
 		a {
 			display: inline-block;
@@ -1040,8 +1049,7 @@ select[type="text"]:focus,
 .toast-body {
 	background-color: $toast-body-bg;
 	a {
-		font-size: $font-size-small;
-		text-decoration: none;
+		font-size: $font-size-xs;
 	}
 }
 
@@ -1085,6 +1093,19 @@ $tooltip-widths: (
 	}
 }
 
+// Single source of truth for the field help "?" icon.
+// Emitted by g:fieldHelp (TranscribeTagLib) and cl:helpText (VolunteerTagLib);
+// .fieldHelp is also the selector bvp.bindTooltips() binds to.
 a.fieldHelp {
-	margin-left: 0.5rem;
+	display: inline-block;
+	vertical-align: top;
+	margin-left: 0.5rem;   // spacing between the field and the ? icon
+	padding: 0 0.25rem;
+	color: var(--bs-secondary, #6c757d);
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover, &:focus {
+		color: var(--bs-primary, #2B779A);
+	}
 }

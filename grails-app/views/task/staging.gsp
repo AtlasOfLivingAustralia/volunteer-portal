@@ -4,16 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="admin.label" default="Administration"/></title>
-
-    <style>
-        .progress {
-            height: 20px;
-            border-radius: 25px;
-          //  background-color: silver;
-        }
-
-    </style>
-
 </head>
 
 <body class="admin">
@@ -109,16 +99,16 @@
 
             <div class="row">
                 <div class="col-md-3" style="text-align: center">
-                    <button id="btnSelectImages" class="btn btn-secondary">Select files</button>
+                    <button id="btnSelectImages" class="btn btn-sm btn-outline-secondary">Select files</button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
                     <g:if test="${hasDataFile}">
-                        <button class="btn btn-warning" id="btnClearDataFile">Clear data file</button>
-                        <a href="${dataFileUrl}">View data file</a>
+                        <button class="btn btn-sm btn-warning" id="btnClearDataFile">Clear data file</button>
+                        <a class="btn btn-sm btn-outline-secondary" href="${dataFileUrl}" target="_blank">View data file</a>
                     </g:if>
                     <g:else>
-                        <button class="btn btn-secondary"
+                        <button class="btn btn-sm btn-outline-secondary"
                                 id="btnUploadDataFile"
                             <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
                                 >
@@ -128,14 +118,14 @@
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
-                    <button class="btnAddFieldDefinition btn btn-secondary"
+                    <button class="btnAddFieldDefinition btn btn-sm btn-outline-secondary"
                         <g:if test="${isAudioProject}">disabled="disabled" title="No applicable for Audio expeditions"</g:if>
                         >
                         <i class="fa fa-plus"></i> Add column</button>
                 </div>
 
                 <div class="col-md-3" style="text-align: center">
-                    <button id="btnLoadTasks" class="btn btn-primary"
+                    <button id="btnLoadTasks" class="btn btn-sm btn-primary"
                             style="margin-left: 10px">Create tasks from staged <g:if test="${isAudioProject}">audio</g:if><g:else>images</g:else></button>
                 </div>
             </div>
@@ -158,8 +148,8 @@
       {{#errors}}<span>Files failed: {{errors}}</span>{{/errors}}
       <span>Files remaining: {{remaining}}</span>
       <span>Total files: {{total}}</span>
-      <button id="pause-upload" class="btn btn-xs btn-warning{{#paused}} active{{/paused}}">{{^paused}}Pause{{/paused}}{{#paused}}Resume{{/paused}}</button>
-      <button id="cancel-upload" class="btn btn-xs btn-danger">Cancel</button>
+      <button id="pause-upload" class="btn btn-sm btn-outline-secondary{{#paused}} active{{/paused}}">{{^paused}}Pause{{/paused}}{{#paused}}Resume{{/paused}}</button>
+      <button id="cancel-upload" class="btn btn-sm btn-secondary">Cancel</button>
     </p>
   </div>
   <div class="col-sm-6">

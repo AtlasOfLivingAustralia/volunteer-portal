@@ -26,8 +26,8 @@
 
         <div class="input-group">
             <div class="controls">
+                <button id="btnCancelExport" class="btn btn-secondary">Close</button>
                 <button id="btnExportTasks" class="btn btn-primary">Export</button>&nbsp;&nbsp;
-                <button id="btnCancelExport" class="btn">Close</button>
             </div>
         </div>
     </div>

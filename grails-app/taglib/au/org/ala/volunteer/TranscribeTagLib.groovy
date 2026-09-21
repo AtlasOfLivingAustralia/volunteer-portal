@@ -398,7 +398,7 @@ class TranscribeTagLib {
                         mb.div(id:'row') {
                             mb.div(class:'col-sm-12', style:'padding-top:10px; padding-left:0px;') {
                                 mkp.yieldUnescaped("""
-                                    <a id="wave-play" class="btn btn-secondary" data-action="play" style="padding-top: 5px;">
+                                    <a id="wave-play" class="btn btn-sm btn-secondary" data-action="play" style="padding-top: 5px;">
                                         <i class="fa fa-play"></i>
                                         Play /
                                         <i class="fa fa-pause"></i>
@@ -712,7 +712,7 @@ class TranscribeTagLib {
     private renderFieldHelp(MarkupBuilder mb, TemplateField field, String placement = 'auto', String customClass = null) {
         if (field && field.helpText) {
             def helpText = markdownService.renderMarkdown(field.helpText)
-            def attributes = [href:'#', class:'btn btn-outline-secondary btn-xs fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
             if (placement) attributes['placement'] = placement
             if (customClass) attributes['customClass'] = customClass
             mb.a(attributes) {

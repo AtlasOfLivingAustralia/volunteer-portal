@@ -7,16 +7,6 @@
     <title><cl:pageTitle title="${g.message(code:"tutorial.manage.label", default:"Manage Tutorials")}" /></title>
 
     <style>
-        .btn, .custom-search-input {
-            border-radius: 4px !important;
-        }
-
-        .btn-secondary {
-            color: white;
-            background-color: #5d8ab1 !important;
-            border-color: #2e6da4 !important;
-        }
-
         .tutorial-status {
             padding-left: 0.2rem;
             padding-right: 0.2rem;
@@ -33,18 +23,18 @@
     %>
 
     <cl:ifAdmin>
-        <a class="btn btn-success" href="${createLink(action: "create")}">
-            Add Tutorial
+        <a class="btn btn-primary" href="${createLink(action: "create")}">
+            <i class="fa fa-plus"></i> Add Tutorial
         </a>
         <cl:ifSiteAdmin>
         <g:if test="${params.admin}">
-        <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage")}">
-            Back to Tutorials
+        <a class="btn btn-sm btn-outline-secondary" href="${createLink(controller: 'tutorials', action: "manage")}">
+            <i class="fa fa-arrow-left"></i> Back to Tutorials
         </a>
         </g:if>
         <g:else>
-        <a class="btn btn-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['admin': true])}">
-            Admin Tutorials
+        <a class="btn btn-sm btn-outline-secondary" href="${createLink(controller: 'tutorials', action: "manage", params: ['admin': true])}">
+            Admin Tutorial List
         </a>
         </g:else>
         </cl:ifSiteAdmin>
@@ -109,8 +99,8 @@
                 <div class="col-md-3">
                     <div class="custom-search-input body">
                         <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control input-lg" value="${params.q}" placeholder="Search Tutorial Name..."/>
-                            <button id="btnSearch" class="btn btn-info btn-lg" type="button">
+                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search Tutorial Name..."/>
+                            <button id="btnSearch" class="btn" type="button">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -118,7 +108,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                        href="${createLink(controller: 'tutorials', action: 'manage', params: [reset: true])}">Reset</a>
                 </div>
 
@@ -175,10 +165,10 @@
                                 <td style="white-space: nowrap;">
                                 <!-- Toggle Status -->
                                     <g:if test="${!tutorial.isActive}">
-                                        <a class="btn btn-xs btn-outline-secondary toggle-tutorial-status" alt="Activate" title="Activate Tutorial"><i class="fa fa-toggle-off"></i></a>
+                                        <a class="btn btn-sm btn-outline-secondary toggle-tutorial-status" alt="Activate" title="Activate Tutorial"><i class="fa fa-toggle-off"></i></a>
                                     </g:if>
                                     <g:else>
-                                        <a class="btn btn-xs btn-outline-secondary toggle-tutorial-status" alt="Deactivate" title="Deactivate Tutorial"><i class="fa fa-toggle-on"></i></a>
+                                        <a class="btn btn-sm btn-outline-secondary toggle-tutorial-status" alt="Deactivate" title="Deactivate Tutorial"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
                                 <!-- Edit -->
@@ -189,13 +179,13 @@
                                         </g:if>
                                     </cl:ifSiteAdmin>
                                     <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">
-                                        <span class="btn btn-xs btn-outline-secondary edit-tutorial">
+                                        <span class="btn btn-sm btn-outline-secondary edit-tutorial">
                                             <i class="fa fa-pencil"></i>
                                         </span>
                                     </g:link>
 
                                 <!-- Delete -->
-                                    <button role="button" class="btn btn-danger btn-xs delete-tutorial"
+                                    <button role="button" class="btn btn-danger btn-sm delete-tutorial"
                                             data-tutorial-name="${tutorial.name}"
                                             data-href="${createLink(controller: "tutorials", action: "delete", id: tutorial.id)}"
                                             title="Delete Tutorial"><i class="fa fa-times"></i></button>

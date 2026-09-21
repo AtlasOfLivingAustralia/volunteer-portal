@@ -39,7 +39,7 @@
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
                 <div class="col-md-3">
-                    <input type="submit" class="save btn btn-secondary" id="addButton"
+                    <input type="submit" class="save btn btn-sm btn-primary" id="addButton"
                            value="${message(code: 'default.button.add.label', default: 'Add')}"/>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                                 <td width="20%">${userRole.createdBy?.displayName}</td>
                                 <td width="20%"><g:formatDate format="yyyy-MM-dd HH:mm" date="${userRole.dateCreated}"/></td>
                                 <td witdth="10%">
-                                    <button class="btn btn-danger deleteRole" userRoleId="${userRole.id}">
+                                    <button class="btn btn-sm btn-danger deleteRole" userRoleId="${userRole.id}">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </td>

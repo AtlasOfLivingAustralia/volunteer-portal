@@ -25,16 +25,16 @@
                 <g:uploadForm action="importFieldsFromCSV" controller="template">
                     <g:hiddenField name="id" value="${templateInstance.id}"/>
                     <div class="col-md-6">
-                        <button class="btn btn-success" id="btnAddField">
-                            <i class="icon-plus icon-white"></i>&nbsp;Add field
+                        <button class="btn btn-sm btn-primary" id="btnAddField">
+                            <i class="fa fa-plus"></i>&nbsp;Add field
                         </button>
-                        <button class="btn btn-secondary" id="btnCleanUpOrdering">Clean up ordering</button>
-                        <button class="btn btn-secondary" id="btnPreviewTemplate">Preview Template</button>
-                        <button class="btn btn-secondary" id="btnExportAsCSV">Export as CSV</button>
+                        <button class="btn btn-sm btn-secondary" id="btnCleanUpOrdering">Clean up ordering</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="btnPreviewTemplate">Preview Template</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="btnExportAsCSV">Export as CSV</button>
                     </div>
                     <div class="col-md-6">
                         <input type="file" data-filename-placement="inside" name="uploadFile"/>
-                        <button class="btn btn-success" id="btnImportFromCSV">Import from CSV</button>
+                        <button class="btn btn-sm btn-secondary" id="btnImportFromCSV">Import from CSV</button>
                     </div>
                 </g:uploadForm>
             </div>
@@ -74,11 +74,11 @@
                                     </g:if>
                                 </td>
                                 <td class="text-center flex-nowrap">
-                                    <button class="btn btn-xs btn-outline-secondary btnEditField imageButton" title="Edit Field"><i class="fa fa-pencil"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldDown" title="Move Field Down"><i class="fa fa-arrow-down"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldUp" title="Move Field Up"><i class="fa fa-arrow-up"></i></button>
-                                    <button class="btn btn-xs btn-outline-secondary btnMoveFieldAnywhere" title="Move Field Anywhere"><i class="fa fa-arrows"></i></button>
-                                    <button class="btn btn-xs btnDeleteField btn-danger" title="Delete Field"><i class="fa fa-times"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary btnEditField imageButton" title="Edit Field"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary btnMoveFieldDown" title="Move Field Down"><i class="fa fa-arrow-down"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary btnMoveFieldUp" title="Move Field Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary btnMoveFieldAnywhere" title="Move Field Anywhere"><i class="fa fa-arrows"></i></button>
+                                    <button class="btn btn-sm btnDeleteField btn-danger" title="Delete Field"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>

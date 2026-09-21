@@ -67,13 +67,13 @@
         </div>
         <div class="col-md-3">
             <cl:helpText>This will be applied over the background image.  Use this if the background image makes the text that overlays it unreadable.  A good starting point is black at half opacity (i.e. `rgba(0,0,0,0.5)`).</cl:helpText>
-            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-secondary btn-xs">Set to default</button>
+            <button role="button" type="button" id="setDefaultOverlay" class="btn btn-secondary btn-sm">Set to default</button>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
-            <g:submitButton class="btn btn-success" name="Update"/>
+            <g:submitButton class="btn btn-primary" name="Update"/>
             <a class="btn btn-danger" id="clearImageSettings" href="${createLink(action: 'clearBackgroundImageSettings', id: projectInstance.id)}">Clear</a>
         </div>
     </div>

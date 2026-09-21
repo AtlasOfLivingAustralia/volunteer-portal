@@ -23,7 +23,7 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="btnCancelCloneProject">Cancel</button>
-        <g:submitButton class="btn btn-success" id="btnCopyProject" name="Clone Expedition" />
+        <g:submitButton class="btn btn-primary" id="btnCopyProject" name="Clone Expedition" />
     </div>
 </g:form>
 

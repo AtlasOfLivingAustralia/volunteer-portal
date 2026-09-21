@@ -43,8 +43,8 @@
         </div>
 
         <div class="span5">
-            <button class="btnSearch btn">Search</button>
-            <button class="btnClose btn">Cancel</button>
+            <button class="btnSearch btn btn-primary">Search</button>
+            <button class="btnClose btn btn-secondary">Cancel</button>
         </div>
     </div>
 </div>

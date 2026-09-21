@@ -19,7 +19,7 @@
                         ${event.country}
                     </td>
                     <td class="result-select-button">
-                        <button class="btn btn-small select_event_button" externalEventId="${event.externalEventId}"
+                        <button class="btn btn-sm btn-primary select_event_button" externalEventId="${event.externalEventId}"
                                 title="Use all of the information from this collection event">Select&nbsp;event</button>
                     </td>
                 </tr>

@@ -20,7 +20,7 @@
 
     <cl:ifSiteAdmin>
         <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#">
+            <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
                 <span class="caret"></span>
             </a>
@@ -57,7 +57,7 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Institution..."/>
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-secondary bs3"
+                    <a class="btn btn-sm btn-outline-secondary"
                         href="${createLink(controller: 'institutionAdmin', action: 'index')}">Reset</a>
                 </div>
             </div>
@@ -110,20 +110,20 @@
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" id="delete-${institutionInstance.id}" method="DELETE">
 
-                                        <a class="btn btn-xs btn-outline-secondary"
+                                        <a class="btn btn-sm btn-outline-secondary"
                                             title="View institution home page"
                                            href="${createLink(controller: 'institution', action: 'index', id: institutionInstance.id)}"><i
                                                 class="fa fa-home"></i></a>
-                                        <a class="btn btn-xs btn-outline-secondary"
+                                        <a class="btn btn-sm btn-outline-secondary"
                                             title="Institution settings"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
                                                 class="fa fa-edit"></i></a>
                                         <cl:ifSiteAdmin>
                                             <g:if test="${institutionInstance.getProjectCount() == 0}">
-                                                <a class="btn btn-xs btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
+                                                <a class="btn btn-sm btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                                             </g:if>
                                             <g:else>
-                                                <button class="btn btn-xs btn-danger delete-institution" alt="Delete" title="You cannot delete an institution that has projects." disabled>
+                                                <button class="btn btn-sm btn-danger delete-institution" alt="Delete" title="You cannot delete an institution that has projects." disabled>
                                                     <i class="fa fa-times"></i>
                                                 </button>
                                             </g:else>
@@ -149,7 +149,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
 
                 <h3>Quick Create Institution</h3>
             </div>

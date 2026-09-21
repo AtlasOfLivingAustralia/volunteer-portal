@@ -4,7 +4,7 @@
         <h3>Staged <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> (${images.size()})
 
             <div class="btn-group float-end">
-                <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Actions
                     <span class="caret"></span>
                 </a>
@@ -50,11 +50,11 @@
                             <div class="small">
                                 <span style="font-weight: normal">( ${field.fieldDefinitionType}: <b>${field.format}</b> - </span>
 
-                                <button class="btnEditField btn btn-xs btn-outline-secondary" title="Edit column definition">
+                                <button class="btnEditField btn btn-sm btn-outline-secondary" title="Edit column definition">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <g:if test="${field.fieldName != 'externalIdentifier'}">
-                                    <button class="btnDeleteField btn btn-xs btn-danger" title="Remove column">
+                                    <button class="btnDeleteField btn btn-sm btn-danger" title="Remove column">
                                         <i class="fa fa-remove"></i>
                                     </button>
                                 </g:if>
@@ -78,7 +78,7 @@
                                     <li>
                                         <div class="label label-default">
                                             <i class="fa fa-chevron-right"></i> <%= shadow.stagedFile.name.replace(shadow.fieldName, "<em>${shadow.fieldName}</em>")%>
-                                            <button class="btnDeleteShadowFile btn btn-xs btn-danger"
+                                            <button class="btnDeleteShadowFile btn btn-sm btn-danger"
                                                title="Delete shadow file ${shadow.stagedFile.name}"
                                                filename="${shadow.stagedFile.name}"><i
                                                     class="fa fa-remove"></i></button>
@@ -92,7 +92,7 @@
                         <td>${image.valueMap[field.fieldName + "_" + field.recordIndex]}</td>
                     </g:each>
                     <td>
-                        <button title="Delete image" class="btn btn-xs btn-danger btnDeleteImage" imageName="${image.name}"><i
+                        <button title="Delete image" class="btn btn-sm btn-danger btnDeleteImage" imageName="${image.name}"><i
                                 class="fa fa-remove"></i></button>
                     </td>
                 </tr>

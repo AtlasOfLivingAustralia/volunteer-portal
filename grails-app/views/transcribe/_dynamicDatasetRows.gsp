@@ -13,8 +13,8 @@
 <g:if test="${fieldList}">
     <div id="observationFields" entriesFieldId="recordValues.0.${entriesField?.fieldType}">
     </div>
-    <button type="button" class="btn btn-small btn-success" id="btnAddRow"><i
-            class="icon-plus icon-white"></i>&nbsp;Add&nbsp;Row</button>
+    <button type="button" class="btn btn-sm btn-primary" id="btnAddRow">
+        <i class="fa fa-plus"></i>&nbsp;Add&nbsp;Row</button>
 </g:if>
 
 <style type="text/css">
@@ -41,9 +41,7 @@
             <g:set var="fieldLabel" value="${field.label ?: field.fieldType.label}"/>
             <g:set var="fieldName" value="${field.fieldType.name()}"/>
             <g:set var="fieldValue" value="${recordValues?.get(i)?.get(field.fieldType.name())?.encodeAsHTML()?.replaceAll('\\\'', '&#39;')?.replaceAll('\\\\', '\\\\\\\\')}"/>
-%{--            <g:set var="fieldHelpText" value="${field.helpText}"/>--}%
             <g:set var="helpMarkup"><g:if test="${field.helpText}"><cl:helpText placement="${fieldIndex == 0 ? 'left' : 'auto'}">${field.helpText}</cl:helpText></g:if></g:set>
-%{--            {'name':'${fieldName.encodeAsJavaScript()}', 'label':'${fieldLabel.encodeAsJavaScript()}', 'fieldType':'${field.type?.toString().encodeAsJavaScript()}', 'helpText': "${fieldHelpText.encodeAsJavaScript()}", 'value': "${fieldValue.encodeAsJavaScript()}", layoutClass:"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"}--}%
             {
                 "name": "${fieldName.encodeAsJavaScript()}",
                 "label": "${fieldLabel.encodeAsJavaScript()}",
@@ -97,9 +95,6 @@
 
                     htmlStr += '<div class="form-group">';
                     htmlStr += '<label for="' + name + '">' + e.label;
-                    // if (e.helpText) {
-                    //     htmlStr += '<a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" title="' + e.helpText + '" ' + (fieldCount === 0 ? 'placement="left"' : '') + '><i class="fa fa-question help-container"></i></a>';
-                    // }
                     htmlStr += e.helpHtml;
                     htmlStr += '</label> ';
 
@@ -135,7 +130,7 @@
                     fieldCount++;
                 }
                 if (entryIndex > 0) {
-                    htmlStr += '<button role="button" class="btn btn-xs btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="fa fa-remove"></span> Delete </button>';
+                    htmlStr += '<button role="button" class="btn btn-sm btn-danger" onclick="deleteEntry(' + entryIndex + '); return false;"><span class="fa fa-remove"></span> Delete </button>';
                 }
                 htmlStr += "</div>";
                 itemCount++;
@@ -165,7 +160,6 @@
     <g:each in="${fieldList}" var="field" status="fieldIndex">
         <g:set var="fieldLabel" value="${field.label ?: field.fieldType.label}"/>
         <g:set var="fieldName" value="${field.fieldType.name()}"/>
-%{--        <g:set var="fieldHelpText" value="${field.helpText}"/>--}%
         <g:set var="helpMarkup"><g:if test="${field.helpText}"><cl:helpText placement="${fieldIndex == 0 ? 'left' : 'auto'}">${field.helpText}</cl:helpText></g:if></g:set>
                 {
                     "name": "${fieldName.encodeAsJavaScript()}",

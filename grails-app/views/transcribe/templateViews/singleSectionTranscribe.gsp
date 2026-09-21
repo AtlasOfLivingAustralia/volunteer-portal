@@ -91,7 +91,7 @@
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {
-            $(this).addClass("btn btn-secondary").attr("target", "tutorialWindow");
+            $(this).addClass("btn btn-sm btn-outline-secondary").attr("target", "tutorialWindow");
         });
     });
 

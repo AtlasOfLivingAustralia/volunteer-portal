@@ -39,7 +39,7 @@
                         <g:if test="${taskInstance.isFullyTranscribed}">
                             <g:if test="${taskInstance.isValid == true}">
                                 <div>
-                                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')}
+                                    <a class="btn btn-sm btn-outline-secondary" ${(lastView ? 'disabled' : '')}
                                        href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
                                     <i class="fa fa-eye" title="Review"></i>
                                     </a>
@@ -47,11 +47,11 @@
                             </g:if>
                             <g:elseif test="${taskInstance.isValid == false}">
                                 <div>
-%{--                                    <g:link controller="validate" action="task" id="${taskInstance.id}">In progress</g:link>--}%
-                                    <a class="btn btn-small" ${(lastView ? 'disabled' : '')}
+                                    <a class="btn btn-sm btn-outline-secondary" ${(lastView ? 'disabled' : '')}
                                        href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
-                                        <i class="fa fa-check-square-o" title="Complete Validation ${(lastView ? '- currently being viewed by another volunteer' : '')}"></i>
+                                        <i class="fa fa-check" title="Complete Validation ${(lastView ? '- currently being viewed by another volunteer' : '')}"></i>
                                     </a>
+                                </div>
 
                             </g:elseif>
                             <g:else>
@@ -61,13 +61,15 @@
                                             <a href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
                                                 ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}
                                             </a>
+                                        </div>
                                     </g:if>
                                     <g:else>
                                         <div>
-                                        <a class="btn btn-small" ${(lastView ? 'disabled' : '')}
-                                        href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
-                                            <i class="fa fa-check-square-o" title="Validate"></i>
-                                        </a>
+                                            <a class="btn btn-sm btn-outline-secondary" ${(lastView ? 'disabled' : '')}
+                                            href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
+                                                <i class="fa fa-check" title="Validate"></i>
+                                            </a>
+                                        </div>
                                     </g:else>
 
 
@@ -77,6 +79,7 @@
                             <div class="label label-default">
                                 New
 
+                            </div>
                         </g:else>
 
                         <g:if test="${lastView}">

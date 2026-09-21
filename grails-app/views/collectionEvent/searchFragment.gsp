@@ -38,7 +38,7 @@
         </g:each>
 
         <div class="span2">
-            <button class="btn btn-small btn-primary span12" id="event_search_button">Search</button>
+            <button class="btn btn-sm btn-primary span12" id="event_search_button">Search</button>
         </div>
     </div>
 

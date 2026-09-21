@@ -85,7 +85,7 @@
 
                 <div class="row">
                     <div class="col-md-10">
-                        <button type="button" class="btn btn-info btnCopyFromPreviousTask" href="#task_selector"
+                        <button type="button" class="btn btn-sm btn-outline-secondary btnCopyFromPreviousTask" href="#task_selector"
                                 style="">Copy values from a previous task</button>
                     </div>
 
@@ -93,9 +93,6 @@
                         <cl:helpText placement="left">
                             Clicking this button will allow you to select a previously transcribed task to copy values from
                         </cl:helpText>
-%{--                        <a href="#" class="btn btn-outline-secondary btn-xs fieldHelp" placement="left"--}%
-%{--                           title="Clicking this button will allow you to select a previously transcribed task to copy values from"><i--}%
-%{--                                class="fa fa-question help-container"></i></a>--}%
                     </div>
                 </div>
             </div>
@@ -126,7 +123,7 @@
 
     $(document).ready(function () {
         $(".tutorialLinks a").each(function (index, element) {
-            $(this).addClass("btn btn-outline-secondary").attr("target", "tutorialWindow");
+            $(this).addClass("btn btn-sm btn-outline-secondary").attr("target", "tutorialWindow");
         });
     });
 

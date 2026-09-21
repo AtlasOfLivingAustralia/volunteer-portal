@@ -22,7 +22,9 @@
             <div class="row" style="padding-bottom: 0.5em; padding-top: 1em; margin-right: 0px; margin-left: 0px;">
                 <g:if test="${piItem.audio.size() > 0}">
                 <g:set var="audioSample" value="${piItem.audio?.first()}" />
-                <div class="" style="width: 48px; float: left;"><a class="btn btn-next audio-sample-list-play" data-action-play="${audioSample.hash}"><i class="fa fa-2x fa-play-circle-o"></i></a></div>
+                <div class="" style="width: 48px; float: left;">
+                    <a class="btn btn-link audio-sample-list-play" data-action-play="${audioSample.hash}"><i class="fa fa-2x fa-play-circle-o"></i></a>
+                </div>
                 <div class="audio-sample-list" style="border-radius: 4px; border: 1px solid #ddd; width: 240px; float: left;"
                      data-play-link="${audioSample.hash}"
                      data-audio-file='<cl:audioUrl prefix="audiotranscribe" name="${audioSample.hash}" format="${audioSample.ext}" template="true"/>'>

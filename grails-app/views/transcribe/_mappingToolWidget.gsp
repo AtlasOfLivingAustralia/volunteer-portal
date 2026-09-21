@@ -12,7 +12,9 @@
     <div class="col-md-8">
         <div class="row">
             <div class="col-md-10">
-                <button type="button" class="btn btn-info float-end" id="btnGeolocate">Mapping tool <i class="fa fa-map-pin"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary float-end" id="btnGeolocate">
+                    <asset:image src="digivol-map-marker.svg" class="btn-icon-svg" alt=""/> Mapping tool
+                </button>
             </div>
 
             <div class="col-md-2">

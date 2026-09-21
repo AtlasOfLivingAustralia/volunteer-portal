@@ -23,8 +23,8 @@
         ]
     %>
 
-    <a class="btn btn-success" href="${createLink(action: "createCategory")}">
-        <i class="icon-plus icon-white"></i>
+    <a class="btn btn-primary" href="${createLink(action: "createCategory")}">
+        <i class="fa fa-plus"></i>
         <g:message code="label.create.category.label" default="Create Tag Category"/>&nbsp;
     </a>
 </cl:headerContent>
@@ -64,7 +64,7 @@
                                 <td style="vertical-align: middle;">${labelCategory.createdBy == 0L ? "System" : User.get(labelCategory.createdBy).displayName}</td>
                                 <td>
                                     <g:if test="${(!labelCategory.isDefault)}">
-                                    <a class="btn btn-xs btn-danger" title="Delete Category">
+                                    <a class="btn btn-sm btn-danger" title="Delete Category">
                                         <i class="fa fa-times label-button delete-label-button"
                                            data-href="${createLink(controller: 'label', action: 'deleteCategory', id: labelCategory.id)}"
                                        title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
