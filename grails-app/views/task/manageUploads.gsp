@@ -15,9 +15,9 @@
             padding-right: 0.6rem;
         }
 
-        .task-descriptor-table {
-            font-size: 1.2rem;
-        }
+        /*.task-descriptor-table {*/
+        /*    font-size: 1.2rem;*/
+        /*}*/
         .task-descriptor-institution {
             font-size: 0.8rem;
             font-style: italic;

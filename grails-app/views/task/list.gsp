@@ -46,7 +46,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input class="form-control" style="height:32px" type="text" name="projectAdminSearch"
+                        <input class="form-control" type="text" name="projectAdminSearch"
                                id="projectAdminSearch" value="${params.q}"
                                placeholder="Search tasks..."
                                size="60"/>

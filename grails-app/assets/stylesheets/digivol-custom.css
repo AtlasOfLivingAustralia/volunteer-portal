@@ -204,15 +204,6 @@ table.task-table {
     margin-top: 1.5em;
 }
 
-.input-group > .form-control {
-    height: auto;
-}
-
-.input-group {
-    height: 38px;
-    padding: 6px 12px;
-}
-
 .admin .modal input {
      margin-bottom: 0;
 }

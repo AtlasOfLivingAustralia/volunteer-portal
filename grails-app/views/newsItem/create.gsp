@@ -12,10 +12,6 @@
         border-radius: 4px !important;
     }
 
-    .input-group[class*="col-"] {
-        padding-left: 15px;
-    }
-
     .datepicker table tr td.disabled {
         color: #ddd !important;
     }
@@ -78,10 +74,12 @@
 
                         <div class="form-group">
                             <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
-                            <div class="input-group col-md-3">
-                                <input type="text" class="form-control datepicker form-control" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${params?.dateExpiresPicker ?: ''}"/>
-                                <div class="input-group-text">
-                                    <span class="fa fa-th-large"></span>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control datepicker" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${params?.dateExpiresPicker ?: ''}"/>
+                                    <span class="input-group-text">
+                                        <span class="fa fa-th-large"></span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
