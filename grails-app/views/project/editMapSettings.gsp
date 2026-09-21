@@ -29,7 +29,7 @@
             Show the map on the expedition landing page
         </label>
         <div class="col-md-6">
-            <div class="form-check form-switch" style="font-size: 1.5rem;">
+            <div class="form-check form-switch form-switch-lg">
                 <g:checkBox name="showMap" class="form-check-input" role="switch"
                         checked="${projectInstance.showMap}"/>
         </div>

@@ -130,11 +130,6 @@ div.pagination {
     min-height: 650px;
 }
 
-input[type='checkbox'].form-control {
-    box-shadow: none;
-    height: 28px;
-}
-
 /*** Begin - Styles for tables ***/
 table .sortable a:visited, .sortable a:link, .sortable a:active, .sortable a:hover {
     border:none;

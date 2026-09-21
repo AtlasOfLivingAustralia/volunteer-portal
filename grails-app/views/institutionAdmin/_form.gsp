@@ -82,7 +82,7 @@
         <g:message code="institution.displayContact.label" default="Display Contact Details"/>
     </label>
     <div class="col-md-6">
-        <g:checkBox name="displayContact" class="form-control" value="${institutionInstance?.displayContact}" />
+        <g:checkBox name="displayContact" class="form-check-input" value="${institutionInstance?.displayContact}" />
     </div>
 </div>
 
@@ -124,7 +124,7 @@
                 <g:message code="institution.isInactive.label" default="Inactive"/>
             </label>
             <div class="col-md-6">
-                <g:checkBox name="isInactive" class="form-control" value="${institutionInstance?.isInactive}" />
+                <g:checkBox name="isInactive" class="form-check-input" value="${institutionInstance?.isInactive}" />
             </div>
         </div>
     </g:if>

@@ -36,7 +36,7 @@
                                 <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Expedition for the day" />
                             </label>
                             <div class="col-md-6">
-                                <g:checkBox name="randomProjectOfTheDay" class="form-control" id="randomProjectToggle" style="margin-top: 9px;" value="${frontPage.randomProjectOfTheDay}" />
+                                <g:checkBox name="randomProjectOfTheDay" class="form-check-input" id="randomProjectToggle" style="margin-top: 9px;" value="${frontPage.randomProjectOfTheDay}" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -73,7 +73,7 @@
                             <label for="useGlobalNewsItem" class="form-label col-md-3"><g:message code="frontPage.showAchievements.label"
                                                                                                      default="Show achievements on User stats page"/></label>
                             <div class="col-md-6">
-                                <g:checkBox name="showAchievements" class="form-control" value="${frontPage.showAchievements}"/>
+                                <g:checkBox name="showAchievements" class="form-check-input" value="${frontPage.showAchievements}"/>
                             </div>
                         </div>
 
@@ -81,7 +81,7 @@
                             <label for="enableTaskComments" class="form-label col-md-3"><g:message code="frontPage.enableTaskComments.label"
                                                                                                      default="Enable task commenting"/></label>
                             <div class="col-md-6">
-                                <g:checkBox name="enableTaskComments" class="form-control" value="${frontPage.enableTaskComments}"/>
+                                <g:checkBox name="enableTaskComments" class="form-check-input" value="${frontPage.enableTaskComments}"/>
                             </div>
                         </div>
 
@@ -89,7 +89,7 @@
                             <label for="enableForum" class="form-label col-md-3"><g:message code="frontPage.enableForum.label"
                                                                                                       default="Enable the ${message(code: "default.application.name")} Forum"/></label>
                             <div class="col-md-6">
-                                <g:checkBox name="enableForum" class="form-control" value="${frontPage.enableForum}"/>
+                                <g:checkBox name="enableForum" class="form-check-input" value="${frontPage.enableForum}"/>
                             </div>
                         </div>
 

@@ -14,7 +14,7 @@
 <content tag="adminButtonBar">
 
     <form class="form-inline" style="display: inline-block;">
-        <div class="form-check form-switch" style="font-size: 1.5rem;">
+        <div class="form-check form-switch form-switch-lg">
             <label class="form-check-label" id="switchLgLabel" for="switchLg">${achievementDescriptionInstance?.enabled ? 'Enabled' : 'Disabled'}</label>
             <input class="form-check-input" type="checkbox" name="enabled" role="switch" id="switchLg" ${achievementDescriptionInstance?.enabled ? 'checked="checked"' : ''}>
         </div>

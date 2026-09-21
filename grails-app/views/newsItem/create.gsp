@@ -68,7 +68,7 @@
                             <label class="form-label col-md-3" for="isActive">Is Active*</label>
                             <div class="col-md-6">
                                 <g:set var="initIsActive" value="${params?.isActive ?: true}"/>
-                                <g:checkBox name="isActive" id="isActive" class="form-control" checked="${initIsActive}"/>
+                                <g:checkBox name="isActive" id="isActive" class="form-check-input" checked="${initIsActive}"/>
                             </div>
                         </div>
 

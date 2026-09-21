@@ -289,7 +289,7 @@ class TranscribeTagLib {
                     value: checked,
                     validationRule: validationRule?.name,
                     tabindex: tabindex,
-                    class: 'form-control'
+                    class: 'form-check-input'
                 )
                 break;
             case FieldType.select:

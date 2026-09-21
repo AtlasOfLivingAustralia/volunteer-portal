@@ -62,7 +62,7 @@
                         <div class="form-group ${hasErrors(bean: rule, field: 'testEmptyValues', 'has-error')}">
                             <label for="testEmptyValues" class="form-label col-md-3"><g:message code="validationRule.testEmptyValues.label" default="Test empty/blank values"/></label>
                             <div class="col-md-4">
-                                <g:checkBox name="testEmptyValues" class="form-control" value="${rule?.testEmptyValues}"/>
+                                <g:checkBox name="testEmptyValues" class="form-check-input" value="${rule?.testEmptyValues}"/>
                             </div>
                         </div>
 
