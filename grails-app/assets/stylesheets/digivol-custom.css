@@ -178,7 +178,6 @@ table.task-table {
     margin-bottom: 20px;
 }
 
-.admin .container .panel,
 .admin .container .card {
     margin: 2em 0;
 }
@@ -211,7 +210,7 @@ table.task-table {
     color: white;
 }
 
-.admin .panel.subpanel {
+.admin .card.subpanel {
     margin-top: 0;
 }
 
@@ -260,7 +259,7 @@ table.task-table {
 
 /*** Begin - Forum ***/
 
-.contact .panel, .forum .panel, .tutorial .panel {
+.contact .card, .forum .card, .tutorial .card {
     margin-top: 20px;
 }
 
