@@ -41,7 +41,7 @@
                             <th>Key</th>
 %{--                            <th>Default Value</th>--}%
                             <th>Value</th>
-                            <th>Description</th>
+                            <th>Action</th>
                             <th></th>
                         </tr>
                         </thead>
