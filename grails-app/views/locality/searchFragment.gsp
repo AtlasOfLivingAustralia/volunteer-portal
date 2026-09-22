@@ -43,7 +43,7 @@
         </div>
 
         <div class="span5">
-            <button class="btnSearch btn btn-primary">Search</button>
+            <button class="btnSearchLocality btn btn-primary">Search</button>
             <button class="btnClose btn btn-secondary">Cancel</button>
         </div>
     </div>
@@ -106,7 +106,7 @@
             bvp.hideModal();
         });
 
-        $(".btnSearch").click(function (e) {
+        $(".btnSearchLocality").click(function (e) {
             e.preventDefault();
             doLocalitySearch();
         });
