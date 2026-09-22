@@ -55,7 +55,7 @@
                                     </cl:helpText>
                                 </td>
                                 <td><strong>${values[setting] instanceof JSONArray ? values[setting].join(', ') : values[setting]}</strong></td>
-                                <td><button class="btn btn-secondary btnEditSetting">Edit</button></td>
+                                <td><button class="btn btn-outline-secondary btnEditSetting"><i class="fa fa-pencil"></i></button></td>
                             </tr>
                         </g:each>
                         </tbody>

@@ -29,7 +29,7 @@
                         <div class="col-md-4">
                             <g:textArea class="form-control" name="settingValue" value="${currentValue}" rows="20" cols="600"/>
                         </div>
-                        <g:submitButton class="btn btn-primary" name="save">Save</g:submitButton>
+                        <g:submitButton class="btn btn-primary" name="Save">Save</g:submitButton>
                     </g:form>
                 </div>
             </div>
