@@ -17,7 +17,7 @@
                                     <g:imageViewer multimedia="${multimedia}"/>
                                 </g:if>
                             </g:each>
-                            <div class="form-horizontal" style="text-align: center;">
+                            <div style="text-align: center;">
                                 <div class="form-group">
                                     <div class="controls" style="margin-left: initial; display: inline-block;">
                                         <label class="checkbox" for="recordValues.0.interesting">
@@ -149,7 +149,7 @@
                                                       model="${[imageInfos: animalInfos, picklistId: template.viewParams.animalsPicklistId?.toLong()]}"/>
                                         </div>
 
-                                        <div class="ct-sub-item form-horizontal" id="ct-unlisted">
+                                        <div class="ct-sub-item" id="ct-unlisted">
 
                                             <div class="row">
                                                 <div class="form-group">

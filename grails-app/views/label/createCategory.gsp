@@ -41,7 +41,7 @@
                     <h4><g:message code="default.label.category.label" default="${entityName}"/> Details</h4>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="saveCategory" class="form-horizontal">
+                    <g:form action="saveCategory">
                         <div class="form-group">
                             <label class="form-label col-md-3" for="categoryName"><g:message code="default.label.category.label" default="${entityName}"/> Name*</label>
                             <div class="col-md-9">

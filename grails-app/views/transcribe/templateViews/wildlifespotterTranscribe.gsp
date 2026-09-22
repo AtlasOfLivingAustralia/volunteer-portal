@@ -30,7 +30,7 @@
                     <div class="card">
                         <div class="card-header"><h3 class="card-title">Classification Status:</h3></div>
                         <div class="card-body">
-                            <div id="classification-status-no-animals-selected" class="form-horizontal">
+                            <div id="classification-status-no-animals-selected">
                                 <div class="form-group">
                                     <div class="col-sm-12">
                                         <div class="checkbox">

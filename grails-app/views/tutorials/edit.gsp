@@ -57,7 +57,7 @@
                     <p>Edit the following details for your Tutorial. You may upload a new version of the tutorial. This will overwrite the existing version.</p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="update" class="form-horizontal" id="${tutorial?.id}" enctype="multipart/form-data">
+                    <g:form action="update" id="${tutorial?.id}" enctype="multipart/form-data">
 
                         <div class="form-group">
                             <label class="form-label col-md-3" for="institutionId">Institution*</label>

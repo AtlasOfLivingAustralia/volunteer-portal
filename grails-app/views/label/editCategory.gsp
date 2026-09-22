@@ -53,7 +53,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
-                    <g:form controller="label" action="updateCategory" class="form-horizontal" method="POST">
+                    <g:form controller="label" action="updateCategory" method="POST">
                     <div class="form-group">
                         <label class="form-label col-md-2" for="name">
                             Category Name:
@@ -115,7 +115,7 @@
 
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
-                    <g:form controller="label" action="saveNewLabel" class="form-horizontal" method="POST">
+                    <g:form controller="label" action="saveNewLabel" method="POST">
                         <div class="form-group">
                             <label class="form-label col-md-2" for="value">
                                 Add ${entityName}:

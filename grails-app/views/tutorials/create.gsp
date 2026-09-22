@@ -47,7 +47,7 @@
                     <p>Fill out the following details for your Tutorial. </p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="save" class="form-horizontal" enctype="multipart/form-data">
+                    <g:form action="save" enctype="multipart/form-data">
 
                         <div class="form-group">
                             <label class="form-label col-md-3" for="institutionId">Institution*</label>

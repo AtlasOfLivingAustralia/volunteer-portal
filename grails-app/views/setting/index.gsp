@@ -65,7 +65,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <g:form action="sendTestEmail" class="form-horizontal">
+                    <g:form action="sendTestEmail">
                         <label class="form-label col-md-1" for="to">To:</label>
                         <div class="col-md-5">
                             <g:textField class="form-control" name="to"/>

@@ -30,7 +30,7 @@
                             <g:renderErrors bean="${frontPage}" as="list"/>
                         </div>
                     </g:hasErrors>
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save">
                         <div class="form-group">
                             <label for="randomProjectOfTheDay" class="form-label col-md-3">
                                 <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Expedition for the day" />
