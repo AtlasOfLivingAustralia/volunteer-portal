@@ -46,12 +46,14 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
+                        <label class="visually-hidden" for="projectAdminSearch">Search tasks</label>
                         <input class="form-control" type="text" name="projectAdminSearch"
                                id="projectAdminSearch" value="${params.q}"
                                placeholder="Search tasks..."
                                size="60"/>
-                        <button class="btn btn-sm btn-primary" id="searchButton">
-                            <i class="fa fa-search"></i>
+                        <button class="btn btn-sm btn-primary" id="searchButton" type="button">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="visually-hidden">Search</span>
                         </button>
                     </div>
                 </div>

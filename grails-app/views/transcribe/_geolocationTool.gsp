@@ -13,10 +13,12 @@
 
             <h5>Locality Search</h5>
             <div class="custom-search-input in-modal">
+                <label class="visually-hidden" for="searchbox">Search locations</label>
                 <div class="input-group">
                     <input type="text" name="address" id="address" class="form-control" placeholder="Search e.g. Wollongong">
                     <button id="locationSearch" class="btn" type="button">
-                        <i class="fa fa-search"></i>
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <span class="visually-hidden">Search</span>
                     </button>
                 </div>
             </div>

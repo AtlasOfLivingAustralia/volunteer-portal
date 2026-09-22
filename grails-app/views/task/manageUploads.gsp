@@ -53,13 +53,13 @@
                               noSelection="['':'- Filter by Institution -']" />
                 </div>
                 <div class="col-md-6">
-                    <div class="custom-search-input body">
-                        <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search Expedition Name..."/>
-                            <button id="btnSearch" class="btn" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                    <label class="visually-hidden" for="searchbox">Search task images</label>
+                    <div class="input-group">
+                        <input type="search" id="searchbox" class="form-control" value="${params.q}" placeholder="Search task images..."/>
+                        <button id="btnSearch" class="btn btn-sm btn-primary" type="button">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="visually-hidden">Search</span>
+                        </button>
                     </div>
                 </div>
 

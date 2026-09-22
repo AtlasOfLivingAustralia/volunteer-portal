@@ -20,6 +20,11 @@
                 }
             });
 
+            $("#btnSearch").click(function (e) {
+                e.preventDefault();
+                doSearch();
+            });
+
             $("#searchbox").focus();
 
         }); // end .ready()
@@ -43,13 +48,13 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="custom-search-input body">
-                        <div class="input-group">
-                            <input type="text" id="searchbox" value="${params.q}" name="searchbox" class="form-control" placeholder="Search by Value" />
-                            <button class="btn" type="button" onclick="doSearch();">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                    <label class="visually-hidden" for="searchbox">Search picklists</label>
+                    <div class="input-group">
+                        <input type="search" id="searchbox" class="form-control" value="${params.q}" placeholder="Search picklists..."/>
+                        <button id="btnSearch" class="btn btn-sm btn-primary" type="button">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="visually-hidden">Search</span>
+                        </button>
                     </div>
 
                     <table class="table table-condensed table-striped">

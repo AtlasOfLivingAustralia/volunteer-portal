@@ -8,7 +8,7 @@
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 
     <style>
-    .btn, .custom-search-input {
+    .btn {
         border-radius: 4px !important;
     }
 

@@ -34,7 +34,8 @@
                                   value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                 </div>
                 <div class="col-md-4">
-                    <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search user..." value="${displayName}" required autocomplete="new-password"/>
+                    <label class="visually-hidden" for="user">Search for user</label>
+                    <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search for user..." value="${displayName}" required autocomplete="new-password"/>
                     <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>

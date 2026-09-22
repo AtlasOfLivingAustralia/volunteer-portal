@@ -6,7 +6,7 @@
     <title><cl:pageTitle title="${g.message(code:"newsItem.manage.label", default:"Manage News Items")}" /></title>
 
     <style>
-    .btn, .custom-search-input {
+    .btn {
         border-radius: 4px !important;
     }
     </style>
@@ -35,13 +35,13 @@
                               value="${params?.statusFilter}" noSelection="['':'- Filter by Status -']" />
                 </div>
                 <div class="col-md-4">
-                    <div class="custom-search-input body">
-                        <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search News Items..."/>
-                            <button id="btnSearch" class="btn" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                    <label class="visually-hidden" for="searchbox">Search news items</label>
+                    <div class="input-group">
+                        <input type="search" id="searchbox" class="form-control" value="${params.q}" placeholder="Search news items..."/>
+                        <button id="btnSearch" class="btn btn-sm btn-primary" type="button">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="visually-hidden">Search</span>
+                        </button>
                     </div>
                 </div>
 

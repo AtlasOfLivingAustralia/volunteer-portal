@@ -12,29 +12,19 @@
     <asset:script>
 
             $(function() {
-
-                $("#searchbox").keydown(function(e) {
-                    if (e.keyCode ==13) {
-                        doSearch();
-                    }
-                });
-
-                $("#btnSearch").click(function(e) {
+                $("#searchForm").on('submit', function (e) {
                     e.preventDefault();
                     doSearch();
                 });
 
                 $("#searchbox").focus();
 
-                //$('[data-bs-toggle="tooltip"]').tooltip();
                 new bootstrap.Tooltip($('[data-bs-toggle="tooltip"]'));
-
             });
 
             function doSearch() {
-                var q = $("#searchbox").val();
-                var url = "${createLink(controller: 'institution', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
-                window.location = url;
+                const q = $("#searchbox").val();
+                window.location = "${createLink(controller: 'institution', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
             }
 
     </asset:script>
@@ -83,12 +73,16 @@
                     <div class="col-sm-6">
                         <div class="card-filter">
                             <div class="custom-search-input body">
-                                <div class="input-group">
-                                    <input type="text" id="searchbox" class="form-control" placeholder="Search e.g. Bivalve"/>
-                                    <button id="btnSearch" class="btn" type="button">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </div>
+                                <form id="searchForm" role="search">
+                                    <label class="visually-hidden" for="searchbox">Search expeditions</label>
+                                    <div class="input-group">
+                                        <input type="search" id="searchbox" class="form-control" placeholder="Search e.g. Bivalve"/>
+                                        <button id="btnSearch" class="btn" type="submit">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                            <span class="visually-hidden">Search</span>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

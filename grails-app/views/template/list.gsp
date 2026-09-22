@@ -82,6 +82,7 @@
                     <g:set var="viewFilterWidth" value="3" />
                 </cl:ifNotSiteAdmin>
                 <div class="col-md-${searchWidth}">
+                    <label class="visually-hidden" for="searchbox">Search templates</label>
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by template name ..."/>
                 </div>
                 <div class="col-md-${viewFilterWidth}">

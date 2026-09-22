@@ -97,13 +97,13 @@
 
                 </div>
                 <div class="col-md-3">
-                    <div class="custom-search-input body">
-                        <div class="input-group">
-                            <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Search Tutorial Name..."/>
-                            <button id="btnSearch" class="btn" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                    <label class="visually-hidden" for="searchbox">Search tutorials</label>
+                    <div class="input-group">
+                        <input type="search" id="searchbox" class="form-control" value="${params.q}" placeholder="Search tutorials..."/>
+                        <button id="btnSearch" class="btn btn-sm btn-primary" type="button">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            <span class="visually-hidden">Search</span>
+                        </button>
                     </div>
                 </div>
 

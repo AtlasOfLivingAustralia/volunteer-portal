@@ -1,0 +1,22 @@
+@media (max-width: $screen-md) {
+  .navbar-collapse.collapse .custom-search-input {
+    float: none;
+    width: 100%;
+    margin: 20px 0 0 0;
+  }
+}
+
+@media (min-width: $screen-md) and (max-width: $screen-lg) {
+  .custom-search-input {
+    width: 100% !important;
+    order: 2 !important;
+    float: none !important;
+    margin-top: 10px;
+    margin-left: 60px !important;
+  }
+}
+
+#btnSearch.btn-primary {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}

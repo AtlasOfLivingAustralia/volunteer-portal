@@ -160,17 +160,23 @@ ul.profile-links {
 	}
 }
 
-/* Navbar Search */
+/* Search field — volunteer-facing (navbar + page body) */
 .custom-search-input {
 	display: flex;
 	align-items: center;      // don't inherit the navbar's stretch
-	border: solid 1px #E4E4E4;
+	min-height: 35px;         // pill height; the input sizes from padding
+	border: solid 1px $input-border;
 	border-radius: 10px;
+	overflow: hidden;
 	width: 220px;
-	float: right;
 	margin-left: 20px;
-	background-color: white;
+	background-color: #fff;
 	order: 2;
+
+	&:focus-within {
+		border-color: $focus-ring-color;
+		box-shadow: 0 0 0 0.25rem rgba($focus-ring-color, 0.25);
+	}
 
 	form {
 		flex: 1 1 auto;
@@ -188,7 +194,9 @@ ul.profile-links {
 		font-size: $font-size-xs;
 	}
 
+	// float is a no-op in the navbar (flex item); it positions the page variants
 	&.body {
+		float: right;
 		margin-top: 0;
 		margin-right: 10px;
 	}
@@ -203,11 +211,14 @@ ul.profile-links {
 
 .custom-search-input input {
 	border: 0;
-	box-shadow: none;
-	height: 35px;
 	background-color: transparent;
 	flex: 1 1 auto;
 	min-width: 0;          // let it shrink instead of forcing the button wider
+
+	// the ring is drawn on the wrapper (:focus-within), not the borderless input
+	&:focus {
+		box-shadow: none;
+	}
 }
 
 .custom-search-input button {
@@ -218,9 +229,9 @@ ul.profile-links {
 	background: none;
 	box-shadow: none;
 	border: 0;
-	border-left: solid 1px #ccc;
-	border-radius: 0 !important;      // kills the curved left divider
-	color: #666666;
+	border-left: solid 1px $btn-neutral-border;
+	border-radius: 0;
+	color: $body-copy;
 	padding: 0 8px 0 10px;
 }
 
@@ -302,15 +313,6 @@ ul.profile-links {
 		box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 	}
 
-	.navbar-collapse.collapse {
-		//display: none!important;
-		.custom-search-input {
-			float: none;
-			width: 100%;
-			margin: 20px 0 0 0;
-		}
-	}
-
 	.navbar-nav {
 		float: none!important;
 		margin: 7.5px -15px;
@@ -334,11 +336,6 @@ ul.profile-links {
 		width: 100%;
 	}
 
-	/* since 3.1.0 */
-	//.navbar-collapse.collapse.in {
-	//	display: block!important;
-	//}
-
 	.collapsing {
 		overflow: hidden!important;
 	}
@@ -358,13 +355,7 @@ ul.profile-links {
 	#navbar {
 		flex-wrap: wrap !important;
 	}
-	.custom-search-input {
-		width: 100% !important;
-		order: 2 !important;
-		float: none !important;
-		margin-top: 10px;
-		margin-left: 60px !important;
-	}
+
 	.navbar-nav.ms-auto.main-menu {
 		order: 1 !important;
 	}

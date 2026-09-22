@@ -145,9 +145,11 @@
                               value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
                 </div>
                 <div class="col-md-3">
+                    <label class="visually-hidden" for="searchbox">Filter by expedition</label>
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by Expedition..."/>
                 </div>
                 <div class="col-md-3">
+                    <label class="visually-hidden" for="user-searchbox">Filter by User</label>
                     <input type="text" id="user-searchbox" class="form-control" value="${displayUserFilter}" placeholder="Filter by User..." autocomplete="off"/>
                     <input id="filter-userId" name="filterUserId" type="hidden" value="${filterUserId}"/>
                     <i id="ajax-filter-spinner" class="fa fa-cog fa-spin d-none"></i>
