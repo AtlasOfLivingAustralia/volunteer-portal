@@ -11,7 +11,7 @@
 
 <content tag="pageTitle">Additional Tags</content>
 
-<g:form action="saveProjectLabels" class="form-horizontal" method="POST" >
+<g:form action="saveProjectLabels" method="POST" >
     <g:hiddenField name="id" value="${landingPageInstance?.id}" />
     <g:hiddenField name="labelIds" value="${landingPageInstance.label*.toMap()?.id?.toString().replaceAll("\\[", "").replaceAll("\\]","")}" />
 

@@ -1,4 +1,4 @@
-<g:form action="save" class="form-horizontal" method="POST" >
+<g:form action="save" method="POST" >
     <g:hiddenField name="id" value="${landingPageInstance?.id}" />
 
     <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'title', 'has-error')} required">

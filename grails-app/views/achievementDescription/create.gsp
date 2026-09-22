@@ -32,7 +32,7 @@
                     </ul>
                 </div>
             </g:hasErrors>
-            <g:form url="[resource: achievementDescriptionInstance, action: 'save']" class="form-horizontal">
+            <g:form url="[resource: achievementDescriptionInstance, action: 'save']">
                 <g:render template="form"/>
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-9">

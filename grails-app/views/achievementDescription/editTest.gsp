@@ -40,7 +40,7 @@
         </g:each>
         </tbody>
     </tabLe>
-    <g:form class="form-horizontal" action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
+    <g:form action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
         <div class="well">
             <h4>Check User</h4>
             <div class="form-group">

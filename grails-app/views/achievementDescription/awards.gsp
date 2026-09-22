@@ -55,7 +55,7 @@
 
     <div class="well">
         <h4>Grant achievement</h4>
-        <g:form class="form-horizontal" action="award" id="${achievementDescriptionInstance?.id}" method="POST">
+        <g:form action="award" id="${achievementDescriptionInstance?.id}" method="POST">
             <div class="form-group">
                 <label class="form-label col-md-3" for="user">
                     <g:message code="user.label" default="User"/>

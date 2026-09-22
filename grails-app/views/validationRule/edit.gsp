@@ -26,7 +26,7 @@
                             <g:renderErrors bean="${rule}" as="list"/>
                         </div>
                     </g:hasErrors>
-                    <g:form method="post" class="form-horizontal">
+                    <g:form method="post">
                         <g:hiddenField name="id" value="${rule?.id}"/>
                         <g:hiddenField name="version" value="${rule?.version}"/>
 
