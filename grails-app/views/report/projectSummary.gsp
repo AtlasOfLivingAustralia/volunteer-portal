@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<g:form action="requestProjectSummaryReport" class="form-horizontal" method="POST">
+<g:form action="requestProjectSummaryReport" method="POST">
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-8 input-group">
             <g:actionSubmit class="save btn btn-primary" action="requestProjectSummaryReport"

@@ -59,7 +59,7 @@
                         <div>
                             Background queue length: <span id="queueLength"><cl:spinner/></span>
                         </div>
-                        <g:form method="GET" action="testQuery" class="form-horizontal">
+                        <g:form method="GET" action="testQuery">
                             <fieldset>
                                 <legend>Raw Search Query</legend>
 

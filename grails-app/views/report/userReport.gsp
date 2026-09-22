@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <g:form action="requestUserReport" class="form-horizontal" method="POST">
+    <g:form action="requestUserReport" method="POST">
         <div class="form-group">
             <label for="dateSelect" class="col-md-3 form-label">Date Range*</label>
             <div class="col-md-8 input-daterange input-group" id="datepicker">

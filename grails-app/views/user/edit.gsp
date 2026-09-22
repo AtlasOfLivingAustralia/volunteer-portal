@@ -37,7 +37,7 @@
                         </div>
                     </g:hasErrors>
 
-                    <g:form method="post" class="form-horizontal">
+                    <g:form method="post">
                         <g:hiddenField name="id" value="${userInstance?.id}"/>
 
                         <div class="form-group">
@@ -105,7 +105,7 @@
                         </div>
                     </g:form>
 
-                    <div class="well form-horizontal" style="padding: 10px !important;">
+                    <div class="well" style="padding: 10px !important;">
                         <div class="form-group">
                             <label for="roles" class="form-label col-md-3">
                                 <g:message code="user.roles.label" default="Roles"/>
@@ -154,7 +154,7 @@
 
 
                     <div class="well" style="padding: 10px !important;">
-                        <g:form method="post" class="form-horizontal">
+                        <g:form method="post">
                             <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}"/>
                             <div class="form-group">
                                 <label for="label" class="form-label col-md-3">

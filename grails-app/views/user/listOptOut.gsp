@@ -21,7 +21,7 @@
     <div class="card">
         <div class="card-body">
             <h3 style="margin-block-start: 0.5em;">Add User Opt-out</h3>
-        <g:form controller="user" class="form-horizontal" action="addUserOptOut" method="POST">
+        <g:form controller="user" action="addUserOptOut" method="POST">
             <div class="form-group">
                 <label class="form-label col-md-1" for="user">
                     Add User:

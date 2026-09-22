@@ -34,7 +34,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 form-horizontal">
+                <div class="col-md-12">
                     <table class="table">
                         <tr>
                             <td>Locality</td>
@@ -66,7 +66,7 @@
             <button class="btn btn-outline-secondary" id="btnToggleFullData">Toggle full geolocate data</button>
 
             <div class="row">
-                <div class="col-md-12 form-horizontal" style="display: none" id="allDataDiv">
+                <div class="col-md-12" style="display: none" id="allDataDiv">
                     <pre>
                         <code id="geocodeAllData" class="prettyprint"></code>
                     </pre>
