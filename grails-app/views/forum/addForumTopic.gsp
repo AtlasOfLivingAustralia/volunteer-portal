@@ -36,7 +36,7 @@
         </g:if>
 
         <ol>
-            <g:form controller="forum" action="insertForumTopic" forum-post__form">
+            <g:form controller="forum" action="insertForumTopic" class="forum-post__form">
                 <g:hiddenField name="taskId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="projectId" value="${projectInstance?.id}"/>
                 <g:hiddenField name="topicType" id="form-data-topictype" value="${ForumTopicType.Question.ordinal()}" />
