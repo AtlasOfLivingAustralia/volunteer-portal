@@ -1,5 +1,4 @@
-<g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data"
-        class="form-horizontal">
+<g:form controller="task" action="uploadStagingDataFile" method="post" enctype="multipart/form-data">
     <g:hiddenField name="projectId" value="${projectInstance.id}"/>
     <div class="form-group">
         <label for="dataFile" class="col-md-3">Select a data file:</label>

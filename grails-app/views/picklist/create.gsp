@@ -27,7 +27,7 @@
                             <g:renderErrors bean="${picklistInstance}" as="list"/>
                         </div>
                     </g:hasErrors>
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save">
                         <div class="form-group ${hasErrors(bean: picklistInstance, field: 'name', 'has-error')}">
                             <label class="form-label col-md-2" for="name"><g:message code="picklist.name.label" default="Name"/></label>
                             <div class="col-md-4">

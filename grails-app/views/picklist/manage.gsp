@@ -21,7 +21,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                    <g:form method="post" class="form-horizontal" name="picklist-form">
+                    <g:form method="post" name="picklist-form">
 
                         <g:hiddenField name="id" value="${params.id}"/>
 
@@ -101,7 +101,7 @@
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <g:uploadForm class="form-horizontal" action="uploadCsvFile">
+                <g:uploadForm action="uploadCsvFile">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <div class="modal-header">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>

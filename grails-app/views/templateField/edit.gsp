@@ -30,7 +30,7 @@
                             <g:renderErrors bean="${templateFieldInstance}" as="list"/>
                         </div>
                     </g:hasErrors>
-                    <g:form method="post" class="form-horizontal">
+                    <g:form method="post">
                         <g:hiddenField name="id" value="${templateFieldInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateFieldInstance?.version}"/>
 
