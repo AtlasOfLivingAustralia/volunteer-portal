@@ -141,7 +141,7 @@
                     </div>
 
                     <div class="pagination">
-                        <g:paginate total="${taskListCount ?: 0}" action="manageProjectTaskUploads" params="${params}"/>
+                        <cl:paginate total="${taskListCount ?: 0}" action="manageProjectTaskUploads" params="${params}"/>
                     </div>
                 </div>
             </div>

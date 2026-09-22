@@ -121,7 +121,7 @@
                         </table>
 
                         <div class="pagination">
-                            <g:paginate total="${messageCount ?: 0}" action="index" params="${params}"/>
+                            <cl:paginate total="${messageCount ?: 0}" action="index" params="${params}"/>
                         </div>
                     </div>
                 </div>

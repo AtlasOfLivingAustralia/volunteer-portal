@@ -196,7 +196,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${tutorialListSize ?: 0}" action="manage" params="${params}"/>
+                        <cl:paginate total="${tutorialListSize ?: 0}" action="manage" params="${params}"/>
                     </div>
                 </div>
             </div>

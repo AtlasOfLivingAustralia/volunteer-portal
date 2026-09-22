@@ -50,7 +50,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${picklistInstanceTotal}"/>
+                        <cl:paginate total="${picklistInstanceTotal}"/>
                     </div>
                 </div>
             </div>

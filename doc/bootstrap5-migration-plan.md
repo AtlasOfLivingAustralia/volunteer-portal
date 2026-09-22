@@ -246,9 +246,9 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - [X] Standardise button styles
 - [X] Standardise font sizes & breadcrumbs
 - [X] Standardise form styles (inc bvp checkboxes)
-- [ ] Standardise search form styles
-  - [ ] Volunteer facing search form should mirror navbar search field
-  - [ ] Admin search form field should mirror task/list
+- [X] Standardise search form styles
+  - [X] Volunteer facing search form should mirror navbar search field
+  - [X] Admin search form field should mirror task/list
 - [ ] Fix pagination styles
 - [ ] Fix date picker styles
 - [ ] Fix file upload browse button style
@@ -402,6 +402,31 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
     - Prompt: "Decide whether the finder should be restricted to the same active/non-archived set as the select, or
       whether picking an archived expedition should inject the option. Add visible feedback when the selection can't be
       applied."
+- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`.
+  The last survivor of the `height: 25px` era; the same select appears without it
+  in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33, `tutorials/manage.gsp` 94,
+  `task/manageUploads.gsp` 48 and `project/manage.gsp` 110. Fold into the
+  `form-control` → `form-select` sweep.
+- [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
+  `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query
+  string. Every other `doSearch()` in the app encodes. Behaviour bug.
+- [ ] Volunteer search forms have no `action` and no hidden inputs, so they are
+  still JS-only and the `<form>` is decorative on submit.
+  - Prompt: "Decide whether volunteer search should work without JS. If so, give
+    each form a real GET action plus hidden inputs for `mode`/`statusFilter`/
+    `activeFilter`/`sort`/`order` and delete the URL-building JS."
+- [ ] `project/list.gsp`, `institution/list.gsp` and `institution/index.gsp` do
+  not echo `params.q` back into the search input — the term appears only as a
+  removable `.currentFilter` tag. `newsItem/manage`, `tutorials/manage`,
+  `task/manageUploads` and `picklist/show` do echo it. Inconsistent.
+  - Prompt: "Pick one: echo the term in the field, or show it as a removable tag."
+- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still
+  carries four `!important` declarations inherited from `_nav.scss`. With the
+  float now scoped to `.body`, check whether any are still needed.
+- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists
+  to compensate for the floated, fixed-width search pill. Re-check whether it is
+  still required now that the admin pages no longer use that wrapper.
+
 
 ---
 
@@ -521,6 +546,41 @@ or `outline: 0` on a focusable control (WCAG 2.4.7).
 `form-text`); `form-control` on a checkbox, radio or file input; fixed
 `height` on `.form-control`; `select[type="text"]` (matches nothing).
 
+#### Search fields
+
+Owned by `scss/modules/_search.scss` (moved out of `layouts/_nav.scss` — the component is body content, not navigation).
+
+| Context | Markup |
+|---|---|
+| Navbar and volunteer-facing page search | `.custom-search-input[.body]` > `<form role="search">` > `.input-group` > `input[type=search].form-control` + `<button class="btn" type="submit">` |
+| Admin search in a card/filter toolbar | plain `.input-group` > `.form-control` + `<button class="btn btn-sm btn-primary" type="button">` |
+| Admin filter field with an explicit Apply button | bare `.form-control`, no `input-group`, no icon button |
+| Search inside a modal or tool panel | `.custom-search-input.in-modal` |
+
+Every search control needs a `visually-hidden` `<label for>`; a placeholder is not a label. Icon-only buttons need
+`aria-hidden="true"` on the `<i>` and a
+`visually-hidden` text label.
+
+**The label must sit outside `.input-group`.** Bootstrap 5 derives input-group border radii and the -1px overlap margin
+from `:first-child` / `:last-child`
+(`bootstrap.css` 2713–2727). Any extra element inside the group — even a zero-layout `visually-hidden` label — shifts
+those selectors and squares off the control. Never put anything in an `.input-group` except the controls themselves.
+
+The pill's focus ring is drawn on the wrapper via `:focus-within`; the inner input suppresses its own `box-shadow`. This
+is the one sanctioned place where a
+`.form-control` focus shadow is removed, because the wrapper draws it instead.
+
+`.custom-search-input` is a poor name (it is neither custom nor nav). Renaming touches 11 GSPs for no user-visible
+gain — do it when the 2015 static design is deleted.
+
+**Removed — do not reintroduce:** `height` on `.custom-search-input input`;
+`border-radius … !important` on the wrapper; `class="btn"` with no variant; icon-only search buttons with no accessible
+name; `.custom-search-input` on admin pages.
+
+The pill clips its children (`overflow: hidden`) so square corners can't poke through the 10px radius. Children must not
+re-round their corners to match, and nothing inside the pill may overflow it — if a typeahead or suggestion list is ever
+added, it will need to be positioned outside the wrapper.
+
 ## Phase 9 - NTH
 
 **Objective:** Fix remaining issues if there is time. Otherwise, defer to next release.
@@ -618,3 +678,32 @@ or `outline: 0` on a focusable control (WCAG 2.4.7).
     `height: 38px` + `padding: 6px 12px` override in `digivol-custom.css` until now.
   - Deliberately not done: `.form-group` retained rather than swept to `mb-*`     utilities (~400 call sites, no visual gain); `form-control` → `form-select`
     deferred; `has-error` → `is-invalid` deferred (adds feedback that doesn't exist today — a behaviour change, not a style fix).
+- 2026-09-22 — Phase 8: "Standardise search form styles" completed.
+  - Six visual treatments of one control reduced to three documented conventions: volunteer-facing (4 sites) now mirrors
+    the navbar pill, admin (5 sites) now mirrors `task/list`'s `input-group` +
+    `btn btn-sm btn-primary`, bare filter fields left bare.
+  - Component CSS moved from `layouts/_nav.scss` to `modules/_search.scss`. It had 10 of its 11 call sites in page body
+    content.
+  - Removed the last fixed `height` on a `.form-control` (35px on the search input) — the Phase 8 form sweep missed it
+    because it was in `_nav.scss`. The pill height is now `min-height` on the wrapper.
+  - Retired four copies of `border-radius: 4px !important` scoped to
+    `.custom-search-input` (notebook-2 `_newsItems.scss` plus three page
+    `<style>` blocks) and the `border-radius: 0 !important` they were fighting. The unscoped `.btn` half of those rules
+    is untouched and stays on the notebook-2 follow-up list.
+  - a11y: 17 search/filter inputs had no accessible name (placeholder only)
+    and 11 icon-only buttons had none either. All now have `visually-hidden`
+    labels. Volunteer-facing search gained a real `<form role="search">`, replacing paired `keydown(13)` + `click`
+    handlers with one `submit`
+    handler, and `type="search"`.
+  - Correction to the plan: the sign-off called for a GET `<form>` on the volunteer pages. Not done — every `doSearch()`
+    hand-builds a URL carrying
+    `mode`/`statusFilter`/`activeFilter`/`sort`/`order`, which a plain GET form would drop. The form intercepts `submit`
+    and calls the existing JS.
+  - `float: right` moved from the base rule to `.body`; in the navbar the element is a flex item, so it had always been
+    a no-op there.
+  - Deliberately not done: renaming `.custom-search-input`; notebook-2
+    `.nav-dropdown` search fields; the BS2 locality/collectionEvent fragments.
+  - Correction, same day: the a11y labels were initially placed inside
+    `.input-group`, which made the input `:not(:first-child)` and squared its corners (admin) and pulled it 1px over the
+    pill border (volunteer). Labels moved outside the group. The pill additionally needed `overflow: hidden`, since the
+    square inner control extends ~3px past a 10px arc at the corner.

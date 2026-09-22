@@ -36,7 +36,7 @@
             </g:each>
 
             <div class="pagination foo">
-                <g:paginate total="${filteredProjectsCount}" prev="" next=""
+                <cl:paginate total="${filteredProjectsCount}" prev="" next=""
                             id="${params.id}" params="${[q: params.q, mode: 'list', tag: params.tag] + (extraParams ?: [:])}"/>
             </div>
         </div>

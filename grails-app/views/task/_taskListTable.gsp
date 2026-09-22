@@ -123,5 +123,5 @@
 </table>
 
 <div class="pagination">
-    <g:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q]}"/>
+    <cl:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q]}"/>
 </div>

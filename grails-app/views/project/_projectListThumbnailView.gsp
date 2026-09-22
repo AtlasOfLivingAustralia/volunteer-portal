@@ -35,7 +35,7 @@
 </g:each>
 <g:if test="${!disablePagination}">
     <div class="pagination">
-        <g:paginate total="${filteredProjectsCount}" prev="" next=""
+        <cl:paginate total="${filteredProjectsCount}" prev="" next=""
                     id="${params.id}" params="${[q: params.q] + (extraParams ?: [:])}"/>
     </div>
 </g:if>

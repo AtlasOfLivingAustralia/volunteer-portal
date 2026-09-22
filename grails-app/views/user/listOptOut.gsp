@@ -80,7 +80,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${userListCount ?: 0}" action="listOptOut" params="${params}"/>
+                        <cl:paginate total="${userListCount ?: 0}" action="listOptOut" params="${params}"/>
                     </div>
                 </div>
             </div>

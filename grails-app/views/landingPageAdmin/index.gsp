@@ -95,7 +95,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${landingPageCount ?: 0}"/>
+                        <cl:paginate total="${landingPageCount ?: 0}"/>
                     </div>
                 </div>
             </div>

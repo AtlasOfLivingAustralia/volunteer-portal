@@ -81,7 +81,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${picklistItemInstanceTotal}" id="${picklistInstance.id}"/>
+                        <cl:paginate total="${picklistItemInstanceTotal}" id="${picklistInstance.id}"/>
                     </div>
                 </div>
             </div>

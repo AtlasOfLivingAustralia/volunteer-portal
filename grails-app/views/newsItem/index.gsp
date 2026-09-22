@@ -55,7 +55,7 @@
         <div class="news-nav-row">
             <div class="news-pagination-nav">
                 <div class="news-nav-header news-nav-pagination">
-                    <g:paginate total="${newsItemCount ?: 0}" action="index" params="${params}" class="pagination-list" max="15"/>
+                    <cl:paginate total="${newsItemCount ?: 0}" action="index" params="${params}" class="pagination-list" max="15"/>
                 </div>
             </div>
         </div>

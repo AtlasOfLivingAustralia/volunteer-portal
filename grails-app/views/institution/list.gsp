@@ -132,7 +132,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="pagination">
-                            <g:paginate total="${totalInstitutions}" prev="" next="" params="${[q: params.q]}"/>
+                            <cl:paginate total="${totalInstitutions}" prev="" next="" params="${[q: params.q]}"/>
                         </div>
                     </div>
                 </div><!-- /.row -->

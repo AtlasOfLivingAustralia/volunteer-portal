@@ -2,24 +2,15 @@ package au.org.ala.volunteer
 
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
-/**
- * Conversion of the Grails 2 Twitter Bootstrap plugin to Grails 3.
- */
-class TwitterBootstrapTagLib {
-    static defaultEncodeAs = [taglib:'none']
-    //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
+class PaginationTagLib {
+    static defaultEncodeAs = [taglib: 'none']
 
-    static namespace = "g"
-
-    /*
-     * This g:paginate tag fix is based on:
-     * https://github.com/grails/grails-core/blob/master/grails-plugin-gsp/src/main/groovy/org/codehaus/groovy/grails/plugins/web/taglib/RenderTagLib.groovy
-     */
+    static namespace = "cl"
 
     /**
      * Creates next/previous links to support pagination for the current controller.<br/>
      *
-     * &lt;g:paginate total="${Account.count()}" /&gt;<br/>
+     * &lt;cl:paginate total="${Account.count()}" /&gt;<br/>
      *
      * @emptyTag
      *
@@ -34,16 +25,10 @@ class TwitterBootstrapTagLib {
      * @attr maxsteps The number of steps displayed for pagination (defaults to 10). Used ONLY if params.maxsteps is empty
      * @attr offset Used only if params.offset is empty
      * @attr fragment The link fragment (often called anchor tag) to use
+     * @attr namespace The namespace to use in the link
+     * @attr mapping The URL mapping to use in the link
      */
     def paginate = { attrs ->
-
-        def configTabLib = grailsApplication.config.getProperty('grails.plugins.twitterbootstrap.fixtaglib', Boolean, false)
-        if (!configTabLib) {
-            log.debug("Bootstrap paginate taglib disabled, falling back to default grails pagination.")
-            def renderTagLib = grailsApplication.mainContext.getBean('org.grails.plugins.web.taglib')
-            renderTagLib.paginate.call(attrs)
-            return
-        }
 
         def writer = out
         if (attrs.total == null) {
@@ -68,7 +53,7 @@ class TwitterBootstrapTagLib {
         if (params.sort) linkParams.sort = params.sort
         if (params.order) linkParams.order = params.order
 
-        def linkTagAttrs = [action:action]
+        def linkTagAttrs = [action: action]
         if (attrs.namespace) {
             linkTagAttrs.namespace = attrs.namespace
         }
@@ -104,7 +89,7 @@ class TwitterBootstrapTagLib {
         if (currentstep > firststep) {
             linkParams.offset = offset - max
             writer << '<li class="prev">'
-            writer << link(linkTagAttrs.clone()) {
+            writer << g.link(linkTagAttrs.clone()) {
                 (attrs.prev ?: messageSource.getMessage('paginate.prev', null, '&laquo;', locale))
             }
             writer << '</li>'
@@ -141,7 +126,7 @@ class TwitterBootstrapTagLib {
             if (beginstep > firststep) {
                 linkParams.offset = 0
                 writer << '<li>'
-                writer << link(linkTagAttrs.clone()) {firststep.toString()}
+                writer << g.link(linkTagAttrs.clone()) { firststep.toString() }
                 writer << '</li>'
                 writer << '<li class="disabled"><span>...</span></li>'
             }
@@ -156,7 +141,7 @@ class TwitterBootstrapTagLib {
                 else {
                     linkParams.offset = (i - 1) * max
                     writer << "<li>";
-                    writer << link(linkTagAttrs.clone()) {i.toString()}
+                    writer << g.link(linkTagAttrs.clone()) { i.toString() }
                     writer << "</li>";
                 }
             }
@@ -164,9 +149,9 @@ class TwitterBootstrapTagLib {
             // display laststep link when endstep is not laststep
             if (endstep < laststep) {
                 writer << '<li class="disabled"><span>...</span></li>'
-                linkParams.offset = (laststep -1) * max
+                linkParams.offset = (laststep - 1) * max
                 writer << '<li>'
-                writer << link(linkTagAttrs.clone()) { laststep.toString() }
+                writer << g.link(linkTagAttrs.clone()) { laststep.toString() }
                 writer << '</li>'
             }
         }
@@ -175,7 +160,7 @@ class TwitterBootstrapTagLib {
         if (currentstep < laststep) {
             linkParams.offset = offset + max
             writer << '<li class="next">'
-            writer << link(linkTagAttrs.clone()) {
+            writer << g.link(linkTagAttrs.clone()) {
                 (attrs.next ? attrs.next : messageSource.getMessage('paginate.next', null, '&raquo;', locale))
             }
             writer << '</li>'

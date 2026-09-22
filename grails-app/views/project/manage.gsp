@@ -240,7 +240,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${archiveProjectInstanceListSize ?: 0}" action="manage" params="${params}"/>
+                        <cl:paginate total="${archiveProjectInstanceListSize ?: 0}" action="manage" params="${params}"/>
                     </div>
                 </div>
             </div>

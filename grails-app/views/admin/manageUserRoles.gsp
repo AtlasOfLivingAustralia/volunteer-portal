@@ -208,7 +208,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${userRoleTotalCount ?: 0}" action="manageUserRoles" params="${params}"/>
+                        <cl:paginate total="${userRoleTotalCount ?: 0}" action="manageUserRoles" params="${params}"/>
                     </div>
                 </div>
             </div>

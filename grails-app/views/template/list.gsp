@@ -175,7 +175,7 @@
                 </div>
 
                 <div class="text-center">
-                    <g:paginate total="${templateInstanceTotal}" params="${params}"/>
+                    <cl:paginate total="${templateInstanceTotal}" params="${params}"/>
                 </div>
             </div>
         </div>

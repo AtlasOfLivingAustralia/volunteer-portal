@@ -74,7 +74,7 @@
                     </table>
 
                     <div class="pagination">
-                        <g:paginate total="${achievementDescriptionInstanceCount ?: 0}"/>
+                        <cl:paginate total="${achievementDescriptionInstanceCount ?: 0}"/>
                     </div>
                 </div>
             </div>

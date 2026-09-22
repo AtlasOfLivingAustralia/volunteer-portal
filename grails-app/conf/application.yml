@@ -75,9 +75,6 @@ grails:
         upload:
             maxFileSize: 5368709120
             maxRequestSize: 5368709120
-    plugins:
-        twitterbootstrap:
-            fixtaglib: true
     mail:
         default:
             from: 'DigiVol <noreply@volunteer.ala.org.au>'
@@ -297,8 +294,6 @@ exportCSVThreadPoolSize: 10
 #        security:
 #            cas:
 #                appServerName: http://volunteer.ala.org.au
-
-#Fix grails taglib <g:paginate/> to work with bootstrap css.
 
 digest:
     enabled: false
