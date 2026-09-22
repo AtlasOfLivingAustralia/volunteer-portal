@@ -30,7 +30,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save">
                         <g:render template="form"/>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">

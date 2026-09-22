@@ -32,7 +32,7 @@
                         </ul>
                     </g:hasErrors>
 
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save">
                         <input type="hidden" name="isApproved" value="true" />
                             <g:render template="form"/>
                         <div class="form-group">

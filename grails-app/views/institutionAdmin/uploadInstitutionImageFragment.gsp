@@ -1,6 +1,6 @@
 <div>
 
-    <g:uploadForm class="form-horizontal" action="uploadInstitutionImage">
+    <g:uploadForm action="uploadInstitutionImage">
         <g:hiddenField name="id" value="${institutionInstance.id}"/>
         <g:hiddenField name="imageType" value="${imageType ?: 'main'}"/>
         <div class="form-group">

@@ -46,7 +46,7 @@
                         </ul>
                     </g:hasErrors>
 
-                    <g:form action="update" class="form-horizontal">
+                    <g:form action="update">
                         <input type="hidden" name="id" value="${institutionMessageInstance.id}" />
                         <g:if test="${institutionMessageInstance.dateSent}">
                             <g:render template="review"/>

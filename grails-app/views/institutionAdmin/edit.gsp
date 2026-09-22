@@ -29,7 +29,7 @@
             </ul>
         </g:hasErrors>
 
-        <g:form class="form-horizontal" controller="institutionAdmin" action="update" id="${institutionInstance?.id}" method="PUT">
+        <g:form controller="institutionAdmin" action="update" id="${institutionInstance?.id}" method="PUT">
             <g:hiddenField name="version" value="${institutionInstance?.version}"/>
             <g:render template="form" model="[mode: 'edit']"/>
             <div class="form-group">

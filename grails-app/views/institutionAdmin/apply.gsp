@@ -37,7 +37,7 @@
                         </ul>
                     </g:hasErrors>
 
-                    <form action="applySave" method="POST" class="form-horizontal">
+                    <form action="applySave" method="POST">
                         <input type="hidden" name="isApproved" value="false" />
                             <g:render template="form"/>
                         <div class="form-group">
