@@ -367,10 +367,6 @@ span.expedition.disabledMenuItem {
     text-align: justify;
 }
 
-.form-group.required .form-label:after {
-    content:"*";
-}
-
 /* centered columns styles */
 .row-centered {
     text-align:center;

@@ -24,7 +24,7 @@ a {
 	}
 
 	&:focus-visible {
-		outline: 2px solid $btn-primary-bg;
+		outline: 2px solid $focus-ring-color;
 		outline-offset: 2px;
 	}
 }

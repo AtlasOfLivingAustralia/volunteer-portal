@@ -670,36 +670,6 @@ h2.body-heading {
 	}
 }
 
-legend {
-	margin-left: 15px;
-	border-bottom: none;
-	width: auto;
-	margin-bottom: 10px;
-	font-size: $font-size-lg;
-	color: $black;
-	font-weight: 500;
-}
-
-form {
-	label {
-		font-weight: 400;
-		color: $black;
-	}
-}
-
-.form-group {
-	margin-bottom: 5px;
-}
-
-.form-control {
-	padding: 5px 8px;
-	//margin-bottom: 5px;
-}
-
-.form-switch-lg {
-	font-size: $font-size-xl;
-}
-
 .transcription-actions {
 	padding: 30px 0;
 	.btn {

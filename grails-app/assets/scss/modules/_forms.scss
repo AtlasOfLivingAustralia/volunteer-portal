@@ -1,0 +1,45 @@
+/* Forms — single owner for form styling. See doc/bootstrap5-migration-plan.md */
+
+legend {
+  margin-left: 15px;
+  border-bottom: none;
+  width: auto;
+  margin-bottom: 10px;
+  font-size: $font-size-lg;
+  color: $black;
+  font-weight: 500;
+}
+
+form {
+  label {
+    font-weight: 400;
+    color: $black;
+  }
+}
+
+// BS5 has no .form-group; retained as a local component meaning
+// "one label + control + help/error". Do not replace with mb-* utilities.
+.form-group {
+  margin-bottom: 5px;
+}
+
+.form-control {
+  padding: 5px 8px;
+}
+
+// Focus ring themed on $link-color to match a:focus-visible in base/_base.scss.
+// Never suppress the indicator (WCAG 2.4.7).
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: $focus-ring-color;
+  box-shadow: 0 0 0 0.25rem rgba($focus-ring-color, 0.25);
+}
+
+.form-switch-lg {
+  font-size: $font-size-xl;
+}
+
+.form-group.required .form-label:after {
+  content: "*";
+}

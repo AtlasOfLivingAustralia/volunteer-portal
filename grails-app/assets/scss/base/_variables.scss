@@ -22,6 +22,10 @@ $btn-primary-active-bg:     #007299;
 
 $btn-neutral-border:        #ccc;
 
+/* Focus ring — themed on $link-color so links and form controls match */
+
+$focus-ring-color:          $link-color;   // #2B779A
+
 /* Typography — base size pending design sign-off (Phase 8) */
 
 $font-size-root:      100%;        // respects browser setting; 16px default
