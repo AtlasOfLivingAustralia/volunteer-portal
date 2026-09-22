@@ -47,7 +47,7 @@
                     <p>* denotes required information.</p>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
-                    <g:form action="save" class="form-horizontal">
+                    <g:form action="save">
 
                         <div class="form-group">
                             <label class="form-label col-md-3" for="institutionId">Expedition institution*</label>

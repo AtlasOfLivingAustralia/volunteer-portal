@@ -12,7 +12,7 @@
 <content tag="adminButtonBar">
 </content>
 
-<g:form method="post" class="form-horizontal">
+<g:form method="post">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_PICKLIST}" />

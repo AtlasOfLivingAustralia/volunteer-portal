@@ -32,8 +32,7 @@
 </cl:hasNoProjectBackgroundImage>
 
 
-<g:form action="uploadBackgroundImage" controller="project" method="post" enctype="multipart/form-data"
-        class="form-horizontal">
+<g:form action="uploadBackgroundImage" controller="project" method="post" enctype="multipart/form-data">
 
     <g:hiddenField name="id" value="${projectInstance.id}"/>
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_BG_IMAGE}" />

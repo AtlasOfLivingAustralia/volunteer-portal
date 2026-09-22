@@ -36,7 +36,7 @@
     </div>
 </g:hasErrors>
 
-<g:form name="updateGeneralSettings" method="post" class="form-horizontal" action="updateGeneralSettings">
+<g:form name="updateGeneralSettings" method="post" action="updateGeneralSettings">
     <g:hiddenField name="id" id="projectId" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_GENERAL}" />

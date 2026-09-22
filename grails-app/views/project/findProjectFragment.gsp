@@ -1,16 +1,13 @@
-<div class="form-horizontal">
 
-    <div class="control-group">
-        <g:textField name="search" class="form-control" value="" placeholder="Search"/>
-        <button id="btnSearchProjects" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
-        <button class="btn btn-secondary" id="btnCancelProjectSearch">Cancel</button>
-    </div>
-
-    <div id="searchResults" style="height: 300px; overflow-y: auto">
-
-    </div>
-
+<div>
+    <g:textField name="search" class="form-control" value="" placeholder="Search"/>
+    <button id="btnSearchProjects" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+    <button class="btn btn-secondary" id="btnCancelProjectSearch">Cancel</button>
 </div>
+
+<div id="searchResults" style="height: 300px; overflow-y: auto">
+</div>
+
 <script>
 
     $("#search").keypress(function (e) {

@@ -18,8 +18,6 @@
         <cl:ifSiteAdmin>- <a href="${createLink(controller: 'project', action: 'resetProjectSize', id: projectInstance.id)}">Reset disk usage</a></cl:ifSiteAdmin>
     </div>
 
-<div class="form-horizontal">
-
     <div class="form-group">
         <label class="form-label col-md-5">Upload images and create new tasks</label>
 
@@ -49,7 +47,6 @@
         </div>
     </div>
 
-
     <div class="form-group">
         <label class="form-label col-md-5">Permanently remove all tasks and their images</label>
 
@@ -58,8 +55,6 @@
                     class="fa fa-times"></i>&nbsp;Delete All Tasks</button>
         </div>
     </div>
-
-</div>
 
 <asset:script type='text/javascript'>
 

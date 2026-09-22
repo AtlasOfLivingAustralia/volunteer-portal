@@ -19,7 +19,7 @@
     <p>You can add new tutorials
     <g:link controller="tutorials" action="manage" params="${[institutionFilter: projectInstance.institution.id]}">here</g:link>.</p>
 </div>
-<g:form method="post" class="form-horizontal">
+<g:form method="post">
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_TUTORIAL}" />

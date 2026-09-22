@@ -5,18 +5,14 @@
     </p>
 
     <div id="confirm">
-    <div class="alert alert-danger">
-        <strong>Warning:</strong> This action cannot be undone. Are you sure you wish to remove all tasks (including those already transcribed) from expedition '${projectInstance.name}'?
-    </div>
-
-    <div class="form-horizontal">
-        <div class="control-group">
-            <div class="controls">
-                <button class="btn btn-secondary" id="btnCancelDeleteAllTasks">Cancel</button>
-                <button class="btn btn-danger" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
-            </div>
+        <div class="alert alert-danger">
+            <strong>Warning:</strong> This action cannot be undone. Are you sure you wish to remove all tasks (including those already transcribed) from expedition '${projectInstance.name}'?
         </div>
-    </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" id="btnCancelDeleteAllTasks">Cancel</button>
+            <button class="btn btn-danger" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
+        </div>
     </div>
 
     <div id="progress" class="d-none">

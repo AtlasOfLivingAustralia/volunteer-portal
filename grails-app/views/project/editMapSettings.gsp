@@ -18,7 +18,7 @@
 <g:set var="initLatitude" value="${projectInstance.mapInitLatitude ?: -27.76133033947936}"/>
 <g:set var="initLongitude" value="${projectInstance.mapInitLongitude ?: 134.47265649999997}"/>
 
-<g:form method="post" class="form-horizontal" name="updateForm" action="updateMapSettings">
+<g:form method="post" name="updateForm" action="updateMapSettings">
 
     <g:hiddenField name="id" value="${projectInstance?.id}"/>
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
