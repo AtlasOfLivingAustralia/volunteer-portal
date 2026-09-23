@@ -6,18 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'newsItem.name.label', default: 'News Item')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-
-    <style>
-    .btn {
-        border-radius: 4px !important;
-    }
-
-    .datepicker table tr td.disabled {
-        color: #ddd !important;
-    }
-    </style>
-
-    <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <asset:stylesheet src="bootstrap-datepicker"/>
 </head>
 
 <body class="admin">
@@ -77,9 +66,10 @@
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <input type="text" class="form-control datepicker" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${params?.dateExpiresPicker ?: ''}"/>
-                                    <span class="input-group-text">
-                                        <span class="fa fa-th-large"></span>
-                                    </span>
+                                    <button type="button" class="btn btn-outline-secondary datepicker-trigger">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        <span class="visually-hidden">Choose date expires</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +94,7 @@
         </div>
     </div>
 </div>
-<asset:script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" asset-defer=""/>
+<asset:javascript src="bootstrap-datepicker" asset-defer=""/>
 <asset:javascript src="tinymce-simple" asset-defer="" />
 <asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
@@ -121,8 +111,7 @@ $(document).ready(function() {
         endDate: "${defaultEndDate}"
     });
 
-    // Ensure addon click opens picker in BS5 markup
-    $('.input-group-text').on('click', function () {
+    $('.datepicker-trigger').on('click', function () {
       $(this).closest('.input-group').find('.datepicker').datepicker('show');
     });
 });

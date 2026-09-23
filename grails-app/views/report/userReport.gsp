@@ -5,46 +5,9 @@
     <meta name="layout" content="digivol-reporting"/>
     <title><g:message code="admin.user.report.label" default="User Reporting"/></title>
 
-    <link id="bsdp-css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <asset:stylesheet src="bootstrap-datepicker"/>
     <style>
-    .label-button {
-        cursor: pointer;
-        font-size: 1.2em;
-    }
 
-    .today, .active {
-        font-weight: bold;
-    }
-
-    .prev, .next, .day, .month, .year, .today, .datepicker-switch {
-        cursor: pointer;
-    }
-
-    .loader {
-        border: 4px solid #e0e0e0; /* Light grey */
-        border-top: 4px solid #000000;
-        border-radius: 50%;
-        width: 2.475rem;
-        height: 2.475rem;
-        animation: spin 1s linear infinite;
-        }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .float-right {
-        position: absolute;
-        z-index: 2;
-        display: block;
-        /*line-height: 2.375rem;*/
-        text-align: center;
-        pointer-events: none;
-        color: #aaa;
-        right:40px;
-        top: 4px;
-    }
     </style>
 </head>
 
@@ -110,7 +73,7 @@
         </div>
     </div>
 
-<asset:script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" asset-defer=""/>
+<asset:javascript src="bootstrap-datepicker" asset-defer=""/>
 <asset:script type="text/javascript" asset-defer="">
 $(function () {
     $('.input-daterange').datepicker({

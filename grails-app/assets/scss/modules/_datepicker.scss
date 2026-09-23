@@ -1,0 +1,41 @@
+/* Date picker — bootstrap-datepicker 1.9.0. See doc/bootstrap5-migration-plan.md */
+
+.datepicker {
+  font-size: $font-size-body;
+
+  td.disabled,
+  td.disabled:hover {
+    color: $divider-grey;
+  }
+
+  // Selected day follows institution branding, as pagination does.
+  td.active,
+  td.active:hover {
+    background: var(--brand-primary, #{$brand-color});
+    border-color: var(--brand-primary, #{$brand-color});
+    color: #fff;
+  }
+
+  td.today {
+    border: 1px solid var(--brand-primary, #{$brand-color});
+  }
+
+  .prev,
+  .next,
+  .day,
+  .month,
+  .year,
+  .today,
+  .datepicker-switch {
+    cursor: pointer;
+  }
+
+  .today,
+  .active {
+    font-weight: bold;
+  }
+
+  td.day {
+    min-width: 2.5rem;
+  }
+}

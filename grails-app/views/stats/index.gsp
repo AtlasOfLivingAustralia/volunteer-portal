@@ -273,38 +273,44 @@
     </div>
 </section>
 <script type="text/ng-template" id="dateRange.html">
-<div class="form-inline">
-    <div class="form-group">
-        <label>From:
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="fromDate" ng-model="$ctrl.startDate" is-open="$ctrl.fromDatePopupOpened" />
-                <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.fromDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
-            </div>
-        </label>
+<div class="row g-3 align-items-end">
+    <div class="col-auto">
+        <label class="form-label" for="fromDate">From:</label>
+        <div class="input-group">
+            <input type="text" id="fromDate" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="fromDate" ng-model="$ctrl.startDate" is-open="$ctrl.fromDatePopupOpened" />
+            <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.fromDatePopupOpened = true">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span class="visually-hidden">Choose start date</span>
+            </button>
+        </div>
     </div>
-    <div class="form-group">
-        <label>To:
-            <div class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
-                <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="$ctrl.toDatePopupOpened = true"><i class="fa fa-calendar"></i></button>
-            </div>
-        </label>
+
+    <div class="col-auto">
+        <label class="form-label" for="toDate">To:</label>
+        <div class="input-group">
+            <input type="text" id="toDate" class="form-control" uib-datepicker-popup="{{$ctrl.format}}" name="toDate" ng-model="$ctrl.endDate" is-open="$ctrl.toDatePopupOpened" />
+            <button type="button" class="btn btn-outline-secondary" ng-click="$ctrl.toDatePopupOpened = true">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span class="visually-hidden">Choose end date</span>
+            </button>
+        </div>
     </div>
-    <div class="form-group">
-        <label>Institution:
-            <div class="input-group">
-                <select name="institutionId" id="institutionId" class="form-control" ng-model="$ctrl.institutionId">
-                    <option value="0">- All Institutions -</option>
-                    <g:each in="${institutionList}" var="institution">
-                        <option value="${institution.id}"
-                                <g:if test="${params?.institutionId == institution.id}">selected</g:if>
-                        >${institution.name}</option>
-                    </g:each>
-                </select>
-            </div>
-        </label>
+
+    <div class="col-auto">
+        <label class="form-label" for="institutionId">Institution:</label>
+        <select name="institutionId" id="institutionId" class="form-select" ng-model="$ctrl.institutionId">
+            <option value="0">- All Institutions -</option>
+            <g:each in="${institutionList}" var="institution">
+                <option value="${institution.id}"
+                        <g:if test="${params?.institutionId == institution.id}">selected</g:if>
+                >${institution.name}</option>
+            </g:each>
+        </select>
     </div>
-    <button class="search btn btn-sm btn-primary" ng-click="$ctrl.confirm()">Search</button>
+
+    <div class="col-auto">
+        <button type="button" class="search btn btn-sm btn-primary" ng-click="$ctrl.confirm()">Search</button>
+    </div>
 </div>
 </script>
 <g:render template="/common/angularBootstrapTabSet" />

@@ -5,11 +5,6 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="frontPage.label" default="Front Page Configuration"/></title>
 
-    <style>
-    .count_message {
-        background-color: smoke;
-    }
-    </style>
 </head>
 
 <body class="admin">
@@ -225,10 +220,6 @@
                 $("#projectOfTheDay").val(projectId);
             });
 
-        });
-
-        $('.grails-date select').each(function() {
-            $(this).attr('class', 'form-control');
         });
 
         var logos = [];

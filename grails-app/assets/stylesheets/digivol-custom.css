@@ -188,10 +188,6 @@ table.task-table {
      margin-bottom: 0;
 }
 
-.admin .grails-date select {
-    display: inline-block;
-}
-
 .admin .list-group-item.active a {
     color: white;
 }

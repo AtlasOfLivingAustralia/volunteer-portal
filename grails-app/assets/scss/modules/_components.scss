@@ -1066,3 +1066,9 @@ a.fieldHelp {
 		color: var(--bs-primary, #2B779A);
 	}
 }
+
+// Character counter on text fields
+.count_message {
+	color: white;
+	background-color: darken(darkgrey, 20%);
+}
