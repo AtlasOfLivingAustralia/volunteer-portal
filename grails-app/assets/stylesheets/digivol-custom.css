@@ -64,20 +64,6 @@ h2.heading > div.subheading {
     padding: 1rem;
 }
 
-div.pagination {
-    width: 100%;
-    text-align: center;
-}
-
-.pagination > li > a, .pagination > li > span {
-    color: #d5502a;
-}
-
-.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
-    background-color: #d5502a;
-    border-color: #d5502a;
-}
-
 .main-menu > li > a {
     padding: 25px 14px; }
 

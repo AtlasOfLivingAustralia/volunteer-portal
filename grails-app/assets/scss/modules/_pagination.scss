@@ -1,0 +1,42 @@
+// Pagination
+//
+// The taglib (PaginationTagLib) emits .pagination / .page-item / .page-link.
+// Never hand-write those classes in a GSP.
+//
+// The active colour is per-institution, set as --brand-primary by
+// layouts/_commonCss.gsp. The literal is the fallback only.
+
+.pagination {
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+// notebook-2 pages (forum, newsItem, user/show) align right
+.pagination.pagination-end {
+  justify-content: flex-end;
+}
+
+.page-link {
+  color: var(--brand-primary, #{$brand-color});
+
+  &:hover {
+    color: var(--brand-primary, #{$brand-color});
+    background-color: $background-grey;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $focus-ring-color;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+}
+
+.page-item.active .page-link {
+  color: #fff;
+  background-color: var(--brand-primary, #{$brand-color});
+  border-color: var(--brand-primary, #{$brand-color});
+}
+
+.page-item.disabled .page-link {
+  color: $body-copy-on-black;
+}

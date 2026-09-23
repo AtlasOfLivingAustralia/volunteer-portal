@@ -140,9 +140,8 @@
                             data-href="${createLink(controller: 'task', action: 'deleteTaskDescriptorList', params: params)}">Delete All Listed Tasks</button>
                     </div>
 
-                    <div class="pagination">
-                        <cl:paginate total="${taskListCount ?: 0}" action="manageProjectTaskUploads" params="${params}"/>
-                    </div>
+                    <cl:paginate total="${taskListCount ?: 0}" action="manageProjectTaskUploads" params="${params}"/>
+
                 </div>
             </div>
 

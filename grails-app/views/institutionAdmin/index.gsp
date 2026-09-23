@@ -135,9 +135,7 @@
                         </tbody>
                     </table>
                     <g:if test="${institutionInstanceCount > 20}">
-                    <div class="pagination">
                         <cl:paginate total="${institutionInstanceCount ?: 0}" params="${params}"/>
-                    </div>
                     </g:if>
                 </div>
             </div>

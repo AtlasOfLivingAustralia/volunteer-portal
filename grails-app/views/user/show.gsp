@@ -132,7 +132,7 @@
                 </ul>
             </div>
             <div class="task-history-pagination-nav">
-                <cl:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
+                <cl:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-end"/>
             </div>
         </nav>
     </section>
@@ -235,7 +235,7 @@
     <section class="task-list-nav-section">
         <nav class="task-history-nav">
             <div class="task-history-pagination-nav">
-                <cl:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-list"/>
+                <cl:paginate total="${totalMatchingTasks ?: 0}" action="show" params="${params}" class="pagination-end"/>
             </div>
         </nav>
     </section>

@@ -122,6 +122,4 @@
     </tbody>
 </table>
 
-<div class="pagination">
-    <cl:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q]}"/>
-</div>
+<cl:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q]}"/>

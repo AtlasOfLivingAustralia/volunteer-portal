@@ -49,9 +49,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${picklistInstanceTotal}"/>
-                    </div>
+                    <cl:paginate total="${picklistInstanceTotal}"/>
+
                 </div>
             </div>
         </div>

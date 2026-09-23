@@ -78,11 +78,9 @@
                     </g:each>
                 </tbody>
             </table>
-            <g:if test="${reportCount > 25}">
-            <div class="pagination">
-                <cl:paginate total="${institutionInstanceCount ?: 0}" params="${params}"/>
-            </div>
-            </g:if>
+        <g:if test="${reportCount > 25}">
+            <cl:paginate total="${institutionInstanceCount ?: 0}" params="${params}"/>
+        </g:if>
         </div>
     </div>
 <asset:script type="text/javascript">

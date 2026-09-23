@@ -207,9 +207,7 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${userRoleTotalCount ?: 0}" action="manageUserRoles" params="${params}"/>
-                    </div>
+                    <cl:paginate total="${userRoleTotalCount ?: 0}" action="manageUserRoles" params="${params}"/>
                 </div>
             </div>
         </div>

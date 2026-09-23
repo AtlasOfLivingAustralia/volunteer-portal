@@ -239,9 +239,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${archiveProjectInstanceListSize ?: 0}" action="manage" params="${params}"/>
-                    </div>
+                    <cl:paginate total="${archiveProjectInstanceListSize ?: 0}" action="manage" params="${params}"/>
+
                 </div>
             </div>
         </div>

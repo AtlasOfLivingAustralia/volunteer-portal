@@ -249,7 +249,7 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - [X] Standardise search form styles
   - [X] Volunteer facing search form should mirror navbar search field
   - [X] Admin search form field should mirror task/list
-- [ ] Fix pagination styles
+- [X] Fix pagination styles
 - [ ] Fix date picker styles
 - [ ] Fix file upload browse button style
 - [ ] Standardise table styles
@@ -306,6 +306,9 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - [ ] Custom landing page admin
 - [ ] Update edit action icons from fa-edit to fa-pencil
 - [ ] Remove 2015 static design and dead css classes
+    - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
+      3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
+      repo. Not referenced by the app; unrelated to `scss/bootstrap/_variables.scss`.
 - [ ] BS2 grid classes still live (`row-fluid`, `span1`–`span12`) — locality/ collectionEvent searchFragment, picklist
   images/wildcount/edit, user/notebookMainFragment, layouts/transcribeTool. Layouts currently collapse to full-width
   stacked divs.
@@ -402,30 +405,46 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
     - Prompt: "Decide whether the finder should be restricted to the same active/non-archived set as the select, or
       whether picking an archived expedition should inject the option. Add visible feedback when the selection can't be
       applied."
-- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`.
-  The last survivor of the `height: 25px` era; the same select appears without it
-  in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33, `tutorials/manage.gsp` 94,
+- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
+  the `height: 25px` era; the same select appears without it in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33,
+  `tutorials/manage.gsp` 94,
   `task/manageUploads.gsp` 48 and `project/manage.gsp` 110. Fold into the
   `form-control` → `form-select` sweep.
 - [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
-  `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query
-  string. Every other `doSearch()` in the app encodes. Behaviour bug.
-- [ ] Volunteer search forms have no `action` and no hidden inputs, so they are
-  still JS-only and the `<form>` is decorative on submit.
-  - Prompt: "Decide whether volunteer search should work without JS. If so, give
-    each form a real GET action plus hidden inputs for `mode`/`statusFilter`/
-    `activeFilter`/`sort`/`order` and delete the URL-building JS."
-- [ ] `project/list.gsp`, `institution/list.gsp` and `institution/index.gsp` do
-  not echo `params.q` back into the search input — the term appears only as a
-  removable `.currentFilter` tag. `newsItem/manage`, `tutorials/manage`,
+  `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query string. Every other `doSearch()` in
+  the app encodes. Behaviour bug.
+- [ ] Volunteer search forms have no `action` and no hidden inputs, so they are still JS-only and the `<form>` is
+  decorative on submit.
+    - Prompt: "Decide whether volunteer search should work without JS. If so, give each form a real GET action plus
+      hidden inputs for `mode`/`statusFilter`/
+      `activeFilter`/`sort`/`order` and delete the URL-building JS."
+- [ ] `project/list.gsp`, `institution/list.gsp` and `institution/index.gsp` do not echo `params.q` back into the search
+  input — the term appears only as a removable `.currentFilter` tag. `newsItem/manage`, `tutorials/manage`,
   `task/manageUploads` and `picklist/show` do echo it. Inconsistent.
-  - Prompt: "Pick one: echo the term in the field, or show it as a removable tag."
-- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still
-  carries four `!important` declarations inherited from `_nav.scss`. With the
-  float now scoped to `.body`, check whether any are still needed.
-- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists
-  to compensate for the floated, fixed-width search pill. Re-check whether it is
-  still required now that the admin pages no longer use that wrapper.
+    - Prompt: "Pick one: echo the term in the field, or show it as a removable tag."
+- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still carries four `!important` declarations
+  inherited from `_nav.scss`. With the float now scoped to `.body`, check whether any are still needed.
+- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
+  fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
+- [X] **Confirm the pagination arrows should now read "Previous"/"Next".**
+  Fixing the `default.paginate.*` lookup means English users now see words where they saw `«` / `»` for 15 years. The
+  alternative is to change the *properties*
+  to `&laquo;` / `&raquo;` in all 16 locale files and keep the glyphs. The arrows now carry `aria-label`, so the
+  accessible name no longer depends on the visible text either way.
+    - Prompt: "Decide glyphs or words for the pagination arrows. If glyphs, change
+      `default.paginate.prev`/`.next` in all 16 `messages*.properties` rather than reverting the taglib lookup."
+- [ ] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
+  "Pagination". Added during the rewrite in anticipation of pages with two paginators; that case exists
+  (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name.
+    - Prompt: "Either give the duplicated paginators distinct `ariaLabel` values (e.g. 'Topics, top' / 'Topics,
+      bottom'), or delete the attribute as speculative generality. Two `<nav>`s with the same accessible name on one
+      page is a real, if minor, screen-reader defect."
+- [ ] `layouts/_commonCss.gsp` still calls `<g:pageProperty name="page.primaryColour">`
+  four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
+  source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw
+  hex, not the custom property.
+- [ ] No `pagination-sm` variant. Admin tables use the default size like everything else. Deferred with no evidence it's
+  wanted — revisit only if the dense admin lists look unbalanced.
 
 
 ---
@@ -581,6 +600,44 @@ The pill clips its children (`overflow: hidden`) so square corners can't poke th
 re-round their corners to match, and nothing inside the pill may overflow it — if a typeahead or suggestion list is ever
 added, it will need to be positioned outside the wrapper.
 
+#### Pagination
+
+All pagination markup is emitted by `PaginationTagLib` (`<cl:paginate>`). Call sites pass data, not classes. Never
+hand-write `.pagination`, `.page-item` or
+`.page-link` in a GSP, and never wrap the tag in a positioning `<div>` — the
+`<ul>` centres itself.
+
+| Class                       | Meaning                                                     |
+|-----------------------------|-------------------------------------------------------------|
+| `.pagination`               | The `<ul>`. Emitted by the taglib. Centred by default       |
+| `.pagination-end`           | Right-aligns the paginator. notebook-2 pages only (5 sites) |
+| `.page-item` / `.page-link` | Emitted by the taglib                                       |
+
+Owned by `scss/modules/_pagination.scss`, imported from `main.scss` after
+`modules/forms`. Bootstrap 5's own `.pagination` rules supply the box model; our file only themes colour, alignment and
+focus.
+
+The active-step colour is per-institution. `layouts/_commonCss.gsp` sets
+`--brand-primary` on `:root` from `page.primaryColour`; the SCSS reads
+`var(--brand-primary, #{$brand-color})`. Do not reintroduce a `.pagination`
+selector into that inline `<style>` block — add the custom property instead. That block loads last and silently wins
+over the SCSS.
+
+`prev=""` / `next=""` suppresses an arrow entirely. The taglib tests
+`attrs.prev != null`, not truthiness, because `""` is falsy in Groovy.
+
+Arrow text comes from `default.paginate.prev` / `default.paginate.next` in
+`messages.properties` (16 locales). The `&laquo;` / `&raquo;` literals in the taglib are the fallback for a missing key,
+not the default.
+
+**Removed — do not reintroduce:** `.pagination` on a wrapper `<div>`; nested
+`div.pagination > ul.pagination`; BS3 child selectors (`.pagination > li > a`,
+`.pagination > .active > span`); `.pagination-list`, `.pagination-list__item`,
+`.pagination-list__item--highlight`; `$pagination-*` and `$pager-*` in
+`scss/bootstrap/_variables.scss`; `float: right` on a paginator;
+`class="step"` on page links; pagination rules in `digivol-custom.css` or a page
+`<style>` block.
+
 ## Phase 9 - NTH
 
 **Objective:** Fix remaining issues if there is time. Otherwise, defer to next release.
@@ -707,3 +764,69 @@ added, it will need to be positioned outside the wrapper.
     `.input-group`, which made the input `:not(:first-child)` and squared its corners (admin) and pulled it 1px over the
     pill border (volunteer). Labels moved outside the group. The pill additionally needed `overflow: hidden`, since the
     square inner control extends ~3px past a 10px arc at the corner.
+- 2026-09-23 — Phase 8: "Fix pagination styles" completed.
+    - Root cause: `TwitterBootstrapTagLib.paginate` emitted Bootstrap 3 markup (`<li class="prev|active|disabled">` +
+      bare `<a class="step">`). BS5 styles
+      `.page-item` / `.page-link`, neither of which was emitted, so `.pagination`
+      contributed only `display: flex` and **every paginator in the app rendered as a row of unstyled inline links** —
+      no boxes, borders, active or disabled state. The only surviving styling was an orange `color` from
+      `digivol-custom.css` and `_commonCss.gsp`.
+    - Taglib renamed `TwitterBootstrapTagLib` → `PaginationTagLib` and moved from the squatted `g` namespace to `cl`,
+      resolving the startup warning
+      "conflicting tags: ...TwitterBootstrapTagLib.g:paginate vs. ...UrlMappingTagLib.g:paginate". Deleted the
+      `fixtaglib` config toggle and its `application.yml` stanza — it existed only to un-shadow the core tag by pulling
+      `org.grails.plugins.web.taglib` out of the app context by bean name, and became unreachable once we stopped
+      squatting. All 28 call sites converted to `<cl:paginate>`; internal `link(...)` calls qualified to `g.link(...)`.
+      Emitted HTML was byte-identical at that commit, so the existing spec passed unmodified.
+    - New `scss/modules/_pagination.scss` is the single owner. Deleted the three BS3 rules from `digivol-custom.css`
+      (67–79, including two hard-coded
+      `#d5502a`) and the five `.pagination` selectors from `_commonCss.gsp`
+      (15, 16, 26, 27, 35). Institution branding now travels as a `--brand-primary`
+      custom property rather than five repeated `<g:pageProperty>` calls.
+    - Removed 22 wrapper `<div class="pagination">` (a flex container wrapping a flex container — which is why
+      `div.pagination { text-align: center }` had never been able to centre the `ul`, leaving every paginator
+      left-aligned where it was meant to be centred). Plus the stray `class="pagination foo"` at
+      `project/_ProjectListDetailsView.gsp` 38 and a redundant `.text-center`
+      wrapper at `template/list.gsp` 177.
+    - Dropped `.pagination-list` from the 5 notebook-2 sites in favour of
+      `.pagination-end`, and deleted `notebook-2/_global.scss` 178–199.
+      `.pagination-list__item` and `--highlight` had never matched anything — the taglib has only ever emitted bare
+      `<li>`. 20 lines of CSS that never applied.
+    - Bugs fixed while in scope:
+        - `prev=""` / `next=""` did nothing. The taglib used `attrs.prev ?: …`, and
+          `""` is falsy in Groovy, so the fallback arrow always rendered. Three call sites (`institution/list` 135,
+          `project/_ProjectListDetailsView` 39,
+          `project/_projectListThumbnailView` 38) had been asking to hide the arrows since they were written. **Visible
+          change on those three pages.**
+        - The i18n lookup used `paginate.prev` / `paginate.next`, but
+          `messages.properties` defines `default.paginate.prev` / `.next`. The lookup always fell through to the
+          hard-coded `&laquo;` / `&raquo;`, making 15 translation files unreachable. **See follow-up — this changes the
+          visible arrows to the words "Previous"/"Next" in English.**
+        - `Math.round(Math.ceil(total / max))` → `Math.ceil(...)`.
+    - a11y: added `<nav aria-label>`, `aria-current="page"` on the active step,
+      `aria-label` on the prev/next links, and `aria-hidden="true"` on disabled arrow spans and the `…` ellipses. None
+      of this existed; arrows announced as
+      "link" with no accessible name.
+    - `TwitterBootstrapTagLibSpec` (one test, asserting an exact BS3 markup string)
+      replaced by `PaginationTagLibSpec` — 7 AAA cases covering first/last/single page, `total=0`, suppressed arrows and
+      the ellipsis window. Structural assertions rather than one full-string compare, which is what let the old test
+      encode BS3 markup unchallenged for years.
+    - Deleted `$pagination-*` and `$pager-*` from `scss/bootstrap/_variables.scss`
+      (436–470). Both blocks dead; six of the seven `$pager-*` values derived from
+      `$pagination-*`, so they had to go together.
+    - Correction to the Step 2 proposal: a `.pagination-wrapper` class was proposed for alignment. The actual split
+      turned out to be 23 centred / 5 right, which didn't justify it — centring went on `.pagination` itself and the 5
+      notebook-2 sites took a `.pagination-end` modifier. The 22 wrapper divs were deleted rather than renamed. Flagged
+      as speculative generality at proposal time and confirmed as such at implementation.
+    - Correction to the Step 2 audit: the `$pagination-*` block is
+      `scss/bootstrap/_variables.scss` 436–454, not 440–449, and is consumed by
+      `$pager-*` at 457–470. Deleting the range as originally given failed the Sass compile. The error came from
+      grepping `$pagination-`, which returned the six
+      `$pager-*` *consumers* and none of the definitions, making the block look 9 lines long. A grep for a variable name
+      finds uses; the definition needs a separate look.
+    - Also corrected: `template/list.gsp` 178 was recorded in the audit as having no wrapper. It had a `.text-center`
+      div.
+    - Note: the `.pagination` and `.pager` rules in
+      `static-design/20151006/css/bootstrap.css` are precompiled Bootstrap 3.3.5, unrelated to our Sass and untouched.
+      They go with the static-design removal.
+- 

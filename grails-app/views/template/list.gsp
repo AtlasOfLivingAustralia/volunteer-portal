@@ -174,9 +174,8 @@
                     </table>
                 </div>
 
-                <div class="text-center">
-                    <cl:paginate total="${templateInstanceTotal}" params="${params}"/>
-                </div>
+                <cl:paginate total="${templateInstanceTotal}" params="${params}"/>
+
             </div>
         </div>
     </div>

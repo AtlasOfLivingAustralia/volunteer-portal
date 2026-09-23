@@ -80,9 +80,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${picklistItemInstanceTotal}" id="${picklistInstance.id}"/>
-                    </div>
+                    <cl:paginate total="${picklistItemInstanceTotal}" id="${picklistInstance.id}"/>
+
                 </div>
             </div>
         </div>

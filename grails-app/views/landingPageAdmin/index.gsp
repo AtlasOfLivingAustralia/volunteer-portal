@@ -94,9 +94,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${landingPageCount ?: 0}"/>
-                    </div>
+                    <cl:paginate total="${landingPageCount ?: 0}"/>
+
                 </div>
             </div>
         </div>

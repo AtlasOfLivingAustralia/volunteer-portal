@@ -1,6 +1,10 @@
 <%-- Allow overriding of primary branding colour --%>
 <meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
 <style>
+    :root {
+        --brand-primary: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+    }
+
     .navbar-brand,
     .navbar-brand:hover,
     .navbar-brand:focus,
@@ -12,29 +16,25 @@
     body .navbar .navbar-brand:active,
     .progress .progress-bar-transcribed,
     .key.transcribed,
-    .pagination > .active > span,
-    .pagination > .active > span:hover,
     .transcription-branding .institution-logo-main {
-        background-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+        background-color: var(--brand-primary);
     }
+
     .progress .progress-bar-success {
-        background-color: rgba( <cl:hexToRbg hex="${g.pageProperty(name:"page.primaryColour", default:"#d5502a")}"/>, .5 );
+        background-color: rgba( var(--brand-primary), .5 );
     }
 
     body .navbar,
-    body.digivol .navbar,
-    .pagination > .active > span,
-    .pagination > .active > span:hover {
-        border-color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+    body.digivol .navbar {
+        border-color: var(--brand-primary);
     }
 
     body .badge,
     body .badge:hover,
     body .not-a-badge,
     body .not-a-badge:hover,
-    .pagination > li > a,
     .primary-color {
-        color: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+        color: var(--brand-primary);
     }
 
     @media (max-width: 991.98px) {

@@ -79,9 +79,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${userListCount ?: 0}" action="listOptOut" params="${params}"/>
-                    </div>
+                    <cl:paginate total="${userListCount ?: 0}" action="listOptOut" params="${params}"/>
+
                 </div>
             </div>
         </div>

@@ -34,9 +34,8 @@
     <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
 </g:each>
 <g:if test="${!disablePagination}">
-    <div class="pagination">
-        <cl:paginate total="${filteredProjectsCount}" prev="" next=""
-                    id="${params.id}" params="${[q: params.q] + (extraParams ?: [:])}"/>
-    </div>
+
+    <cl:paginate total="${filteredProjectsCount}" id="${params.id}" params="${[q: params.q] + (extraParams ?: [:])}"/>
+
 </g:if>
 </div>

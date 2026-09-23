@@ -96,6 +96,4 @@
     </div>
 </div>
 
-<div class="pagination">
-    <cl:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q, mode: params.mode]}"/>
-</div>
+<cl:paginate total="${taskQueryTotal}" id="${params?.id}" params="${[q: params.q, mode: params.mode]}"/>

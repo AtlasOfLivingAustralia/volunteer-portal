@@ -68,7 +68,7 @@
 
             <div class="forum-pagination-nav">
                 <div class="forum-nav-header forum-nav-pagination">
-                    <cl:paginate total="${topicCount ?: 0}" action="index" params="${params}" class="pagination-list" max="30"/>
+                    <cl:paginate total="${topicCount ?: 0}" action="index" params="${params}" class="pagination-end" max="30"/>
                 </div>
             </div>
 
@@ -217,7 +217,7 @@
 
             <div class="forum-pagination-nav">
                 <div class="forum-nav-header forum-nav-pagination">
-                    <cl:paginate total="${topicCount ?: 0}" action="index" params="${params}" class="pagination-list" max="30"/>
+                    <cl:paginate total="${topicCount ?: 0}" action="index" params="${params}" class="pagination-end" max="30"/>
                 </div>
             </div>
 

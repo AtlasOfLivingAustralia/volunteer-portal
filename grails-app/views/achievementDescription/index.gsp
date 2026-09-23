@@ -73,9 +73,8 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
-                        <cl:paginate total="${achievementDescriptionInstanceCount ?: 0}"/>
-                    </div>
+                    <cl:paginate total="${achievementDescriptionInstanceCount ?: 0}"/>
+
                 </div>
             </div>
         </div>

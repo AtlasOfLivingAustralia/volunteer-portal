@@ -129,13 +129,7 @@
                     </div>
                     <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
                 </g:each>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="pagination">
-                            <cl:paginate total="${totalInstitutions}" prev="" next="" params="${[q: params.q]}"/>
-                        </div>
-                    </div>
-                </div><!-- /.row -->
+
 
                 %{--</div>--}%
             </div><!-- /.col-sm-8 -->
@@ -145,6 +139,11 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <cl:paginate total="${totalInstitutions}" params="${[q: params.q]}"/>
+        </div>
+    </div><!-- /.row -->
 </section>
 </body>
 </html>
