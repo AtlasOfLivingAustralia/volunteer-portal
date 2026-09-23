@@ -250,7 +250,7 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   - [X] Volunteer facing search form should mirror navbar search field
   - [X] Admin search form field should mirror task/list
 - [X] Fix pagination styles
-- [ ] Fix date picker styles
+- [X] Fix date picker styles
 - [ ] Fix file upload browse button style
 - [ ] Standardise table styles
 - [ ] Standardise modal styles (BS5 vs Bootbox)
@@ -316,7 +316,12 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   throughout fragments.
 - [ ] Sweep remaining `hide` → `d-none` outside the project filter blocks.
 - [ ] angular-ui-bootstrap 1.3.3 datepicker/timepicker emit `btn-default` + glyphicons — renders unstyled. Legacy
-  library, maintenance only.
+  library, maintenance only. The surrounding markup in `stats/index.gsp` 275–314 was migrated to BS5 on 2026-09-23, but
+  the **popup panel itself is still unstyled** — the directive templates are compiled into the vendor bundle.
+    - Prompt: "Decide whether the stats date range keeps angular-ui-bootstrap with a compatibility shim scoped to
+      `.uib-datepicker-popup`, or is rewritten to reuse the vendored bootstrap-datepicker outside Angular. A shim means
+      reintroducing `btn-default`/`glyphicon` selectors the phase has otherwise deleted — scope it tightly or not at
+      all."
 - [ ] `admin/tools.gsp` 68–72 — buttons in a `<g:form>` with no `type="button"`, default to submit.
 - [ ] Align notebook-2 heading sizes with the global scale
     - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
@@ -365,12 +370,13 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - Prompt: "Migrate `has-error` to BS5 `is-invalid` + `invalid-feedback`. Decide whether the message comes from the
   Grails `hasErrors`/`fieldError`
   server-side path, client-side constraint validation, or both."
-- [ ] `form-control` on `<select>` should be `form-select` (~40+ sites). Includes `frontPage/edit.gsp` 230–232, where
-  `$(this).attr('class', 'form-control')` also **clobbers** every existing class on `.grails-date select`.
+- [ ] `form-control` on `<select>` should be `form-select` (~40+ sites). The `frontPage/edit.gsp` 230–232 half of this
+  item is resolved — that block was dead (the page has no date field) and was deleted on 2026-09-23. Remaining known
+  sites include `report/userReport.gsp` 80 and `task/list.gsp` 60.
 - [ ] `report/userReport.gsp` 68/76/86 and `report/projectSummary.gsp` 24 put
   `input-group` and `col-*` on the same element (latent layout bug), and use BS3 `col-sm-offset-3` instead of
   `offset-sm-3` (currently a no-op).
-- [ ] `newsItem/create.gsp` 24 loads bootstrap-datepicker CSS from a public CDN — external runtime dependency and
+- [X] `newsItem/create.gsp` 24 loads bootstrap-datepicker CSS from a public CDN — external runtime dependency and
   supply-chain exposure on an admin page. Vendor it with the other assets.
 - [X] `TranscribeTagLib.getWidgetHtml` has 15 widget branches and no tests. It is private and depends on `Task`,
   `TemplateField`, `field.template.viewParams`
@@ -445,7 +451,20 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   hex, not the custom property.
 - [ ] No `pagination-sm` variant. Admin tables use the default size like everything else. Deferred with no evidence it's
   wanted — revisit only if the dense admin lists look unbalanced.
-
+- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at 69, 71, 80 (class
+  has no CSS since BS4), and `.float-right` at 37–47, which redefines a BS3 float utility as an absolutely-positioned
+  overlay. Rename to something that isn't a Bootstrap class name.
+- [ ] `_dateWidget.gsp` 16 and 48 — `(from)` / `(to)` are bare text in a `col-md-3`, not `<label>`s, and the six inputs
+  are identified by placeholder only. Fold into the transcribe pages task.
+- [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
+  `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
+  item, renders no feedback. Fold into the field-level validation item.
+- [ ] `newsItem/create.gsp` and `newsItem/edit.gsp` are ~90% identical, including the whole date picker block. Add to
+  the extraction backlog alongside the copy-from-previous-task widget and mapping tool.
+- [ ] `stats/index.gsp` 312 — the date-range Search button is `btn-sm btn-primary` next to default-size trigger
+  buttons. Left as-is because the search conventions call for `btn-sm btn-primary` on admin filters.
+    - Prompt: "Decide whether an admin filter button adjacent to default-size controls should match its neighbours or
+      the filter convention. This is the first place the two rules conflict."
 
 ---
 
@@ -638,6 +657,44 @@ not the default.
 `class="step"` on page links; pagination rules in `digivol-custom.css` or a page
 `<style>` block.
 
+#### Date pickers
+
+Four libraries render dates. Do not add a fifth, and do not migrate between them without a reason beyond consistency —
+each is load-bearing where it sits.
+
+| Context                             | Mechanism                                                   |
+|-------------------------------------|-------------------------------------------------------------|
+| GSP form needing a date             | bootstrap-datepicker 1.9.0 on `input[type=text].datepicker` |
+| Angular 1 pages (`stats/index.gsp`) | `uib-datepicker-popup`. Legacy, maintenance only            |
+| SlickGrid spreadsheet cells         | jQuery UI `datepicker` (`slickgrid.js` `DateEditor`)        |
+| Transcribe partial-date ranges      | `_dateWidget.gsp` — six text inputs, not a calendar         |
+
+bootstrap-datepicker is **vendored** at
+`assets/lib/compile/bootstrap-datepicker/1.9.0/`, exposed through the
+`bootstrap-datepicker` JS and CSS asset manifests. Never load a picker from a CDN.
+
+Single-date markup is `.input-group` > `input.form-control.datepicker` +
+`button.btn.btn-outline-secondary.datepicker-trigger` carrying `fa-calendar`,
+`aria-hidden="true"` on the `<i>` and a `visually-hidden` label. The visible
+`<label for>` sits **outside** the input group, per the search-field rule. Range pickers (`input-daterange`) bind to the
+container and open on focus — they need no trigger button.
+
+Trigger handlers must be scoped to `.datepicker-trigger`. A handler bound to
+`.input-group-text` captures every input group on the page.
+
+Styling is owned solely by `scss/modules/_datepicker.scss`, imported from
+`main.scss` between `modules/components` and `modules/forms`. The selected day reads
+`var(--brand-primary, #{$brand-color})`, as pagination does. The vendor stylesheet's own selectors are short and
+unprefixed (`.active`, `.today`,
+`.prev`, `.next`, `.day`) — **always nest them inside `.datepicker`**. Unscoped,
+`.active` collides with nav items and `.page-item.active`.
+
+**Removed — do not reintroduce:** CDN `<link>`/`<script>` for a picker;
+`.datepicker` or bare `.active`/`.today`/`.prev`/`.next` rules in a page
+`<style>` or in `digivol-custom.css`; `<span class="input-group-text">` as an interactive trigger; unscoped
+`$('.input-group-text')` handlers; `fa-th-large`
+as a calendar glyph; `templates: { leftArrow / rightArrow }` restating library defaults; `.grails-date`; `form-inline`.
+
 ## Phase 9 - NTH
 
 **Objective:** Fix remaining issues if there is time. Otherwise, defer to next release.
@@ -829,4 +886,41 @@ not the default.
     - Note: the `.pagination` and `.pager` rules in
       `static-design/20151006/css/bootstrap.css` are precompiled Bootstrap 3.3.5, unrelated to our Sass and untouched.
       They go with the static-design removal.
+- 2026-09-23 — Phase 8: "Fix date picker styles" completed.
+    - Audit found **four** date libraries across 7 call sites and **zero** picker rules in the SCSS pipeline — every
+      picker was styled entirely by a vendor stylesheet or not at all.
+    - bootstrap-datepicker 1.9.0 vendored to `assets/lib/compile/bootstrap-datepicker/1.9.0/` with JS and CSS asset
+      manifests. Removed 6 CDN `<link>`/`<script>` tags (unpinned, no SRI) from `newsItem/create`, `newsItem/edit` and
+      `report/userReport` — all three are admin pages that previously broke if cdnjs was unreachable.
+    - New `scss/modules/_datepicker.scss` is the single owner. Both `newsItem` page `<style>` blocks deleted outright,
+      which also removed two copies of `.btn { border-radius: 4px !important }` — the exact pattern retired in the
+      search-forms task, reintroduced since.
+    - `report/userReport.gsp` 15–21 defined `.today, .active { font-weight: bold }` and a `cursor` rule on `.prev`,
+      `.next`, `.day`, `.month`, `.year`, `.datepicker-switch` **unscoped**. `.active` is a Bootstrap class, so on that
+      admin page the rule bolded every active nav item and `.page-item.active` — silently undoing part of yesterday's
+      pagination work. Rules moved into `.datepicker` in the SCSS.
+    - Trigger markup: `<span class="input-group-text">` → `<button type="button" class="btn btn-outline-secondary">`
+      with `fa-calendar` and a `visually-hidden` label. The picker had been **keyboard-unreachable** on both newsItem
+      pages. Handler rescoped from the page-wide `.input-group-text` to `.datepicker-trigger`.
+    - `stats/index.gsp` dateRange template: dropped `form-inline` (removed in BS5, so the three groups had not been
+      laying out inline), unwrapped three `<label>`s that enclosed block elements with no `for`, gave both icon-only
+      trigger buttons accessible names and a matching size, `form-control` → `form-select`. The `uib-datepicker-popup`
+      directive is untouched and its popup is still unstyled — see follow-up.
+    - Deleted dead code: `digivol-custom.css` `.admin .grails-date select` (the app's only `<g:datePicker>` is
+      `task/edit.gsp` 92, whose body has no `admin` class, so it had never matched) and `frontPage/edit.gsp` 230–232
+      (no date field on that page). The latter closes half of the `form-select` follow-up, which had proposed fixing
+      the block rather than deleting it.
+    - Deliberately not done: jQuery UI `DateEditor` in `slickgrid.js` (self-contained, only consumer of jquery-ui.css);
+      `_dateWidget.gsp` (a partial-date range widget, not a calendar); no `<cl:datePicker>` taglib — two call sites on
+      near-duplicate pages does not justify one, and it was flagged as speculative generality at proposal time.
+    - **Correction to the Step 1 audit:** it recorded 2 bootstrap-datepicker call sites. There are 3 —
+      `report/userReport.gsp` was missed. The repo-wide grep capped at 20 results; the cap was flagged and narrower
+      greps were run, but all of them targeted the *other* three mechanisms, so the original term was never re-run
+      scoped. Only a literal `bootstrap-datepicker` search over `grails-app/views/**` returned the true set. Same
+      failure mode as the `$pagination-*` miss on 2026-09-23: a capped grep flagged but not actually re-run for the
+      term that mattered.
+    - **Correction to Step 3:** the first pass at `newsItem/edit.gsp` dropped the
+      `<g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy')}"/>` and bound the input to
+      `params.dateExpiresPicker`, which is empty on a GET. The edit form rendered a blank, `required` expiry date —
+      a data-loss risk, not a style bug. Caught on verification and restored before sign-off.
 - 
