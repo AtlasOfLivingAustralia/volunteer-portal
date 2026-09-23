@@ -243,6 +243,14 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 
 ### Tasks
 
+Work the groups in the order below. The order is a dependency/efficiency sequence, not a priority cut — everything here
+ships before release. Shared conventions land before the pages that consume them, legacy markup is deleted before
+anything restyles it, and the CSS ownership moves happen last so no task is rebased mid-flight.
+
+Behaviour bugs found while styling live in **Phase 8a**, not here.
+
+#### Completed
+
 - [X] Standardise button styles
 - [X] Standardise font sizes & breadcrumbs
 - [X] Standardise form styles (inc bvp checkboxes)
@@ -252,18 +260,160 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - [X] Fix pagination styles
 - [X] Fix date picker styles
 - [X] Fix file upload browse button style
-- [ ] `.form-control { padding: 5px 8px }` (`modules/_forms.scss` 27) silently disables `.form-control-sm` and
+- [X] Help text icons
+- [X] `.form-control { padding: 5px 8px }` (`modules/_forms.scss` 27) silently disables `.form-control-sm` and
   `.form-control-lg`. Bootstrap sets their padding in `bootstrap.css`, which loads first, so our unqualified
   `.form-control` rule wins at equal specificity and both size modifiers become inert (font-size and border-radius
   still apply). Found during the file-upload task, which is why no upload uses `form-control-sm`.
-    - Prompt: "Decide whether the app wants three form-control sizes. If so, scope the padding override to
-      `.form-control:not(.form-control-sm):not(.form-control-lg)` or restate the `-sm`/`-lg` padding; if not, delete
-      the `form-control-sm` call sites so the class stops implying something it doesn't do."
+- [X] `project/index.gsp` 105 — `<a disabled="disabled">` is invalid; `disabled`
+  is not an anchor attribute. Needs `class="disabled"` + `aria-disabled="true"`
+    + `tabindex="-1"`. (Fold into the a11y item.)
+- [X] `project/index.gsp` 76/82/94 — tutorial panel `<h4>` headings dropped from 24px to 16px with the new scale.
+  Confirm they still read as headings; if not, adjust `font-weight` rather than reintroducing a size override.
+- [X] `newsItem/create.gsp` 24 loads bootstrap-datepicker CSS from a public CDN — external runtime dependency and
+  supply-chain exposure on an admin page. Vendor it with the other assets.
+- [X] `TranscribeTagLib.getWidgetHtml` has 15 widget branches and no tests. It is private and depends on `Task`,
+  `TemplateField`, `field.template.viewParams`
+  and GORM statics (`ValidationRule`, `Picklist`), so a unit test currently costs more than it's worth.
+    - Prompt: "Decide whether to separate widget rendering from GORM lookups to make it testable, or accept it as
+      untested legacy."
+- [X] `.btn-file input[type=file]` (`digivol-custom.css` 30–44) is `opacity: 0`
+  **and** `outline: none`, and the visible `.btn-file` has no `:focus-within`
+  style — the file picker gives keyboard users no focus indicator.
+    - Resolved 2026-09-23 by deleting `.btn-file` and the JS wrapper entirely rather than adding a ring. The native
+      `input[type=file].form-control` is a real focusable control and takes the standard `.form-control:focus` ring.
+- [X] **Confirm the pagination arrows should now read "Previous"/"Next".**
+  Fixing the `default.paginate.*` lookup means English users now see words where they saw `«` / `»` for 15 years. The
+  alternative is to change the *properties*
+  to `&laquo;` / `&raquo;` in all 16 locale files and keep the glyphs. The arrows now carry `aria-label`, so the
+  accessible name no longer depends on the visible text either way.
+    - Prompt: "Decide glyphs or words for the pagination arrows. If glyphs, change
+      `default.paginate.prev`/`.next` in all 16 `messages*.properties` rather than reverting the taglib lookup."
+
+---
+
+#### 1. Legacy sweep (BS2 + 2015 design)
+
+*First: deleting dead markup and stylesheets shrinks the surface every later audit has to grep.*
+
+- [ ] Remove 2015 static design and dead css classes
+    - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
+      3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
+      repo. Not referenced by the app; unrelated to `scss/bootstrap/_variables.scss`.
+- [ ] BS2 grid classes still live (`row-fluid`, `span1`–`span12`) — locality/ collectionEvent searchFragment, picklist
+  images/wildcount/edit, user/notebookMainFragment, layouts/transcribeTool. Layouts currently collapse to full-width
+  stacked divs.
+- [ ] BS2 form scaffolding (`form-horizontal`, `control-group`, `controls`)
+  throughout fragments.
+- [ ] Sweep remaining `hide` → `d-none` outside the project filter blocks.
+- [ ] Dead BS2/BS3 classes found during the form sweep: `.well`
+  (`user/edit.gsp` 108) and `.form` (`template/create.gsp` 30). Neither has any CSS. Fold into the BS2 grid/scaffolding
+  sweep.
+
+#### 2. Component standardisation
+
+*Establishes the conventions groups 3–5 consume. Blocked by the Bootbox and tag-taxonomy open decisions below.*
+
+- [ ] Standardise table styles
+- [ ] Standardise modal styles (BS5 vs Bootbox)
+- [ ] Fix aria-hidden warnings (if sticking with bootbox - see specimenLabelTranscribe)
+- [ ] Standardise alert styles
+- [ ] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*)
+- [ ] Dropdown menu styles (inc double caret)
+
+#### 3. Forms completion
+
+*Finishes the form conventions established 2026-09-22; everything here was explicitly deferred from that task.*
+
+- [ ] `form-control` on `<select>` should be `form-select` (~40+ sites). The `frontPage/edit.gsp` 230–232 half of this
+  item is resolved — that block was dead (the page has no date field) and was deleted on 2026-09-23. Remaining known
+  sites include `report/userReport.gsp` 80 and `task/list.gsp` 60.
+- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
+  the `height: 25px` era; the same select appears without it in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33,
+  `tutorials/manage.gsp` 94,
+  `task/manageUploads.gsp` 48 and `project/manage.gsp` 110. Fold into the
+  `form-control` → `form-select` sweep.
+- [ ] Field-level validation feedback is absent. `hasErrors(bean:…, 'has-error')`
+  appears throughout the GSPs but `has-error` is BS3 and has zero CSS anywhere;
+  `help-block` has zero occurrences. Invalid fields render no visual feedback.
+    - Prompt: "Migrate `has-error` to BS5 `is-invalid` + `invalid-feedback`. Decide whether the message comes from the
+      Grails `hasErrors`/`fieldError`
+      server-side path, client-side constraint validation, or both."
+- [ ] Required-field marking is inconsistent. Only a few `.form-group`s carry
+  `required` (e.g. `achievementDescription/_form.gsp` 2, 12, 22); many fields set the HTML `required` attribute with no
+  class and show no asterisk; others hard-code `*` in the label text (`newsItem/create.gsp` 57, 64, 72, 80), which would
+  double up if the class were added.
+  - Prompt: "Pick one source of truth — derive the asterisk from the `required`
+    attribute, or apply `.form-group.required` everywhere — then strip the hard-coded asterisks. Confirm the
+    requirement is announced to screen readers, since a CSS `:after` asterisk is not."
+- [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
+  `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
+  item, renders no feedback. Fold into the field-level validation item.
+- [ ] `report/userReport.gsp` 68/76/86 and `report/projectSummary.gsp` 24 put
+  `input-group` and `col-*` on the same element (latent layout bug), and use BS3 `col-sm-offset-3` instead of
+  `offset-sm-3` (currently a no-op).
+- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at 69, 71, 80 (class
+  has no CSS since BS4), and `.float-right` at 37–47, which redefines a BS3 float utility as an absolutely-positioned
+  overlay. Rename to something that isn't a Bootstrap class name.
 - [ ] No `accept` attribute on any of the 13 remaining native file inputs. Two were added on 2026-09-23 where the
   client already enforced the same rule (`achievementDescription/_form.gsp` `image/*`, `picklist/wildcount.gsp`
   `.csv`). The rest accept anything and fail server-side.
     - Prompt: "Confirm the permitted types per upload endpoint, then add matching `accept` attributes. Note `accept`
       is a filter, not validation — server-side checks must stay."
+- [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload
+  button looks like it is taller than the control creating the whitespace.
+
+#### 4. Chrome: navbar, breadcrumbs, footer
+
+*Global; touching it mid-page-work would invalidate page screenshots.*
+
+- [ ] Navbar fixes
+    - [ ] Main Navbar background should be white
+    - [ ] Condensed nav doesn't line up with top of the page and it should centered (left half is the back button, right half is the title and profile drop down)
+    - [ ] Breadcrumps are not vertically centered in it's section.
+    - [ ] Breadcrumbs - truncate long project names, add ellipsis in middle of breadcrumb trail so we see the start and end
+        of the name, and add `title` attribute for full name on hover.
+    - [ ] `.digivol-logo { font-size: 0.5rem }` (`layouts/_nav.scss` 26)
+      - The element's only child is a block-level `<img>` at `width: 100%`, so this declaration appears to be dead or a
+      whitespace-collapse hack.
+      - Prompt: "Determine whether .digivol-logo's font-size is load-bearing; remove it if not. Check the navbar brand at
+        all breakpoints."
+- [ ] Footer logo image has the red bar on the right of the image. This was fixed for the logo in the navbar but not the footer.
+
+#### 5. Page-level layout fixes
+
+*Consumes the conventions from groups 2–4.*
+
+- [ ] Project index page with info cards
+  - [ ] Add a card background to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
+  - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Reviewed, etc.)
+- [ ] Review Index page
+  - [ ] Fix honourboard/contributor styles
+- [ ] Stats page
+  - [ ] Tab background colour is not correct (should be white)
+  - [ ] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
+  - [ ] As does .container (or p tag). See `stats/index.gsp` line 23-27
+- [ ] Institution/Project/Custom landing page lists
+  - [ ] Institution list - each row should be 2 cards
+  - [ ] Project list - Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+  - [ ] Project list - Table layout image does not resize correctly.
+- [ ] Template edit collapsable list - each list should be the width of the page
+- [ ] Custom landing page admin
+  - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
+- [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
+  - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
+- [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
+
+#### 6. Accessibility sweep
+
+*After the markup settles, so none of it is done twice.*
+
+- [ ] Keyboard inaccessible buttons/a11y
+    - [ ] `fieldHelp` uses `<a href="#">` + `tabindex="-1"` — tooltip is keyboard-unreachable. Should be
+      `<button type="button">`.
+    - [ ] `newsItem/manage.gsp` 119 — `<span class="btn">` as an edit control.
+    - [ ] `.btn { outline: none }` removes the focus ring app-wide (WCAG 2.4.7)
+      — replace with `:focus-visible` (see Step 5-iii).
 - [ ] Upload progress and status regions are not announced: `#uploadingMessage`
   (`task/selectImagesForStagingFragment.gsp` 21) and `#upload-progress`
   (`achievementDescription/_form.gsp` 87) toggle visibility with no `role="status"` / `aria-live`. Screen-reader users
@@ -273,6 +423,26 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   surprising.
     - Prompt: "Decide whether the hero image upload should keep auto-submit or gain an explicit Upload button like
       every other upload in the app."
+- [ ] Heading semantics / document outline (fold into "Keyboard inaccessible buttons/a11y" or track separately)
+    - `template/audioTemplateConfig.gsp` 47 and 154, and
+      `template/wildlifeTemplateConfig.gsp` 42 and 160, each render two `<h1>`
+      elements on one page; the second ("Animals") is a sub-section and should be
+      `<h2>`.
+    - `<h4>Step 1</h4>`, `<h4>EITHER</h4>`, `<h4>OR</h4>` in the specimen/label transcribe templates are layout labels,
+      not headings, and create empty outline levels.
+    - Prompt: "Fix the heading document outline: one h1 per page, no skipped levels, and no headings used purely for
+      visual weight. Convert the transcribe step labels to non-heading elements without changing the grid layout."
+- [ ] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
+  "Pagination". Added during the rewrite in anticipation of pages with two paginators; that case exists
+  (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name.
+    - Prompt: "Either give the duplicated paginators distinct `ariaLabel` values (e.g. 'Topics, top' / 'Topics,
+      bottom'), or delete the attribute as speculative generality. Two `<nav>`s with the same accessible name on one
+      page is a real, if minor, screen-reader defect."
+
+#### 7. CSS ownership, consolidation & dead code
+
+*Last: pure consolidation of whatever survives groups 1–6.*
+
 - [ ] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
   163–230, not `modules/_search.scss`, which holds only two media queries and
   `#btnSearch`. The search-forms task recorded the move as done; only the responsive overrides actually moved. The
@@ -280,37 +450,28 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
     - Prompt: "Move the `.custom-search-input` block out of `layouts/_nav.scss`
       into `modules/_search.scss` so the documented owner is the real one, checking that `main.scss` import order
       keeps the media queries after the base rules."
+- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still carries four `!important` declarations
+  inherited from `_nav.scss`. With the float now scoped to `.body`, check whether any are still needed.
+- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
+  fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
 - [ ] Audit the remaining bare element selectors inside component blocks for the same shape as the `.modal select,
   input` margin removed on 2026-09-23 — a blanket rule on `input`/`select`/`a`
   inside a component, which silently reaches controls it was never written for. `notebook-2/_forum.scss` 62 and
   `notebook-2/_newsItems.scss` 60 are the known remaining pairs; both set padding/width/font-size rather than margin,
   so neither is currently harmful.
-- [ ] Standardise table styles
-- [ ] Standardise modal styles (BS5 vs Bootbox)
-- [ ] Navbar
-    - [ ] bg colour
-    - [ ] Condensed nav doesn't line up with main nav
-- [ ] Fix aria-hidden warnings (if sticking with bootbox - see specimenLabelTranscribe)
-- [ ] Standardise alert styles
-- [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
-- [ ] Project index page with info cards
-  - [ ] Add a card background to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
-  - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Reviewed, etc.)
-- [X] Help text icons
-- [ ] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*)
-- [ ] Dropdown menu styles (inc double caret)
-- [ ] Keyboard inaccessible buttons/a11y
-    - [ ] `fieldHelp` uses `<a href="#">` + `tabindex="-1"` — tooltip is keyboard-unreachable. Should be
-      `<button type="button">`.
-    - [ ] `newsItem/manage.gsp` 119 — `<span class="btn">` as an edit control.
-    - [ ] `.btn { outline: none }` removes the focus ring app-wide (WCAG 2.4.7)
-      — replace with `:focus-visible` (see Step 5-iii).
-- [ ] Index page
-- [ ] Stats page
-- [ ] Transcribe pages
-- [ ] Institution/Project/Custom landing page lists
-- [ ] Institution/Project admin pages
-- [ ] Template edit collapsable list
+- [ ] Review the font-size overrides in `digivol-custom.css`: live off-scale values at 89 (`75%`), 101 (`12px`), 126
+  (`larger`), 160 (`12px`), 243 (`16px`), 253 (`18px`), 315 (`inherit`). The file loads after the SCSS, so these beat
+  the `$font-size-*` scale. Line 169 is a commented-out
+  `.admin h1 { font-size: 2.5em !important }` — dead, delete. The `100px`
+  `.btn-file` glyph hack noted here previously is gone — the whole rule was deleted on 2026-09-23. Line numbers in this
+  item predate that deletion and are now ~19 lines out.
+    - Prompt: "Tokenise or delete each font-size in digivol-custom.css against the `$font-size-*` scale. Then decide
+      whether digivol-custom.css should exist at all, or be folded into the SCSS pipeline so load order stops being a
+      factor — it now has no form or file-upload rules left."
+- [ ] `layouts/_commonCss.gsp` still calls `<g:pageProperty name="page.primaryColour">`
+  four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
+  source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw
+  hex, not the custom property.
 - [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
     - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
       `news.scss` **in addition to** digivol.css, as a last-loading overlay.
@@ -327,42 +488,6 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
     - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
         Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
         file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
-- [ ] Admin pages
-- [ ] Fix tooltips on wildlife spotter config (create/destroy on maximise/minimise)
-- [ ] `TranscribeTagLib` drops `cssClass` for checkbox fields. Every other branch emits `"$cssClass form-control"`; the
-  checkbox branch emits only a class literal, so `validate[required]` is lost — **mandatory checkbox fields are not
-  validated**. Behaviour bug, not styling.
-  - Prompt: "Confirm whether mandatory checkbox fields were ever meant to be enforced, then restore `cssClass` on the
-    checkbox branch and cover it."
-- [ ] Required-field marking is inconsistent. Only a few `.form-group`s carry
-  `required` (e.g. `achievementDescription/_form.gsp` 2, 12, 22); many fields set the HTML `required` attribute with no
-  class and show no asterisk; others hard-code `*` in the label text (`newsItem/create.gsp` 57, 64, 72, 80), which would
-  double up if the class were added.
-  - Prompt: "Pick one source of truth — derive the asterisk from the `required`
-    attribute, or apply `.form-group.required` everywhere — then strip the hard-coded asterisks. Confirm the
-    requirement is announced to screen readers, since a CSS `:after` asterisk is not."
-- [ ] Custom landing page admin
-  - [ ] Modernise index page.
-- [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
-  - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
-- [ ] Remove 2015 static design and dead css classes
-    - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
-      3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
-      repo. Not referenced by the app; unrelated to `scss/bootstrap/_variables.scss`.
-- [ ] BS2 grid classes still live (`row-fluid`, `span1`–`span12`) — locality/ collectionEvent searchFragment, picklist
-  images/wildcount/edit, user/notebookMainFragment, layouts/transcribeTool. Layouts currently collapse to full-width
-  stacked divs.
-- [ ] BS2 form scaffolding (`form-horizontal`, `control-group`, `controls`)
-  throughout fragments.
-- [ ] Sweep remaining `hide` → `d-none` outside the project filter blocks.
-- [ ] angular-ui-bootstrap 1.3.3 datepicker/timepicker emit `btn-default` + glyphicons — renders unstyled. Legacy
-  library, maintenance only. The surrounding markup in `stats/index.gsp` 275–314 was migrated to BS5 on 2026-09-23, but
-  the **popup panel itself is still unstyled** — the directive templates are compiled into the vendor bundle.
-    - Prompt: "Decide whether the stats date range keeps angular-ui-bootstrap with a compatibility shim scoped to
-      `.uib-datepicker-popup`, or is rewritten to reuse the vendored bootstrap-datepicker outside Angular. A shim means
-      reintroducing `btn-default`/`glyphicon` selectors the phase has otherwise deleted — scope it tightly or not at
-      all."
-- [ ] `admin/tools.gsp` 68–72 — buttons in a `<g:form>` with no `type="button"`, default to submit.
 - [ ] Align notebook-2 heading sizes with the global scale
     - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
       `$screen-md`) and `h2: 1.5rem` (→ `1.875rem`). `notebook-2/_newsItems.scss`
@@ -383,83 +508,27 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
       component so they are not mistaken for heading size overrides. Update call sites in modules/_components.scss,
       modules/_sections.scss, notebook-2/_newsItems.scss 218 and the GSPs using class='heading' /
       'pre-header' / 'body-heading'. Behaviour must not change."
-- [ ] Heading semantics / document outline (fold into "Keyboard inaccessible buttons/a11y" or track separately)
-    - `template/audioTemplateConfig.gsp` 47 and 154, and
-      `template/wildlifeTemplateConfig.gsp` 42 and 160, each render two `<h1>`
-      elements on one page; the second ("Animals") is a sub-section and should be
-      `<h2>`.
-    - `<h4>Step 1</h4>`, `<h4>EITHER</h4>`, `<h4>OR</h4>` in the specimen/label transcribe templates are layout labels,
-      not headings, and create empty outline levels.
-    - Prompt: "Fix the heading document outline: one h1 per page, no skipped levels, and no headings used purely for
-      visual weight. Convert the transcribe step labels to non-heading elements without changing the grid layout."
-- [ ] `.digivol-logo { font-size: 0.5rem }` (`layouts/_nav.scss` 26)
-    - The element's only child is a block-level `<img>` at `width: 100%`, so this declaration appears to be dead or a
-      whitespace-collapse hack.
-    - Prompt: "Determine whether .digivol-logo's font-size is load-bearing; remove it if not. Check the navbar brand at
-      all breakpoints."
-- [X] `project/index.gsp` 105 — `<a disabled="disabled">` is invalid; `disabled`
-  is not an anchor attribute. Needs `class="disabled"` + `aria-disabled="true"`
-    + `tabindex="-1"`. (Fold into the a11y item.)
-- [X] `project/index.gsp` 76/82/94 — tutorial panel `<h4>` headings dropped from 24px to 16px with the new scale.
-  Confirm they still read as headings; if not, adjust `font-weight` rather than reintroducing a size override.
-- [ ] Breadcrumbs - truncate long project names, add ellipsis in middle of breadcrumb trail so we see the start and end
-  of the name, and add `title` attribute for full name on hover.
-- [ ] Field-level validation feedback is absent. `hasErrors(bean:…, 'has-error')`
-  appears throughout the GSPs but `has-error` is BS3 and has zero CSS anywhere;
-  `help-block` has zero occurrences. Invalid fields render no visual feedback.
-- Prompt: "Migrate `has-error` to BS5 `is-invalid` + `invalid-feedback`. Decide whether the message comes from the
-  Grails `hasErrors`/`fieldError`
-  server-side path, client-side constraint validation, or both."
-- [ ] `form-control` on `<select>` should be `form-select` (~40+ sites). The `frontPage/edit.gsp` 230–232 half of this
-  item is resolved — that block was dead (the page has no date field) and was deleted on 2026-09-23. Remaining known
-  sites include `report/userReport.gsp` 80 and `task/list.gsp` 60.
-- [ ] `report/userReport.gsp` 68/76/86 and `report/projectSummary.gsp` 24 put
-  `input-group` and `col-*` on the same element (latent layout bug), and use BS3 `col-sm-offset-3` instead of
-  `offset-sm-3` (currently a no-op).
-- [X] `newsItem/create.gsp` 24 loads bootstrap-datepicker CSS from a public CDN — external runtime dependency and
-  supply-chain exposure on an admin page. Vendor it with the other assets.
-- [X] `TranscribeTagLib.getWidgetHtml` has 15 widget branches and no tests. It is private and depends on `Task`,
-  `TemplateField`, `field.template.viewParams`
-  and GORM statics (`ValidationRule`, `Picklist`), so a unit test currently costs more than it's worth.
-    - Prompt: "Decide whether to separate widget rendering from GORM lookups to make it testable, or accept it as
-      untested legacy."
-- [X] `.btn-file input[type=file]` (`digivol-custom.css` 30–44) is `opacity: 0`
-  **and** `outline: none`, and the visible `.btn-file` has no `:focus-within`
-  style — the file picker gives keyboard users no focus indicator.
-    - Resolved 2026-09-23 by deleting `.btn-file` and the JS wrapper entirely rather than adding a ring. The native
-      `input[type=file].form-control` is a real focusable control and takes the standard `.form-control:focus` ring.
-- [ ] Review the font-size overrides in `digivol-custom.css`: live off-scale values at 89 (`75%`), 101 (`12px`), 126
-  (`larger`), 160 (`12px`), 243 (`16px`), 253 (`18px`), 315 (`inherit`). The file loads after the SCSS, so these beat
-  the `$font-size-*` scale. Line 169 is a commented-out
-  `.admin h1 { font-size: 2.5em !important }` — dead, delete. The `100px`
-  `.btn-file` glyph hack noted here previously is gone — the whole rule was deleted on 2026-09-23. Line numbers in this
-  item predate that deletion and are now ~19 lines out.
-    - Prompt: "Tokenise or delete each font-size in digivol-custom.css against the `$font-size-*` scale. Then decide
-      whether digivol-custom.css should exist at all, or be folded into the SCSS pipeline so load order stops being a
-      factor — it now has no form or file-upload rules left."
-- [ ] Dead BS2/BS3 classes found during the form sweep: `.well`
-  (`user/edit.gsp` 108) and `.form` (`template/create.gsp` 30). Neither has any CSS. Fold into the BS2 grid/scaffolding
-  sweep.
+- [ ] `newsItem/create.gsp` and `newsItem/edit.gsp` are ~90% identical, including the whole date picker block. Add to
+  the extraction backlog alongside the copy-from-previous-task widget and mapping tool.
+
+#### 8. Manual review (no AI)
+
+*Run against the finished conventions, not before.*
+
+- [ ] Transcribe pages
+  - [ ] Review each transcription template view (manually, no AI).
+- [ ] `_dateWidget.gsp` 16 and 48 — `(from)` / `(to)` are bare text in a `col-md-3`, not `<label>`s, and the six inputs
+  are identified by placeholder only. Fold into the transcribe pages task.
+- [ ] Review form layout on all admin pages (No AI)
+
+#### Open decisions
+
+Each needs an answer before the group it blocks starts. All still ship this release — deciding is the work, not
+deferring.
+
 - [ ] Design decision: should required-field labels be bold? A
   `.form-control.required .form-label { font-weight: bold }` rule existed but had never matched, so it was deleted
-  rather than silently activated.
-- [ ] `frontPage/edit.gsp` — "Find an expedition" doesn't fill in the select. The handler (222–228) calls
-  `bvp.selectProjectId()` then
-  `$("#projectOfTheDay").val(projectId)`, but the select is populated by
-  `<cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"/>`
-  (49). If the chosen expedition is archived or inactive there is no matching
-  `<option>`, so jQuery's `.val()` silently no-ops and the previous value stays.
-    - Prompt: "Decide whether the finder should be restricted to the same active/non-archived set as the select, or
-      whether picking an archived expedition should inject the option. Add visible feedback when the selection can't be
-      applied."
-- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
-  the `height: 25px` era; the same select appears without it in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33,
-  `tutorials/manage.gsp` 94,
-  `task/manageUploads.gsp` 48 and `project/manage.gsp` 110. Fold into the
-  `form-control` → `form-select` sweep.
-- [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
-  `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query string. Every other `doSearch()` in
-  the app encodes. Behaviour bug.
+  rather than silently activated. *(Blocks group 3.)*
 - [ ] Volunteer search forms have no `action` and no hidden inputs, so they are still JS-only and the `<form>` is
   decorative on submit.
     - Prompt: "Decide whether volunteer search should work without JS. If so, give each form a real GET action plus
@@ -469,45 +538,19 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   input — the term appears only as a removable `.currentFilter` tag. `newsItem/manage`, `tutorials/manage`,
   `task/manageUploads` and `picklist/show` do echo it. Inconsistent.
     - Prompt: "Pick one: echo the term in the field, or show it as a removable tag."
-- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still carries four `!important` declarations
-  inherited from `_nav.scss`. With the float now scoped to `.body`, check whether any are still needed.
-- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
-  fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
-- [X] **Confirm the pagination arrows should now read "Previous"/"Next".**
-  Fixing the `default.paginate.*` lookup means English users now see words where they saw `«` / `»` for 15 years. The
-  alternative is to change the *properties*
-  to `&laquo;` / `&raquo;` in all 16 locale files and keep the glyphs. The arrows now carry `aria-label`, so the
-  accessible name no longer depends on the visible text either way.
-    - Prompt: "Decide glyphs or words for the pagination arrows. If glyphs, change
-      `default.paginate.prev`/`.next` in all 16 `messages*.properties` rather than reverting the taglib lookup."
-- [ ] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
-  "Pagination". Added during the rewrite in anticipation of pages with two paginators; that case exists
-  (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name.
-    - Prompt: "Either give the duplicated paginators distinct `ariaLabel` values (e.g. 'Topics, top' / 'Topics,
-      bottom'), or delete the attribute as speculative generality. Two `<nav>`s with the same accessible name on one
-      page is a real, if minor, screen-reader defect."
-- [ ] `layouts/_commonCss.gsp` still calls `<g:pageProperty name="page.primaryColour">`
-  four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
-  source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw
-  hex, not the custom property.
-- [ ] No `pagination-sm` variant. Admin tables use the default size like everything else. Deferred with no evidence it's
-  wanted — revisit only if the dense admin lists look unbalanced.
-- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at 69, 71, 80 (class
-  has no CSS since BS4), and `.float-right` at 37–47, which redefines a BS3 float utility as an absolutely-positioned
-  overlay. Rename to something that isn't a Bootstrap class name.
-- [ ] `_dateWidget.gsp` 16 and 48 — `(from)` / `(to)` are bare text in a `col-md-3`, not `<label>`s, and the six inputs
-  are identified by placeholder only. Fold into the transcribe pages task.
-- [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
-  `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
-  item, renders no feedback. Fold into the field-level validation item.
-- [ ] `newsItem/create.gsp` and `newsItem/edit.gsp` are ~90% identical, including the whole date picker block. Add to
-  the extraction backlog alongside the copy-from-previous-task widget and mapping tool.
 - [ ] `stats/index.gsp` 312 — the date-range Search button is `btn-sm btn-primary` next to default-size trigger
   buttons. Left as-is because the search conventions call for `btn-sm btn-primary` on admin filters.
     - Prompt: "Decide whether an admin filter button adjacent to default-size controls should match its neighbours or
-      the filter convention. This is the first place the two rules conflict."
-- [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload 
-  button looks like it is taller than the control creating the whitespace.
+      the filter convention. This is the first place the two rules conflict." *(Blocks group 5, stats page.)*
+- [ ] angular-ui-bootstrap 1.3.3 datepicker/timepicker emit `btn-default` + glyphicons — renders unstyled. Legacy
+  library, maintenance only. The surrounding markup in `stats/index.gsp` 275–314 was migrated to BS5 on 2026-09-23, but
+  the **popup panel itself is still unstyled** — the directive templates are compiled into the vendor bundle.
+    - Prompt: "Decide whether the stats date range keeps angular-ui-bootstrap with a compatibility shim scoped to
+      `.uib-datepicker-popup`, or is rewritten to reuse the vendored bootstrap-datepicker outside Angular. A shim means
+      reintroducing `btn-default`/`glyphicon` selectors the phase has otherwise deleted — scope it tightly or not at
+      all." *(Blocks group 5, stats page.)*
+- [ ] No `pagination-sm` variant. Admin tables use the default size like everything else. Deferred with no evidence it's
+  wanted — revisit only if the dense admin lists look unbalanced.
 
 ---
 
@@ -616,16 +659,18 @@ Never set a fixed `height` on `.form-control` — it sizes from `padding` +
 Where a label sits in its own `col-*`, use a standalone `.form-check-input`
 without the `.form-check` wrapper — the wrapper's `padding-left` is for an adjacent label.
 
+There is one `.form-control` size. `.form-control-sm` / `.form-control-lg` are inert: `_forms.scss` sets an
+unqualified `padding: 5px 8px` that beats Bootstrap's modifier padding at equal specificity. Do not use them, and do
+not scope the override to re-enable them. Use `.form-condensed` if a form needs to be tighter.
+
 Focus rings are themed on `$focus-ring-color` (= `$link-color`) so form controls match `a:focus-visible` in
 `base/_base.scss`. Never `outline: none`
 or `outline: 0` on a focusable control (WCAG 2.4.7).
 
 **Removed — do not reintroduce:**
-`form-horizontal`, `control-group`, `controls`, `control-label`,
-`input-xlarge`/`-large`/`-medium`/`-small`, `uneditable-input` (BS2);
-`has-error`, `help-block` (BS3 — use `is-invalid` / `invalid-feedback` /
-`form-text`); `form-control` on a checkbox or radio; fixed
-`height` on `.form-control`; `select[type="text"]` (matches nothing).
+`form-horizontal`, `control-group`, `controls`, `control-label`, `input-xlarge`/`-large`/`-medium`/`-small`, `uneditable-input` (BS2);
+`has-error`, `help-block` (BS3 — use `is-invalid` / `invalid-feedback` / `form-text`); `form-control` on a checkbox or radio; fixed
+`height` on `.form-control`; `select[type="text"]` (matches nothing), `form-control-sm`, `form-control-lg`.
 
 Note: `form-control` **is** correct on `<input type="file">` — Bootstrap 5 styles it. See "File uploads" below. An
 earlier version of this list banned it, which was a BS3 carry-over.
@@ -762,13 +807,42 @@ the margin has to follow or the button overhangs the border. Only the standard
 `::file-selector-button` selector is needed — Blink and WebKit alias `::-webkit-file-upload-button` to it, and our
 file loads after `bootstrap.css`.
 
-`form-control-sm` is not used on uploads: the `.form-control` padding override makes it a no-op (see follow-up).
+`form-control-sm` is not used on uploads: the app has one form-control size (see Forms conventions).
 
 **Removed — do not reintroduce:** the `bootstrap.file-input` plugin and
 `bootstrapFileInput()`; `.btn-file`, `.file-input-wrapper`, `.file-input-name`;
 `data-filename-placement`; `opacity: 0` file inputs; `outline: none` on a file input; a wrapper `<a>` or `<div>` used
 as a fake browse button; `btn-default` on an upload wrapper; `border-radius … !important` scoped to an upload wrapper;
 `type="file"` on a `<button>`.
+
+## Phase 8a — Behaviour bugs found during styling
+
+**Objective:** Fix the non-styling defects surfaced while working Phase 8. Independent of the Phase 8 groups; can run in
+parallel. Ships this release.
+
+### Tasks
+
+- [ ] `TranscribeTagLib` drops `cssClass` for checkbox fields. Every other branch emits `"$cssClass form-control"`; the
+  checkbox branch emits only a class literal, so `validate[required]` is lost — **mandatory checkbox fields are not
+  validated**. Behaviour bug, not styling.
+  - Prompt: "Confirm whether mandatory checkbox fields were ever meant to be enforced, then restore `cssClass` on the
+    checkbox branch and cover it."
+- [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
+  `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query string. Every other `doSearch()` in
+  the app encodes. Behaviour bug.
+- [ ] `admin/tools.gsp` 68–72 — buttons in a `<g:form>` with no `type="button"`, default to submit.
+- [ ] `frontPage/edit.gsp` — "Find an expedition" doesn't fill in the select. The handler (222–228) calls
+  `bvp.selectProjectId()` then
+  `$("#projectOfTheDay").val(projectId)`, but the select is populated by
+  `<cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"/>`
+  (49). If the chosen expedition is archived or inactive there is no matching
+  `<option>`, so jQuery's `.val()` silently no-ops and the previous value stays.
+    - Prompt: "Decide whether the finder should be restricted to the same active/non-archived set as the select, or
+      whether picking an archived expedition should inject the option. Add visible feedback when the selection can't be
+      applied."
+- [ ] Fix tooltips on wildlife spotter config (create/destroy on maximise/minimise)
+
+---
 
 ## Phase 9 - NTH
 
@@ -1025,7 +1099,7 @@ as a fake browse button; `btn-default` on an upload wrapper; `border-radius … 
       `.form-control` padding, and `modules/_forms.scss` 27 overrides that padding to `5px 8px`. Adopting the native
       button without mirroring the margin would have left it overhanging the control border. The theming rule sets
       `margin: -5px -8px` to match. This also exposed that the same override makes `.form-control-sm` / `-lg` inert
-      app-wide — new follow-up.
+      app-wide — new follow-up — resolved 2026-09-23: one size, modifiers retired.
     - a11y: 6 inputs had no `<label>` at all and one
       (`achievementDescription/_form.gsp` 74) pointed `for="badge"` at the hidden field rather than the file input, so
       clicking it did nothing. All fixed. The old wrapper was an `<a>` with no
@@ -1070,5 +1144,37 @@ as a fake browse button; `btn-default` on an upload wrapper; `border-radius … 
       `institutionAdmin/index`, `institutionAdmin/applications`) are all `<body class="admin">`, where the counter-patch
       already zeroed the margin — so the change is a no-op for them. The visible fix lands on non-admin modals, e.g.
       the upload modal hosted by `institutionAdmin/edit.gsp` (`<body>`, no `admin` class).
-
-- 
+- 2026-09-23 — form-control sizing decision 
+    - Standardised: one `.form-control` size. `.form-control-sm` / `-lg` are documented as inert and listed under
+      "Removed — do not reintroduce".
+    - Retired: nothing. A workspace grep found zero call sites outside this doc and the unloaded BS3 vendor CSS in
+          `static-design/20151006/`, so the "delete the call sites" branch of the prompt was a no-op.
+    - No code changed. `_forms.scss` 26–28 and the `::file-selector-button` margin at 37 are unaffected.
+    - Corrected: the notes at 765 and 1027, which described the sizing question as open. 
+- 2026-09-24 — Phase 8 task list restructured. Document change only; no code touched and **no items added, removed,
+  merged or reworded**. Every bullet is verbatim from the previous revision.
+    - The flat list of ~60 open items at one level was regrouped into eight headed work packages plus an Open
+      decisions subsection, ordered as a dependency/efficiency sequence rather than a priority cut: legacy sweep →
+      component standardisation → forms → chrome → page-level → a11y → CSS ownership → manual review. Shared
+      conventions now land before the pages that consume them, dead markup is deleted before anything restyles it,
+      and the stylesheet-ownership moves are last so no task is rebased mid-flight.
+    - The 15 completed `[X]` items were collected under a **Completed** heading at the top of the section rather than
+      left interleaved with open work.
+    - Five non-styling defects moved verbatim to a new **Phase 8a — Behaviour bugs found during styling**:
+      `TranscribeTagLib` checkbox `cssClass`, `picklist/show` encoding, `admin/tools` implicit submit,
+      `frontPage/edit` expedition select, wildlife-spotter tooltips. The questionnaire carousel stayed in Phase 8
+      group 5 — it is an unfinished BS5 data-attribute migration, not a pre-existing bug. Phase 8's "done when" is now
+      about styling only.
+    - One formatting correction, no text change: the `Prompt:` under "Field-level validation feedback is absent" was
+      a top-level bullet, so it read as a separate task. It is now indented as a child of its item, matching every
+      other prompt in the section.
+    - Items whose resolution is a judgement call rather than an edit were gathered into **Open decisions**, each
+      tagged with the group it blocks. They are decisions to take, not deferrals — everything in Phase 8 and 8a ships
+      this release.
+    - Known sequencing constraints recorded at the time of the restructure: the Bootbox-vs-BS5 and tag-taxonomy
+      decisions block group 2; the `btn-sm` filter-button conflict and the angular-ui-bootstrap datepicker decision
+      block the stats page in group 5; the required-label boldness decision blocks group 3.
+    - Cross-references preserved where an item says "fold into X" (e.g. `_dateWidget.gsp` labels → transcribe manual
+      review; `task/list.gsp` inline height → the `form-select` sweep; `notebook-reset.css` →
+      digivol-custom consolidation). The referenced item is now in the same or a named group, so the pointer still
+      resolves.
