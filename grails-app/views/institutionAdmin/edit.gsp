@@ -74,7 +74,6 @@
         </div>
         </g:if>
     </div>
-    <asset:javascript src="bootstrap-file-input" asset-defer=""/>
     <asset:script>
 
         $(function() {

@@ -112,7 +112,7 @@
                                 <button class="btn btn-sm btn-secondary" ng-click="tcc.addEntry(c)" data-bs-toggle="tooltip" data-bs-placement="top" title="Add entry">
                                     <i class="fa fa-plus"></i>
                                 </button>
-                                <button class="btn btn-sm btn-secondary" type="file"
+                                <button class="btn btn-sm btn-secondary" type="button"
                                         ngf-drop="tcc.addManyImages(null,c,$files)"
                                         ngf-select="tcc.addManyImages(null,c,$files)" ngf-multiple="true" data-bs-toggle="tooltip" data-bs-placement="top"
                                         ngf-accept="'image/*'" title="upload multiple category images">
@@ -128,7 +128,7 @@
                             <td ngf-drop="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'"><img
                                     ng-src="{{tcc.entryUrl(e)}}"></td>
                             <td>
-                                <button class="btn btn-sm btn-outline-secondary" type="file" data-bs-toggle="tooltip" data-bs-placement="top" title="Upload entry image"
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Upload entry image"
                                         ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'">
                                     <i class="fa fa-upload"></i>
                                 </button>
@@ -245,7 +245,7 @@
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Add new image">
                                     <i class="fa fa-plus"></i>
                                 </button>
-                                <button class="btn btn-sm btn-secondary" type="file"  data-bs-toggle="tooltip" data-bs-placement="top"
+                                <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         ngf-select="tcc.addManyImages(a,null,$files)" ngf-multiple="true"
                                         ngf-accept="'image/*'" title="Upload multiple images for this animal">
                                     <i class="fa fa-upload"></i>
@@ -257,7 +257,7 @@
                         <tr ng-repeat="i in a.images">
                             <td ngf-drop="tcc.addImage(a.images,$index,$files)"><img ng-src="{{tcc.imageUrl(i)}}"></td>
                             <td>
-                                <button class="btn btn-sm btn-outline-secondary" type="file" data-bs-toggle="tooltip" data-bs-placement="top"
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="Upload image for this animal"
                                         ngf-select="tcc.addImage(a.images,$index,$files)" ngf-accept="'image/*'">
                                     <i class="fa fa-upload"></i></button>

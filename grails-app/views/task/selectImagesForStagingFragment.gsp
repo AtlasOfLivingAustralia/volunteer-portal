@@ -5,8 +5,9 @@
 <g:form id="stageImagesForm" name="stageImagesForm" enctype="multipart/form-data">
     <g:hiddenField name="projectId" value="${projectInstance.id}"/>
     <div class="form-group">
-        <div class="col-md-12 text-center">
-            <input type="file" name="imageFile" id="imageFile" data-filename-placement="inside" multiple="multiple"/>
+        <div class="col-md-12">
+            <label class="form-label" for="imageFile">Select images to stage</label>
+            <input type="file" class="form-control" name="imageFile" id="imageFile" multiple="multiple"/>
         </div>
     </div>
 
@@ -45,7 +46,5 @@
         submitStagingFiles("${projectInstance.id}", arrayFileList);
     });
 
-    // Initialize input type file
-    $('input[type=file]').bootstrapFileInput();
 
 </script>

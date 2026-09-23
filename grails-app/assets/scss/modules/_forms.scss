@@ -27,6 +27,25 @@ form {
   padding: 5px 8px;
 }
 
+// File inputs use Bootstrap 5's native browse button. Bootstrap bleeds it to the
+// edge of the control with a negative margin equal to .form-control's padding,
+// so this must mirror the padding above or the button overhangs the border.
+// Only ::file-selector-button is needed: Blink and WebKit treat
+// ::-webkit-file-upload-button as an alias, and this file loads after
+// bootstrap.css, so it wins the cascade for both.
+.form-control::file-selector-button {
+  margin: -5px -8px;
+  margin-inline-end: 8px;
+  padding: 5px 8px;
+  color: $black;
+  background-color: $background-grey;
+  border-inline-end: 1px solid $input-border;
+}
+
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+  background-color: $divider-grey;
+}
+
 // Focus ring themed on $link-color to match a:focus-visible in base/_base.scss.
 // Never suppress the indicator (WCAG 2.4.7).
 .form-control:focus,

@@ -103,7 +103,7 @@
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 <button class="btn btn-sm btn-secondary" title="Upload multiple category images"
-                                        type="file"
+                                        type="button"
                                         ngf-drop="tcc.addManyImages(null,c,$files)"
                                         ngf-select="tcc.addManyImages(null,c,$files)"
                                         ngf-accept="'image/*'"
@@ -121,7 +121,7 @@
                                 <img ng-if="tcc.entryUrl(e) === ''" src="https://via.placeholder.com/80?text=No+image">
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-secondary" type="file" title="Upload entry image"
+                                <button class="btn btn-sm btn-outline-secondary" type="button" title="Upload entry image"
                                         ngf-select="tcc.addImage(c.entries,$index,$files)" ngf-accept="'image/*'">
                                     <i class="fa fa-upload"></i>
                                 </button>
@@ -231,7 +231,7 @@
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 <button class="btn btn-sm btn-secondary"
-                                        type="file"
+                                        type="button"
                                         ngf-select="tcc.addManyImages(a,null,$files)"
                                         ngf-multiple="false"
                                         ngf-accept="'image/*'"
@@ -248,7 +248,7 @@
                                 <img ng-if="tcc.imageUrl(i) !== ''" ng-src="{{tcc.imageUrl(i)}}">
                                 <img ng-if="tcc.imageUrl(i) === ''" src="https://via.placeholder.com/150?text=No+image">
                             <td>
-                                <button class="btn btn-sm btn-secondary" type="file" title="Upload image"
+                                <button class="btn btn-sm btn-secondary" type="button" title="Upload image"
                                         ngf-select="tcc.addImage(a.images,$index,$files)" ngf-accept="'image/*'"><i
                                         class="fa fa-upload"></i></button>
                                 <button class="btn btn-sm btn-outline-danger" title="Remove image" ng-click="tcc.removeImage(a,$index)"><i
@@ -263,7 +263,7 @@
                             <th style="padding-left: 15px;">Audio Samples</th>
                             <th>
                                 <button class="btn btn-sm btn-secondary"
-                                        type="file"
+                                        type="button"
                                         ngf-select="tcc.addManyAudio(a,null,$files)"
                                         ngf-multiple="true"
                                         ngf-accept="'audio/*'"
@@ -279,7 +279,7 @@
                                 <span class="sm2_link"><a href="{{tcc.audioUrl(i)}}">Audio Sample {{$index + 1}}</a></span> <span ng-if="$index == 0">(This sample will be displayed on the animal selection view)</span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-secondary" type="file" title="Upload audio sample"
+                                <button class="btn btn-sm btn-outline-secondary" type="button" title="Upload audio sample"
                                         ngf-select="tcc.addAudio(a.audio,$index,$files)" ngf-accept="'audio/*'"><i
                                         class="fa fa-upload"></i></button>
                                 <button class="btn btn-sm btn-outline-danger" ng-click="tcc.removeAudio(a,$index)"><i

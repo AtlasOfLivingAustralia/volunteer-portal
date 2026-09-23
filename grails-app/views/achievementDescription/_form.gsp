@@ -71,7 +71,7 @@
 </div>
 
 <div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'has-error')}">
-    <label class="form-label col-md-3" for="badge">
+    <label class="form-label col-md-3" for="file-select">
         <g:message code="achievementDescription.badge.label" default="Badge"/>
     </label>
 
@@ -79,8 +79,10 @@
         <g:hiddenField name="badge" value="${achievementDescriptionInstance?.badge}"/>
         <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
              width="140" height="140"/>
-        <input type="file" id="file-select" data-filename-placement="inside"/>
-        <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
+        <div class="input-group">
+            <input type="file" class="form-control" id="file-select" accept="image/*"/>
+            <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
+        </div>
     </div>
 </div>
 

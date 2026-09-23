@@ -8,9 +8,6 @@
     <title><g:message code="default.create.label" args="[entityName]"/></title>
 
     <style>
-        .file-input-wrapper {
-            border-radius: 4px !important;
-        }
         .submit-button-row {
             padding-top: 0.5rem;
         }
@@ -83,7 +80,7 @@
                             <label class="form-label col-md-3" for="tutorialFile">Upload Tutorial File</label>
 
                             <div class="col-md-6">
-                                <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile" required="required"/>
+                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" required="required"/>
                             </div>
                         </div>
 
@@ -99,14 +96,5 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:script type="text/javascript">
-    $(document).ready(function() {
-        $('input[type=file]').bootstrapFileInput();
-
-    });
-
-
-</asset:script>
 </body>
 </html>

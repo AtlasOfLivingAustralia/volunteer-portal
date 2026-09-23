@@ -52,7 +52,10 @@
                     ${flash.message}
                 </div>
             </g:if>
-            <div><input type="file" id="csv-input"></div>
+            <div>
+                <label class="form-label" for="csv-input">CSV file</label>
+                <input type="file" class="form-control" id="csv-input" accept=".csv,text/csv">
+            </div>
 
             <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
 

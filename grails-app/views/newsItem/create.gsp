@@ -78,7 +78,7 @@
                             <label class="form-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" data-filename-placement="inside" name="newsItemThumb" id="newsItemThumb"/>
+                                <input type="file" class="form-control" name="newsItemThumb" id="newsItemThumb"/>
                             </div>
                         </div>
 
@@ -96,10 +96,8 @@
 </div>
 <asset:javascript src="bootstrap-datepicker" asset-defer=""/>
 <asset:javascript src="tinymce-simple" asset-defer="" />
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
 $(document).ready(function() {
-    $('input[type=file]').bootstrapFileInput();
 
     $('.datepicker').datepicker({
         format: "dd/mm/yyyy",

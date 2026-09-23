@@ -133,7 +133,7 @@
                             <label class="form-label col-md-3" for="picklistFile">Picklist file</label>
 
                             <div class="col-md-6">
-                                <input type="file" data-filename-placement="inside" id="picklistFile" name="picklistFile"/>
+                                <input type="file" class="form-control" id="picklistFile" name="picklistFile"/>
                             </div>
                         </div>
                     </div>
@@ -148,7 +148,6 @@
     </div>
 </div>
 <asset:javascript src="underscore" asset-defer="" />
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
 
             $(document).ready(function() {
@@ -223,8 +222,6 @@
                 return s;
             }
 
-            // Initialize input type file
-            $('input[type=file]').bootstrapFileInput();
 
 </asset:script>
 </body>

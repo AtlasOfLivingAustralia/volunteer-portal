@@ -171,7 +171,6 @@
 
 </div>
 </script>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="digivol-stageImage.js" asset-defer="" />
 <asset:script type='text/javascript'>

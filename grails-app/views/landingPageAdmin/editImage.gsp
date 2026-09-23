@@ -29,9 +29,11 @@
 
             <br>
 
-            <div class="file btn btn-sm btn-primary btn-file">
-                Select File
-                <input id="heroImage" name="heroImage" type="file" />
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-start">
+                    <label class="form-label" for="heroImage">Select file</label>
+                    <input id="heroImage" name="heroImage" type="file" class="form-control"/>
+                </div>
             </div>
 
             <div class="display-inline-block">
@@ -46,12 +48,9 @@
 
 
 
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript" asset-defer="">
 
     $(function() {
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
 
         $('#heroImage').change(function(e){
             // submit the forms after the file is selected

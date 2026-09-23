@@ -33,8 +33,10 @@
                         <button class="btn btn-sm btn-outline-secondary" id="btnExportAsCSV">Export as CSV</button>
                     </div>
                     <div class="col-md-6">
-                        <input type="file" data-filename-placement="inside" name="uploadFile"/>
-                        <button class="btn btn-sm btn-secondary" id="btnImportFromCSV">Import from CSV</button>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="uploadFile" name="uploadFile"/>
+                            <button class="btn btn-sm btn-secondary" id="btnImportFromCSV">Import from CSV</button>
+                        </div>
                     </div>
                 </g:uploadForm>
             </div>
@@ -120,7 +122,6 @@
     </div>
 </div>
 <asset:javascript src="bootbox" asset-defer=""/>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 
 <asset:script type="text/javascript">
 
@@ -214,8 +215,6 @@
 
         bvp.bindTooltips("a.fieldHelp");
 
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
 
         $('#btnSaveField').click(function (e) {
             e.preventDefault();

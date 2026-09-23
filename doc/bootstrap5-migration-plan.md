@@ -251,7 +251,40 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   - [X] Admin search form field should mirror task/list
 - [X] Fix pagination styles
 - [X] Fix date picker styles
-- [ ] Fix file upload browse button style
+- [X] Fix file upload browse button style
+- [ ] `.form-control { padding: 5px 8px }` (`modules/_forms.scss` 27) silently disables `.form-control-sm` and
+  `.form-control-lg`. Bootstrap sets their padding in `bootstrap.css`, which loads first, so our unqualified
+  `.form-control` rule wins at equal specificity and both size modifiers become inert (font-size and border-radius
+  still apply). Found during the file-upload task, which is why no upload uses `form-control-sm`.
+    - Prompt: "Decide whether the app wants three form-control sizes. If so, scope the padding override to
+      `.form-control:not(.form-control-sm):not(.form-control-lg)` or restate the `-sm`/`-lg` padding; if not, delete
+      the `form-control-sm` call sites so the class stops implying something it doesn't do."
+- [ ] No `accept` attribute on any of the 13 remaining native file inputs. Two were added on 2026-09-23 where the
+  client already enforced the same rule (`achievementDescription/_form.gsp` `image/*`, `picklist/wildcount.gsp`
+  `.csv`). The rest accept anything and fail server-side.
+    - Prompt: "Confirm the permitted types per upload endpoint, then add matching `accept` attributes. Note `accept`
+      is a filter, not validation — server-side checks must stay."
+- [ ] Upload progress and status regions are not announced: `#uploadingMessage`
+  (`task/selectImagesForStagingFragment.gsp` 21) and `#upload-progress`
+  (`achievementDescription/_form.gsp` 87) toggle visibility with no `role="status"` / `aria-live`. Screen-reader users
+  get no feedback that an upload started or finished.
+- [ ] `landingPageAdmin/editImage.gsp` 52–56 auto-submits the form on `change`
+  with no confirmation and no announcement. Selecting a file immediately uploads and reloads. Working as built, but
+  surprising.
+    - Prompt: "Decide whether the hero image upload should keep auto-submit or gain an explicit Upload button like
+      every other upload in the app."
+- [ ] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
+  163–230, not `modules/_search.scss`, which holds only two media queries and
+  `#btnSearch`. The search-forms task recorded the move as done; only the responsive overrides actually moved. The
+  conventions section names `modules/_search.scss` as the owner, so the file and the doc currently disagree.
+    - Prompt: "Move the `.custom-search-input` block out of `layouts/_nav.scss`
+      into `modules/_search.scss` so the documented owner is the real one, checking that `main.scss` import order
+      keeps the media queries after the base rules."
+- [ ] Audit the remaining bare element selectors inside component blocks for the same shape as the `.modal select,
+  input` margin removed on 2026-09-23 — a blanket rule on `input`/`select`/`a`
+  inside a component, which silently reaches controls it was never written for. `notebook-2/_forum.scss` 62 and
+  `notebook-2/_newsItems.scss` 60 are the known remaining pairs; both set padding/width/font-size rather than margin,
+  so neither is currently harmful.
 - [ ] Standardise table styles
 - [ ] Standardise modal styles (BS5 vs Bootbox)
 - [ ] Navbar
@@ -261,6 +294,8 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - [ ] Standardise alert styles
 - [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
 - [ ] Project index page with info cards
+  - [ ] Add a card background to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
+  - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Reviewed, etc.)
 - [X] Help text icons
 - [ ] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*)
 - [ ] Dropdown menu styles (inc double caret)
@@ -289,6 +324,9 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
       align with `btn-primary`? Take to the colour discussion.
     - Note: `_global.scss` restyles bare `table`/`th`/`td` — relevant to the
       "Standardise table styles" task. `.pill--*` is relevant to "Tag styles".
+    - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
+        Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
+        file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
 - [ ] Admin pages
 - [ ] Fix tooltips on wildlife spotter config (create/destroy on maximise/minimise)
 - [ ] `TranscribeTagLib` drops `cssClass` for checkbox fields. Every other branch emits `"$cssClass form-control"`; the
@@ -304,7 +342,9 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
     attribute, or apply `.form-group.required` everywhere — then strip the hard-coded asterisks. Confirm the
     requirement is announced to screen readers, since a CSS `:after` asterisk is not."
 - [ ] Custom landing page admin
-- [ ] Update edit action icons from fa-edit to fa-pencil
+  - [ ] Modernise index page.
+- [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
+  - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
 - [ ] Remove 2015 static design and dead css classes
     - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
       3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
@@ -383,19 +423,20 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   and GORM statics (`ValidationRule`, `Picklist`), so a unit test currently costs more than it's worth.
     - Prompt: "Decide whether to separate widget rendering from GORM lookups to make it testable, or accept it as
       untested legacy."
-- [ ] `.btn-file input[type=file]` (`digivol-custom.css` 30–44) is `opacity: 0`
+- [X] `.btn-file input[type=file]` (`digivol-custom.css` 30–44) is `opacity: 0`
   **and** `outline: none`, and the visible `.btn-file` has no `:focus-within`
   style — the file picker gives keyboard users no focus indicator.
-    - Prompt: "Add a `:focus-within` ring to `.btn-file` without un-hiding the native input." (Fold into the file-upload
-      and a11y items.)
+    - Resolved 2026-09-23 by deleting `.btn-file` and the JS wrapper entirely rather than adding a ring. The native
+      `input[type=file].form-control` is a real focusable control and takes the standard `.form-control:focus` ring.
 - [ ] Review the font-size overrides in `digivol-custom.css`: live off-scale values at 89 (`75%`), 101 (`12px`), 126
   (`larger`), 160 (`12px`), 243 (`16px`), 253 (`18px`), 315 (`inherit`). The file loads after the SCSS, so these beat
   the `$font-size-*` scale. Line 169 is a commented-out
-  `.admin h1 { font-size: 2.5em !important }` — dead, delete. Line 36 (`100px`)
-  is the `.btn-file` glyph hack and is probably legitimate.
+  `.admin h1 { font-size: 2.5em !important }` — dead, delete. The `100px`
+  `.btn-file` glyph hack noted here previously is gone — the whole rule was deleted on 2026-09-23. Line numbers in this
+  item predate that deletion and are now ~19 lines out.
     - Prompt: "Tokenise or delete each font-size in digivol-custom.css against the `$font-size-*` scale. Then decide
       whether digivol-custom.css should exist at all, or be folded into the SCSS pipeline so load order stops being a
-      factor — it now has no form rules left."
+      factor — it now has no form or file-upload rules left."
 - [ ] Dead BS2/BS3 classes found during the form sweep: `.well`
   (`user/edit.gsp` 108) and `.form` (`template/create.gsp` 30). Neither has any CSS. Fold into the BS2 grid/scaffolding
   sweep.
@@ -465,6 +506,8 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
   buttons. Left as-is because the search conventions call for `btn-sm btn-primary` on admin filters.
     - Prompt: "Decide whether an admin filter button adjacent to default-size controls should match its neighbours or
       the filter convention. This is the first place the two rules conflict."
+- [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload 
+  button looks like it is taller than the control creating the whitespace.
 
 ---
 
@@ -581,8 +624,11 @@ or `outline: 0` on a focusable control (WCAG 2.4.7).
 `form-horizontal`, `control-group`, `controls`, `control-label`,
 `input-xlarge`/`-large`/`-medium`/`-small`, `uneditable-input` (BS2);
 `has-error`, `help-block` (BS3 — use `is-invalid` / `invalid-feedback` /
-`form-text`); `form-control` on a checkbox, radio or file input; fixed
+`form-text`); `form-control` on a checkbox or radio; fixed
 `height` on `.form-control`; `select[type="text"]` (matches nothing).
+
+Note: `form-control` **is** correct on `<input type="file">` — Bootstrap 5 styles it. See "File uploads" below. An
+earlier version of this list banned it, which was a BS3 carry-over.
 
 #### Search fields
 
@@ -694,6 +740,35 @@ unprefixed (`.active`, `.today`,
 `<style>` or in `digivol-custom.css`; `<span class="input-group-text">` as an interactive trigger; unscoped
 `$('.input-group-text')` handlers; `fa-th-large`
 as a calendar glyph; `templates: { leftArrow / rightArrow }` restating library defaults; `.grails-date`; `form-inline`.
+
+#### File uploads
+
+Bootstrap 5 styles file inputs natively. `<input type="file" class="form-control">` renders a real browse button via
+`::file-selector-button` — focusable, localised by the browser, no JavaScript. That is the only sanctioned markup.
+
+| Context                  | Markup                                                                          |
+|--------------------------|---------------------------------------------------------------------------------|
+| Any file upload          | `<label class="form-label" for="x">` then `<input type="file" id="x" name="x" class="form-control">` |
+| Upload with its own button | `.input-group` > the input + the submit button                                |
+| Angular template-config pages | `ngf-select` on `<button type="button">`. Legacy, maintenance only         |
+
+The button label is the browser's ("Choose File", "Browse…"), not the app's. This is deliberate — it is the control the
+user already knows, and it is correct in every locale without translation.
+
+Theming lives in `scss/modules/_forms.scss` alongside the rest of the form styling. **The negative margin on
+`::file-selector-button` must mirror `.form-control`'s padding.** Bootstrap bleeds the button to the edge of the
+control with `margin: -0.375rem -0.75rem`, the negative of *its* padding; we override that padding to `5px 8px`, so
+the margin has to follow or the button overhangs the border. Only the standard
+`::file-selector-button` selector is needed — Blink and WebKit alias `::-webkit-file-upload-button` to it, and our
+file loads after `bootstrap.css`.
+
+`form-control-sm` is not used on uploads: the `.form-control` padding override makes it a no-op (see follow-up).
+
+**Removed — do not reintroduce:** the `bootstrap.file-input` plugin and
+`bootstrapFileInput()`; `.btn-file`, `.file-input-wrapper`, `.file-input-name`;
+`data-filename-placement`; `opacity: 0` file inputs; `outline: none` on a file input; a wrapper `<a>` or `<div>` used
+as a fake browse button; `btn-default` on an upload wrapper; `border-radius … !important` scoped to an upload wrapper;
+`type="file"` on a `<button>`.
 
 ## Phase 9 - NTH
 
@@ -817,6 +892,10 @@ as a calendar glyph; `templates: { leftArrow / rightArrow }` restating library d
     a no-op there.
   - Deliberately not done: renaming `.custom-search-input`; notebook-2
     `.nav-dropdown` search fields; the BS2 locality/collectionEvent fragments.
+  - **Correction, 2026-09-23:** this entry states the component CSS "moved from `layouts/_nav.scss` to
+    `modules/_search.scss`". Only the responsive overrides moved. The `.custom-search-input` component block is still
+    in `layouts/_nav.scss` 163–230; `modules/_search.scss` contains two media queries and `#btnSearch` and nothing
+    else. Noticed while tracing an unrelated rule. See follow-up.
   - Correction, same day: the a11y labels were initially placed inside
     `.input-group`, which made the input `:not(:first-child)` and squared its corners (admin) and pulled it 1px over the
     pill border (volunteer). Labels moved outside the group. The pill additionally needed `overflow: hidden`, since the
@@ -923,4 +1002,73 @@ as a calendar glyph; `templates: { leftArrow / rightArrow }` restating library d
       `<g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy')}"/>` and bound the input to
       `params.dateExpiresPicker`, which is empty on a GET. The edit form rendered a blank, `required` expiry date —
       a data-loss risk, not a style bug. Caught on verification and restored before sign-off.
+- 2026-09-23 — Phase 8: "Fix file upload browse button style" completed.
+    - Root cause: the browse button was never Bootstrap's. A vendored jQuery plugin
+      (`assets/lib/compile/bootstrap.file-input/`, 130 lines) wrapped every
+      `<input type="file">` in `<a class="file-input-wrapper btn btn-default">`, hid the real input at `opacity: 0`,
+      and **tracked the mouse to slide the invisible native button under the cursor** — a 2013 Firefox workaround.
+      `btn-default` has had no CSS since BS4, so the wrapper rendered as unstyled text on all 15 upload pages.
+    - Bootstrap 5.0.2 styles file inputs natively via `::file-selector-button`
+      (`bootstrap.css` 2203–2250). The plugin was reimplementing, badly, a feature already in the vendored stylesheet.
+      Deleted the plugin, its asset manifest, 14 `<asset:javascript>` includes and 15 `bootstrapFileInput()` calls;
+      all 15 inputs are now `class="form-control"`.
+    - **Visible change on 15 pages.** The button now reads "Choose File" / "Browse…" per the browser rather than
+      "Browse", and the filename appears beside the button rather than inside it. Signed off before implementation.
+    - Three competing sources of truth collapsed to one: `.btn-file` +
+      `.btn-file input[type=file]` deleted from `digivol-custom.css` (26–44, including `font-size: 100px`,
+      `outline: none` and `opacity: 0`); the plugin's runtime-injected `<style>`
+      went with the plugin; the two `.file-input-wrapper { border-radius: 4px !important }` page blocks in
+      `tutorials/create` and `tutorials/edit` deleted. That `!important` pattern has now been retired three times
+      (search forms, date pickers, here) — it keeps coming back with copy-pasted upload blocks.
+    - **Found mid-implementation, not in the audit:** Bootstrap's
+      `::file-selector-button` negative margin is the negative of *Bootstrap's*
+      `.form-control` padding, and `modules/_forms.scss` 27 overrides that padding to `5px 8px`. Adopting the native
+      button without mirroring the margin would have left it overhanging the control border. The theming rule sets
+      `margin: -5px -8px` to match. This also exposed that the same override makes `.form-control-sm` / `-lg` inert
+      app-wide — new follow-up.
+    - a11y: 6 inputs had no `<label>` at all and one
+      (`achievementDescription/_form.gsp` 74) pointed `for="badge"` at the hidden field rather than the file input, so
+      clicking it did nothing. All fixed. The old wrapper was an `<a>` with no
+      `href` — not focusable — so upload was keyboard-operable only by tabbing to an invisible, `outline: none` input.
+      The native control is focusable and takes the standard `.form-control:focus` ring, which closes the
+      `:focus-within` follow-up by deleting its cause rather than patching it.
+    - Bug fixed while in scope: `type="file"` on 10 `<button>` elements across
+      `template/audioTemplateConfig.gsp` and `template/wildlifeTemplateConfig.gsp`. Not a valid button `type`, so the
+      HTML spec makes them default to **submit** inside their Angular forms. Changed to `type="button"`. Committed
+      separately — behaviour, not styling.
+    - `template/manageFields.gsp` and `task/loadTaskData.gsp` gained an
+      `input-group` so their adjacent submit button stays inline; `form-control` is `display: block; width: 100%` and
+      would otherwise have stacked them.
+    - Two `accept` attributes added where the client already enforced the same rule two lines later
+      (`_form.gsp` `image/*`, `wildcount.gsp` `.csv`). The other 13 inputs are a follow-up, not a silent fix.
+    - Deliberately not done: no upload taglib — 15 call sites across 12 forms with different names, ids and
+      surrounding layout, flagged as speculative generality at proposal time and confirmed at implementation;
+      `ng-file-upload` 9.1.2 left alone beyond the invalid `type` (legacy, maintenance only); `picklist/wildcount.gsp`
+      BS2 markup left to the BS2 sweep, only its input and label touched.
+    - Verified with `./gradlew assetCompile`; `.form-control::file-selector-button` is present in the compiled
+      `digivol.css`. Note a repo-wide grep for `btn-file` still returns hits in
+      `build/assets/*.css` — those are stale hashed artifacts from earlier builds, not source.
+    - **Correction to the Step 1 audit:** it reported 14 native file inputs from a repo-wide grep that silently capped
+      at 20 results. The cap was flagged and the search re-run scoped by directory, which found a 15th
+      (`landingPageAdmin/editImage.gsp`, the only `.btn-file` call site — the one page the task was named after).
+      Third occurrence of this failure mode after the `$pagination-*` and `bootstrap-datepicker` misses. A capped grep
+      must be re-run for the term that matters, not just for adjacent terms.
+    - **Correction to the forms conventions:** the "Removed" list had banned
+      `form-control` on a file input. True in BS3, wrong in BS5 — it is now the required markup. List amended.
+    - **Smoke-test regression, fixed same day.** Whitespace gap under the browse button on file inputs inside modals.
+      Cause: `modules/_components.scss` 883 carried a blanket BS2-era
+      `.modal { select, input { margin-bottom: 10px } }`. Under the old plugin the real input was
+      `position: absolute`, so that margin had no layout effect; as a normal in-flow block it applies. Replaced with
+      `.modal .form-group { margin-bottom: 10px }` — spacing belongs to the documented `.form-group` unit, not to bare
+      element selectors, which also hit `.input-group` children and break their alignment.
+    - Deleted the counter-patch `.admin .modal input { margin-bottom: 0 }`
+      (`digivol-custom.css` 168–170), which existed solely to undo the blanket rule on admin pages. Same
+      patch-and-counter-patch shape as the seven `height: 25px` patches removed on 2026-09-22; this one survived that
+      sweep because it is a `margin`, not a `height`.
+    - Blast radius checked before the change: of the 10 modal-bearing views with form controls, 6 use `.form-group`
+      and are unaffected; the other 4 (`template/manageFields`, `task/manageUploads`,
+      `institutionAdmin/index`, `institutionAdmin/applications`) are all `<body class="admin">`, where the counter-patch
+      already zeroed the margin — so the change is a no-op for them. The visible fix lands on non-admin modals, e.g.
+      the upload modal hosted by `institutionAdmin/edit.gsp` (`<body>`, no `admin` class).
+
 - 

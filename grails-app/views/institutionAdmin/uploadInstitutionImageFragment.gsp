@@ -5,7 +5,8 @@
         <g:hiddenField name="imageType" value="${imageType ?: 'main'}"/>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-6">
-                <input type="file" data-filename-placement="inside" name="imagefile"/>
+                <label class="form-label" for="imagefile">Image file</label>
+                <input type="file" class="form-control" id="imagefile" name="imagefile"/>
             </div>
         </div>
         <div class="form-group">
@@ -24,7 +25,5 @@
         bvp.hideModal();
     });
 
-    // Initialize input type file
-    $('input[type=file]').bootstrapFileInput();
 
 </script>

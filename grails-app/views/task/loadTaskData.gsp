@@ -34,9 +34,12 @@
                         </g:if>
                         <g:else>
                             <g:form controller="task" action="uploadTaskDataFile" method="post" enctype="multipart/form-data">
-                                <input type="file" name="dataFile" id="dataFile"  data-filename-placement="inside"/>
+                                <label class="form-label" for="dataFile">Data file</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" name="dataFile" id="dataFile"/>
+                                    <g:submitButton class="btn btn-sm btn-secondary" name="Upload Data File"/>
+                                </div>
                                 <g:hiddenField name="projectId" value="${projectInstance.id}"/>
-                                <g:submitButton class="btn btn-sm btn-secondary" name="Upload Data File"/>
                             </g:form>
                         </g:else>
                     </div>
@@ -90,12 +93,5 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:script>
-    $(function() {
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
-    });
-</asset:script>
 </body>
 </html>

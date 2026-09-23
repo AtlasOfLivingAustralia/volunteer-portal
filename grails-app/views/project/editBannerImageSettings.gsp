@@ -35,7 +35,7 @@
         <label class="form-label col-md-3" for="featuredImage">Expedition Image</label>
 
         <div class="col-md-9">
-            <input type="file" data-filename-placement="inside" name="featuredImage" id="featuredImage"/>
+            <input type="file" class="form-control" name="featuredImage" id="featuredImage"/>
         </div>
     </div>
 
@@ -55,14 +55,6 @@
     </div>
 
 </g:form>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
-<asset:script type='text/javascript'>
-    $(function () {
-
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
-    });
-</asset:script>
 
 </body>
 </html>

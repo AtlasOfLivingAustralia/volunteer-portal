@@ -10,10 +10,6 @@
     <g:set var="admin" value="${(params.admin == 'true' || params.admin == true)}"/>
 
     <style>
-        .file-input-wrapper {
-            border-radius: 4px !important;
-        }
-
         .tutorial-text-row {
             padding-top: 0.7rem;
             padding-bottom: 1rem;
@@ -101,7 +97,7 @@
                             <label class="form-label col-md-3" for="tutorialFile">Upload New Tutorial File</label>
 
                             <div class="col-md-6">
-                                <input type="file" data-filename-placement="inside" name="tutorialFile" id="tutorialFile" />
+                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" />
                             </div>
                         </div>
 
@@ -189,10 +185,8 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:script type="text/javascript">
     $(document).ready(function() {
-        $('input[type=file]').bootstrapFileInput();
         <g:if test="${migrate}">
         $('.projectListItem').on('change', function() {
            const $row = $(this).closest('tr');

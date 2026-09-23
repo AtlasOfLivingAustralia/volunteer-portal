@@ -880,7 +880,10 @@ table thead th {
 		@include h2-heading;
 		margin-bottom: 20px;
 	}
-	select, input {
+	// Modal forms are denser than page forms. Spacing belongs to the .form-group
+	// unit, not to bare element selectors: a blanket `select, input` margin also
+	// hits file inputs and .input-group children, where it breaks alignment.
+	.form-group {
 		margin-bottom: 10px;
 	}
 	.modal-body, .modal-header {

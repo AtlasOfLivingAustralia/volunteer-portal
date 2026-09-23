@@ -48,12 +48,9 @@
         <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
     </g:form>
 </div>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="codemirror/codemirror-groovy-js-sublime.js" asset-defer="" />
 <asset:script type="text/javascript" asset-defer="">
     $(function() {
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
 
         $('#deleteButton').on('click', function(e) {
             e.preventDefault();

@@ -41,7 +41,7 @@
         <label class="form-label col-md-3" for="backgroundImage">Background Image</label>
 
         <div class="col-md-9">
-            <input type="file" data-filename-placement="inside" name="backgroundImage" id="backgroundImage"/>
+            <input type="file" class="form-control" name="backgroundImage" id="backgroundImage"/>
         </div>
     </div>
 
@@ -78,13 +78,10 @@
     </div>
 
 </g:form>
-<asset:javascript src="bootstrap-file-input" asset-defer=""/>
 <asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="bootstrap-colorpicker" asset-defer=""/>
 <asset:script type='text/javascript'>
     $(function () {
-        // Initialize input type file
-        $('input[type=file]').bootstrapFileInput();
 
         $('#clearImageSettings').on('click', function(e) {
             e.preventDefault();
