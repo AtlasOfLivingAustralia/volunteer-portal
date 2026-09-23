@@ -26,81 +26,86 @@
                         </div>
                     </g:hasErrors>
                     <g:form action="save">
-                        <div class="form-group">
-                            <label for="randomProjectOfTheDay" class="form-label col-md-3">
-                                <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Expedition for the day" />
-                            </label>
-                            <div class="col-md-6">
-                                <g:checkBox name="randomProjectOfTheDay" class="form-check-input" id="randomProjectToggle" style="margin-top: 9px;" value="${frontPage.randomProjectOfTheDay}" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="projectOfTheDay" class="form-label col-md-3">
-                                <g:message code="frontPage.projectOfTheDay.label"
-                                    default="Expedition of the day"/></label>
-                            <div class="col-md-6">
-                                <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
-                                    <option value="">- Select an Expedition -</option>
-                                    <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
-                                                             selectedProject="${frontPage.projectOfTheDay?.id}" />
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <g:link class="btn btn-sm btn-outline-secondary" action="edit" controller="project"
-                                        id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;selected expedition</g:link>
-
-                                <button class="btn btn-sm btn-outline-secondary" id="btnFindProject">Find an expedition</button>
-
-                            </div>
-                        </div>
-
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}>
                             <label for="systemMessage" class="form-label col-md-3"><g:message code="frontPage.systemMessage.label"
-                                                                                            default="System message"/></label>
-                            <div class="col-md-6">
+                                                                                              default="System message"/></label>
+                            <div class="col-md-9">
                                 <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
                                 <span class="float-end label label-default count_message" id="count_message"></span>
                                 <span class="form-text">(Displayed on every page)</span>
                             </div>
                         </div>
 
+                        <div class="form-group">
+
+                            <div class="col-md-9">
+                                <g:checkBox name="randomProjectOfTheDay" class="form-check-input" id="randomProjectToggle" value="${frontPage.randomProjectOfTheDay}" />
+                                <label for="randomProjectOfTheDay" class="form-label col-md-6">
+                                    <g:message code="frontPage.randomProjectOfTheDay.label" default="Select a random Expedition for the day" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectOfTheDay" class="form-label col-md-6">
+                                <g:message code="frontPage.projectOfTheDay.label"
+                                    default="Expedition of the day"/></label>
+                            <div class="col-md-9">
+                                <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
+                                    <option value="">- Select an Expedition -</option>
+                                    <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
+                                                             selectedProject="${frontPage.projectOfTheDay?.id}" />
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-9">
+                                <g:link class="btn btn-sm btn-outline-secondary" action="edit" controller="project"
+                                        id="${frontPage.projectOfTheDay?.id}">Edit&nbsp;selected expedition</g:link>
+
+                                <button class="btn btn-sm btn-outline-secondary" id="btnFindProject">Find an expedition</button>
+                            </div>
+                        </div>
+
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'showAchievements', 'has-error')}>
-                            <label for="useGlobalNewsItem" class="form-label col-md-3"><g:message code="frontPage.showAchievements.label"
-                                                                                                     default="Show achievements on User stats page"/></label>
-                            <div class="col-md-6">
+
+                            <div class="col-md-9">
                                 <g:checkBox name="showAchievements" class="form-check-input" value="${frontPage.showAchievements}"/>
+                                <label for="useGlobalNewsItem" class="form-label col-md-9"><g:message code="frontPage.showAchievements.label"
+                                                                                                      default="Show achievements on User stats page"/></label>
                             </div>
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'has-error')}>
-                            <label for="enableTaskComments" class="form-label col-md-3"><g:message code="frontPage.enableTaskComments.label"
-                                                                                                     default="Enable task commenting"/></label>
-                            <div class="col-md-6">
+
+                            <div class="col-md-9">
                                 <g:checkBox name="enableTaskComments" class="form-check-input" value="${frontPage.enableTaskComments}"/>
+                                <label for="enableTaskComments" class="form-label col-md-9"><g:message code="frontPage.enableTaskComments.label"
+                                                                                                       default="Enable task commenting"/></label>
                             </div>
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}>
-                            <label for="enableForum" class="form-label col-md-3"><g:message code="frontPage.enableForum.label"
-                                                                                                      default="Enable the ${message(code: "default.application.name")} Forum"/></label>
-                            <div class="col-md-6">
+
+                            <div class="col-md-9">
                                 <g:checkBox name="enableForum" class="form-check-input" value="${frontPage.enableForum}"/>
+                                <label for="enableForum" class="form-label col-md-9"><g:message code="frontPage.enableForum.label"
+                                                                                                default="Enable the ${message(code: "default.application.name")} Forum"/></label>
                             </div>
                         </div>
 
                         <div class="form-group" ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'has-error')}>
-                            <label for="numberOfContributors" class="form-label col-md-3"><g:message code="frontPage.numberOfContributors.label"
+                            <label for="numberOfContributors" class="form-label col-md-9"><g:message code="frontPage.numberOfContributors.label"
                                                                                                default="The number of contributors to show on the front page"/></label>
-                            <div class="col-md-6">
+                            <div class="col-md-9">
                                 <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${frontPage.numberOfContributors}"/>
                             </div>
                         </div>
 
                         <div class="form-group ${hasErrors(bean: frontPage, field: 'attributionText', 'has-error')}">
-                            <label for="heroImageAttribution" class="form-label col-md-3">
+                            <label for="heroImageAttribution" class="form-label col-md-9">
                                 <g:message code="frontPage.heroImageAttribution" default="Hero Image Attribution Text" />
                             </label>
-                            <div class="col-md-6">
+                            <div class="col-md-9">
                                 <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control" value="${frontPage.heroImageAttribution}" />
                                 <span class="float-end label label-default count_message" id="hero_count_message"></span>
                             </div>
@@ -136,7 +141,7 @@
                                          src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/hero/${frontPage.heroImage}"/>
 
                                 </g:if>
-                                <input id="heroImage" name="heroImage" type="file" />
+                                <input id="heroImage" class="form-control" name="heroImage" type="file" />
                             </div>
                         </div>
 
@@ -164,14 +169,20 @@
             <div class="row" id="logos">
             </div>
             <div class="row">
-                <g:uploadForm controller="frontPage" action="addLogoImage">
-                <div class="col-sm-12 logos">
-                    <input id="uploadLogo" name="uploadLogo" type="file" multiple />
+                <div class="col-md-12">
+                    <g:uploadForm controller="frontPage" action="addLogoImage">
+                    <div class="form-group">
+                        <div class="col-sm-6 logos">
+                            <input id="uploadLogo" class="form-control" name="uploadLogo" type="file" multiple />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <g:submitButton name="Upload logos" class="btn btn-primary"/>
+                        </div>
+                    </div>
+                    </g:uploadForm>
                 </div>
-                <div class="col-sm-12">
-                    <g:submitButton name="Upload logos" class="btn btn-primary"/>
-                </div>
-                </g:uploadForm>
             </div>
         </div>
     </div>
@@ -183,7 +194,7 @@
         src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}"
         alt="${grailsApplication.config.getProperty('server.url')}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/logos/{{src}}">
       <div class="caption">
-        <p><button class="btn btn-danger delete-logo" data-idx="{{idx}}"><i class="fa fa-times"></i></button></p>
+        <p><button class="btn btn-outline-danger delete-logo" data-idx="{{idx}}"><i class="fa fa-times"></i></button></p>
       </div>
     </div>
 </div>
