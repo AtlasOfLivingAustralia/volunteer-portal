@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch
 import com.google.common.base.Strings
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.action.search.SearchType
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -22,7 +21,6 @@ class UserController {
     def forumService
     def authService
     def fullTextIndexService
-    def freemarkerService
     def fieldService
     def achievementService
 
@@ -57,29 +55,6 @@ class UserController {
 }
 '''
 
-    static final MATCH_ALL = '{ "constant_score" : { "query": { "match_all": { } } } }'
-
-    static final FIELD_OBSERVATIONS = '''{
-  "constant_score": {
-    "filter": {
-      "and": [
-        { "term": { "project.projectType": "fieldnotes" } },
-        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
-      ]
-    }
-  }
-}'''
-
-    static final VALIDATED_TASKS_FOR_USER = '''{
-  "constant_score": {
-    "filter": {
-      "and": [
-        { "term": { "isValid": true } },
-        { "term": { "transcriptions.fullyTranscribedBy": "${userId}" } }
-      ]
-    }
-  }
-}'''
 
     def index() {
         redirect(action: "adminList", params: params)
@@ -548,116 +523,4 @@ class UserController {
         }
     }
 
-    def notebookMainFragment() {
-        def user = User.get(params.int("id"))
-        //def simpleTemplateEngine = new SimpleTemplateEngine()
-        Stopwatch sw = Stopwatch.createStarted()
-        def c = Transcription.createCriteria()
-        def expeditions = c {
-            eq("fullyTranscribedBy", user.userId)
-            projections {
-                countDistinct("project")
-            }
-        }
-        sw.stop()
-
-        log.debug("notebookMainFragment.projectCount ${sw.toString()}")
-
-        sw.reset().start()
-        def score = userService.getUserScore(user)
-        sw.stop()
-        log.debug("notebookMainFragment.getUserScore ${sw.toString()}")
-
-        sw.reset().start()
-        def recentAchievements = AchievementAward.findAllByUser(user, [sort:'awarded', order:'desc', max: 3])
-        sw.stop()
-        log.debug("notebookMainFragment.recentAchievements ${sw.toString()}")
-
-        sw.reset().start()
-        final String query = freemarkerService.runTemplate(ALA_HARVESTABLE, [userId: user.userId])
-        final agg = SPECIES_AGG_TEMPLATE
-
-        def speciesList2 = fullTextIndexService.rawSearch(query, SearchType.COUNT, agg) { SearchResponse searchResponse ->
-            searchResponse.aggregations.get('fields').aggregations.get('speciesfields').aggregations.get('species').buckets.collect { [ it.key, it.docCount ] }
-        }.sort { m -> m[1] }
-        def totalSpeciesCount = speciesList2.size()
-        sw.stop()
-        log.debug("notebookMainFragment.speciesList2 ${sw.toString()}")
-        log.debug("specieslist2: ${speciesList2}")
-
-        sw.reset().start()
-
-        final matchAllQuery = MATCH_ALL
-
-        def userCount = fullTextIndexService.rawSearch(query, SearchType.COUNT, hitsCount)
-        def totalCount = fullTextIndexService.rawSearch(matchAllQuery, SearchType.COUNT, hitsCount)
-        def userPercent = String.format('%.2f', (userCount / totalCount) * 100)
-
-        sw.stop()
-        log.debug("notbookMainFragment.percentage ${sw.toString()}")
-
-        sw.reset().start()
-        def fieldObservationQuery = freemarkerService.runTemplate(FIELD_OBSERVATIONS, [userId: user.userId])
-        def fieldObservationCount = fullTextIndexService.rawSearch(fieldObservationQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-
-        sw.stop()
-        log.debug("notbookMainFragment.fieldObservationCount ${sw.toString()}")
-
-        sw.reset().start()
-        final validatedQuery = freemarkerService.runTemplate(VALIDATED_TASKS_FOR_USER, [userId: user.userId])
-        def validatedCount = fullTextIndexService.rawSearch(validatedQuery, SearchType.COUNT, fullTextIndexService.hitsCount)
-        sw.stop()
-        log.debug("notbookMainFragment.validatedCount ${sw.toString()}")
-
-        [userInstance: user, expeditionCount: expeditions ? expeditions[0] : 0, score: score,
-         recentAchievements: recentAchievements, speciesList: speciesList2, fieldObservationCount: fieldObservationCount,
-         validatedCount: validatedCount, userPercent: userPercent, totalSpeciesCount: totalSpeciesCount
-        ]
-    }
-
-    def badgesFragment() {
-        def user = User.get(params.int("id"))
-        //def achievements = achievementService.calculateAchievements(userInstance)
-        def achievements = user.achievementAwards
-        def sortedAchievements = achievements.sort { a,b -> b.awarded.compareTo(a.awarded) }
-        def score = userService.getUserScore(user)
-        def awardedIds = achievements*.achievement*.id.toList()
-        def otherAchievements
-        otherAchievements = AchievementDescription.withCriteria(sort: 'name') {
-            eq 'enabled', true
-            if (awardedIds) {
-                not {
-                    'in'('id', awardedIds)
-                }
-            }
-        }
-
-        [userInstance: user, achievements: sortedAchievements, score: score, allAchievements: otherAchievements]
-    }
-
-    def recentTasksFragment() {
-        def user = User.get(params.int("id"))
-        def tasks = taskService.getRecentlyTranscribedTasks(user?.userId,
-                ['max' : 5, 'sort':'dateFullyTranscribed', order:'desc'])
-
-        [userInstance: user, recentTasks: tasks]
-    }
-
-    def transcribedTasksFragment() {
-        def user = User.get(params.int("id"))
-
-        [userInstance: user]
-    }
-
-    def savedTasksFragment() {
-        def user = User.get(params.int("id"))
-
-        [userInstance: user]
-    }
-
-    def validatedTasksFragment() {
-        def user = User.get(params.int("id"))
-
-        [userInstance: user]
-    }
 }
