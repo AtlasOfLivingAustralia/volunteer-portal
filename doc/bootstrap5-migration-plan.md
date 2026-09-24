@@ -300,13 +300,13 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
     - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
       3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
       repo. Not referenced by the app; unrelated to `scss/bootstrap/_variables.scss`.
-- [ ] BS2 grid classes still live (`row-fluid`, `span1`–`span12`) — locality/ collectionEvent searchFragment, picklist
+- [X] BS2 grid classes still live (`row-fluid`, `span1`–`span12`) — locality/ collectionEvent searchFragment, picklist
   images/wildcount/edit, user/notebookMainFragment, layouts/transcribeTool. Layouts currently collapse to full-width
   stacked divs.
-- [ ] BS2 form scaffolding (`form-horizontal`, `control-group`, `controls`)
+- [X] BS2 form scaffolding (`form-horizontal`, `control-group`, `controls`)
   throughout fragments.
 - [ ] Sweep remaining `hide` → `d-none` outside the project filter blocks.
-- [ ] Dead BS2/BS3 classes found during the form sweep: `.well`
+- [X] Dead BS2/BS3 classes found during the form sweep: `.well`
   (`user/edit.gsp` 108) and `.form` (`template/create.gsp` 30). Neither has any CSS. Fold into the BS2 grid/scaffolding
   sweep.
 
@@ -320,6 +320,9 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 - [ ] Standardise alert styles
 - [ ] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*)
 - [ ] Dropdown menu styles (inc double caret)
+- [ ] `.progress > .bar` (BS2) in `picklist/wildcount.gsp` 55–57 and its two JS handlers at 128/133. BS5 uses
+  `.progress-bar`, so the CSV upload progress bar has no fill. Found during the BS2 sweep on 2026-09-24; left alone
+  because it is a component, not grid/scaffolding, and the fix touches JS.
 
 #### 3. Forms completion
 
@@ -517,6 +520,10 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 
 - [ ] Transcribe pages
   - [ ] Review each transcription template view (manually, no AI).
+  - [ ] **Inspect the 2026-09-24 `.well` → `.card` conversions.** 25 containers that rendered flat now draw a border
+    and background. Highest risk: `admin/tools.gsp` and `admin/mappingTool.gsp`, where the new cards sit inside an
+    existing `.card` > `.card-body` (card-in-card); and the 10 transcribe sections, which also gain the
+    `.transcribeSection .row` gutters that were previously inert.
 - [ ] `_dateWidget.gsp` 16 and 48 — `(from)` / `(to)` are bare text in a `col-md-3`, not `<label>`s, and the six inputs
   are identified by placeholder only. Fold into the transcribe pages task.
 - [ ] Review form layout on all admin pages (No AI)
@@ -1178,3 +1185,72 @@ parallel. Ships this release.
       review; `task/list.gsp` inline height → the `form-select` sweep; `notebook-reset.css` →
       digivol-custom consolidation). The referenced item is now in the same or a named group, so the pointer still
       resolves.
+- 2026-09-24 — Phase 8 group 1: BS2 legacy sweep (grid, `.well`, form scaffolding) completed. `static-design/20151006/**`
+  deliberately excluded — it is vendored BS3/BS2 with no `<link>` from the app and goes with its own deletion item.
+    - **Nothing removed in this task had any CSS.** `.span1`–`.span12`, `.row-fluid`, `.well`, `.well-small`,
+      `.well-sm`, `.controls`, `.input-block-level`, `.input-medium` and `.form` have zero rules in the SCSS pipeline
+      (the only matches are commented-out blocks in `cameratrap.css` / `audiotranscribe.css` / `wildlifespotter.css`).
+      Every "layout" they described had been inert since the BS4 upgrade, so **the visible change is the layout and the
+      cards coming back**, not going away.
+    - Grid: `locality/searchFragment` (2/4/1/5) and `collectionEvent/searchFragment` (2/2…/2 and 2/2/2/3/3) restored to
+      `row` + `col-md-*`; both had been rendering as stacked full-width divs. The remaining nine sites were
+      `row-fluid > span12` — a full-width wrapper around a full-width child — and were deleted rather than converted to
+      `row > col-12` (`layouts/transcribeTool`, `picklist/images`/`wildcount`/`edit`, `journalTranscribe`). Only
+      `task/showDetails` 64/170 became a real `.row`, because its children were already `col-*`.
+    - `.well` → `.card` + `.card-body` at 25 sites. The 10 transcribe sections took `card transcribeSection` to match
+      `TranscribeTagLib.getWidgetHtml` (634) and the already-migrated `singleSection`/`aerialObservations`/
+      `genericLabels` views; they now also get the `.transcribeSection .row` gutters from `modules/_components.scss`
+      934, which had never applied. Deleted the five inline paddings that existed to make wells look right
+      (`user/edit` ×2 `padding: 10px !important`, `_taskSummary` `padding: 2px`), and moved three `margin-top: 10px`
+      to `mt-2`.
+    - `class="well-small"` with no `well` (`achievementDescription/index` 55, `landingPageAdmin/index` 59) was deleted
+      rather than converted. `.well-small` was only ever a modifier — those two divs never rendered as wells, even in
+      BS2, so carding them would have invented a panel that has never existed.
+    - Form scaffolding: `form-inline` removed from all 5 sites (BS5 deleted the class, so none of them had been laying
+      out inline) — the four admin forms took `d-inline-block` + `pe-2`, replacing `style="display: inline-block"`, and
+      the dynamic-rows JS took `d-flex flex-wrap align-items-center gap-2`. `.controls` removed from 4 sites, not the
+      1 recorded in the audit — see correction below. `input-block-level` ×2 and `input-medium` ×2 → `form-control` or
+      nothing; `class="form"` deleted from `template/create` 30.
+    - Deleted `notebookMainFragment.gsp`, `badgesFragment.gsp`, `recentTasksFragment.gsp` and six controller actions.
+      `UserController.notebook()` (450) has only ever forwarded to `show()`, which renders the notebook-2 `user/show.gsp`;
+      the fragments' sole caller was a commented-out `$.ajax` **inside `notebookMainFragment.gsp` itself**, and their
+      `data-switch-tab` hooks have had no JS handler in the repo for years. `transcribedTasksFragment`,
+      `savedTasksFragment` and `validatedTasksFragment` had no view file at all and would have 500'd if reached.
+      Committed separately — behaviour, not styling.
+        - Two traps in that deletion: `ALA_HARVESTABLE` and `SPECIES_AGG_TEMPLATE` **stay**, because
+          `UserService.appendNotebookFunctionalityToModel` reads them as `UserController.ALA_HARVESTABLE`;
+          `MATCH_ALL`, `FIELD_OBSERVATIONS` and `VALIDATED_TASKS_FOR_USER` went, as did
+          `TaskService.getRecentlyTranscribedTasks` (579), whose only caller was `recentTasksFragment`. Also dropped the
+          now-unused `SearchResponse` import and `freemarkerService` injection.
+        - The dead action duplicated the live service almost line for line, down to the `log.debug` strings, which still
+          read `notebookMainFragment.*` in `UserService` 839/855. It had also drifted: the dead copy counted distinct
+          projects with a bare `countDistinct("project")` where the live one nests it under `task { }`.
+    - Deleted the dead `layoutClass` payload from `_dynamicDatasetRows.gsp` 51/170. It was written into the JS `entries`
+      objects and never read by `renderEntries()`, and its `?: 'span1'` default was the last `span1` in the app. **The
+      DB column stays** — `_dateWidget.gsp` 3–7 reads `DMY`/`MDY`/`YMD` out of it, and of the 33 distinct
+      `template_field.layout_class` values only one (`span6`) is a grid class. That row is inert now that the payload
+      is gone; no migration written.
+    - Bugs fixed while in scope: unclosed `<span class="transcribeSectionHeaderLabel">` in
+      `observationWithGeoTranscribe` 84 and `observationDiaryTranscribe` 84 (the `</div>` closed it implicitly, so the
+      "Shrink" link was inside the label span); BS2 `label.checkbox` wrapping its input in
+      `collectionEvent/searchFragment` 63 and `cameratrapTranscribe` 23 → `form-check` with a real `for`;
+      `task/exportOptionsFragment` 27 had its two buttons in an `.input-group`, which in BS5 joins them into a
+      segmented control — now `d-flex gap-2`.
+    - a11y while in scope: `Locality`, `Event date` and `Locality` were bare text in a grid cell on the two search
+      fragments and are now `<label for>`; the wildcount image search gained a `visually-hidden` label and the
+      documented admin `input-group` + `btn btn-sm btn-primary` markup.
+    - **Correction to the Step 1 audit:** it reported one `.controls` div (`task/exportOptionsFragment` 28). There are
+      four — `project/deleteAllTasksFragment` 12, `project/deleteProjectFragment` 13 and `cameratrapTranscribe` 22 were
+      missed. The audit grep combined seven alternations in one pattern and hit the 20-result cap, so the three files
+      that sorted after the cap never appeared. Re-running per-term found them. Same failure mode as the
+      `$pagination-*`, `bootstrap-datepicker` and `btn-file` misses: **a capped grep must be re-run for each term, not
+      just re-run narrower on adjacent terms.** Every count in this entry comes from a single-term grep.
+    - **Correction to the Step 1 audit, second:** it listed `input-block-level` nowhere and `input-medium` only at
+      `picklist/wildcount` 113/116. `input-block-level` has four sites (`picklist/images`, `picklist/wildcount`,
+      `picklist/manage`, `achievementDescription/_form`); it surfaced only when the wildcount search block was opened
+      for the well conversion.
+    - Deliberately not done: `hide` → `d-none` (unchanged, still open in group 1); `.progress > .bar` in
+      `picklist/wildcount` — a BS2 *component* with two JS consumers, moved to group 2 as a new item; re-indenting the
+      bodies of the two large `admin/tools.gsp` blocks was done, so those two hunks are large in the diff despite being
+      a two-line change.
+    - Verified with `./gradlew compileGroovy` (BUILD SUCCESSFUL) and a div-balance check on every edited GSP.
