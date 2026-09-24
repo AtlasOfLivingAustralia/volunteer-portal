@@ -65,15 +65,15 @@
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="6" cols="42"/>
                 <div>
-                    <button type="button" class="insert-symbol-button" symbol="&deg;"
+                    <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&deg;"
                             title="Insert a degree symbol"></button>
-                    <button type="button" class="insert-symbol-button" symbol="&#39;"
+                    <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#39;"
                             title="Insert an apostrophe (minutes) symbol"></button>
-                    <button type="button" class="insert-symbol-button" symbol="&quot;"
+                    <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&quot;"
                             title="Insert a quote (seconds) symbol"></button>
-                    <button type="button" class="insert-symbol-button" symbol="&#x2642;"
+                    <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#x2642;"
                             title="Insert the male gender symbol"></button>
-                    <button type="button" class="insert-symbol-button" symbol="&#x2640;"
+                    <button type="button" class="btn btn-sm btn-outline-secondary insert-symbol-button" symbol="&#x2640;"
                             title="Insert the female gender symbol"></button>
                 </div>
             </div>
