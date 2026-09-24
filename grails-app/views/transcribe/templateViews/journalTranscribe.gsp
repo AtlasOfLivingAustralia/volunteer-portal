@@ -7,34 +7,28 @@
 <content tag="templateView">
 <div class="container-fluid">
 
-    <div class="row-fluid">
-        <div class="span12">
-            <span id="journalPageButtons">
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="showPreviousJournalPage"
-                        title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
-                    <i class="fa fa-arrow-left"></i> Show previous journal page
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="showNextJournalPage"
-                        title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
-                    Show next journal page <i class="fa fa-arrow-right"></i>
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="rotateImage"
-                        title="Rotate the page 180 degrees">
-                    Rotate <i class="fa fa-rotate-right"></i>
-                </button>
-            </span>
-        </div>
-    </div>
+    <span id="journalPageButtons">
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="showPreviousJournalPage"
+                title="displays page in new window" ${prevTask ? '' : 'disabled="true"'}>
+            <i class="fa fa-arrow-left"></i> Show previous journal page
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="showNextJournalPage"
+                title="displays page in new window" ${nextTask ? '' : 'disabled="true"'}>
+            Show next journal page <i class="fa fa-arrow-right"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="rotateImage"
+                title="Rotate the page 180 degrees">
+            Rotate <i class="fa fa-rotate-right"></i>
+        </button>
+    </span>
 
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="well well-small">
-                <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
-                    <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                        <g:imageViewer multimedia="${multimedia}"/>
-                    </g:if>
-                </g:each>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
+                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
+                    <g:imageViewer multimedia="${multimedia}"/>
+                </g:if>
+            </g:each>
         </div>
     </div>
 
@@ -53,39 +47,41 @@
 
 
 
-    <div class="well well-small transcribeSection">
-        <div class="row-fluid transcribeSectionHeader">
-            <div class="span12">
-                <g:set var="allTextField"
-                       value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
-                <cl:helpText placement="left">
-                    ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
-                </cl:helpText>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+    <div class="card transcribeSection">
+        <div class="card-body">
+            <div class="row transcribeSectionHeader">
+                <div class="col-md-12">
+                    <g:set var="allTextField"
+                           value="${TemplateField.findByTemplateAndFieldType(template, DarwinCoreField.occurrenceRemarks)}"/>
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${allTextField?.label ?: "Transcribe All Text"}</span>
+                    <cl:helpText placement="left">
+                        ${allTextField?.helpText ?: "Transcribe all text as it appears on the page"}
+                    </cl:helpText>
+                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                </div>
             </div>
-        </div>
 
-        <div class="transcribeSectionBody">
-            <div class="row-fluid">
-                <g:textArea class="span12" name="recordValues.0.occurrenceRemarks"
+            <div class="transcribeSectionBody">
+                <g:textArea class="form-control" name="recordValues.0.occurrenceRemarks"
                             value="${recordValues?.get(0)?.occurrenceRemarks}" id="recordValues.0.occurrenceRemarks"
                             rows="${numberOfTextRows}" cols="42"/>
             </div>
         </div>
     </div>
 
-    <div class="well well-small transcribeSection">
-        <div class="row-fluid transcribeSectionHeader">
-            <div class="span12">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  For each entry on the field note, please transcribe information into the following fields.</span>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+    <div class="card transcribeSection">
+        <div class="card-body">
+            <div class="row transcribeSectionHeader">
+                <div class="col-md-12">
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />.  For each entry on the field note, please transcribe information into the following fields.</span>
+                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+                </div>
             </div>
-        </div>
 
-        <div class="transcribeSectionBody">
-            <g:render template="/transcribe/dynamicDatasetRows"
-                      model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+            <div class="transcribeSectionBody">
+                <g:render template="/transcribe/dynamicDatasetRows"
+                          model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+            </div>
         </div>
     </div>
 

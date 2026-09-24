@@ -61,7 +61,7 @@
 </g:if>
 <g:else>
     <div class="container-fluid">
-        <div class="row-fluid">
+        <div class="row">
             <div class="col-sm-12 col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -167,7 +167,7 @@
             </div>
         </div>
 
-        <div class="row-fluid">
+        <div class="row">
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">

@@ -32,50 +32,47 @@
     %>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
-        <div class="well well-small">
-            <h1>Image Search</h1>
-            <input type="text" id="q" name="q" class="input-block-level"><button type="button" class="btn btn-primary"
-                                                                                 id="search">Search</button>
+<div class="card">
+    <div class="card-body">
+        <h1>Image Search</h1>
+        <label class="visually-hidden" for="q">Search images</label>
+        <div class="input-group">
+            <input type="text" id="q" name="q" class="form-control">
+            <button type="button" class="btn btn-sm btn-primary" id="search">Search</button>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="span12">
-        <div class="well well-small">
-            <p><strong>Upload CSV</strong></p>
-            <g:if test="${flash.message}">
-                <div class="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
-                    ${flash.message}
-                </div>
-            </g:if>
-            <div>
-                <label class="form-label" for="csv-input">CSV file</label>
-                <input type="file" class="form-control" id="csv-input" accept=".csv,text/csv">
+<div class="card">
+    <div class="card-body">
+        <p><strong>Upload CSV</strong></p>
+        <g:if test="${flash.message}">
+            <div class="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+                ${flash.message}
             </div>
-
-            <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
-
-            <div id="progress-div" class="d-none">
-                <div class="progress progress-striped active">
-                    <div class="bar" style="width: 0;"></div>
-                </div>
-            </div>
-            <g:form name="upload-form" action="loadWildcount" id="${picklistInstance.id}">
-                <g:hiddenField name="instCode" value="${institutionCode}"/>
-                <g:hiddenField name="csv"/>
-            </g:form>
+        </g:if>
+        <div>
+            <label class="form-label" for="csv-input">CSV file</label>
+            <input type="file" class="form-control" id="csv-input" accept=".csv,text/csv">
         </div>
+
+        <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
+
+        <div id="progress-div" class="d-none">
+            <div class="progress progress-striped active">
+                <div class="bar" style="width: 0;"></div>
+            </div>
+        </div>
+        <g:form name="upload-form" action="loadWildcount" id="${picklistInstance.id}">
+            <g:hiddenField name="instCode" value="${institutionCode}"/>
+            <g:hiddenField name="csv"/>
+        </g:form>
     </div>
 </div>
 </div>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <table class="table table-condensed table-bordered">
+    <table class="table table-condensed table-bordered">
                 <thead>
                 <tr>
                     <th style="width: 300px;">Value</th>
@@ -110,10 +107,10 @@
                             <g:hiddenField name="dayImages-${i}" value="${obj.dayImages}"/>
                         </td>
                         <td>
-                            <g:textField name="tags-${i}" class="input-medium" value="${obj.tags}"/>
+                            <g:textField name="tags-${i}" value="${obj.tags}"/>
                         </td>
                         <td>
-                            <g:textField name="similarSpecies-${i}" class="input-medium" value="${obj.similarSpecies}"/>
+                            <g:textField name="similarSpecies-${i}" value="${obj.similarSpecies}"/>
                         </td>
                         <td>
                             <div class="btn-group">
@@ -125,8 +122,6 @@
                 </g:each>
                 </tbody>
             </table>
-        </div>
-    </div>
     <asset:javascript src="underscore" asset-defer=""/>
     <asset:script>
         jQuery(function ($) {

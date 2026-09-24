@@ -32,49 +32,43 @@
     %>
 </cl:headerContent>
 
-<div class="row">
-    <div class="span12">
-        <div class="well well-small">
-            <h1>Image Search</h1>
-            <input type="text" id="q" name="q" class="input-block-level">
-        </div>
+<div class="card">
+    <div class="card-body">
+        <h1>Image Search</h1>
+        <input type="text" id="q" name="q" class="form-control">
     </div>
 </div>
 
 </div>
 
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
-            <table class="table table-condensed table-bordered">
-                <thead>
-                <tr>
-                    <th style="width: 300px;">Value</th>
-                    <th>Images</th>
-                    <th style="width: 50px;">Controls</th>
-                </tr>
-                </thead>
-                <tbody>
-                <g:each in="${picklistItems}" status="i" var="item">
-                    <tr class="picklist-item-row">
-                        <td>
-                            <input type="text" id="key-${i}" name="key-${i}" value="${item.value}">
-                        </td>
-                        <td>
+    <table class="table table-condensed table-bordered">
+        <thead>
+        <tr>
+            <th style="width: 300px;">Value</th>
+            <th>Images</th>
+            <th style="width: 50px;">Controls</th>
+        </tr>
+        </thead>
+        <tbody>
+        <g:each in="${picklistItems}" status="i" var="item">
+            <tr class="picklist-item-row">
+                <td>
+                    <input type="text" id="key-${i}" name="key-${i}" value="${item.value}">
+                </td>
+                <td>
 
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-up"></i></button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-down"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-up"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-arrow-down"></i></button>
+                    </div>
+                </td>
+            </tr>
+        </g:each>
+        </tbody>
+    </table>
     <asset:javascript src="underscore" asset-defer=""/>
 </body>
 </html>

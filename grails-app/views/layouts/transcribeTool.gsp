@@ -35,10 +35,8 @@
 <div id="toolContent" class="toolContent">
 
     <g:if test="${taskInstance}">
-        <div class="row-fluid">
-            <div class="span12" id="currentTaskHeader">
-                <h3>Image from current task</h3>
-            </div>
+        <div id="currentTaskHeader">
+            <h3>Image from current task</h3>
         </div>
 
         <div id="imagePane">

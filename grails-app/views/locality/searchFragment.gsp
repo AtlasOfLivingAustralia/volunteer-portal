@@ -27,22 +27,22 @@
 </style>
 
 <div id="toolContentHeader">
-    <div class="row-fluid">
-        <div class="span2">
-            Locality
+    <div class="row align-items-center g-2">
+        <div class="col-md-2">
+            <label class="form-label mb-0" for="localitySearch">Locality</label>
         </div>
 
-        <div class="span4">
-            <input style="width:100%" type="text" id="localitySearch" value="${verbatimLocality}"/>
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="localitySearch" value="${verbatimLocality}"/>
         </div>
 
-        <div class="span1" style="vertical-align: middle">
+        <div class="col-md-1">
             <cl:helpText>
                 If the initial search doesn’t find an existing locality try expanding abbreviations, inserting or removing spaces and commas or simplifying the locality description, eg by deleting the state. Example If &quot;Broome,  WA&quot; doesn’t get a result try &quot;Broome&quot; or &quot;Broome Western Australia&quot;. Only choose an existing location if you think it adequately represents the verbatim locality.
             </cl:helpText>
         </div>
 
-        <div class="span5">
+        <div class="col-md-5">
             <button class="btnSearchLocality btn btn-primary">Search</button>
             <button class="btnClose btn btn-secondary">Cancel</button>
         </div>

@@ -26,46 +26,47 @@
 </style>
 
 <div id="toolContentHeader">
-    <div class="row-fluid">
-        <div class="span2">
+    <div class="row align-items-center g-2">
+        <div class="col-md-2">
             Collector(s)
         </div>
 
         <g:each in="${collectors}" var="collector" status="i">
-            <div class="span2">
-                <input class="span12" id="search_collector_${i}" type="text" value="${collector}">
+            <div class="col-md-2">
+                <input class="form-control" id="search_collector_${i}" type="text" value="${collector}">
             </div>
         </g:each>
 
-        <div class="span2">
-            <button class="btn btn-sm btn-primary span12" id="event_search_button">Search</button>
+        <div class="col-md-2">
+            <button class="btn btn-sm btn-primary w-100" id="event_search_button">Search</button>
         </div>
     </div>
 
-    <div class="row-fluid">
-        <div class="span2">
-            Event date
+    <div class="row align-items-center g-2">
+        <div class="col-md-2">
+            <label class="form-label mb-0" for="search_event_date">Event date</label>
         </div>
 
-        <div class="span2">
-            <input class="span12" type="text" id="search_event_date" value="${eventDate}"/>
+        <div class="col-md-2">
+            <input class="form-control" type="text" id="search_event_date" value="${eventDate}"/>
         </div>
 
-        <div class="span2">
-            Locality
+        <div class="col-md-2">
+            <label class="form-label mb-0" for="search_locality">Locality</label>
         </div>
 
-        <div class="span3">
-            <g:textField class="span12" name="search_locality" id="search_locality"/>
+        <div class="col-md-3">
+            <g:textField class="form-control" name="search_locality" id="search_locality"/>
         </div>
 
-        <div class="span3">
-            <label class="checkbox" for="expandedSearch">
-                <g:checkBox name="expandedSearch" checked="true" value="checked" id="expandedSearch"/>
-                Use expanded search
-            </label>
+        <div class="col-md-3">
+            <div class="form-check">
+                <g:checkBox class="form-check-input" name="expandedSearch" checked="true" value="checked"
+                            id="expandedSearch"/>
+                <label class="form-check-label" for="expandedSearch">Use expanded search</label>
+            </div>
 
-            <div style="text-align: center">
+            <div class="text-center">
                 <span class="text-success" id="search_results_status"></span>
             </div>
         </div>
@@ -87,7 +88,7 @@
     });
 
     $(".collection_search_content :input").keydown(function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             doSearch();
         }
     });
