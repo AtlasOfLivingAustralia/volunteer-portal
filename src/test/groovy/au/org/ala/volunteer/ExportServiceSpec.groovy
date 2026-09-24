@@ -86,6 +86,18 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         fields
     }
 
+    /**
+     * export_default writes a UTF-8 BOM so Excel opens the CSV correctly; strip it before parsing
+     * otherwise the first column name becomes "\uFEFFtaskID".
+     */
+    private List readCsv(GrailsMockHttpServletResponse response) {
+        String csv = response.text
+        if (csv.startsWith('\uFEFF')) {
+            csv = csv.substring(1)
+        }
+        new CSVMapReader(new StringReader(csv)).readAll()
+    }
+
     def "Test non parrallel writes is working for larger tasks"() {
         setup:
         project.transcriptionsPerTask = 2
@@ -108,7 +120,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, allFields, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
@@ -148,7 +160,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, allFields, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
@@ -180,7 +192,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, birdFields1 + birdFields2 + kangarooFields1 + kangarooFields2, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
@@ -209,7 +221,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, birdFields1 + kangarooFields1, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['scientificName', 0], ['individualCount', 0]]
@@ -234,7 +246,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, [], response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
@@ -257,7 +269,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, [], response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
@@ -279,7 +291,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, fields, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['occurenceRemarks', 0]]
@@ -305,7 +317,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, fields, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> [['occurenceRemarks', 2]]
@@ -332,7 +344,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, fields, response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
@@ -347,7 +359,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         results[0]['externalIdentifier'] == 'external id'
         results[0]['exportComment'] == "Fully transcribed by Test user. Exported on ${today} from DigiVol (https://volunteer.ala.org.au)"
         results[0]['validationStatus'] == ''
-        results[0]['dateTranscribed'] == '01-Jul-2019 10:30:00'
+        results[0]['dateTranscribed'] == transcriptionDate.format('dd-MMM-yyyy HH:mm:ss')
         results[0]['dateValidated'] == ''
     }
 
@@ -363,7 +375,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
         when:
         service.export_default(project, taskList, fieldNames, [], response)
-        List results = new CSVMapReader(new StringReader(response.text)).readAll()
+        List results = readCsv(response)
 
         then:
         1 * fieldService.getMaxRecordIndexByFieldForProject(project) >> []
