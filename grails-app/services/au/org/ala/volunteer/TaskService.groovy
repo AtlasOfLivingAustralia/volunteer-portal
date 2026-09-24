@@ -570,20 +570,6 @@ class TaskService {
         return null
     }
 
-  /**
-   * Get tasks transcribed by this user. Includes partial edits and complete edits.
-   *
-   * @param userId
-   * @return list of tasks
-   */
-    List<Task> getRecentlyTranscribedTasks(String userId, Map params) {
-        def c = Task.createCriteria()
-
-        c.list(params) {
-            eq("fullyTranscribedBy", userId)
-            isNotNull("dateFullyTranscribed")
-        } as List<Task>
-    }
 
     /**
      * Resets the current views for a task. Utilised when skipping a task, so that it doesn't remain locked for someone
