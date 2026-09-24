@@ -10,12 +10,10 @@
         <strong>Warning:</strong> This action cannot be undone. Are you sure you wish to delete this expedition?
     </div>
 
-    <div class="controls">
-        <g:form controller="project" action="delete" id="${projectInstance.id}">
-            <button class="btn btn-secondary" id="btnCancelDeleteExpedition">Cancel</button>
-            <button class="btn btn-danger" type="submit">Delete expedition</button>
-        </g:form>
-    </div>
+    <g:form controller="project" action="delete" id="${projectInstance.id}" class="d-flex gap-2">
+        <button class="btn btn-secondary" id="btnCancelDeleteExpedition">Cancel</button>
+        <button class="btn btn-danger" type="submit">Delete expedition</button>
+    </g:form>
 
 </div>
 

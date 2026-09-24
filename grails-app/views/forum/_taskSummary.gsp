@@ -5,13 +5,17 @@
 
             <g:set var="multimedia" value="${taskInstance.multimedia.first()}"/>
             <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('audio/')}">
-                <div class="well well-small" style="padding: 2px;">
-                    <g:audioWaveViewer multimedia="${multimedia}" waveColour="${taskInstance.project.institution?.themeColour}"/>
+                <div class="card">
+                    <div class="card-body">
+                        <g:audioWaveViewer multimedia="${multimedia}" waveColour="${taskInstance.project.institution?.themeColour}"/>
+                    </div>
                 </div>
             </g:if>
             <g:else>
-                <div class="well well-small">
-                    <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" hideShowInOtherWindow="${true}"/>
+                <div class="card">
+                    <div class="card-body">
+                        <g:imageViewer multimedia="${multimedia}" preserveWidthWhenPinned="true" hideShowInOtherWindow="${true}"/>
+                    </div>
                 </div>
             </g:else>
 

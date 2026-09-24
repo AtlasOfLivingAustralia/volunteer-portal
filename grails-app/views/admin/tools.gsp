@@ -21,147 +21,155 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="well well-sm">
-                        <h3>General</h3>
-                        <hr/>
-                        <a href="${createLink(action: 'mappingTool')}" class="btn btn-sm btn-outline-secondary">Mapping tool</a>
-%{--                        <a href="${createLink(action: 'migrateProjectsToInstitutions')}"--}%
-%{--                           class="btn btn-sm btn-outline-secondary">Expedition-Institution migration tool</a>--}%
-                        <g:link action="updateUsers" class="btn btn-sm btn-outline-secondary">Update users from Auth</g:link>
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>General</h3>
+                            <hr/>
+                            <a href="${createLink(action: 'mappingTool')}" class="btn btn-sm btn-outline-secondary">Mapping tool</a>
+%{--                            <a href="${createLink(action: 'migrateProjectsToInstitutions')}"--}%
+%{--                               class="btn btn-sm btn-outline-secondary">Expedition-Institution migration tool</a>--}%
+                            <g:link action="updateUsers" class="btn btn-sm btn-outline-secondary">Update users from Auth</g:link>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="well well-sm">
-                        <h3>Caches</h3>
-                        <hr/>
-                        <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-sm btn-outline-secondary">Clear page caches</a>
-                        <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-sm btn-outline-secondary">Clear entity caches</a>
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>Caches</h3>
+                            <hr/>
+                            <a href="${createLink(action: 'clearPageCaches')}" class="btn btn-sm btn-outline-secondary">Clear page caches</a>
+                            <a href="${createLink(action: 'clearAllCaches')}" class="btn btn-sm btn-outline-secondary">Clear entity caches</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="well" style="margin-top: 10px">
-                        <h3>Full Text Index</h3>
-                        <hr/>
-                        <div class="alert alert-warning" role="alert">
-                            These functions will overwrite the current indexes with new values. This could take some time.
-                        </div>
-                        <button class="confirmation-required btn btn-sm btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
-                                data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
-                        <button class="confirmation-required btn btn-sm btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
-                                data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h3>Full Text Index</h3>
+                            <hr/>
+                            <div class="alert alert-warning" role="alert">
+                                These functions will overwrite the current indexes with new values. This could take some time.
+                            </div>
+                            <button class="confirmation-required btn btn-sm btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
+                                    data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
+                            <button class="confirmation-required btn btn-sm btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
+                                    data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
 
-                        <div>
-                            Background queue length: <span id="queueLength"><cl:spinner/></span>
-                        </div>
-                        <g:form method="GET" action="testQuery">
-                            <fieldset>
-                                <legend>Raw Search Query</legend>
+                            <div>
+                                Background queue length: <span id="queueLength"><cl:spinner/></span>
+                            </div>
+                            <g:form method="GET" action="testQuery">
+                                <fieldset>
+                                    <legend>Raw Search Query</legend>
 
-                                <div class="form-group">
-                                    <div id="set-query" class="col-sm-10">
-                                        <button id="match_all" class="btn btn-sm btn-outline-secondary" data-query="matchAll">Match All</button>
-                                        <button id="project_name" class="btn btn-sm btn-outline-secondary"
-                                                data-query="projectName">Project Name</button>
-                                        <button id="project_id" class="btn btn-sm btn-outline-secondary" data-query="projectId">Project Id</button>
-                                        <button id="task_id" class="btn btn-sm btn-outline-secondary" data-query="taskId">Task Id</button>
+                                    <div class="form-group">
+                                        <div id="set-query" class="col-sm-10">
+                                            <button id="match_all" class="btn btn-sm btn-outline-secondary" data-query="matchAll">Match All</button>
+                                            <button id="project_name" class="btn btn-sm btn-outline-secondary"
+                                                    data-query="projectName">Project Name</button>
+                                            <button id="project_id" class="btn btn-sm btn-outline-secondary" data-query="projectId">Project Id</button>
+                                            <button id="task_id" class="btn btn-sm btn-outline-secondary" data-query="taskId">Task Id</button>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="form-group">
-                                    <label class="form-label col-sm-2" for="query">Query text</label>
+                                    <div class="form-group">
+                                        <label class="form-label col-sm-2" for="query">Query text</label>
 
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="query" name="query" rows="10">{
-    "query_string": {
-        "query": "query string"
-    }
-}</textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label col-sm-2" for="searchType">Search Type</label>
-
-                                    <div class="col-sm-10">
-                                        <select id="searchType" class="form-control" name="searchType">
-                                            <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
-                                            <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
-                                            <option value="query_then_fetch" selected>Query then Fetch</option>
-                                            <option value="query_and_fetch">Query and Fetch</option>
-                                            <option value="scan">Scan</option>
-                                            <option value="count">Count</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label col-sm-2" for="aggregation">Aggregation</label>
-
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
-    "&lt;aggregation_name>" : {
-        "&lt;aggregation_type>" : {
-            &lt;aggregation_body>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" id="query" name="query" rows="10">{
+        "query_string": {
+            "query": "query string"
         }
-        [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
-    }
-    [,"&lt;aggregation_name_2>" : { ... } ]*
-}</textarea>
+    }</textarea>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <g:submitButton class="btn btn-sm btn-primary" name="submitQuery" value="Run Query"/>
+                                    <div class="form-group">
+                                        <label class="form-label col-sm-2" for="searchType">Search Type</label>
+
+                                        <div class="col-sm-10">
+                                            <select id="searchType" class="form-control" name="searchType">
+                                                <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
+                                                <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
+                                                <option value="query_then_fetch" selected>Query then Fetch</option>
+                                                <option value="query_and_fetch">Query and Fetch</option>
+                                                <option value="scan">Scan</option>
+                                                <option value="count">Count</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                            </fieldset>
-                        </g:form>
+
+                                    <div class="form-group">
+                                        <label class="form-label col-sm-2" for="aggregation">Aggregation</label>
+
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" id="aggregation" name="aggregation" rows="10">{
+        "&lt;aggregation_name>" : {
+            "&lt;aggregation_type>" : {
+                &lt;aggregation_body>
+            }
+            [,"aggregations" : { [&lt;sub_aggregation>]+ } ]?
+        }
+        [,"&lt;aggregation_name_2>" : { ... } ]*
+    }</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <g:submitButton class="btn btn-sm btn-primary" name="submitQuery" value="Run Query"/>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </g:form>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="well" style="margin-top: 10px">
-                        <h3>S3 Configuration</h3>
-                        <hr/>
-                        <button id="test-s3" class="btn btn-sm btn-secondary" data-href="${createLink(action: 'testS3')}">Test S3</button>
-                        <span id="test-s3-spinner" class="d-none"><cl:spinner/></span>
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h3>S3 Configuration</h3>
+                            <hr/>
+                            <button id="test-s3" class="btn btn-sm btn-secondary" data-href="${createLink(action: 'testS3')}">Test S3</button>
+                            <span id="test-s3-spinner" class="d-none"><cl:spinner/></span>
 
-                        <div id="test-s3-results" class="d-none" style="margin-top: 15px">
-                            <div id="test-s3-message" class="alert" role="alert"></div>
-                            <table class="table table-condensed table-bordered">
-                                <tbody>
-                                <tr>
-                                    <th>Status</th>
-                                    <td id="test-s3-status"></td>
-                                </tr>
-                                <tr>
-                                    <th>Enabled</th>
-                                    <td id="test-s3-enabled"></td>
-                                </tr>
-                                <tr>
-                                    <th>Region</th>
-                                    <td id="test-s3-region"></td>
-                                </tr>
-                                <tr>
-                                    <th>Bucket</th>
-                                    <td id="test-s3-bucket"></td>
-                                </tr>
-                                <tr>
-                                    <th>Auth Mode</th>
-                                    <td id="test-s3-auth-mode"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <pre id="test-s3-json"></pre>
+                            <div id="test-s3-results" class="d-none" style="margin-top: 15px">
+                                <div id="test-s3-message" class="alert" role="alert"></div>
+                                <table class="table table-condensed table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td id="test-s3-status"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Enabled</th>
+                                        <td id="test-s3-enabled"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Region</th>
+                                        <td id="test-s3-region"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bucket</th>
+                                        <td id="test-s3-bucket"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Auth Mode</th>
+                                        <td id="test-s3-auth-mode"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <pre id="test-s3-json"></pre>
+                            </div>
                         </div>
                     </div>
                 </div>

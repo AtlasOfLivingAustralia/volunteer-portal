@@ -9,7 +9,7 @@
             <strong>Warning:</strong> This action cannot be undone. Are you sure you wish to remove all tasks (including those already transcribed) from expedition '${projectInstance.name}'?
         </div>
 
-        <div class="controls">
+        <div class="d-flex gap-2">
             <button class="btn btn-secondary" id="btnCancelDeleteAllTasks">Cancel</button>
             <button class="btn btn-danger" id="btnSubmitDeleteAllTasks">Delete all tasks</button>
         </div>

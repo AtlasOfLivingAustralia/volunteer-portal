@@ -12,12 +12,12 @@
 <content tag="pageTitle">Awards</content>
 
 <content tag="adminButtonBar">
-    <g:form class="form-inline" style="display: inline-block; padding-right: 10px;" action="awardAll"
+    <g:form class="d-inline-block pe-2" action="awardAll"
             id="${achievementDescriptionInstance?.id}" method="post">
         <input type="submit" class="btn btn-secondary"
                value="${message(code: 'default.button.awardAll.label', default: 'Award All Eligible')}"/>
     </g:form>
-    <g:form class="form-inline" style="display: inline-block" action="unawardAll"
+    <g:form class="d-inline-block" action="unawardAll"
             id="${achievementDescriptionInstance?.id}" method="post">
         <input type="submit" class="btn btn-danger"
                value="${message(code: 'default.button.unawardAll.label', default: 'Remove all awards')}"/>
@@ -53,31 +53,33 @@
         </tbody>
     </tabLe>
 
-    <div class="well">
-        <h4>Grant achievement</h4>
-        <g:form action="award" id="${achievementDescriptionInstance?.id}" method="POST">
-            <div class="form-group">
-                <label class="form-label col-md-3" for="user">
-                    <g:message code="user.label" default="User"/>
-                </label>
+    <div class="card">
+        <div class="card-body">
+            <h4>Grant achievement</h4>
+            <g:form action="award" id="${achievementDescriptionInstance?.id}" method="POST">
+                <div class="form-group">
+                    <label class="form-label col-md-3" for="user">
+                        <g:message code="user.label" default="User"/>
+                    </label>
 
-                <div class="col-md-6">
-                    <input class="form-control" id="user" type="text" value="${displayName}" autocomplete="off"/>
-                    <input id="userId" name="userId" type="hidden" value="${userId}"/>
+                    <div class="col-md-6">
+                        <input class="form-control" id="user" type="text" value="${displayName}" autocomplete="off"/>
+                        <input id="userId" name="userId" type="hidden" value="${userId}"/>
+                    </div>
+
+                    <div class="col-md-3">
+                        <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <input type="submit" class="save btn btn-secondary" id="awardButton"
+                               value="${message(code: 'default.button.award.label', default: 'Award')}"/>
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-9">
-                    <input type="submit" class="save btn btn-secondary" id="awardButton"
-                           value="${message(code: 'default.button.award.label', default: 'Award')}"/>
-                </div>
-            </div>
-        </g:form>
+            </g:form>
+        </div>
     </div>
 </div>
 <asset:javascript src="label-autocomplete" asset-defer=""/>

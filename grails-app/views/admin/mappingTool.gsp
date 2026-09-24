@@ -29,8 +29,10 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="well well-small" id="mappingToolContent">
-                        <g:render template="/transcribe/geolocationTool" />
+                    <div class="card" id="mappingToolContent">
+                        <div class="card-body">
+                            <g:render template="/transcribe/geolocationTool" />
+                        </div>
                     </div>
                 </div>
 

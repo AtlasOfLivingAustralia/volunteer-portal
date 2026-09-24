@@ -84,12 +84,14 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-sm transcribeSection" style="margin-top: 10px">
-            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${template.viewParams?.datasetSectionHeader ?: 'Specimen details'}</span>
+        <div class="card transcribeSection mt-2">
+            <div class="card-body">
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. ${template.viewParams?.datasetSectionHeader ?: 'Specimen details'}</span>
 
-            <div class="row" style="margin-top: 10px">
-                <div class="col-md-12">
-                    <div id="dataGrid" style="height: 300px"></div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div id="dataGrid" style="height: 300px"></div>
+                    </div>
                 </div>
             </div>
         </div>

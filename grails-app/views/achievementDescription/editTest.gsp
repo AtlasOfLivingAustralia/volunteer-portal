@@ -41,25 +41,27 @@
         </tbody>
     </tabLe>
     <g:form action="editTest" id="${achievementDescriptionInstance?.id}" method="GET">
-        <div class="well">
-            <h4>Check User</h4>
-            <div class="form-group">
-                <label class="form-label col-md-3" for="user">
-                    <g:message code="user.label" default="User"/>
-                    <asset:image src="spinner.gif" height="16px" width="16px" id="ajax-spinner"
-                           class="d-none"/>
-                </label>
+        <div class="card">
+            <div class="card-body">
+                <h4>Check User</h4>
+                <div class="form-group">
+                    <label class="form-label col-md-3" for="user">
+                        <g:message code="user.label" default="User"/>
+                        <asset:image src="spinner.gif" height="16px" width="16px" id="ajax-spinner"
+                               class="d-none"/>
+                    </label>
 
-                <div class="col-md-6">
-                    <input id="user" class="form-control" type="text" value="${displayName}" autocomplete="off"/>
-                    <input id="userId" name="userId" type="hidden" value="${userId}"/>
+                    <div class="col-md-6">
+                        <input id="user" class="form-control" type="text" value="${displayName}" autocomplete="off"/>
+                        <input id="userId" name="userId" type="hidden" value="${userId}"/>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-9">
-                    <input type="submit" class="save btn btn-secondary" id="testButton"
-                           value="${message(code: 'default.button.test.label', default: 'Test')}"/>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <input type="submit" class="save btn btn-secondary" id="testButton"
+                               value="${message(code: 'default.button.test.label', default: 'Test')}"/>
+                    </div>
                 </div>
             </div>
         </div>

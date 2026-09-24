@@ -34,7 +34,7 @@
         <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>    </label>
 
     <div class="col-md-9">
-        <g:textArea class="input-block-level" rows="10" name="searchQuery"
+        <g:textArea class="form-control" rows="10" name="searchQuery"
                     value="${achievementDescriptionInstance?.searchQuery}"/>
     </div>
 </div>

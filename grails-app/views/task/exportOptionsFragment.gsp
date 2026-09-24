@@ -24,11 +24,9 @@
             </p>
         </div>
 
-        <div class="input-group">
-            <div class="controls">
-                <button id="btnCancelExport" class="btn btn-secondary">Close</button>
-                <button id="btnExportTasks" class="btn btn-primary">Export</button>&nbsp;&nbsp;
-            </div>
+        <div class="d-flex gap-2">
+            <button id="btnCancelExport" class="btn btn-secondary">Close</button>
+            <button id="btnExportTasks" class="btn btn-primary">Export</button>
         </div>
     </div>
 </div>

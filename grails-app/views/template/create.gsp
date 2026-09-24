@@ -27,7 +27,7 @@
                             <g:renderErrors bean="${templateInstance}" as="list"/>
                         </div>
                     </g:hasErrors>
-                    <g:form class="form" action="save">
+                    <g:form action="save">
                         <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
                             <label for="name" class="col-md-2 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">

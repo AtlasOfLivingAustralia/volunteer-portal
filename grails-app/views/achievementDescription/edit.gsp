@@ -13,7 +13,7 @@
 
 <content tag="adminButtonBar">
 
-    <form class="form-inline" style="display: inline-block;">
+    <form class="d-inline-block">
         <div class="form-check form-switch form-switch-lg">
             <label class="form-check-label" id="switchLgLabel" for="switchLg">${achievementDescriptionInstance?.enabled ? 'Enabled' : 'Disabled'}</label>
             <input class="form-check-input" type="checkbox" name="enabled" role="switch" id="switchLg" ${achievementDescriptionInstance?.enabled ? 'checked="checked"' : ''}>
@@ -43,7 +43,7 @@
             </div>
         </div>
     </g:form>
-    <g:form class="form-inline" style="display: inline-block; padding-right:10px;" action="delete"
+    <g:form class="d-inline-block pe-2" action="delete"
             id="${achievementDescriptionInstance?.id}" method="delete">
         <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
     </g:form>

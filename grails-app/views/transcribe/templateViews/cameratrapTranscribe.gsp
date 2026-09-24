@@ -19,11 +19,10 @@
                             </g:each>
                             <div style="text-align: center;">
                                 <div class="form-group">
-                                    <div class="controls" style="margin-left: initial; display: inline-block;">
-                                        <label class="checkbox" for="recordValues.0.interesting">
-                                            <g:checkBox name="recordValues.0.interesting"
-                                                        checked="${recordValues[0]?.interesting == 'true'}"/> ${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting')}
-                                        </label>
+                                    <div class="form-check d-inline-block">
+                                        <g:checkBox class="form-check-input" name="recordValues.0.interesting"
+                                                    checked="${recordValues[0]?.interesting == 'true'}"/>
+                                        <label class="form-check-label" for="recordValues.0.interesting">${message(code: 'cameratrap.interesting.label', default: 'This image is particularly interesting')}</label>
                                     </div>
                                 </div>
                             </div>

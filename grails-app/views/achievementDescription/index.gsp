@@ -52,7 +52,7 @@
                                     <h3><g:link action="edit"
                                                 id="${achievementDescriptionInstance.id}">${fieldValue(bean: achievementDescriptionInstance, field: "name")}</g:link></h3>
 
-                                    <div class="well-small">
+                                    <div>
                                         <p>${fieldValue(bean: achievementDescriptionInstance, field: "description")}</p>
                                     </div>
                                 </td>

@@ -105,82 +105,86 @@
                         </div>
                     </g:form>
 
-                    <div class="well" style="padding: 10px !important;">
-                        <div class="form-group">
-                            <label for="roles" class="form-label col-md-3">
-                                <g:message code="user.roles.label" default="Roles"/>
-                            </label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="roles" class="form-label col-md-3">
+                                    <g:message code="user.roles.label" default="Roles"/>
+                                </label>
 
-                            <div class="col-md-6">
-                                <div class="table-responsive roles-table">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th><g:message code="user.role.name.label" default="Role Name"/></th>
-                                            <th><g:message code="user.role.scope.label"
-                                                           default="Institution/Project"/></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <g:each var="roleInfo" in="${roles}">
+                                <div class="col-md-6">
+                                    <div class="table-responsive roles-table">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
                                             <tr>
-                                                <td>${roleInfo.role}</td>
-                                                <td>
-                                                    ${roleInfo.scope}
-                                                    <g:if test="${!roleInfo.scope}">
-                                                        <g:message code="user.role.site-wide.label"
-                                                                   default="Site-wide"/>
-                                                    </g:if>
-                                                </td>
+                                                <th><g:message code="user.role.name.label" default="Role Name"/></th>
+                                                <th><g:message code="user.role.scope.label"
+                                                               default="Institution/Project"/></th>
                                             </tr>
-                                        </g:each>
-                                        <g:if test="${roles.isEmpty()}">
-                                            <tr>
-                                                <td colspan="2"><g:message code="user.roles.none.label"
-                                                                           default="No roles assigned"/></td>
-                                            </tr>
-                                        </g:if>
-                                        </tbody>
-                                    </table>
-                                    <a class="btn btn-sm btn-outline-secondary"
-                                       href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
-                                       title="Edit User Roles">
-                                        <i class="fa fa-users"></i> Edit user roles
-                                    </a>
+                                            </thead>
+                                            <tbody>
+                                            <g:each var="roleInfo" in="${roles}">
+                                                <tr>
+                                                    <td>${roleInfo.role}</td>
+                                                    <td>
+                                                        ${roleInfo.scope}
+                                                        <g:if test="${!roleInfo.scope}">
+                                                            <g:message code="user.role.site-wide.label"
+                                                                       default="Site-wide"/>
+                                                        </g:if>
+                                                    </td>
+                                                </tr>
+                                            </g:each>
+                                            <g:if test="${roles.isEmpty()}">
+                                                <tr>
+                                                    <td colspan="2"><g:message code="user.roles.none.label"
+                                                                               default="No roles assigned"/></td>
+                                                </tr>
+                                            </g:if>
+                                            </tbody>
+                                        </table>
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                           href="${createLink(controller: 'admin', action: 'manageUserRoles', params: [userid: userInstance.id])}"
+                                           title="Edit User Roles">
+                                            <i class="fa fa-users"></i> Edit user roles
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
 
-                    <div class="well" style="padding: 10px !important;">
-                        <g:form method="post">
-                            <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}"/>
-                            <div class="form-group">
-                                <label for="label" class="form-label col-md-3">
-                                    <g:message code="user.labels.label" default="Tags"/>
-                                </label>
+                    <div class="card">
+                        <div class="card-body">
+                            <g:form method="post">
+                                <g:hiddenField name="id" id="add-label-user-id" value="${userInstance?.id}"/>
+                                <div class="form-group">
+                                    <label for="label" class="form-label col-md-3">
+                                        <g:message code="user.labels.label" default="Tags"/>
+                                    </label>
 
-                                <div class="col-md-3">
-                                    <g:select name="tag" from="${userLabelList}" optionKey="id"
-                                              noSelection="['': '- Select a Tag -']"
-                                              optionValue="value" data-live-search="true" id="tag-select"/>
-                                    <div id="labels" style="padding-top: 10px;">
-                                        <g:each in="${userInstance.labels}" var="l">
-                                            <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
-                                            <span class="label label-${labelClassName}">${l.value} <i
-                                                    class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
-                                            </span>
-                                        </g:each>
+                                    <div class="col-md-3">
+                                        <g:select name="tag" from="${userLabelList}" optionKey="id"
+                                                  noSelection="['': '- Select a Tag -']"
+                                                  optionValue="value" data-live-search="true" id="tag-select"/>
+                                        <div id="labels" style="padding-top: 10px;">
+                                            <g:each in="${userInstance.labels}" var="l">
+                                                <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+                                                <span class="label label-${labelClassName}">${l.value} <i
+                                                        class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
+                                                </span>
+                                            </g:each>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <g:actionSubmit class="save btn btn-sm btn-secondary" action="addUserLabel"
+                                                        value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/>
                                     </div>
                                 </div>
-
-                                <div class="col-md-3">
-                                    <g:actionSubmit class="save btn btn-sm btn-secondary" action="addUserLabel"
-                                                    value="${message(code: 'default.button.save.label', default: 'Add Tag')}"/>
-                                </div>
-                            </div>
-                        </g:form>
+                            </g:form>
+                        </div>
                     </div>
 
                 </div>

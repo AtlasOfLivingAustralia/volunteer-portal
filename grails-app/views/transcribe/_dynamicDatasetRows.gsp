@@ -47,8 +47,7 @@
                 "label": "${fieldLabel.encodeAsJavaScript()}",
                 "fieldType": "${field.type?.toString()?.encodeAsJavaScript()}",
                 "helpHtml": "${helpMarkup.toString().trim().encodeAsJavaScript()}",
-                "value": "${fieldValue.encodeAsJavaScript()}",
-                "layoutClass":"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"
+                "value": "${fieldValue.encodeAsJavaScript()}"
             }<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
         </g:each>
         ]<g:if test="${i < numItems}">,</g:if>
@@ -84,7 +83,7 @@
                 if (entryIndex > 0) {
                   htmlStr += "<hr/>";
                 }
-                htmlStr += '<div class="form-inline">';
+                htmlStr += '<div class="d-flex flex-wrap align-items-center gap-2">';
                 let fieldCount = 0;
                 for (let fieldIndex in entries[entryIndex]) {
                     let e = entries[entryIndex][fieldIndex];
@@ -166,8 +165,7 @@
                     "label": "${fieldLabel.encodeAsJavaScript()}",
                     "fieldType": "${field.type?.toString()?.encodeAsJavaScript()}",
                     "helpHtml": "${helpMarkup.toString().trim().encodeAsJavaScript()}",
-                    "value": "",
-                    "layoutClass":"${(field.layoutClass ?: 'span1').encodeAsJavaScript()}"
+                    "value": ""
                 }<g:if test="${fieldIndex < fieldList.size() - 1}">,</g:if>
     </g:each>
             ];

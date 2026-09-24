@@ -26,12 +26,14 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="well well-small">
-            <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
-                <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
-                    <g:imageViewer multimedia="${multimedia}"/>
-                </g:if>
-            </g:each>
+        <div class="card">
+            <div class="card-body">
+                <g:each in="${taskInstance.multimedia}" var="multimedia" status="i">
+                    <g:if test="${!multimedia.mimeType || multimedia.mimeType.startsWith('image/')}">
+                        <g:imageViewer multimedia="${multimedia}"/>
+                    </g:if>
+                </g:each>
+            </div>
         </div>
     </div>
 </div>
@@ -54,41 +56,45 @@
 </g:if>
 
 <g:if test="${viewParams?.showMonth}">
-    <div class="well well-small transcribeSection">
-        <div class="row transcribeSectionHeader">
-            <div class="col-md-12">
-                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Enter the month from the top of the page</span>
-                <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
-            </div>
-        </div>
-
-        <div class="transcribeSectionBody">
-            <div class="row">
-                <div class="col-md-1">
-                    Month
+    <div class="card transcribeSection">
+        <div class="card-body">
+            <div class="row transcribeSectionHeader">
+                <div class="col-md-12">
+                    <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Enter the month from the top of the page</span>
+                    <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
                 </div>
+            </div>
 
-                <div class="col-md-1">
-                    <g:textField class="form-control" id="recordValues.0.verbatimEventDate"
-                                 name="recordValues.0.verbatimEventDate"
-                                 value="${recordValues?.get(0)?.get('verbatimEventDate')}"/>
+            <div class="transcribeSectionBody">
+                <div class="row">
+                    <div class="col-md-1">
+                        Month
+                    </div>
+
+                    <div class="col-md-1">
+                        <g:textField class="form-control" id="recordValues.0.verbatimEventDate"
+                                     name="recordValues.0.verbatimEventDate"
+                                     value="${recordValues?.get(0)?.get('verbatimEventDate')}"/>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </g:if>
 
-<div class="well well-small transcribeSection">
-    <div class="row transcribeSectionHeader">
-        <div class="col-md-12">
-            <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.
+<div class="card transcribeSection">
+    <div class="card-body">
+        <div class="row transcribeSectionHeader">
+            <div class="col-md-12">
+                <span class="transcribeSectionHeaderLabel"><g:sectionNumber />. Transcribe each record as follows: Enter the number into the “CatalogNumber “ field. Enter the text into the “Transcribe All text” field.</span>
                 <a style="float:right" class="closeSectionLink" href="#">Shrink</a>
+            </div>
         </div>
-    </div>
 
-    <div class="transcribeSectionBody">
-        <g:render template="/transcribe/dynamicDatasetRows"
-                  model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+        <div class="transcribeSectionBody">
+            <g:render template="/transcribe/dynamicDatasetRows"
+                      model="${[recordValues: recordValues, fieldList: fieldList, entriesField: entriesField]}"/>
+        </div>
     </div>
 </div>
 

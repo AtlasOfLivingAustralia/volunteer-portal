@@ -56,7 +56,7 @@
                                     <h3><g:link action="edit"
                                                 id="${landingPage.id}">${fieldValue(bean: landingPage, field: "title")}</g:link></h3>
 
-                                    <div class="well-small">
+                                    <div>
                                         <g:if test="${landingPage.bodyCopy}">
                                             <p><markdown:renderHtml text="${landingPage.bodyCopy}" /></p>
                                         </g:if>

@@ -70,7 +70,7 @@
                                            default="CSV List"/>
                             </label>
                             <div class="col-md-8">
-                                <g:textArea class="input-block-level form-control" name="picklist" rows="25" cols="40" value="${picklistData}"/>
+                                <g:textArea class="form-control" name="picklist" rows="25" cols="40" value="${picklistData}"/>
                                 <span class="form-text">Paste csv list here. Each line should take the format '&lt;value&gt;'[,&lt;optional key&gt;]</span>
                             </div>
                         </div>
