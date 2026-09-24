@@ -296,7 +296,7 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 
 *First: deleting dead markup and stylesheets shrinks the surface every later audit has to grep.*
 
-- [ ] Remove 2015 static design and dead css classes
+- [X] Remove 2015 static design and dead css classes
     - Includes `static-design/20151006/css/bootstrap.css` — precompiled Bootstrap
       3.3.5 carrying the only `.pagination` and `.pager` component CSS left in the
       repo. Not referenced by the app; unrelated to `scss/bootstrap/_variables.scss`.
@@ -305,7 +305,7 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
   stacked divs.
 - [X] BS2 form scaffolding (`form-horizontal`, `control-group`, `controls`)
   throughout fragments.
-- [ ] Sweep remaining `hide` → `d-none` outside the project filter blocks.
+- [X] Sweep remaining `hide` → `d-none` outside the project filter blocks.
 - [X] Dead BS2/BS3 classes found during the form sweep: `.well`
   (`user/edit.gsp` 108) and `.form` (`template/create.gsp` 30). Neither has any CSS. Fold into the BS2 grid/scaffolding
   sweep.
