@@ -219,10 +219,8 @@ jQuery(function($) {
         $(selector).click(function(e) {
             var href = $(this).data('href');
             var name = $(this).data('imageName');
-            bootbox.confirm(messageFn(name), function(result) {
-                if (result) {
-                    $.postGo(href);
-                }
+            bvp.confirm(messageFn(name), function() {
+                $.postGo(href);
             });
         });
     }
@@ -238,11 +236,9 @@ jQuery(function($) {
     $('#btnDeleteAllTasks').click(function(e) {
         var $this = $(this);
         var href = $this.data('href');
-        bootbox.confirm("Are you sure you wish to delete ALL the listed task descriptors (image uploads)?", function(result) {
-            if (result) {
-                let idListParams = {taskDescriptorIds: getTaskDescriptorIds()};
-                $.postGo(href, idListParams);
-            }
+        bvp.confirm("Are you sure you wish to delete ALL the listed task descriptors (image uploads)?", function() {
+            let idListParams = {taskDescriptorIds: getTaskDescriptorIds()};
+            $.postGo(href, idListParams);
         });
     });
 

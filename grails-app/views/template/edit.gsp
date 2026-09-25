@@ -316,11 +316,9 @@
         $('#deleteButton').on('click', function(e) {
             if (!_result) {
                 e.preventDefault();
-                bootbox.confirm("Are you sure?", function (result) {
-                    _result = result;
-                    if(result) {
-                        $('#deleteButton').click();
-                    }
+                bvp.confirm("Are you sure you want to delete this template?", function () {
+                    _result = true;
+                    $('#deleteButton').click();
                 });
             } else {
                 return true;

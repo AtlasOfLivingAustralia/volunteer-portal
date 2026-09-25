@@ -121,7 +121,6 @@
         </div>
     </div>
 </div>
-<asset:javascript src="bootbox" asset-defer=""/>
 
 <asset:script type="text/javascript">
 
@@ -182,9 +181,9 @@
             e.preventDefault();
             var fieldId = $(this).parents("[fieldId]").attr("fieldId");
             if (fieldId) {
-                if (confirm("Are you sure you wish to delete this field from the template?")) {
+                bvp.confirm("Are you sure you wish to delete this field from the template?", function() {
                     window.location.href = "${createLink(controller: 'template', action: 'deleteField', id: templateInstance.id)}?fieldId=" + fieldId;
-                }
+                });
             }
         });
 
@@ -208,9 +207,9 @@
 
         $("#btnImportFromCSV").click(function(e) {
             e.preventDefault();
-            if (confirm("This will remove all existing fields, and replace them with the contents of the selected file. Are you sure?")) {
+            bvp.confirm("This will remove all existing fields, and replace them with the contents of the selected file. Are you sure?", function() {
                 $("form").submit();
-            }
+            });
         });
 
         bvp.bindTooltips("a.fieldHelp");

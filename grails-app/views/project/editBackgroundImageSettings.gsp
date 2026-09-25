@@ -78,7 +78,6 @@
     </div>
 
 </g:form>
-<asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="bootstrap-colorpicker" asset-defer=""/>
 <asset:script type='text/javascript'>
     $(function () {
@@ -86,10 +85,8 @@
         $('#clearImageSettings').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bootbox.confirm('The background image and attribution text will be deleted. Are you sure?', function(result) {
-                if (result) {
-                    window.location.href = $(self).attr('href');
-                }
+            bvp.confirm('The background image and attribution text will be deleted. Are you sure?', function() {
+                window.location.href = $(self).attr('href');
             });
         });
 

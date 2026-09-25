@@ -134,7 +134,6 @@
 </script>
         <asset:javascript src="dotdotdot" asset-defer=""/>
         <asset:javascript src="mustache" asset-defer="" />
-        <asset:javascript src="bootbox" asset-defer="" />
 <asset:script type="text/javascript">
     jQuery(function($) {
         var active = 0;
@@ -301,11 +300,15 @@
     </g:if>
     postValidationFunction = function(validationResults) {
       if (validationResults.hasErrors || validationResults.hasWarnings) {
-        bootbox.confirm(
-          "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
-              "${cancelCaption}", "${okCaption}", function(answer) {
-                if (answer) submitInvalid();
-              });
+        bvp.showModal({
+          id: 'questionnaireSubmitConfirm',
+          title: 'Please confirm',
+          message: "<strong>Warning!</strong> There may be some problems with the fields indicated. If you are confident that the data entered accurately reflects the image, then you may continue to submit the record, otherwise please cancel the submission and correct the marked fields.",
+          buttons: {
+            cancel: { label: "${cancelCaption}", className: 'btn-outline-secondary' },
+            ok: { label: "${okCaption}", className: 'btn-primary', callback: function() { submitInvalid(); } }
+          }
+        });
           }
         };
 

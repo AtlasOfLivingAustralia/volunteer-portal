@@ -162,10 +162,8 @@
             var name = $this.attr('data-news-item-title');
             let warningText = "<b>Warning:</b><br/>Are you sure you wish to delete the news item titled: " + name
                 + "?<br/>This action is permanent!"
-            bootbox.confirm(warningText, function(result) {
-                if (result) {
-                    $.postGo(href);
-                }
+            bvp.confirm(warningText, function() {
+                $.postGo(href);
             });
         });
 

@@ -501,11 +501,9 @@ $(function($) {
         var href = $this.data('href');
         //console.log("href: " + href);
 
-        bootbox.confirm("Are you sure you wish to delete this label? This action is permanent!", function(result) {
-            if (result) {
-                $.postGo(href);
-                toggleEdit(this);
-            }
+        bvp.confirm("Are you sure you wish to delete this label? This action is permanent!", function() {
+            $.postGo(href);
+            toggleEdit(this);
         });
     });
 

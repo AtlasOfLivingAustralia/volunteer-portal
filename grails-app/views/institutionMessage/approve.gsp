@@ -155,8 +155,8 @@
                 }
                 confirmMsg += "?";
 
-                bootbox.confirm(confirmMsg, function(result) {
-                    if (result) window.location = "${createLink(controller: 'institutionMessage', action: 'delete')}/" + messageId;
+                bvp.confirm(confirmMsg, function() {
+                    window.location = "${createLink(controller: 'institutionMessage', action: 'delete')}/" + messageId;
                 });
             } else {
                 console.log("Missing info: mId: [" + messageId + "], recipientType: [" + recipientType +

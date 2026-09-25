@@ -220,7 +220,6 @@
 </section>
 <asset:javascript src="markerclusterer.js" asset-defer=""/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cuttr/1.4.3/cuttr.min.js"></script>
-<asset:javascript src="bootbox" asset-defer=""/>
 <g:if test="${projectInstance.showMap}">
     <asset:script type="text/javascript">
 
@@ -364,9 +363,11 @@ $(document).ready(function () {
 
 function showTutorialModal() {
     var content = $("#tutorialContent").html();
-    bootbox.dialog({
+    bvp.showModal({
+        id: 'tutorialModal',
+        title: 'Getting started',
         message: content,
-        onEscape: true,
+        size: 'large',
         backdrop: true
     });
 }

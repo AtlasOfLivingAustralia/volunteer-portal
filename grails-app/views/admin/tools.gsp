@@ -178,22 +178,13 @@
     </div>
 </div>
 </body>
-<asset:javascript src="bootbox" asset-defer=""/>
 <asset:javascript src="codemirror/codemirror-js-sublime" asset-defer="" />
 <asset:script type='text/javascript'>
 
     jQuery(function ($) {
         $('button.confirmation-required').click(function (e) {
-            var confirm = e.target.dataset.confirm || 'Confirm';
-            var cancel = e.target.dataset.cancel || 'Cancel';
-            bootbox.confirm({
-                message: "Are you sure you want to " + e.target.dataset.message,
-                callback: function (result) {
-                    if (result) {
-                        window.open(e.target.dataset.href, "_self");
-                    }
-                }
-
+            bvp.confirm("Are you sure you want to " + e.target.dataset.message, function () {
+                window.open(e.target.dataset.href, "_self");
             });
         });
     });

@@ -117,18 +117,16 @@ $(function($) {
         if (id) {
             let confirmMsg = 'Are you sure you wish to delete the Institution Admin role for ' + roleUser + '?';
 
-            bootbox.confirm(confirmMsg, function(result) {
-                if (result) {
-                    const params = new URLSearchParams(window.location.search);
-                    let url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}";
-                    let institution = params.get('institution');
-                    if (institution !== "" && institution !== undefined) {
-                        url += "?institution=" + institution + "&userRoleId=" + id;
-                    } else {
-                        url += "?userRoleId=" + id;
-                    }
-                    window.location = url;
+            bvp.confirm(confirmMsg, function() {
+                const params = new URLSearchParams(window.location.search);
+                let url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}";
+                let institution = params.get('institution');
+                if (institution !== "" && institution !== undefined) {
+                    url += "?institution=" + institution + "&userRoleId=" + id;
+                } else {
+                    url += "?userRoleId=" + id;
                 }
+                window.location = url;
             });
         } else {
             var alert = $('#maintain-message');

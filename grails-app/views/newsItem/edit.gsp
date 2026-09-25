@@ -144,9 +144,9 @@
         $('.news-image-remove-btn').click(function(e) {
             e.preventDefault();
             var href = $(this).data('href');
-            if (confirm("Are you sure you want to remove this image? This action will not save any changes to news item content.")) {
+            bvp.confirm("Are you sure you want to remove this image? This action will not save any changes to news item content.", function() {
                 window.location.href = href;
-            }
+            });
         });
     </cl:ifNewsItemHasThumb>
      });

@@ -218,11 +218,11 @@
             var thresholdMatchingTranscriptions = parseInt($('#thresholdMatchingTranscriptions').val());
             if ((!transcriptionsPerTask) || (!thresholdMatchingTranscriptions) ||
                 (transcriptionsPerTask < 0) || (thresholdMatchingTranscriptions < 0)) {
-                bootbox.alert("The template supports multiple transcriptions.<br><br> " +
+                bvp.alert("The template supports multiple transcriptions.<br><br> " +
                                 "You must enter the number of transcriptions per task (1 or more) and set threshold of matching transcriptions to more than 0 and less than number of transcriptions.");
                 e.preventDefault();
             } else if (thresholdMatchingTranscriptions > transcriptionsPerTask) {
-                bootbox.alert("You must set threshold to more than 0 and less than number of transcriptions per task.");
+                bvp.alert("You must set threshold to more than 0 and less than number of transcriptions per task.");
                 e.preventDefault();
             }
         }

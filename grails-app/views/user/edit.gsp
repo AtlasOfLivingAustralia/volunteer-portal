@@ -99,8 +99,7 @@
                                 <g:actionSubmit class="save btn btn-primary" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                                 <g:actionSubmit class="delete btn btn-danger" action="delete"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                                onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
                             </div>
                         </div>
                     </g:form>
@@ -232,6 +231,19 @@ $(function() {
     }
 
     $('#labels').on('click', 'i.delete-label', onDeleteLabelClick);
+
+    let deleteConfirmed = false;
+    $('.delete').click(function(e) {
+        if (deleteConfirmed) {
+            return true;
+        }
+        e.preventDefault();
+        const self = this;
+        bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: [entityName])}', function() {
+            deleteConfirmed = true;
+            $(self).click();
+        });
+    });
 });
 </asset:script>
 </body>

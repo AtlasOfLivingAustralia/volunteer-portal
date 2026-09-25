@@ -101,9 +101,9 @@
             const parentDiv = $(this).closest('.forum-post__footer');
             const messageId = $(parentDiv).attr('data-message-id');
             if (messageId) {
-                if (confirm("Are you sure you wish to permanently delete this message?")) {
+                bvp.confirm("${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ["message"])}", function() {
                     window.location = "${createLink(action: 'deleteTopicMessage')}?messageId=" + messageId;
-                }
+                });
             }
         });
 
@@ -112,9 +112,9 @@
             const parentDiv = $(this).closest('article');
             const topicId = $(parentDiv).attr('data-topic-id');
             if (topicId) {
-                if (confirm("Are you sure you wish to permanently delete this topic and ALL replies?")) {
+                bvp.confirm("${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ["topic and ALL replies"])}", function() {
                     window.location = "${createLink(action: 'deleteTopic')}?topicId=" + topicId;
-                }
+                });
             }
         });
 

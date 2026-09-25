@@ -878,7 +878,7 @@ table thead th {
 	h5 {
 		/*@extend h2.heading;*/
 		@include h2-heading;
-		margin-bottom: 20px;
+		margin-bottom: 0;
 	}
 	// Modal forms are denser than page forms. Spacing belongs to the .form-group
 	// unit, not to bare element selectors: a blanket `select, input` margin also

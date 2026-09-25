@@ -181,7 +181,6 @@
     </div>
 </div>
 
-<asset:javascript src="bootbox" asset-defer=""/>
 <asset:script type="text/javascript">
     $(function() {
 
@@ -222,15 +221,13 @@
                 let linkMsg = "";
                 if (linkCount > 0) linkMsg = "<br />There are <b>" + linkCount + "</b> expeditions linked to this template.";
                 let confirmMsg = "Are you sure you wish to delete template " + templateName + "? " + linkMsg
-                bootbox.confirm(confirmMsg, function(result) {
-                    if (result) {
-                        let url = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
-                        const params = getQueryStringParams();
-                        if (params) {
-                            url += "?" + params;
-                        }
-                        window.location = url;
+                bvp.confirm(confirmMsg, function() {
+                    let url = "${createLink(controller: 'template', action: 'delete')}/" + templateId;
+                    const params = getQueryStringParams();
+                    if (params) {
+                        url += "?" + params;
                     }
+                    window.location = url;
                 });
             }
         });

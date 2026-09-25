@@ -226,10 +226,8 @@
             var name = $this.attr('data-tutorial-name');
             let warningText = "<b>Warning:</b><br/>Are you sure you wish to delete the tutorial titled: " + name
                 + "?<br/>This action is permanent!"
-            bootbox.confirm(warningText, function(result) {
-                if (result) {
-                    $.postGo(href);
-                }
+            bvp.confirm(warningText, function() {
+                $.postGo(href);
             });
         });
 

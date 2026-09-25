@@ -1,7 +1,7 @@
 //= encoding UTF-8
 //  assume jquery
 //  assume underscore
-//  assume bootbox
+//  assume bvp
 //= require mustache
 //= require dotdotdot
 //= require transitionend
@@ -445,7 +445,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
     var submitRequiresConfirmation = true;
 
     postValidationFunction = function(validationResults) {
-      if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
+      if (validationResults.errorList.length > 0) bvp.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
     };
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {

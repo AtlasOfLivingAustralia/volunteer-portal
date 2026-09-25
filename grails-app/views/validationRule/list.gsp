@@ -71,11 +71,8 @@
         $('a.delete-button').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bootbox.confirm("Are you sure?", function (result) {
-                _result = result;
-                if(result) {
-                    window.location.href = $(self).attr('href');
-                }
+            bvp.confirm("Are you sure?", function () {
+                window.location.href = $(self).attr('href');
             });
         });
     });

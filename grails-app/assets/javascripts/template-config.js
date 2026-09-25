@@ -153,7 +153,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
             hashable.hash = resp.data.hash;
             hashable.ext = resp.data.format;
         }, function (resp) {
-            bootbox.alert("Image upload failed");
+            bvp.alert("Image upload failed");
             $log.error('Error status: ' + resp.status);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
@@ -311,7 +311,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
 
             // TODO sanity check
             if (!Array.isArray(categories)) {
-                bootbox.alert("Uploaded file is not an array");
+                bvp.alert("Uploaded file is not an array");
                 return;
             }
 
@@ -353,7 +353,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
 
             var normalisedFields = _.map(dataset.fields, function(v,i) {
                 var key = findCategory(v);
-                if (!key) bootbox.alert("Unknown category/column: " + v);
+                if (!key) bvp.alert("Unknown category/column: " + v);
                 return key || v;
             });
 
@@ -389,7 +389,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
                     var origValue = v2[1];
                     var value = findCatEntry(field, origValue);
                     if (origValue && !value) {
-                        bootbox.alert("Can't find a matching value for row " + (i+2) + ", vernacular name " +
+                        bvp.alert("Can't find a matching value for row " + (i+2) + ", vernacular name " +
                             animal.vernacularName + ", category " + field + ", value of " + origValue );
                     }
                     return [ field, value ];
@@ -411,7 +411,7 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
             initAnimalUiStatus();
 
         }).fail(function(e) {
-            bootbox.alert("Couldn't read CSV:" + e);
+            bvp.alert("Couldn't read CSV:" + e);
         });
     };
 
@@ -519,13 +519,13 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
         filterModel();
         const warnings = validateAnimalImages();
         if (warnings.length > 0) {
-            bootbox.alert("<b>Please fix the following issues before saving:</b><ul><li>" + warnings.join("</li><li>") + "</li></ul>");
+            bvp.alert("<b>Please fix the following issues before saving:</b><ul><li>" + warnings.join("</li><li>") + "</li></ul>");
         } else {
             const p = $http.post(T_CONF.saveTemplateUrl, self.model);
             p.then(function (response) {
-                bootbox.alert("Saved!");
+                bvp.alert("Saved!");
             }, function (response) {
-                bootbox.alert("Couldn't save WildlifeSpotter config");
+                bvp.alert("Couldn't save WildlifeSpotter config");
             });
         }
     };

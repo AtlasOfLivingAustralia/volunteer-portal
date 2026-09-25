@@ -269,19 +269,16 @@ $(function($) {
             let confirmMsg = 'Are you sure you wish to delete the '+ roleLevel +' '+ roleName +' role for ' +
                 roleUser + (roleLevelName ? ' and the '+ roleLevel + ' "' + roleLevelName + '"?' : '');
 
-            bootbox.confirm(confirmMsg, function(result) {
-                if (result) {
-                    const params = new URLSearchParams(window.location.search);
-                    let url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}";
-                    let institution = params.get('institution');
-                    if (institution !== "" && institution !== undefined && institution !== null) {
-                        url += "?institution=" + institution + "&userRoleId=" + id;
-                    } else {
-                        url += "?userRoleId=" + id;
-                    }
-                    // console.log("url: " + url);
-                    window.location = url;
+            bvp.confirm(confirmMsg, function() {
+                const params = new URLSearchParams(window.location.search);
+                let url = "${createLink(controller: 'admin', action: 'deleteUserRole').encodeAsJavaScript()}";
+                let institution = params.get('institution');
+                if (institution !== "" && institution !== undefined && institution !== null) {
+                    url += "?institution=" + institution + "&userRoleId=" + id;
+                } else {
+                    url += "?userRoleId=" + id;
                 }
+                window.location = url;
             });
         } else {
             var alert = $('#maintain-message');

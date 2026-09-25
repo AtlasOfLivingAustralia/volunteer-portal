@@ -1,7 +1,7 @@
 //= require compile/resumable/1.1.2/resumable.js
 //= require compile/spark-md5/3.0.0/spark-md5.js
 //= require mustache
-//= require bootbox
+//= require bvp-common
 //= require_self
 
 function digivolStageFiles (config, self) {
@@ -23,10 +23,8 @@ function digivolStageFiles (config, self) {
         });
         $("#btnClearStagingArea").click(function (e) {
             e.preventDefault();
-            bootbox.confirm('Are you sure you wish to delete all images from the staging area?', function (result) {
-                if (result) {
-                    window.location = config.clearStagingUrl;
-                }
+            bvp.confirm('Are you sure you wish to delete all images from the staging area?', function () {
+                window.location = config.clearStagingUrl;
             });
         });
         $("#btnExportTasksCSV").click(function (e) {
@@ -153,7 +151,7 @@ function digivolStageFiles (config, self) {
     });
 
     if (!r.support) {
-        bootbox.alert("Uploading from this browser is not supported.  Please use a modern browser to upload files.")
+        bvp.alert("Uploading from this browser is not supported.  Please use a modern browser to upload files.")
     }
 
     r.assignBrowse(document.getElementById('btnSelectImages'));
@@ -173,17 +171,25 @@ function digivolStageFiles (config, self) {
     r.on('fileError', function (file, message) {
         if (message === "Access denied") {
             pause(true);
-            bootbox.alert(
-                "You appear to have been logged out.  Please open a new tab, login to DigiVol again and click ok to resume",
-                function() {
-                    pause(false);
-                    file.retry();
+            bvp.showModal({
+                id: 'stageImageSessionExpired',
+                title: 'Session expired',
+                message: "You appear to have been logged out.  Please open a new tab, login to DigiVol again and click ok to resume",
+                buttons: {
+                    ok: {
+                        label: 'OK',
+                        className: 'btn-outline-secondary',
+                        callback: function () {
+                            pause(false);
+                            file.retry();
+                        }
+                    }
                 }
-            );
+            });
         } else {
             console.log("file error", arguments);
             errors.push(file);
-            bootbox.alert("There was an error uploading " + file.fileName + ".  Please try uploading it again and if the error persists please contact DigiVol support.");
+            bvp.alert("There was an error uploading " + file.fileName + ".  Please try uploading it again and if the error persists please contact DigiVol support.");
         }
     });
     r.on('complete', function () {
@@ -208,7 +214,7 @@ function digivolStageFiles (config, self) {
     r.on('error', function (message, file) {
         console.log("error", arguments);
         if (!file) {
-            bootbox.alert("An error has occurred.  Please refresh the page, try uploading again and if the error persists please contact DigiVol support.");
+            bvp.alert("An error has occurred.  Please refresh the page, try uploading again and if the error persists please contact DigiVol support.");
         }
     });
     r.on('pause', function () {

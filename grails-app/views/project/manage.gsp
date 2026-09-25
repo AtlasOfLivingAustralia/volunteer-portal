@@ -290,10 +290,8 @@ jQuery(function($) {
         var $this = $(this);
         var href = $this.data('href');
         var name = $this.data('projectName');
-        bootbox.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function(result) {
-            if (result) {
-                $.postGo(href);
-            }
+        bvp.confirm("Are you sure you wish to archive \"" + name + "\"?  Note that this will remove all task images and there may not be any backups!", function() {
+            $.postGo(href);
         });
     });
 

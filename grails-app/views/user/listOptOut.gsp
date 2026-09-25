@@ -116,10 +116,8 @@
             var $this = $(this);
             var href = $this.data('href');
             var name = $this.data('user-name');
-            bootbox.confirm("Are you sure you wish to delete the opt-out request for \"" + name + "\"?", function(result) {
-                if (result) {
-                    $.postGo(href);
-                }
+            bvp.confirm("Are you sure you wish to delete the opt-out request for \"" + name + "\"?", function() {
+                $.postGo(href);
             });
         });
 

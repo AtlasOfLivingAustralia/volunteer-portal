@@ -107,10 +107,8 @@ $(function($) {
         var href = $this.data('href');
         //console.log("href: " + href);
 
-        bootbox.confirm("Are you sure you wish to delete this tag category and all it's tags? This action is permanent!", function(result) {
-            if (result) {
-                $.postGo(href);
-            }
+        bvp.confirm("Are you sure you wish to delete this tag category and all it's tags? This action is permanent!", function() {
+            $.postGo(href);
         });
     });
 

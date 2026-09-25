@@ -160,11 +160,9 @@
 
                 $('.delete-institution').on('click', function(e) {
                     e.preventDefault();
-                    var self = this;
-                    bootbox.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}', function(result) {
-                        if (result) {
-                            $(self).closest('form').submit();
-                        }
+                    const self = this;
+                    bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: [entityName])}', function() {
+                        $(self).closest('form').submit();
                     });
                 });
             });

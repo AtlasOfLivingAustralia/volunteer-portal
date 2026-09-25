@@ -144,8 +144,7 @@
                                 <g:actionSubmit class="btn btn-primary save" action="update"
                                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
                                 <g:actionSubmit class="btn btn-danger delete" action="delete"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"
-                                                onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/>
+                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
                             </div>
                         </div>
                     </g:form>
@@ -159,6 +158,20 @@
     // Bind tooltips when document is ready (non-jQuery):
     bvp.bindTooltips();
 
+    $(function() {
+        let deleteConfirmed = false;
+        $('.delete').click(function(e) {
+            if (deleteConfirmed) {
+                return true;
+            }
+            e.preventDefault();
+            const self = this;
+            bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ['field'])}', function() {
+                deleteConfirmed = true;
+                $(self).click();
+            });
+        });
+    });
 </asset:script>
 
 </body>

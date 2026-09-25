@@ -4,10 +4,120 @@ let bvp = {};
 
     const noop = function() {};
 
+    const MODAL_SIZE_CLASSES = {
+        'small': 'modal-sm',
+        'large': 'modal-lg',
+        'extra-large': 'modal-xl'
+    };
+
+    let openModals = [];
+
+    function buildModalElement(opts, bodyHtml) {
+        const titleId = opts.id + '-title';
+
+        const root = document.createElement('div');
+        root.className = 'modal' + (opts.animate ? ' fade' : '') + (opts.className ? ' ' + opts.className : '');
+        root.id = opts.id;
+        root.tabIndex = -1;
+        root.setAttribute('aria-labelledby', titleId);
+
+        const dialog = document.createElement('div');
+        dialog.className = 'modal-dialog' +
+            (opts.centerVertical ? ' modal-dialog-centered' : '') +
+            (MODAL_SIZE_CLASSES[opts.size] ? ' ' + MODAL_SIZE_CLASSES[opts.size] : '');
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        const title = document.createElement('h5');
+        title.className = 'modal-title';
+        title.id = titleId;
+        title.textContent = opts.title;
+        const dismiss = document.createElement('button');
+        dismiss.type = 'button';
+        dismiss.className = 'btn-close';
+        dismiss.setAttribute('data-bs-dismiss', 'modal');
+        dismiss.setAttribute('aria-label', 'Close');
+        header.appendChild(title);
+        header.appendChild(dismiss);
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+        body.innerHTML = bodyHtml;
+
+        content.appendChild(header);
+        content.appendChild(body);
+
+        if (opts.buttons) {
+            const footer = document.createElement('div');
+            footer.className = 'modal-footer';
+            Object.keys(opts.buttons).forEach(function (key) {
+                const spec = opts.buttons[key];
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn ' + (spec.className || 'btn-outline-secondary');
+                // Labels carry markup at some call sites, e.g. a trailing icon.
+                button.innerHTML = spec.label || key;
+                button.addEventListener('click', function () {
+                    // Returning false from a callback keeps the modal open, as the previous library did.
+                    if (spec.callback && spec.callback() === false) {
+                        return;
+                    }
+                    bootstrap.Modal.getInstance(root).hide();
+                });
+                footer.appendChild(button);
+            });
+            content.appendChild(footer);
+        }
+
+        dialog.appendChild(content);
+        root.appendChild(dialog);
+        return root;
+    }
+
+    function openModal(opts, bodyHtml) {
+        const element = buildModalElement(opts, bodyHtml);
+        const previouslyFocused = document.activeElement;
+        document.body.appendChild(element);
+        openModals.push(element);
+
+        element.addEventListener('show.bs.modal', function () { opts.onShowing(); });
+        element.addEventListener('shown.bs.modal', function () { opts.onShown(); });
+        element.addEventListener('hide.bs.modal', function () {
+            // Bootstrap 5.0.2 sets aria-hidden="true" on the modal while focus is still
+            // on a control inside it, which assistive technology blocks. Return focus to
+            // whatever opened the modal before that happens.
+            if (element.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+            if (previouslyFocused && document.body.contains(previouslyFocused)) {
+                previouslyFocused.focus();
+            }
+            opts.onClosing();
+        });
+        element.addEventListener('hidden.bs.modal', function () {
+            opts.onClose();
+            if (window.history && window.history.pushState) {
+                const current = window.history.state;
+                if (current && current["bvp-modal"]) {
+                    window.history.back();
+                }
+            }
+            openModals = openModals.filter(function (open) { return open !== element; });
+            bootstrap.Modal.getInstance(element).dispose();
+            element.remove();
+        });
+
+        new bootstrap.Modal(element, {
+            backdrop: opts.backdrop,
+            keyboard: true
+        }).show();
+    }
+
     /**
-     * Wrapper function for Bootbox Modals.
-     * THIS STILL DEPENDS ON jQuery and Bootbox being loaded in the page.
-     * TODO: Replace with Bootstrap 5 native modals
+     * Opens a Bootstrap 5 modal, either from a fragment URL or from inline markup.
      * @param options Any custom properties for the modal dialog.
      */
     lib.showModal = function(options) {
@@ -17,6 +127,7 @@ let bvp = {};
             animate: options.animate !== undefined ? options.animate : true,
             centerVertical: options.centerVertical !== undefined ? options.centerVertical : true,
             url: options.url !== undefined ? options.url : false,
+            message: options.message !== undefined ? options.message : null,
             id: options.id !== undefined ? options.id : 'myModal',
             size: options.size !== undefined ? options.size : null,
             className: options.className !== undefined ? options.className : null,
@@ -28,43 +139,9 @@ let bvp = {};
             buttons: options.buttons !== undefined ? options.buttons : null
         };
 
-        if (opts.url !== undefined && opts.url !== false) {
+        if (opts.url) {
             $.get(opts.url, function (html) {
-                let dialog = bootbox.dialog({
-                    id: opts.id,
-                    animate: opts.animate,
-                    message: html,
-                    title: opts.title,
-                    backdrop: opts.backdrop,
-                    centerVertical: opts.centerVertical,
-                    onEscape: true,
-                    buttons: opts.buttons,
-                    size: opts.size,
-                    className: opts.className,
-                    show: false
-                });
-
-                // Fixes event handling when using bootbox for dialogs
-                dialog.on('show.bs.modal', function () {
-                    opts.onShowing();
-                });
-                dialog.on('shown.bs.modal', function () {
-                    opts.onShown();
-                });
-                dialog.on('hide.bs.modal', function () {
-                    opts.onClosing();
-                });
-                dialog.on('hidden.bs.modal', function () {
-                    opts.onClose();
-                    if (window.history && window.history.pushState) {
-                        const current = window.history.state;
-                        if (current && current["bvp-modal"]) {
-                            window.history.back();
-                        }
-                    }
-                });
-
-                dialog.modal('show');
+                openModal(opts, html);
             });
 
             // hook the back button so that it closes the window. Only works on browsers that support window.history and window.history.popstate
@@ -74,11 +151,48 @@ let bvp = {};
                     lib.hideModal();
                 };
             }
+        } else if (opts.message !== null) {
+            openModal(opts, opts.message);
         }
     };
 
     lib.hideModal = function() {
-        bootbox.hideAll();
+        // Only modals this helper opened; pages with their own markup manage their own.
+        openModals.slice().forEach(function (element) {
+            const instance = bootstrap.Modal.getInstance(element);
+            if (instance) {
+                instance.hide();
+            }
+        });
+    };
+
+    /**
+     * Confirmation dialog. onConfirm runs only when the user confirms.
+     */
+    lib.confirm = function(message, onConfirm) {
+        lib.showModal({
+            id: 'bvp-confirm',
+            title: 'Please confirm',
+            message: message,
+            buttons: {
+                cancel: { label: 'Cancel', className: 'btn-outline-secondary' },
+                confirm: { label: 'OK', className: 'btn-danger', callback: onConfirm }
+            }
+        });
+    };
+
+    /**
+     * Message dialog with a single dismiss button.
+     */
+    lib.alert = function(message) {
+        lib.showModal({
+            id: 'bvp-alert',
+            title: 'Attention!',
+            message: message,
+            buttons: {
+                ok: { label: 'OK', className: 'btn-outline-secondary' }
+            }
+        });
     };
 
     lib.htmlEscape = function(str) {

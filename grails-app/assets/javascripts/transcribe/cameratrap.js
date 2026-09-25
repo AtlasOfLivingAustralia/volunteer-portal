@@ -1,7 +1,7 @@
 //= encoding UTF-8
 //  assume jquery
 //  assume underscore
-//  assume bootbox
+//  assume bvp
 //= require mustache
 //= require dotdotdot
 //= require transitionend
@@ -72,10 +72,8 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
         // check if we're don't confirm and confirm
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
         if (dontConfirm) {
-          bootbox.confirm('Do you wish to record "' + answer + '" as your answer?', function(confirm) {
-            if (confirm) {
-              $btnSave.click();
-            }
+          bvp.confirm('Do you wish to record "' + answer + '" as your answer?', function() {
+            $btnSave.click();
           });
         } else {
           $btnSave.click();
@@ -567,7 +565,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
 
     submitRequiresConfirmation = true;
     postValidationFunction = function(validationResults) {
-      if (validationResults.errorList.length > 0) bootbox.alert("<h3>Invalid choices</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
+      if (validationResults.errorList.length > 0) bvp.alert("<h3>Invalid choices</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
     };
 
     transcribeWidgets.addBeforeSubmitHook(function (e) {
