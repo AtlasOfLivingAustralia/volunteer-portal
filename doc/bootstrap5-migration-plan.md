@@ -328,14 +328,14 @@ Log entry for that date.*
   `layouts/digivol-task.gsp` 286.
 - [X] Standardise alert styles — completed 2026-09-25. No custom alert CSS exists or should be added; alerts are
   pure Bootstrap. Retired `alert-block` and gave every variantless alert a variant.
-- [ ] `bvp.confirm` renders its OK button `btn-danger` because the overwhelming majority of confirmations are
-  deletes, archives or permanent removals. Three call sites are not destructive and now show a red OK:
-  `transcribe/cameratrap.js` 75 ("record this as your answer"), `admin/tools.gsp` 186 (varies by
-  `data-message`; some entries are cache rebuilds) and `template/edit.gsp` 319. Found while converting on
-  2026-09-25.
-    - Prompt: "Decide whether a non-destructive confirmation should get a neutral OK. If so, the choice must not
-      become a free-form options object — either derive it from the caller (e.g. a separate `bvp.confirmSafe`) or
-      accept red everywhere and document it."
+- [X] `bvp.confirm` renders its OK button `btn-danger` because the overwhelming majority of confirmations are
+  deletes, archives or permanent removals. **Decided 2026-09-26: non-destructive confirmations get a neutral OK,
+  via a separate `bvp.confirmSafe` entry point (`btn-primary`) rather than an options object.** Both share a private
+  `confirmWith` helper, so the colour is derived from which function the caller chose. Converted:
+  `transcribe/cameratrap.js` 75 (recording an answer) and `admin/tools.gsp` 186 (both `.confirmation-required`
+  buttons are index rebuilds). `template/edit.gsp` 319 was listed in error — it deletes a template and stays
+  `bvp.confirm`.
+  - Added task in Phase 9 to convert manual modal calls to `bvp.openModal`.
 - [X] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*) — **decided: `.badge` with semantic
   modifiers.** Completed for the BS3 `label`/`label-*` half on 2026-09-25. The notebook-2 `.pill--*` half is
   deferred — see the follow-up below.
@@ -674,12 +674,13 @@ All modals are Bootstrap 5 native. There is no modal library — bootbox was del
 
 Two ways to open one, and no third:
 
-| Context | Mechanism |
-|---|---|
-| Content loaded from a fragment URL | `bvp.showModal({url, title, size, buttons, …})` |
-| Inline markup already on the page | `bvp.showModal({message, title, …})` |
-| Confirmation before a destructive action | `bvp.confirm(message, onConfirm)` |
-| Message with a single dismiss button | `bvp.alert(message)` |
+| Context                                       | Mechanism                                        |
+|-----------------------------------------------|--------------------------------------------------|
+| Content loaded from a fragment URL            | `bvp.showModal({url, title, size, buttons, …})`  |
+| Inline markup already on the page             | `bvp.showModal({message, title, …})`             |
+| Confirmation before a destructive action      | `bvp.confirm(message, onConfirm)`                |
+| Confirmation before a reversible action       | `bvp.confirmSafe(message, onConfirm)`            |
+| Message with a single dismiss button          | `bvp.alert(message)`                             |
 | A modal that is part of the page's own markup | hand-written `.modal` + `data-bs-toggle="modal"` |
 
 `bvp.confirm` and `bvp.alert` are thin wrappers over `showModal`. **`onConfirm` runs only when the user confirms** —
@@ -1057,7 +1058,11 @@ parallel. Ships this release.
       modifier from — the constant rather than `message(code: ...)`.
     - Note the constants only cover three of the four statuses `getTaskStatus()`
       can emit; `invalidated` ("In progress", `badge--in-progress`) needs one too.
-
+- [ ] Migrate modals not using wrapper `bvp.showModal()` / `bvp.confirm()` / `bvp.alert()`.
+  - [ ] `label/editCategory.gsp` (2 modals)
+  - [ ] `layouts/digivol-task.gsp`
+  - [ ] `task/manageUploads.gsp`
+  - [ ] `template/manageFields.gsp`
 ---
 
 ## Tracking Log
