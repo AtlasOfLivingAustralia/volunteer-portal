@@ -51,7 +51,7 @@
                                 </div>
 
                                 <div id="inline-validation-${name}" class="col-12" style="display: none;">
-                                    <div class="alert alert-warning alert-block inline-validation"><span></span></div>
+                                    <div class="alert alert-warning inline-validation"><span></span></div>
                                 </div>
 
                                 <div class="col-12">

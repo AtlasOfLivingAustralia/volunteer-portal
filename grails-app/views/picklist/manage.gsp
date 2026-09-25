@@ -104,7 +104,7 @@
                 <g:uploadForm action="uploadCsvFile">
                     <g:hiddenField name="id" value="${params.id}"/>
                     <div class="modal-header">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
                         <h3 id="picklistModalLabel">Upload picklist file</h3>
                     </div>

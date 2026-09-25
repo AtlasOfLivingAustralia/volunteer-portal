@@ -1,13 +1,13 @@
 <g:set var="picklistInfo" value="${g.imageInfos(field: field, project: taskInstance?.project)}"/>
 <g:if test="${picklistInfo.error}">
-    <div class="alert alert-danger alert-block">
+    <div class="alert alert-danger">
         Could not load images for field ${field.fieldType} (${field.fieldTypeClassifier}) because ${picklistInfo.error}
     </div>
 </g:if>
 <g:else>
     <g:if test="${picklistInfo.warnings}">
-        <div class="alert alert-block">
-            <a href="#" class="btn-close" data-bs-dismiss="alert">&times;</a>
+        <div class="alert alert-warning">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             Warnings:
             <ul>
                 <g:each in="${picklistInfo.warnings}" var="w">

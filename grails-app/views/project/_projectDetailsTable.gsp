@@ -173,7 +173,7 @@
         </td>
     </tr>
 
-    <tr class="alert">
+    <tr class="table-warning">
         <td></td>
         <td>
             <span>

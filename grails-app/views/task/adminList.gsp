@@ -33,7 +33,6 @@
             <div class="btn-group">
                 <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Tools
-                    <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <cl:ifAdmin>

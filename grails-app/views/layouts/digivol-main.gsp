@@ -76,7 +76,6 @@
                             <span class="fa fa-user"></span>
                            <!-- My Profile -->
                             <g:message code="action.myProfile" />
-                            <span class="fa fa-chevron-down"></span>
                         </a>
 
                         <g:render template="/layouts/profileDropDown"/>

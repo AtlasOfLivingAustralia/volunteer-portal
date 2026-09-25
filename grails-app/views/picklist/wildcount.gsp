@@ -47,8 +47,8 @@
     <div class="card-body">
         <p><strong>Upload CSV</strong></p>
         <g:if test="${flash.message}">
-            <div class="alert">
-                <button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+            <div class="alert alert-info">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 ${flash.message}
             </div>
         </g:if>
@@ -60,8 +60,10 @@
         <div id="upload-div"><button type="button" class="btn btn-primary" id="upload">Do it</button></div>
 
         <div id="progress-div" class="d-none">
-            <div class="progress progress-striped active">
-                <div class="bar" style="width: 0;"></div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                     style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                     aria-label="CSV upload progress"></div>
             </div>
         </div>
         <g:form name="upload-form" action="loadWildcount" id="${picklistInstance.id}">
@@ -130,12 +132,12 @@
 
             reader.onprogress = function (e) {
                 var percentage = Math.round((e.loaded * 100) / e.total);
-                $('#progress-div .bar').css('width', percentage + '%');
+                $('#progress-div .progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage);
             };
 
             reader.onload = function (e) {
                 var text = reader.result;
-                $('#progress-div .bar').css('width', '100%');
+                $('#progress-div .progress-bar').css('width', '100%').attr('aria-valuenow', 100);
                 $('#csv').val(text);
                 $('#upload-form').submit();
             };

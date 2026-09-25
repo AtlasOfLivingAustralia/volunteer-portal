@@ -22,7 +22,6 @@
         <div class="btn-group">
             <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
-                <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
                 <li>
@@ -106,7 +105,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
                 <h3>Quick Create Institution</h3>
             </div>

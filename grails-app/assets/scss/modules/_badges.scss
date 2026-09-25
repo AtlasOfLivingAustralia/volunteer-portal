@@ -12,8 +12,8 @@
  * a label category — the two sets are allowed to drift apart visually.
  */
 
-/* Bootstrap's .badge is a rounded rectangle; DigiVol badges are pill shaped.
-   Moved here from digivol-custom.css, which loads after the SCSS and silently won. */
+/* Softened corners rather than a full pill — the 1em pill was the pre-2026 style.
+   Lives here, not in digivol-custom.css, which loads after the SCSS and silently won. */
 .badge {
 	border-radius: 0.5em;
 }

@@ -20,10 +20,6 @@
         background-color: var(--brand-primary);
     }
 
-    .progress .progress-bar-success {
-        background-color: rgba( var(--brand-primary), .5 );
-    }
-
     body .navbar,
     body.digivol .navbar {
         border-color: var(--brand-primary);

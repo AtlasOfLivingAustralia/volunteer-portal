@@ -6,7 +6,7 @@
             <div class="expedition-thumb-settings-btn-group">
                 <div class="btn-group ">
                     <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle " data-bs-toggle="dropdown" href="#">
-                        <i class="fa fa-lg fa-cog"></i>&nbsp;<span class="caret"></span>
+                        <i class="fa fa-lg fa-cog"></i>
                     </button>
                     <ul class="dropdown-menu">
                         <li>

@@ -87,8 +87,10 @@
 </div>
 
 <div id="upload-progress" class="fieldcontain d-none">
-    <div class="progress progress-striped active">
-        <div class="bar" style="width: 0%;"></div>
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+             style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+             aria-label="Image upload progress"></div>
     </div>
 </div>
 
@@ -220,7 +222,9 @@ jQuery(function($) {
             if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
                 $('#upload-progress').removeClass('d-none');
-                $('#upload-progress bar').width(percentComplete*100+"%");
+                $('#upload-progress .progress-bar')
+                    .width(percentComplete*100+"%")
+                    .attr('aria-valuenow', Math.round(percentComplete*100));
             }
         }, false);
         return xhr;

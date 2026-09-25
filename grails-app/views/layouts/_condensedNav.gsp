@@ -26,7 +26,6 @@
                                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                         <span class="fa fa-user"></span>
                                         <g:message code="action.myProfile" />
-                                        <span class="fa fa-chevron-down"></span>
                                     </a>
 
                                     <g:render template="/layouts/profileDropDown"/>

@@ -6,7 +6,6 @@
             <div class="btn-group float-end">
                 <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Actions
-                    <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <g:if test="${!isAudioProject}">

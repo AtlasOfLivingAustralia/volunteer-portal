@@ -98,7 +98,6 @@ class VolunteerTagLib {
                         mkp.yield("")
                     }
                     mkp.yield(' Camera Traps')
-                    span(class: "fa fa-chevron-down")
                 }
                 mb.ul(class: 'dropdown-menu profile-links nav-cameratrap-menu') {
                     buildLandingPage()

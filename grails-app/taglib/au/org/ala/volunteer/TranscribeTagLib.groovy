@@ -378,13 +378,9 @@ class TranscribeTagLib {
                 def sampleFile = grailsApplication.mainContext.getResource("classpath:/public/audio/klankbeeld_suburb-sunday-713am.wav")
                 audioFileUrl = resource(file: '/klankbeeld_suburb-sunday-713am.wav')
 
-                mb.div(class: 'alert alert-danger') {
-                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
-                        mkp.yieldUnescaped('&times;')
-                    }
-                    span() {
-                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
-                    }
+                mb.div(class:'alert alert-danger alert-dismissable fade show', role: 'alert') {
+                    mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    mkp.yieldUnescaped("<button type='button' class='btn-close' data-bs-dismiss='alert' style='float: right;' aria-label='Close'></button>")
                 }
             }
 
@@ -487,13 +483,9 @@ class TranscribeTagLib {
                     log.error("Unable to get image file metadata for sample file.")
                 }
 
-                mb.div(class:'alert alert-danger') {
-                    button(type: 'button', class: 'close', ('data-dismiss'): 'alert') {
-                        mkp.yieldUnescaped('&times;')
-                    }
-                    span() {
-                        mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
-                    }
+                mb.div(class:'alert alert-danger alert-dismissable fade show', role: 'alert') {
+                    mkp.yield("An error occurred getting the meta data for task image ${multimedia.id}!")
+                    mkp.yieldUnescaped("<button type='button' class='btn-close' data-bs-dismiss='alert' style='float: right;' aria-label='Close'></button>")
                 }
             }
 
