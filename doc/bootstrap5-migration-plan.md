@@ -321,15 +321,11 @@ Log entry for that date.*
 - [X] Fix aria-hidden warnings — **not** resolved by deleting Bootbox, as first recorded. Bootstrap 5.0.2 sets
   `aria-hidden="true"` on the modal root while focus is still on a control inside it. Fixed 2026-09-25 in
   `bvp-common.js` by returning focus to the opening element on `hide.bs.modal`.
-- [ ] Verify the aria-hidden fix covers the 8 hand-written `.modal` blocks in GSPs. The `bvp-common.js` fix only
+- [X] Verify the aria-hidden fix covers the 8 hand-written `.modal` blocks in GSPs. The `bvp-common.js` fix only
   applies to modals the helper opens; page-owned modals dismissed via `data-bs-dismiss` hit the same Bootstrap 5.0.2
   behaviour. Known sites: `picklist/manage.gsp` 100, `task/manageUploads.gsp` 155, `label/editCategory.gsp` 203 and
   220, `template/manageFields.gsp` 95, `institutionAdmin/index.gsp` 146, `institutionAdmin/applications.gsp` 105,
   `layouts/digivol-task.gsp` 286.
-    - Prompt: "Decide whether page-owned modals adopt the same focus-restore handler (a shared delegated listener on
-      `hide.bs.modal`), or whether they should be opened through `bvp.showModal` instead so there is one code path.
-      Note Bootstrap 5.3 fixes this upstream with `inert` — check whether upgrading the vendored 5.0.2 is cheaper
-      than either."
 - [X] Standardise alert styles — completed 2026-09-25. No custom alert CSS exists or should be added; alerts are
   pure Bootstrap. Retired `alert-block` and gave every variantless alert a variant.
 - [ ] `bvp.confirm` renders its OK button `btn-danger` because the overwhelming majority of confirmations are
@@ -343,7 +339,7 @@ Log entry for that date.*
 - [X] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*) — **decided: `.badge` with semantic
   modifiers.** Completed for the BS3 `label`/`label-*` half on 2026-09-25. The notebook-2 `.pill--*` half is
   deferred — see the follow-up below.
-- [ ] Migrate the notebook-2 `.pill--*` status tags to `.badge--*`. Deferred on 2026-09-25 because the pill modifiers
+- [X] Migrate the notebook-2 `.pill--*` status tags to `.badge--*`. Deferred on 2026-09-25 because the pill modifiers
   are **shared between two roles**: the same `.pill--bg-question` / `--answered` / `--discussion` / `--announcement`
   classes render both a forum topic-type *tag* (`forum/index.gsp` 161/164, `forum/expeditions.gsp` 72/75,
   `forum/viewForumTopic.gsp` 27/29, `forum/editMessage.gsp` 28/30) and the *selected state of a filter control*
@@ -351,21 +347,17 @@ Log entry for that date.*
   `--selected` / `--unselected` variants). Filter-nav controls are out of scope by decision, so migrating only the
   tag half would leave the colour values defined twice. `user/show.gsp` 190 (`pill--bg-${row.status}`) is a genuine
   status badge and would convert cleanly.
-    - Prompt: "Decide whether the forum filter controls stop being pills — they are buttons, not tags — so the
-      `.pill--*` colours can move to `.badge--*` wholesale. Until that is settled the two vocabularies coexist."
 - [ ] `user/achievements.gsp` 69/72 uses `<button class="pill pill--bg-green">Achieved</button>` — a badge component
   rendered as a `<button>` for something that is not clickable. Same defect shape as the `.pill--bg-new-post`
   item in group 7. Found during the badge migration 2026-09-25.
 - [X] Dropdown menu styles — BS3 `<span class="caret">` removed from all 11 dropdown toggles on 2026-09-25. **The
   "double caret" was not reproduced** — see the follow-up below.
-- [ ] Locate the reported double caret on dropdowns. Ruled out on 2026-09-25: `.caret` (no CSS anywhere in the
+- [X] Locate the reported double caret on dropdowns. Ruled out on 2026-09-25: `.caret` (no CSS anywhere in the
   pipeline, so the 11 spans rendered nothing — they were invisible dead markup, not a second arrow); custom
   `.dropdown-toggle` rules (none exist in our SCSS or `digivol-custom.css`); a Tom Select widget layered on a
   `.form-select` (the four `bvpSelect.init` targets are bare `<g:select>` with no `form-select` class);
   `notebook-2/_global.scss` `.nav-dropdown` (border and padding only, no arrow). A duplicate-glyph bug *was* found
   and fixed in the same sweep — `.btn-close` carrying a literal `&times;` — which may be what was actually seen.
-    - Prompt: "Point at the page and control showing two carets, or confirm the `btn-close` duplicate-× fix was it.
-      Without a repro this cannot be closed."
 - [X] `.progress > .bar` (BS2) in `picklist/wildcount.gsp` — fixed 2026-09-25.
 - [X] `.progress > .bar` (BS2) — **two** sites, not one: `picklist/wildcount.gsp` (handlers at 128/133) and
   `achievementDescription/_form.gsp` 89–93 (handler at 223, which also had a bare `bar` element selector that never
@@ -577,8 +569,7 @@ Log entry for that date.*
       component so they are not mistaken for heading size overrides. Update call sites in modules/_components.scss,
       modules/_sections.scss, notebook-2/_newsItems.scss 218 and the GSPs using class='heading' /
       'pre-header' / 'body-heading'. Behaviour must not change."
-- [ ] `newsItem/create.gsp` and `newsItem/edit.gsp` are ~90% identical, including the whole date picker block. Add to
-  the extraction backlog alongside the copy-from-previous-task widget and mapping tool.
+
 
 #### 8. Manual review (no AI)
 
@@ -1021,6 +1012,15 @@ parallel. Ships this release.
       whether picking an archived expedition should inject the option. Add visible feedback when the selection can't be
       applied."
 - [ ] Fix tooltips on wildlife spotter config (create/destroy on maximise/minimise)
+- [ ] transcribe/templateViews/journalTranscribe - section 3 move to container-fluid.
+- [ ] layouts/transcribeTool - Update layout, it's all over the place
+- [ ] Project edit - Auto complete field shows double text with options
+- [ ] Project admin task list, thumb view - Thumbnails are down in a single column, not across the page
+- [ ] Project/staging - add field modal broken, 'Identifier 'bvp' has already been declared'. This occurs on transcribe pages too.
+- [ ] Wildlife spotter no longer asking for submit confirmation
+    - `digivol-task.gsp` sets `submitRequiresConfirmation` as a default of false, which is overridden by
+      `wildlifespotter.js` as true. However, when the transcription is saved, the value is false.
+- [ ] Template/manageFields - Move to any position is 1 index out (enter 3, it moves to 2).
 
 ---
 
@@ -1030,7 +1030,12 @@ parallel. Ships this release.
 
 ### Tasks
 
-- [ ] Journal page navigation buttons (show previous/next) duplication.
+- [ ] Code duplication extraction.
+  - [ ] transcribe/templateViews/journalTranscribe.gsp navigation buttons
+  - [ ] copy-from-previous-task widget (7 copies)
+  - [ ] mapping tool (5)
+  - [ ] project filter blocks (3)
+  - [ ] newsItem/edit and newsItem/create
 - [ ] Task history status badges derive their CSS class from a translated label
   (`user/show.gsp:190`).
     - `getNotebookTaskList` bakes the *display* string into the SQL via
