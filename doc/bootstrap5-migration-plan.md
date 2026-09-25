@@ -347,7 +347,7 @@ Log entry for that date.*
   `--selected` / `--unselected` variants). Filter-nav controls are out of scope by decision, so migrating only the
   tag half would leave the colour values defined twice. `user/show.gsp` 190 (`pill--bg-${row.status}`) is a genuine
   status badge and would convert cleanly.
-- [ ] `user/achievements.gsp` 69/72 uses `<button class="pill pill--bg-green">Achieved</button>` — a badge component
+- [X] `user/achievements.gsp` 69/72 uses `<button class="pill pill--bg-green">Achieved</button>` — a badge component
   rendered as a `<button>` for something that is not clickable. Same defect shape as the `.pill--bg-new-post`
   item in group 7. Found during the badge migration 2026-09-25.
 - [X] Dropdown menu styles — BS3 `<span class="caret">` removed from all 11 dropdown toggles on 2026-09-25. **The
