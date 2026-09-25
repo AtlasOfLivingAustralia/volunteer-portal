@@ -49,6 +49,12 @@ p + p {
 }
 
 // Pills
+//
+// Status and topic-type tags moved to .badge--* (scss/modules/_badges.scss) on
+// 2026-09-25, and the forum/task filters became .nav-pills. What remains are the
+// three controls still wearing pill styling for want of a better component:
+// .pill--bg-new-post and the achievements Achieved/Not Achieved buttons. Both are
+// tracked in the Phase 8 plan. Do not add new .pill--* modifiers.
 
 .pill {
   display: inline-block;
@@ -60,49 +66,13 @@ p + p {
   border-radius: variables-and-mixins.$space-2;
 }
 
-.pill--bg-black, .pill--bg-selected {
-  color: white !important;
-  background-color: black !important;
-}
-
-.pill--bg-grey {
-  color: black;
-  background-color: #c8c8c8;
-}
-
-.pill--bg-blue, .pill--bg-in-progress, .pill--bg-discussion {
-  color: white;
-  background-color: variables-and-mixins.$blue;
-}
-
-.pill--bg-blue-unselected, .pill--bg-in-progress-unselected, .pill--bg-discussion-unselected {
-  color: white;
-  background-color: mix(variables-and-mixins.$blue, #fff, 55%);
-}
-
-.pill--bg-green, .pill--bg-validated, .pill--bg-answered {
+.pill--bg-green {
   color: black;
   background-color: variables-and-mixins.$green;
 }
 
-.pill--bg-orange, .pill--bg-saved, .pill--bg-question {
+.pill--bg-orange {
   background-color: variables-and-mixins.$orange;
-}
-
-.pill--bg-orange-unselected, .pill--bg-saved-unselected, .pill--bg-question-unselected {
-  background-color: mix(variables-and-mixins.$orange, #fff, 55%);
-}
-
-.pill--bg-purple, .pill--bg-transcribed, .pill--bg-announcement {
-  color: white;
-  background-color: variables-and-mixins.$purple;
-}
-
-.pill--bg-purple-unselected,
-.pill--bg-transcribed-unselected,
-.pill--bg-announcement-unselected {
-  color: white;
-  background-color: mix(variables-and-mixins.$purple, #fff, 55%);
 }
 
 .pill--bg-new-post {
@@ -115,19 +85,6 @@ p + p {
   }
 }
 
-.pill--bg-watched {
-  color: white;
-  background-color: #d5502a;
-  padding: 1px 1px;
-  font-size: variables-and-mixins.$text-lg;
-  cursor: pointer;
-}
-
-.pill--selected {
-  display: inline-block;
-  border-bottom: 3px solid black;
-  padding-bottom: variables-and-mixins.$space-2;
-}
 
 .pill--reset {
   border: solid 1px variables-and-mixins.$button-grey;

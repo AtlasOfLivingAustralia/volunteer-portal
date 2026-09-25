@@ -116,18 +116,18 @@
                         Select a filter to view your tasks. Transcribed and Validated tasks will appear in the full list (All tasks). Saved tasks is a separate list. 'All tasks' will also clear filters.
                     </cl:helpText>
                 </div>
-                <ul class="task-history-nav__list">
+                <ul class="task-history-nav__list nav nav-pills">
                     <g:if test="${userInstance.userId == currentUser}">
                         <g:set var="perspective" value="by me"/>
                     </g:if>
                     <g:else>
                         <g:set var="perspective" value="by ${cl.displayNameForUserId(id: userInstance.userId)}"/>
                     </g:else>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All tasks</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('transcribed')) ? "black" : "grey"}" title="Tasks transcribed ${perspective}">Transcribed ${perspective}</span></g:link></li>
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('validated')) ? "black" : "grey"}" title="Tasks validated ${perspective}">Validated ${perspective}</span></g:link></li>
+                    <li class="nav-item"><g:link class="nav-link ${!params.filter ? 'active' : ''}" controller="user" action="show" id="${userInstance.id}">All tasks</g:link></li>
+                    <li class="nav-item"><g:link class="nav-link ${params.filter?.equalsIgnoreCase('transcribed') ? 'active' : ''}" controller="user" action="show" id="${userInstance.id}" params="${[filter: 'transcribed']}">Transcribed ${perspective}</g:link></li>
+                    <li class="nav-item"><g:link class="nav-link ${params.filter?.equalsIgnoreCase('validated') ? 'active' : ''}" controller="user" action="show" id="${userInstance.id}" params="${[filter: 'validated']}">Validated ${perspective}</g:link></li>
                 <g:if test="${userInstance.userId == currentUser}">
-                    <li class="filter-nav__list-item"><g:link controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('saved')) ? "black" : "grey"}" title="Tasks saved for later ${perspective}">Saved for later</span></g:link></li>
+                    <li class="nav-item"><g:link class="nav-link ${params.filter?.equalsIgnoreCase('saved') ? 'active' : ''}" controller="user" action="show" id="${userInstance.id}" params="${[filter: 'saved']}">Saved for later</g:link></li>
                 </g:if>
                 </ul>
             </div>
@@ -187,7 +187,7 @@
                     <g:if test="${currentUser == row.fullyValidatedBy && row.status == message(code: 'status.validated')}">
                         <g:set var="statusPerspective" value=" by me" />
                     </g:if>
-                    <span class="pill pill--bg-${row.status.replace(" ", "-").toLowerCase()}">${row.status}${statusPerspective}</span>
+                    <span class="badge badge--${row.status.replace(" ", "-").toLowerCase()}">${row.status}${statusPerspective}</span>
                 </td>
                 <td data-key="action" class="task-history__action-buttons">
 %{--                    // If task is fully transcribed and (the user is the transcriber or the user is a validator)--}%

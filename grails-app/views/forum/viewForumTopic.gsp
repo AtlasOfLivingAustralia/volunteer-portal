@@ -24,9 +24,9 @@
         <div class="forum-nav-row">
             <nav class="forum-filter-nav">
                 <div class="forum-nav-header">
-                    <span class="pill pill--bg-${topicTypeName.toLowerCase()}">${topicTypeName}</span>
+                    <span class="badge badge--${topicTypeName.toLowerCase()}">${topicTypeName}</span>
                     <g:if test="${topic.isAnswered}">
-                        <span class="pill pill--bg-answered">Answered</span>
+                        <span class="badge badge--answered">Answered</span>
                     </g:if>
                 </div>
             </nav>

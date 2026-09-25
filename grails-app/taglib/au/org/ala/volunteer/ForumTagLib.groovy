@@ -271,16 +271,22 @@ class ForumTagLib {
                         }
                         mkp.yieldUnescaped("</div>")
                     } else {
-                        // Forum Topic Type
+                        // Forum Topic Type. Real radios named `topicType`, so the value posts
+                        // with the form and needs no hidden field or JS to mirror it.
                         div(class: 'forum-post-buttons--new-post-type hr-spacer') {
                             div(class: 'filter-nav__label') {
                                label(class: 'forum-post__title_label') {
                                    mkp.yield(message(code: 'forum.newpost.topictype.label', default: 'Mark as:'))
                                }
                             }
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link \"><span class=\"pill pill--bg-question pill--bg-selected\" data-topic-type=\"question\" data-topic-type-id=\"${ForumTopicType.Question.ordinal()}\" title=\"Question Topics\">Question</span></a>")
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-announcement-unselected\" data-topic-type=\"announcement\" data-topic-type-id=\"${ForumTopicType.Announcement.ordinal()}\" title=\"Announcement Topics\">Announcement</span></a>")
-                            mkp.yieldUnescaped("<a href=\"#\" class=\"filter-topic-link\"><span class=\"pill pill--bg-discussion-unselected\" data-topic-type=\"discussion\" data-topic-type-id=\"${ForumTopicType.Discussion.ordinal()}\" title=\"Discussion Topics\">Discussion</span></a>")
+                            mkp.yieldUnescaped("<div class=\"btn-group\" role=\"group\" aria-label=\"Topic type\">")
+                            [ForumTopicType.Question, ForumTopicType.Announcement, ForumTopicType.Discussion].eachWithIndex { topicType, i ->
+                                String id = "topicType-${topicType.name().toLowerCase()}"
+                                String checked = i == 0 ? ' checked="checked"' : ''
+                                mkp.yieldUnescaped("<input type=\"radio\" class=\"btn-check\" name=\"topicType\" id=\"${id}\" value=\"${topicType.ordinal()}\"${checked}>")
+                                mkp.yieldUnescaped("<label class=\"btn btn-outline-secondary\" for=\"${id}\">${topicType.name()}</label>")
+                            }
+                            mkp.yieldUnescaped("</div>")
                         }
                     }
 
@@ -298,7 +304,7 @@ class ForumTagLib {
                         if (!newPost && !isEdit) {
                             if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
                                 String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Reply and mark as ')}"
-                                buttonLabel += "<div class=\"pill pill--bg-answered\">Answered</div>"
+                                buttonLabel += "<div class=\"badge badge--answered\">Answered</div>"
                                 mb.button(type: 'submit', class: 'forum-post-button', name: '_action_saveNewTopicMessageAnswered') {
                                     mkp.yieldUnescaped(buttonLabel)
                                 }

@@ -45,22 +45,22 @@
             <nav class="forum-filter-nav filter-nav--mt-6">
                 <div class="forum-nav-header">
                     <div class="filter-nav__label">Filter by:</div>
-                    <ul>
+                    <ul class="nav nav-pills">
                         <g:set var="queryString" value="${params}" />
-                        <li class="filter-nav__list-item">
-                            <a href="#" data-topic-type="all" class="filter-topic-link"><span class="pill pill--bg-${(!params.filter) ? "black" : "grey"}">All types</span></a>
+                        <li class="nav-item">
+                            <a href="#" data-topic-type="all" class="nav-link filter-topic-link ${!params.filter ? 'active' : ''}" ${!params.filter ? raw('aria-current="page"') : ''}>All types</a>
                         </li>
-                        <li class="filter-nav__list-item">
-                            <a href="#" data-topic-type="question" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('question')) ? "black" : "question"}" title="Question Topics">Question</span></a>
+                        <li class="nav-item">
+                            <a href="#" data-topic-type="question" class="nav-link filter-topic-link ${params.filter?.equalsIgnoreCase('question') ? 'active' : ''}" ${params.filter?.equalsIgnoreCase('question') ? raw('aria-current="page"') : ''}>Question</a>
                         </li>
-                        <li class="filter-nav__list-item">
-                            <a href="#" data-topic-type="answered" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('answered')) ? "black" : "answered"}" title="Answered Topics">Answered</span></a>
+                        <li class="nav-item">
+                            <a href="#" data-topic-type="answered" class="nav-link filter-topic-link ${params.filter?.equalsIgnoreCase('answered') ? 'active' : ''}" ${params.filter?.equalsIgnoreCase('answered') ? raw('aria-current="page"') : ''}>Answered</a>
                         </li>
-                        <li class="filter-nav__list-item">
-                            <a href="#" data-topic-type="announcement" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('announcement')) ? "black" : "announcement"}" title="Announcement Topics">Announcement</span></a>
+                        <li class="nav-item">
+                            <a href="#" data-topic-type="announcement" class="nav-link filter-topic-link ${params.filter?.equalsIgnoreCase('announcement') ? 'active' : ''}" ${params.filter?.equalsIgnoreCase('announcement') ? raw('aria-current="page"') : ''}>Announcement</a>
                         </li>
-                        <li class="filter-nav__list-item">
-                            <a href="#" data-topic-type="discussion" class="filter-topic-link"><span class="pill pill--bg-${(params.filter?.equalsIgnoreCase('discussion')) ? "black" : "discussion"}" title="Discussion Topics">Discussion</span></a>
+                        <li class="nav-item">
+                            <a href="#" data-topic-type="discussion" class="nav-link filter-topic-link ${params.filter?.equalsIgnoreCase('discussion') ? 'active' : ''}" ${params.filter?.equalsIgnoreCase('discussion') ? raw('aria-current="page"') : ''}>Discussion</a>
                         </li>
                     </ul>
                 </div>
@@ -158,10 +158,10 @@
                 <td class="forum-posts-table__status">
                     <g:set var="topicTypeStyle" value="${topic.style}" />
                     <g:if test="${topic.topicType == ForumTopicType.Question && topic.isAnswered}">
-                        <div class="pill pill--bg-answered">Answered</div>
+                        <div class="badge badge--answered">Answered</div>
                     </g:if>
                     <g:else>
-                        <div class="pill pill--bg-${topicTypeStyle}">${topic.topicType.name()}</div>
+                        <div class="badge badge--${topicTypeStyle}">${topic.topicType.name()}</div>
                     </g:else>
                 </td>
                 <td class="td--order-3 text-nowrap">${topic.creator.displayName}</td>

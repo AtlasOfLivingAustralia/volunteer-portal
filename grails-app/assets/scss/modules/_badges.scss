@@ -50,6 +50,25 @@
 	color: #212529;
 }
 
+/* Forum topic types — semantic, same vocabulary as task status */
+
+.badge--question {
+	background-color: #e67e22;
+}
+
+.badge--answered {
+	background-color: #5cb85c;
+	color: #212529;
+}
+
+.badge--announcement {
+	background-color: #9b59b6;
+}
+
+.badge--discussion {
+	background-color: #337ab7;
+}
+
 /* Label category palette — mirrors the LabelColour enum.
    Values moved verbatim from digivol-custom.css .label-* (the only styling these
    ever had; .label itself has had no CSS since BS4, so every tag in the app

@@ -69,10 +69,10 @@
                     <g:if test="${projectRow.lastTopic}">
                         <g:set var="topicTypeStyle" value="${projectRow.lastTopic.topicType.name().toLowerCase()}" />
                         <g:if test="${projectRow.lastTopic.topicType == ForumTopicType.Question && projectRow.lastTopic.isAnswered}">
-                            <div class="pill pill--bg-answered">Answered</div>
+                            <div class="badge badge--answered">Answered</div>
                         </g:if>
                         <g:else>
-                            <div class="pill pill--bg-${topicTypeStyle}">${projectRow.lastTopic.topicType.name()}</div>
+                            <div class="badge badge--${topicTypeStyle}">${projectRow.lastTopic.topicType.name()}</div>
                         </g:else>
                     </g:if>
                     <g:else>

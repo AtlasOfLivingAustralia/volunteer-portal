@@ -1,4 +1,3 @@
-<%@ page import="au.org.ala.volunteer.ForumTopicType" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -39,7 +38,6 @@
             <g:form controller="forum" action="insertForumTopic" class="forum-post__form">
                 <g:hiddenField name="taskId" value="${taskInstance?.id}"/>
                 <g:hiddenField name="projectId" value="${projectInstance?.id}"/>
-                <g:hiddenField name="topicType" id="form-data-topictype" value="${ForumTopicType.Question.ordinal()}" />
                 <g:hiddenField name="watched" id="form-data-watched" value="false"/>
                 <g:if test="${params.linkToNewsItem}">
                     <g:hiddenField name="newsItemId" value="${params.linkToNewsItem}"/>
@@ -95,29 +93,6 @@
             }
         });
 
-        $('.filter-topic-link').click(function() {
-            const selectedPill = $(this).find('span');
-            const parentDiv = $(this).closest('.forum-post-buttons--new-post-type');
-            const oldSelectedPill = $(parentDiv).find('.pill--bg-selected');
-
-            const oldTypeId = $(oldSelectedPill).data('topic-type-id');
-            const oldType = $(oldSelectedPill).data('topic-type');
-            const newTypeId = $(selectedPill).data('topic-type-id');
-            const newType = $(selectedPill).data('topic-type');
-
-            if (oldTypeId !== newTypeId) {
-                $('#form-data-topictype').val(newTypeId);
-
-                $(oldSelectedPill)
-                    .removeClass('pill--bg-selected pill--bg-' + oldType)
-                    //.removeClass('pill--bg-' + oldType)
-                    .addClass('pill--bg-' + oldType + '-unselected');
-
-                $(selectedPill)
-                    .addClass('pill--bg-selected')
-                    .removeClass('pill--bg-' + newType + '-unselected');
-            }
-        });
 
     });
 </asset:script>

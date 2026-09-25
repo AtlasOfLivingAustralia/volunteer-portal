@@ -12,6 +12,79 @@ let bvp = {};
 
     let openModals = [];
 
+    /* Focus management for every Bootstrap modal in the app — helper-built and
+     * page-owned alike.
+     *
+     * Bootstrap 5.0.2 sets aria-hidden="true" on the modal root while a control
+     * inside it still holds focus, which assistive technology blocks outright:
+     * "Blocked aria-hidden on an element because its descendant retained focus."
+     * Bootstrap 5.3 fixes this upstream with `inert`; until we upgrade, we move
+     * focus out ourselves on hide and put it back on the opener on hidden.
+     *
+     * Delegated on `document` because Bootstrap's modal events bubble, so a modal
+     * built in a GSP with `new bootstrap.Modal(...)` is covered without that page
+     * needing to know anything about this.
+     */
+    const modalOpeners = new WeakMap();
+
+    // Safari and Firefox do not focus a <button> on click, so document.activeElement
+    // is often <body> by the time a modal opens. Remember what was actually clicked.
+    let lastPointerDownTarget = null;
+    document.addEventListener('mousedown', function (e) {
+        lastPointerDownTarget = e.target;
+    }, true);
+
+    function findOpener(modal, explicitOpener) {
+        if (explicitOpener) {
+            return explicitOpener;
+        }
+        const active = document.activeElement;
+        if (active && active !== document.body && !modal.contains(active)) {
+            return active;
+        }
+        const clicked = lastPointerDownTarget && lastPointerDownTarget.closest
+            ? lastPointerDownTarget.closest('a, button, [tabindex]')
+            : null;
+        if (clicked && !modal.contains(clicked)) {
+            return clicked;
+        }
+        // Opened with no user interaction, e.g. on page load. A trigger declared in
+        // markup is only usable if it is unambiguous — repeated row actions are not.
+        const declared = modal.id ? document.querySelectorAll('[data-bs-target="#' + modal.id + '"]') : [];
+        return declared.length === 1 ? declared[0] : null;
+    }
+
+    document.addEventListener('show.bs.modal', function (e) {
+        modalOpeners.set(e.target, findOpener(e.target, e.relatedTarget));
+    });
+
+    document.addEventListener('hide.bs.modal', function (e) {
+        const modal = e.target;
+        if (modal.contains(document.activeElement)) {
+            // Must happen before Bootstrap sets aria-hidden.
+            document.activeElement.blur();
+        }
+    });
+
+    /* Focus is restored on `hidden`, not `hide`.
+     *
+     * Bootstrap 5.0.2 removes its focusin trap inside hide(), *after* it has
+     * dispatched hide.bs.modal. Focusing the opener from a hide.bs.modal handler
+     * therefore fires focusin while the trap is still armed, and the trap pulls
+     * focus straight back onto the modal root — leaving `div.modal` itself focused
+     * when aria-hidden lands, which is the exact violation this code exists to
+     * prevent. By hidden.bs.modal the trap is gone and the modal is display:none.
+     */
+    document.addEventListener('hidden.bs.modal', function (e) {
+        const opener = modalOpeners.get(e.target);
+        modalOpeners.delete(e.target);
+        if (opener && document.body.contains(opener) && typeof opener.focus === 'function') {
+            opener.focus();
+        }
+        // With no opener, focus rests on <body>: no violation, and the next Tab
+        // starts from the top of the document.
+    });
+
     function buildModalElement(opts, bodyHtml) {
         const titleId = opts.id + '-title';
 
@@ -79,24 +152,12 @@ let bvp = {};
 
     function openModal(opts, bodyHtml) {
         const element = buildModalElement(opts, bodyHtml);
-        const previouslyFocused = document.activeElement;
         document.body.appendChild(element);
         openModals.push(element);
 
         element.addEventListener('show.bs.modal', function () { opts.onShowing(); });
         element.addEventListener('shown.bs.modal', function () { opts.onShown(); });
-        element.addEventListener('hide.bs.modal', function () {
-            // Bootstrap 5.0.2 sets aria-hidden="true" on the modal while focus is still
-            // on a control inside it, which assistive technology blocks. Return focus to
-            // whatever opened the modal before that happens.
-            if (element.contains(document.activeElement)) {
-                document.activeElement.blur();
-            }
-            if (previouslyFocused && document.body.contains(previouslyFocused)) {
-                previouslyFocused.focus();
-            }
-            opts.onClosing();
-        });
+        element.addEventListener('hide.bs.modal', function () { opts.onClosing(); });
         element.addEventListener('hidden.bs.modal', function () {
             opts.onClose();
             if (window.history && window.history.pushState) {
