@@ -85,7 +85,7 @@ let bvp = {};
         // starts from the top of the document.
     });
 
-    function buildModalElement(opts, bodyHtml) {
+    function buildModalElement(opts) {
         const titleId = opts.id + '-title';
 
         const root = document.createElement('div');
@@ -118,7 +118,6 @@ let bvp = {};
 
         const body = document.createElement('div');
         body.className = 'modal-body';
-        body.innerHTML = bodyHtml;
 
         content.appendChild(header);
         content.appendChild(body);
@@ -151,8 +150,9 @@ let bvp = {};
     }
 
     function openModal(opts, bodyHtml) {
-        const element = buildModalElement(opts, bodyHtml);
+        const element = buildModalElement(opts);
         document.body.appendChild(element);
+        $(element).find('.modal-body').html(bodyHtml);
         openModals.push(element);
 
         element.addEventListener('show.bs.modal', function () { opts.onShowing(); });

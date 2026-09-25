@@ -156,6 +156,7 @@
                     e.preventDefault();
                     bvp.newCollectionCode = "";
                     bvp.showModal({
+                        id: 'add-collection-code-modal',
                         title:'Create picklist collection code',
                         url: "addCollectionCodeFragment",
                         onClose: function() {
