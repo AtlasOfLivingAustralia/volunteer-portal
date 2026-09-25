@@ -39,7 +39,7 @@
         <b>Selected tags:</b><br/>
         <g:each in="${landingPageInstance.label}" var="l">
             <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
-            <span class="label label-${labelClassName}"> ${l.category.name}/${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
+            <span class="badge badge--${labelClassName}"> ${l.category.name}/${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i> </span>
         </g:each>
     </div>
 </g:form>

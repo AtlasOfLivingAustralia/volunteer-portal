@@ -68,7 +68,7 @@
         <div class="col-md-6">
             %{-- <g:textField class="form-control" maxlength="500" name="shortDescription" value="${projectInstance.shortDescription}"/> --}%
             <g:textArea class="form-control" name="shortDescription" maxlength="500" rows="5" value="${projectInstance.shortDescription}" />
-            <span class="float-end label label-default" id="count_message"></span>
+            <span class="float-end badge badge--neutral" id="count_message"></span>
         </div>
     </div>
 
@@ -138,7 +138,7 @@
         <div id="labels" class="col-md-offset-3 col-md-9">
             <g:each in="${sortedLabels}" var="l">
                 <g:set var="labelColourName" value="${l.category.labelColour ?: 'base'}"/>
-                <span class="label label-${labelColourName}" title="${l.category.name}">
+                <span class="badge badge--${labelColourName}" title="${l.category.name}">
                     ${l.value} <i class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
                 </span>
             </g:each>
@@ -229,7 +229,6 @@
     });
 
     jQuery(function($) {
-        var labelColourMap = <cl:json value="${labelColourMap}"/>;
         var baseUrl = "${createLink(controller: 'institution', action: 'index')}";
 
         labelAutocomplete("#label", "${createLink(controller: 'project', action: 'newLabels', id: projectInstance.id)}", '', function(item) {
@@ -241,9 +240,8 @@
             $.ajax(updateUrl, {type: 'POST', data: { labelId: item.id }})
                 .done(function(data) {
                     $( "<span>" )
-                        .addClass("label")
-                        //.addClass(labelColourMap[item.category])
-                        .addClass("label-" + labelColour  )
+                        .addClass("badge")
+                        .addClass("badge--" + labelColour  )
                         .attr("title", item.category.name)
                         .text(item.value)
                         .append(

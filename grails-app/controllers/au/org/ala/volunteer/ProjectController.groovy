@@ -24,7 +24,6 @@ class ProjectController {
                       'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen',
                       'Twenty']
 
-    static final LABEL_COLOURS = ["label-success", "label-warning", "label-danger", "label-info", "label-primary", "label-default"]
     public static final int MAX_BACKGROUND_SIZE = 512 * 1024
 
     def taskService
@@ -537,7 +536,6 @@ class ProjectController {
                     templates      : editLists?.templates,
                     projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                     institutionList: editLists?.insts,
-                    labelColourMap : editLists?.catColourMap,
                     sortedLabels   : editLists?.sortedLabels]
         }
     }
@@ -553,10 +551,7 @@ class ProjectController {
             return x == 0 ? a.value <=> b.value : x
         }
 
-        def counter = 0
-        final catColourMap = labelCats?.collectEntries { [(it): LABEL_COLOURS[counter++ % LABEL_COLOURS.size()]] }
-
-        return [insts: insts, labelCats: labelCats, templates: templates, sortedLabels: sortedLabels, catColourMap: catColourMap]
+        return [insts: insts, labelCats: labelCats, templates: templates, sortedLabels: sortedLabels]
     }
 
     def checkTemplateSupportMultiTranscriptions() {
@@ -718,7 +713,6 @@ class ProjectController {
                                                             templates      : editLists?.templates,
                                                             projectTypes   : projectTypeService.getEnabledProjectTypes(project.projectType),
                                                             institutionList: editLists?.insts,
-                                                            labelColourMap : editLists?.catColourMap,
                                                             sortedLabels   : editLists?.sortedLabels])
             } else {
                 redirect(action:'editGeneralSettings', id: project.id)

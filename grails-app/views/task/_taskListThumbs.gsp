@@ -57,7 +57,7 @@
                             <g:else>
 
                                     <g:if test="${projectInstance.requiredNumberOfTranscriptions > 1}">
-                                        <div class="label label-info">
+                                        <div class="badge badge--in-progress">
                                             <a href="${lastView ? '#' : createLink(controller: 'validate', action: 'task', id: taskInstance.id)}">
                                                 ${taskInstance.numberOfMatchingTranscriptions} / ${projectInstance.requiredNumberOfTranscriptions}
                                             </a>
@@ -76,7 +76,7 @@
                             </g:else>
                         </g:if>
                         <g:else>
-                            <div class="label label-default">
+                            <div class="badge badge--neutral">
                                 New
 
                             </div>

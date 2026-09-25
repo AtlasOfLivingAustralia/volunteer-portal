@@ -57,7 +57,7 @@
         <div class="col-sm-8 col-sm-pull-4">
             <h1 class="">${institutionInstance.name}</h1>
             <g:if test="${institutionInstance.isInactive}">
-                <h2><small><span class="label label-info"><g:message code="status.inactive" /></span></small></h2>
+                <h2><small><span class="badge badge--inactive"><g:message code="status.inactive" /></span></small></h2>
             </g:if>
             <p style="margin-top: 20px;"><%=institutionInstance.description%></p>
             <div class="cta-primary ">

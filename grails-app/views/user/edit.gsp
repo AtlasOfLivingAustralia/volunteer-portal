@@ -170,7 +170,7 @@
                                         <div id="labels" style="padding-top: 10px;">
                                             <g:each in="${userInstance.labels}" var="l">
                                                 <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
-                                                <span class="label label-${labelClassName}">${l.value} <i
+                                                <span class="badge badge--${labelClassName}">${l.value} <i
                                                         class="fa fa-times-circle delete-label" data-label-id="${l.id}"></i>
                                                 </span>
                                             </g:each>

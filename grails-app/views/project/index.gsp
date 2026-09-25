@@ -60,8 +60,8 @@
         <div class="row">
             <div class="col-sm-8">
                 <h1>${projectInstance.name}</h1>
-                <h2><g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
-                    <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if></h2>
+                <h2><g:if test="${projectInstance.archived}"> <small><span class="badge badge--archived"><g:message code="status.archived" /></span></small></g:if>
+                    <g:if test="${projectInstance.inactive}"> <small><span class="badge badge--inactive"><g:message code="status.inactive" /></span></small></g:if></h2>
                 <div id="projectDescription"> <!--class="hidden" -->
                     <p>${raw(projectInstance.description)}</p><!-- end description -->
 %{--                    <a href="#" title="read more" class="readmore">Read more »</a>--}%

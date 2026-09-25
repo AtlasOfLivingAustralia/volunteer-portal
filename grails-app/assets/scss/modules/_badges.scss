@@ -1,0 +1,99 @@
+/* Badges
+ *
+ * Bootstrap 5 supplies .badge itself (padding, weight, radius and color: #fff).
+ * This file only adds the modifiers. Two vocabularies, because the app has two
+ * unrelated kinds of tag:
+ *
+ *   .badge--<status>  system state the app decides (archived, validated, …)
+ *   .badge--<colour>  a colour an admin picked from the LabelColour enum for a
+ *                     label category. Decoration, not meaning.
+ *
+ * Never use a palette modifier to convey status, or a status modifier to render
+ * a label category — the two sets are allowed to drift apart visually.
+ */
+
+/* Bootstrap's .badge is a rounded rectangle; DigiVol badges are pill shaped.
+   Moved here from digivol-custom.css, which loads after the SCSS and silently won. */
+.badge {
+	border-radius: 0.5em;
+}
+
+/* Status — semantic */
+
+.badge--neutral {
+	background-color: $heading-grey;
+}
+
+.badge--archived {
+	background-color: $heading-grey;
+}
+
+.badge--inactive {
+	background-color: #f0ad4e;
+	color: #212529;
+}
+
+.badge--in-progress {
+	background-color: $link-color;
+}
+
+.badge--transcribed {
+	background-color: #9b59b6;
+}
+
+.badge--saved {
+	background-color: #e67e22;
+}
+
+.badge--validated {
+	background-color: #5cb85c;
+	color: #212529;
+}
+
+/* Label category palette — mirrors the LabelColour enum.
+   Values moved verbatim from digivol-custom.css .label-* (the only styling these
+   ever had; .label itself has had no CSS since BS4, so every tag in the app
+   rendered as unpadded body-coloured text on a colour block until 2026-09-25). */
+
+.badge--base {
+	background-color: #777;
+}
+
+.badge--green {
+	background-color: #5cb85c;
+	color: #212529;
+}
+
+.badge--red {
+	background-color: #d9534f;
+}
+
+.badge--yellow {
+	background-color: #f0ad4e;
+	color: #212529;
+}
+
+.badge--blue {
+	background-color: #337ab7;
+}
+
+.badge--lightblue {
+	background-color: #3498db;
+}
+
+.badge--orange {
+	background-color: #e67e22;
+}
+
+.badge--purple {
+	background-color: #9b59b6;
+}
+
+.badge--darkgrey {
+	background-color: #4b5359;
+}
+
+.not-a-badge,
+.not-a-badge:hover {
+	color: var(--brand-primary);
+}

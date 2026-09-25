@@ -31,7 +31,7 @@
                                                                                               default="System message"/></label>
                             <div class="col-md-9">
                                 <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
-                                <span class="float-end label label-default count_message" id="count_message"></span>
+                                <span class="float-end badge badge--neutral count_message" id="count_message"></span>
                                 <span class="form-text">(Displayed on every page)</span>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                             </label>
                             <div class="col-md-9">
                                 <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control" value="${frontPage.heroImageAttribution}" />
-                                <span class="float-end label label-default count_message" id="hero_count_message"></span>
+                                <span class="float-end badge badge--neutral count_message" id="hero_count_message"></span>
                             </div>
                         </div>
 

@@ -379,20 +379,20 @@ class VolunteerTagLib {
             def mb = new MarkupBuilder(out)
 
             transcribers.each { transcriber ->
-                mb.span(class:"label label-info") {
+                mb.span(class:"badge badge--transcribed") {
                     mkp.yield("Transcribed by ${transcriber.user?.displayName} on ${transcriber.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
                 }
             }
 
             if (validator) {
                 def status = "Not yet validated"
-                def badgeClass = "label"
+                def badgeClass = "badge badge--neutral"
                 if (!taskInstance.isValid) {
                     status = "Partially validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-warning"
+                    badgeClass = "badge badge--in-progress"
                 } else if (taskInstance.isValid) {
                     status = "Validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
-                    badgeClass = "label label-success"
+                    badgeClass = "badge badge--validated"
                 }
                 mb.span(class:badgeClass) {
                     mkp.yield(status)

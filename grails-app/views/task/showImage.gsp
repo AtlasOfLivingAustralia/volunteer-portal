@@ -60,7 +60,7 @@
 
             <div class="col-sm-3">
                 <g:if test="${sequenceNumber >= 0}">
-                    <span class="float-end label label-info">Sequence number: ${sequenceNumber}</span>
+                    <span class="float-end badge badge--neutral">Sequence number: ${sequenceNumber}</span>
                 </g:if>
             </div>
 

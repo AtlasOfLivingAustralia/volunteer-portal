@@ -99,8 +99,7 @@
                                 <td>
                                     <g:each in="${userInstance.labels}" var="l">
                                         <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
-                                        <span class="label label-${labelClassName}">${l.value}</span>
-%{--                                        <span class="label label-base">${userLabel.value}</span>--}%
+                                        <span class="badge badge--${labelClassName}">${l.value}</span>
                                     </g:each>
                                 </td>
 

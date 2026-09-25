@@ -129,8 +129,8 @@
                             <td>Validation Status</td>
                             <td>
                                 <g:if test="${taskInstance.dateFullyValidated}">
-                                    <g:if test="${!taskInstance.isValid}"><span class="label label-info">In progress</span></g:if>
-                                    <g:if test="${taskInstance.isValid}"><span class="label label-success">Validated</span></g:if>
+                                    <g:if test="${!taskInstance.isValid}"><span class="badge badge--in-progress">In progress</span></g:if>
+                                    <g:if test="${taskInstance.isValid}"><span class="badge badge--validated">Validated</span></g:if>
                                     ${taskInstance.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")} by ${cl.displayNameForUserId(id: taskInstance.fullyValidatedBy) ?: "<span class='muted'>unknown</span>"}
                                 </g:if>
                                 <g:else>

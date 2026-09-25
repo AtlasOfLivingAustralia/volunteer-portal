@@ -29,14 +29,6 @@
         border-color: var(--brand-primary);
     }
 
-    body .badge,
-    body .badge:hover,
-    body .not-a-badge,
-    body .not-a-badge:hover,
-    .primary-color {
-        color: var(--brand-primary);
-    }
-
     @media (max-width: 991.98px) {
         .navbar .navbar-collapse.show {
             display: block;

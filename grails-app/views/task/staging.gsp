@@ -216,6 +216,11 @@
 
         });
 
+        $("#btnCancelDataFileUpload").click(function (e) {
+            e.preventDefault();
+            bvp.hideModal();
+        });
+
         $("#btnClearDataFile").click(function(e) {
             e.preventDefault();
             window.location = "${createLink(controller: 'task', action: 'clearStagedDataFile', params: [projectId: projectInstance.id])}";

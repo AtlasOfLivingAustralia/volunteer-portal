@@ -17,7 +17,7 @@
 
     <g:if test="${isValidator}">
         <div class="text-center">
-            Task identifier: <div class="label label-default">${taskInstance.externalIdentifier}</div>
+            Task identifier: <div class="badge badge--neutral">${taskInstance.externalIdentifier}</div>
             <br/>
             <small>
                 Copy and paste this into the search box to easily find the task in the admin list.

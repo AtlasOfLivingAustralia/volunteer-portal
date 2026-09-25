@@ -82,7 +82,7 @@
                             </div>
                             <div class="form-label col-md-1" id="example-tag-display">
                                 <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
-                                <span class="label label-${labelColourClass}" id="example-tag">Example Tag</span>
+                                <span class="badge badge--${labelColourClass}" id="example-tag">Example Tag</span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -509,8 +509,8 @@ $(function($) {
 
     $('#label-colour').on('change', function() {
         var colourValue = $(this).val();
-        var newLabelColour = "label-" + colourValue;
-        $('#example-tag').removeClass().addClass("label " + newLabelColour);
+        var newLabelColour = "badge--" + colourValue;
+        $('#example-tag').removeClass().addClass("badge " + newLabelColour);
     });
 
 });

@@ -32,10 +32,7 @@
 
 <script>
 
-    $("#btnCancelDataFileUpload").click(function (e) {
-        e.preventDefault();
-        bvp.hideModal();
-    });
+
 
 
 </script>

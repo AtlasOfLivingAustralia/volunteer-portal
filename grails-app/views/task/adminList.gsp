@@ -20,8 +20,8 @@
         <g:if test="${projectInstance.archived || projectInstance.inactive}">
             <h2>
         </g:if>
-            <g:if test="${projectInstance.archived}"> <small><span class="label label-info"><g:message code="status.archived" /></span></small></g:if>
-            <g:if test="${projectInstance.inactive}"> <small><span class="label label-warning"><g:message code="status.inactive" /></span></small></g:if>
+            <g:if test="${projectInstance.archived}"> <small><span class="badge badge--archived"><g:message code="status.archived" /></span></small></g:if>
+            <g:if test="${projectInstance.inactive}"> <small><span class="badge badge--inactive"><g:message code="status.inactive" /></span></small></g:if>
         <g:if test="${projectInstance.archived || projectInstance.inactive}">
             </h2>
         </g:if>

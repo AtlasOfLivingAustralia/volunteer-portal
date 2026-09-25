@@ -59,7 +59,7 @@
                                 <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
                                 <td style="vertical-align: middle; width: 35%;"><g:link action="editCategory" id="${labelCategory.id}">${labelCategory.name}</g:link></td>
                                 <td style="vertical-align: middle; text-align: right; width: 8%;">${labelCategory.labels?.size()}</td>
-                                <td style="vertical-align: middle; text-align: right; width: 8%;"><span class="label label-${labelColourClass}">Example Tag</span></td>
+                                <td style="vertical-align: middle; text-align: right; width: 8%;"><span class="badge badge--${labelColourClass}">Example Tag</span></td>
                                 <td style="vertical-align: middle;">${formatDate(date: labelCategory.updatedDate, format: DateConstants.DATE_TIME_FORMAT)}</td>
                                 <td style="vertical-align: middle;">${labelCategory.createdBy == 0L ? "System" : User.get(labelCategory.createdBy).displayName}</td>
                                 <td>
