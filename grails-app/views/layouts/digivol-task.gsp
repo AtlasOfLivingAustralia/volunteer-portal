@@ -303,7 +303,7 @@
             </div>
 
             <div class="modal-footer">
-                <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-link"
+                <button role="button" id="submit-confirm-cancel" type="button" class="btn btn-outline-secondary"
                         data-bs-dismiss="modal">Cancel</button>
                 <button role="button" id="submit-confirm-ok" type="button" class="btn btn-primary">Submit</button>
             </div>

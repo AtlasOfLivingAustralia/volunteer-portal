@@ -316,7 +316,7 @@
         $('#deleteButton').on('click', function(e) {
             if (!_result) {
                 e.preventDefault();
-                bvp.confirm("Are you sure you want to delete this template?", function () {
+                bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ['template'])}', function () {
                     _result = true;
                     $('#deleteButton').click();
                 });

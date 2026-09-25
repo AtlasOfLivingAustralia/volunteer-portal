@@ -107,7 +107,7 @@ $(function($) {
         var href = $this.data('href');
         //console.log("href: " + href);
 
-        bvp.confirm("Are you sure you wish to delete this tag category and all it's tags? This action is permanent!", function() {
+        bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ['category AND all its associated labels'])}', function() {
             $.postGo(href);
         });
     });

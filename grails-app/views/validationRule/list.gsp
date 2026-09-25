@@ -71,7 +71,7 @@
         $('a.delete-button').on('click', function(e) {
             e.preventDefault();
             var self = this;
-            bvp.confirm("Are you sure?", function () {
+            bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ['validation rule'])}', function () {
                 window.location.href = $(self).attr('href');
             });
         });

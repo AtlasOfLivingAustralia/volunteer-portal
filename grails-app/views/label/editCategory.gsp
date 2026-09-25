@@ -234,7 +234,7 @@
                             <div class="col-md-8" style="vertical-align: middle;">
                                 <g:set var="categoryFilterList" value="${categoryList.findAll{it.id != labelCategory.id}}"/>
                                 <g:select name="newCategory"
-                                          class="form-control"
+                                          class="form-select"
                                           from="${categoryFilterList}"
                                           optionKey="id"
                                           optionValue="name"
@@ -246,8 +246,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="btn-save-change-cat">Save</button>
-                <button class="btn btn-secondary" id="btn-close-change-cat">Cancel</button>
+                <button class="btn btn-outline-secondary" id="btn-close-change-cat">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-change-cat">Save</button>
             </div>
         </div>
     </div>
@@ -501,7 +501,7 @@ $(function($) {
         var href = $this.data('href');
         //console.log("href: " + href);
 
-        bvp.confirm("Are you sure you wish to delete this label? This action is permanent!", function() {
+        bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: ['label'])}', function() {
             $.postGo(href);
             toggleEdit(this);
         });
