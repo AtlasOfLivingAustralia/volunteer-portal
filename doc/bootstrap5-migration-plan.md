@@ -222,6 +222,7 @@ Work one numbered step at a time. After each step:
 - list files changed and why
 - flag anything you found mid-step that changes the plan Don't batch unrelated fixes into a step. Don't add abstraction,
   configurability or error handling I didn't ask for.
+- Allow me to commit changes in logical chunks. Pause implementation after each step to allow me to commit if I want. Wait for my sign-off before moving to the next step.
 
 #### Step 4 — Document
 
@@ -312,17 +313,64 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 
 #### 2. Component standardisation
 
-*Establishes the conventions groups 3–5 consume. Blocked by the Bootbox and tag-taxonomy open decisions below.*
+*Establishes the conventions groups 3–5 consume. Both blocking decisions were taken on 2026-09-25 — see the Tracking
+Log entry for that date.*
 
-- [ ] Standardise table styles
-- [ ] Standardise modal styles (BS5 vs Bootbox)
-- [ ] Fix aria-hidden warnings (if sticking with bootbox - see specimenLabelTranscribe)
-- [ ] Standardise alert styles
-- [ ] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*)
-- [ ] Dropdown menu styles (inc double caret)
-- [ ] `.progress > .bar` (BS2) in `picklist/wildcount.gsp` 55–57 and its two JS handlers at 128/133. BS5 uses
-  `.progress-bar`, so the CSV upload progress bar has no fill. Found during the BS2 sweep on 2026-09-24; left alone
-  because it is a component, not grid/scaffolding, and the fix touches JS.
+- [X] Standardise modal styles — **decided: BS5 native, Bootbox retires.** Replaced bootbox 6.0.4 with `bvp.showModal`
+  over `bootstrap.Modal`, plus `bvp.confirm` / `bvp.alert`. Completed 2026-09-25.
+- [X] Fix aria-hidden warnings — **not** resolved by deleting Bootbox, as first recorded. Bootstrap 5.0.2 sets
+  `aria-hidden="true"` on the modal root while focus is still on a control inside it. Fixed 2026-09-25 in
+  `bvp-common.js` by returning focus to the opening element on `hide.bs.modal`.
+- [ ] Verify the aria-hidden fix covers the 8 hand-written `.modal` blocks in GSPs. The `bvp-common.js` fix only
+  applies to modals the helper opens; page-owned modals dismissed via `data-bs-dismiss` hit the same Bootstrap 5.0.2
+  behaviour. Known sites: `picklist/manage.gsp` 100, `task/manageUploads.gsp` 155, `label/editCategory.gsp` 203 and
+  220, `template/manageFields.gsp` 95, `institutionAdmin/index.gsp` 146, `institutionAdmin/applications.gsp` 105,
+  `layouts/digivol-task.gsp` 286.
+    - Prompt: "Decide whether page-owned modals adopt the same focus-restore handler (a shared delegated listener on
+      `hide.bs.modal`), or whether they should be opened through `bvp.showModal` instead so there is one code path.
+      Note Bootstrap 5.3 fixes this upstream with `inert` — check whether upgrading the vendored 5.0.2 is cheaper
+      than either."
+- [X] Standardise alert styles — completed 2026-09-25. No custom alert CSS exists or should be added; alerts are
+  pure Bootstrap. Retired `alert-block` and gave every variantless alert a variant.
+- [ ] `bvp.confirm` renders its OK button `btn-danger` because the overwhelming majority of confirmations are
+  deletes, archives or permanent removals. Three call sites are not destructive and now show a red OK:
+  `transcribe/cameratrap.js` 75 ("record this as your answer"), `admin/tools.gsp` 186 (varies by
+  `data-message`; some entries are cache rebuilds) and `template/edit.gsp` 319. Found while converting on
+  2026-09-25.
+    - Prompt: "Decide whether a non-destructive confirmation should get a neutral OK. If so, the choice must not
+      become a free-form options object — either derive it from the caller (e.g. a separate `bvp.confirmSafe`) or
+      accept red everywhere and document it."
+- [X] Tag styles are broken (label, label- *, pill, pill-*, badge, badge-*) — **decided: `.badge` with semantic
+  modifiers.** Completed for the BS3 `label`/`label-*` half on 2026-09-25. The notebook-2 `.pill--*` half is
+  deferred — see the follow-up below.
+- [ ] Migrate the notebook-2 `.pill--*` status tags to `.badge--*`. Deferred on 2026-09-25 because the pill modifiers
+  are **shared between two roles**: the same `.pill--bg-question` / `--answered` / `--discussion` / `--announcement`
+  classes render both a forum topic-type *tag* (`forum/index.gsp` 161/164, `forum/expeditions.gsp` 72/75,
+  `forum/viewForumTopic.gsp` 27/29, `forum/editMessage.gsp` 28/30) and the *selected state of a filter control*
+  (`forum/index.gsp` 51–63, `user/show.gsp` 126–130, plus the `addForumTopic.gsp` 101–118 JS that swaps
+  `--selected` / `--unselected` variants). Filter-nav controls are out of scope by decision, so migrating only the
+  tag half would leave the colour values defined twice. `user/show.gsp` 190 (`pill--bg-${row.status}`) is a genuine
+  status badge and would convert cleanly.
+    - Prompt: "Decide whether the forum filter controls stop being pills — they are buttons, not tags — so the
+      `.pill--*` colours can move to `.badge--*` wholesale. Until that is settled the two vocabularies coexist."
+- [ ] `user/achievements.gsp` 69/72 uses `<button class="pill pill--bg-green">Achieved</button>` — a badge component
+  rendered as a `<button>` for something that is not clickable. Same defect shape as the `.pill--bg-new-post`
+  item in group 7. Found during the badge migration 2026-09-25.
+- [X] Dropdown menu styles — BS3 `<span class="caret">` removed from all 11 dropdown toggles on 2026-09-25. **The
+  "double caret" was not reproduced** — see the follow-up below.
+- [ ] Locate the reported double caret on dropdowns. Ruled out on 2026-09-25: `.caret` (no CSS anywhere in the
+  pipeline, so the 11 spans rendered nothing — they were invisible dead markup, not a second arrow); custom
+  `.dropdown-toggle` rules (none exist in our SCSS or `digivol-custom.css`); a Tom Select widget layered on a
+  `.form-select` (the four `bvpSelect.init` targets are bare `<g:select>` with no `form-select` class);
+  `notebook-2/_global.scss` `.nav-dropdown` (border and padding only, no arrow). A duplicate-glyph bug *was* found
+  and fixed in the same sweep — `.btn-close` carrying a literal `&times;` — which may be what was actually seen.
+    - Prompt: "Point at the page and control showing two carets, or confirm the `btn-close` duplicate-× fix was it.
+      Without a repro this cannot be closed."
+- [X] `.progress > .bar` (BS2) in `picklist/wildcount.gsp` — fixed 2026-09-25.
+- [X] `.progress > .bar` (BS2) — **two** sites, not one: `picklist/wildcount.gsp` (handlers at 128/133) and
+  `achievementDescription/_form.gsp` 89–93 (handler at 223, which also had a bare `bar` element selector that never
+  matched). Both converted to `.progress > .progress-bar` with `role="progressbar"` and live `aria-valuenow`.
+  **Done 2026-09-25.**
 
 #### 3. Forms completion
 
@@ -373,7 +421,7 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 - [ ] Navbar fixes
     - [ ] Main Navbar background should be white
     - [ ] Condensed nav doesn't line up with top of the page and it should centered (left half is the back button, right half is the title and profile drop down)
-    - [ ] Breadcrumps are not vertically centered in it's section.
+    - [ ] Breadcrumbs are not vertically centered in its section.
     - [ ] Breadcrumbs - truncate long project names, add ellipsis in middle of breadcrumb trail so we see the start and end
         of the name, and add `title` attribute for full name on hover.
     - [ ] `.digivol-logo { font-size: 0.5rem }` (`layouts/_nav.scss` 26)
@@ -400,12 +448,24 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
   - [ ] Institution list - each row should be 2 cards
   - [ ] Project list - Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
   - [ ] Project list - Table layout image does not resize correctly.
+  - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
+    above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
 - [ ] Template edit collapsable list - each list should be the width of the page
 - [ ] Custom landing page admin
   - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
 - [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
   - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
 - [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
+    - Note 2026-09-25: a *second*, unrelated break on these templates — a bootbox 3 `confirm` signature that had been
+      throwing — was fixed with the modal work. The carousel data attributes are still outstanding.
+- [ ] `bvp.alert` titles every message dialog "Message" and `bvp.confirm` titles every confirmation "Please confirm".
+  Bootbox rendered no header at all for these, so all 40 sites have gained a title bar. Cosmetic, but it is new text
+  on 40 dialogs and some messages already begin with their own `<h3>` or `<strong>Warning!</strong>`
+  (`transcribe/wildlifespotter.js` 448, `transcribe/audiotranscribe.js` 563, `transcribe/cameratrap.js` 570,
+  `template-config.js` 522).
+    - Prompt: "Decide whether alert/confirm dialogs should have a title bar. If yes, strip the duplicated inline
+      headings from the four message strings above; if no, render those two helpers headerless with just a close
+      button."
 
 #### 6. Accessibility sweep
 
@@ -446,6 +506,11 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
 
 *Last: pure consolidation of whatever survives groups 1–6.*
 
+- [ ] Standardise table styles. Moved here from group 2 on 2026-09-25: the work is an ownership question, not a
+  component one. `notebook-2/_global.scss` restyles bare `table`/`th`/`td` as a last-loading overlay, so any
+  convention written in group 2 would have been overridden on the five notebook-2 pages and rebased here anyway.
+  Consequence accepted at the time of the move: the group 5 page-level table items (notably the project list table
+  layout) land first and may need re-touching once the convention exists.
 - [ ] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
   163–230, not `modules/_search.scss`, which holds only two media queries and
   `#btnSearch`. The search-forms task recorded the move as done; only the responsive overrides actually moved. The
@@ -491,6 +556,7 @@ Behaviour bugs found while styling live in **Phase 8a**, not here.
     - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
         Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
         file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
+    - [ ] Style the forum and user notebook nav-pills. Reduce their size and change to secondary colour.
 - [ ] Align notebook-2 heading sizes with the global scale
     - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
       `$screen-md`) and `h2: 1.5rem` (→ `1.875rem`). `notebook-2/_newsItems.scss`
@@ -611,7 +677,114 @@ Field help icons are styled solely by `a.fieldHelp` in
 `scss/modules/_components.scss`. Taglibs emit `class:'fieldHelp'` only — the class is also the JS tooltip binding hook
 (`bvp-common.js`, `bindTooltips`).
 
+#### Modals
+
+All modals are Bootstrap 5 native. There is no modal library — bootbox was deleted on 2026-09-25.
+
+Two ways to open one, and no third:
+
+| Context | Mechanism |
+|---|---|
+| Content loaded from a fragment URL | `bvp.showModal({url, title, size, buttons, …})` |
+| Inline markup already on the page | `bvp.showModal({message, title, …})` |
+| Confirmation before a destructive action | `bvp.confirm(message, onConfirm)` |
+| Message with a single dismiss button | `bvp.alert(message)` |
+| A modal that is part of the page's own markup | hand-written `.modal` + `data-bs-toggle="modal"` |
+
+`bvp.confirm` and `bvp.alert` are thin wrappers over `showModal`. **`onConfirm` runs only when the user confirms** —
+there is no boolean argument. The old `function(result) { if (result) … }` shape is gone; reintroducing it silently
+breaks the action, because `result` would be `undefined`.
+
+Anything needing custom button labels or a dismiss callback uses `showModal`'s `buttons` map directly
+(`{ key: { label, className, callback } }`) rather than growing the `confirm`/`alert` signatures. A callback returning
+`false` keeps the modal open. Button `className` follows the button conventions above — `btn-danger` for destructive
+confirms, `btn-outline-secondary` for Cancel.
+
+`size` takes `'small'`, `'large'` or `'extra-large'`, mapped to `modal-sm` / `modal-lg` / `modal-xl`. The helper builds
+the markup, appends it to `<body>`, and **disposes and removes the element on `hidden.bs.modal`**, so modals do not
+accumulate in the DOM. `bvp.hideModal()` closes only modals the helper opened; pages with their own modal markup manage
+their own.
+
+Titles are set with `textContent` and bodies with `innerHTML` — body HTML is trusted app content, titles are not
+markup.
+
+Any control still focused inside a closing modal is blurred on `hide.bs.modal`, and focus returns to the element
+that opened it on `hidden.bs.modal`. This is required, not cosmetic: Bootstrap 5.0.2 sets `aria-hidden="true"` on
+the modal root while a control inside it still has focus, which assistive technology blocks outright. The split
+across the two events is deliberate — 5.0.2 tears down its `focusin` trap *inside* `hide()`, after `hide.bs.modal`
+has been dispatched, so restoring focus any earlier is caught by the trap and bounced back onto the modal root.
+Do not collapse the two handlers, or remove the focus restore, without first confirming the vendored Bootstrap has
+been upgraded past this behaviour.
+
+Native `window.confirm()` / `window.alert()` are not used anywhere in app code — they block the page, cannot be
+styled, and on `<g:actionSubmit onclick="return confirm(…)">` they silently coupled a delete action to a browser
+dialog. Where a confirmation must gate a native form submit, prevent the default, confirm, then re-trigger the
+control so Grails still receives its `_action_*` parameter.
+
+**Removed — do not reintroduce:** bootbox in any version; `bootbox.alert` / `.confirm` / `.dialog` / `.hideAll`;
+`<asset:javascript src="bootbox">`; `//= require bootbox`; the `(message, cancelLabel, okLabel, callback)` confirm
+signature (bootbox 6 threw `Invalid argument length` on it); a boolean-result confirm callback; `.modal()` jQuery
+plugin calls; `window.confirm()` / `window.alert()`; `onclick="return confirm(…)"`.
+
+#### Badges
+
+All tags are Bootstrap 5 `.badge`. BS5 supplies the box model, weight and `color: #fff`; `scss/modules/_badges.scss`
+owns everything else and is imported from `main.scss` after `modules/buttons`. BS3's `.label` / `.label-*` is gone.
+
+Two modifier vocabularies, because the app has two unrelated kinds of tag. **Never mix them.**
+
+| Vocabulary | Modifiers | Use for |
+|---|---|---|
+| Status (semantic) | `--neutral`, `--archived`, `--inactive`, `--in-progress`, `--transcribed`, `--saved`, `--validated` | State the app decides |
+| Palette (decorative) | `--base`, `--green`, `--red`, `--yellow`, `--blue`, `--lightblue`, `--orange`, `--purple`, `--darkgrey` | Label-category colour an admin picked |
+
+The palette set mirrors the `LabelColour` enum (`src/main/groovy/au/org/ala/volunteer/LabelColour.groovy`) one-for-one,
+so `LabelCategory.labelColour` maps straight to a class name and needs no lookup table. Default is `base`. Adding an
+enum value means adding the matching modifier.
+
+`.badge` uses `border-radius: 0.5em` — softened corners, not a full pill. The 1em pill was the pre-2026 style and
+was dropped on 2026-09-25 for a flatter, more current badge. Modifiers set `background-color` only, except
+`--yellow`, `--green`, `--inactive` and `--validated`, which also set `color: #212529` because their backgrounds fail
+contrast against white.
+
+Status colours are deliberately not derived from the palette ones — a category that happens to be green must not
+start meaning "validated".
+
+**Removed — do not reintroduce:** `.label` and every `.label-*` (BS3, and unstyled since BS4 — the app's tags had no
+padding or radius for years); `badge-*` single-dash colour variants (BS5.0 removed them; use `bg-*` or our
+modifiers); label or badge rules in `digivol-custom.css`; `ProjectController.LABEL_COLOURS` and the
+`catColourMap` / `labelColourMap` model key it fed.
+
+#### Alerts, dropdowns and progress bars
+
+These three components are **pure Bootstrap**. There is no custom CSS for any of them and none should be added —
+verified 2026-09-25, `grep '\.alert'` over the whole SCSS pipeline and `digivol-custom.css` returns nothing.
+
+**Alerts** always carry a variant: `alert-success`, `alert-info`, `alert-warning` or `alert-danger`. A bare
+`class="alert"` renders a transparent border and no background — effectively invisible. The one exception is a
+placeholder whose variant is applied at runtime (`admin/tools.gsp` 146, where the S3 test result picks the variant
+from the response); those still need `role="alert"`.
+
+**Dismiss buttons** are `<button type="button" class="btn-close" data-bs-dismiss="alert|modal" aria-label="Close">`
+with **no content**. BS5 draws the × as a background image, so a literal `&times;` inside renders a *second* ×.
+Never `aria-hidden="true"` on a close button — it is focusable, and hiding it from assistive technology while
+leaving it in the tab order is the same defect class as the modal `aria-hidden` issue.
+
+**Dropdown toggles** get their caret from `.dropdown-toggle::after`. Do not add a caret glyph — no
+`<span class="caret">` (BS3, no CSS since BS4) and no `fa-caret-down`.
+
+**Progress bars** are `.progress > .progress-bar`, with `progress-bar-striped` / `progress-bar-animated` for the
+striped and animated variants. BS2's `.progress-striped.active > .bar` is gone. The inner element carries
+`role="progressbar"`, `aria-valuenow/min/max` and an `aria-label`; JS that updates the width must update
+`aria-valuenow` too, or screen readers report a bar frozen at its initial value.
+
+**Removed — do not reintroduce:** `alert-block` (BS2); a bare `class="alert"` with no variant; `&times;` inside
+`.btn-close`; `aria-hidden` on a close button; `<a href="#" class="btn-close">` (use a `<button>`);
+`<span class="caret">`; `.progress-striped`, `.progress.active`, `.bar`; `<tr class="alert">` (use `table-warning`).
+
 #### Typography:
+
+
 
 Base size is set once in `scss/base/_variables.scss` (`$font-size-body`) and applied in `scss/modules/_typography.scss`.
 `html { font-size: 100% }` keeps the app responsive to the user's browser font-size setting (WCAG 1.4.4), so all sizes
@@ -858,6 +1031,27 @@ parallel. Ships this release.
 ### Tasks
 
 - [ ] Journal page navigation buttons (show previous/next) duplication.
+- [ ] Task history status badges derive their CSS class from a translated label
+  (`user/show.gsp:190`).
+    - `getNotebookTaskList` bakes the *display* string into the SQL via
+      `getTaskStatus()` (`TaskService.groovy:1584-1591`), which reads
+      `status.validated` / `status.invalidated` / `status.transcribed` /
+      `status.saved` from `messages.properties`. The GSP then reverse-engineers a
+      modifier out of it: `badge--${row.status.replace(" ", "-").toLowerCase()}`.
+    - Two consequences. The badge silently loses its colour the moment a label is
+      reworded or the app is viewed in a non-English locale, because the derived
+      class no longer matches anything in `scss/modules/_badges.scss`. And the
+      status comparisons at lines 184, 187 and 207 do a string match against
+      `message(code: 'status.*')`, so the *business* logic that decides whether to
+      show "by me" and whether the validate button reads "Review" or "Validate" is
+      driven by presentation text.
+    - Fix: promote the filter constants at `TaskService.groovy:1413-1415`
+      (`FILTER_TRANSCRIBED`, `FILTER_VALIDATED`, `FILTER_SAVED`) to public static
+      finals, return a machine-readable status key on each row alongside the
+      display label, and have the GSP compare against — and build the badge
+      modifier from — the constant rather than `message(code: ...)`.
+    - Note the constants only cover three of the four statuses `getTaskStatus()`
+      can emit; `invalidated` ("In progress", `badge--in-progress`) needs one too.
 
 ---
 
@@ -1254,3 +1448,190 @@ parallel. Ships this release.
       bodies of the two large `admin/tools.gsp` blocks was done, so those two hunks are large in the diff despite being
       a two-line change.
     - Verified with `./gradlew compileGroovy` (BUILD SUCCESSFUL) and a div-balance check on every edited GSP.
+- 2026-09-25 — Phase 8 group 2: three scope decisions taken. Document change only; no code touched.
+    - **Modals: BS5 native, Bootbox retires.** The 2026-09-24 restructure recorded "Bootbox-vs-BS5" as blocking group
+      2. Decided in favour of a single shared dialog helper over `bootstrap.Modal`, exposing `confirm` and `alert`
+      only. bootbox 6.0.4 is vendored at `assets/lib/compile/bootbox/6.0.4/`, manifested by
+      `assets/javascripts/bootbox.js` and pulled in by `digivol.js`, `digivol-transcribe.js` and
+      `digivol-stageImage.js`. A helper rather than 30 hand-written modals: the call-site count is the justification,
+      and the API is deliberately two functions so it cannot drift back into Bootbox's option-object surface. Two
+      call sites already use that object form and convert by hand — `project/index.gsp` 367 (`bootbox.dialog`) and
+      `admin/tools.gsp` 189 (`bootbox.confirm({…})`).
+    - This also resolves the `aria-hidden` warnings item by deleting its cause rather than patching it.
+    - **Tags: `.badge` with semantic modifiers**, in two vocabularies. The audit found the app has two unrelated kinds
+      of tag wearing the same BS3 class. System status (archived, inactive, in progress, saved, transcribed,
+      validated) is semantic and takes named modifiers. Label-category colour is chosen by an admin from the
+      `LabelColour` enum (`base, green, red, yellow, blue, lightblue, orange, purple, darkgrey`, defaulting to
+      `base`) and stored on `LabelCategory.labelColour`; it carries no meaning, so it keeps colour-named modifiers
+      and needs no data migration.
+    - **Tables move to group 2 → group 7.** See the item there for the reasoning and the accepted group 5 rework.
+    - Found during the audit, to be actioned with the badge work:
+        - `ProjectController.LABEL_COLOURS` (27) is dead. It feeds `catColourMap` (557), passed to the view as
+          `labelColourMap` (540, 721) — **no GSP reads that model key.** The six-colour cycler assigned label
+          categories a colour by list index, which the DB column superseded. Whole chain to be deleted, committed
+          separately as it is controller code.
+        - `.label` has had no CSS since BS4, so every tag in the app currently renders as unpadded body-coloured text
+          on a colour block — the nine `.label-*` rules in `digivol-custom.css` 373–408 set `background-color` and
+          nothing else. Migrating to `.badge` is therefore a **visible change on every page with a tag**, and a fix
+          rather than a restyle.
+        - `.badge { border-radius: 1em }` (`digivol-custom.css` 354) must move into the new SCSS with them — that
+          file loads after the SCSS and silently wins.
+        - BS5's `.badge` supplies `color: #fff`, so the palette modifiers need only `background-color`. Exception:
+          `--yellow` (`#f0ad4e`) and `--green` (`#5cb85c`) fail contrast against white and take `color: #212529`.
+        - Commented-out `label label-base` at `user/adminList.gsp` 103 — dead, delete.
+    - Out of scope, recorded so they are not swept in by a `pill`/`badge` grep: `.pill--selected`, `.pill--reset` and
+      the `.pill--*-unselected` set are filter-nav controls, not badges; `.badges` (`modules/_components.scss` 754)
+      and the `.badge-list-*` block in `notebook-2/_notebook.scss` size achievement **images** and share the name by
+      coincidence.
+    - Audit caveat: the workspace grep capped at 20 results on `bootbox.`, `label-*`, `badge` and `pill`. Counts in
+      this entry come from single-term greps; the modal call-site list must still be re-run per term before step 2
+      edits, per the correction repeated on 2026-09-23 and 2026-09-24.
+- 2026-09-25 — Phase 8 group 2: "Standardise modal styles" completed. Bootbox deleted; all modals are now BS5 native.
+    - **The audit above understated the job, in the app's favour.** `bvp.showModal` / `bvp.hideModal` already existed
+      in `assets/javascripts/bvp-common.js` as a wrapper around `bootbox.dialog`, carrying a
+      `TODO: Replace with Bootstrap 5 native modals`. It has **52 usages across 37 files** — it is the app's primary
+      modal mechanism, loading a fragment by URL. Because every one of those call sites talks to the wrapper and not
+      to bootbox, reimplementing the wrapper internals on `bootstrap.Modal` converted all 37 files with **zero
+      call-site edits**. The option surface (`url`, `id`, `title`, `size`, `className`, `backdrop`, `animate`,
+      `centerVertical`, `buttons`, and the four lifecycle callbacks) is unchanged.
+    - Direct bootbox usage was 43 calls: 23 `confirm`, 17 `alert`, 3 `dialog` (one of which was inside the wrapper).
+      `bvp.confirm` and `bvp.alert` were added as thin wrappers and every call site converted.
+    - **`confirm` no longer passes a boolean.** All 23 sites were `function(result) { if (result) { … } }`; they are
+      now `function() { … }`. This is the one genuinely risky edit in the task — a missed site would leave `result`
+      `undefined`, silently turning a delete button into a no-op. Verified by grepping for a `result`/`answer`
+      parameter or guard within three lines of every `bvp.confirm`: zero matches.
+    - Deleted `assets/lib/compile/bootbox/6.0.4/` (2 files), the `assets/javascripts/bootbox.js` manifest, 3
+      `//= require bootbox` lines and **7 `<asset:javascript src="bootbox">` page includes** — the audit predicted
+      only the 3 requires. `digivol-transcribe.js` and `digivol-stageImage.js` required bootbox but not
+      `bvp-common`, so those two requires became `//= require bvp-common` rather than being dropped.
+    - Bugs found and fixed while in scope:
+        - **`transcribe/templateViews/questionnaireTranscribe.gsp` 304 called
+          `bootbox.confirm(message, cancelLabel, okLabel, callback)`** — the bootbox 3 signature, removed in bootbox 4.
+          `mapArguments` (vendored source, 906–922) throws `Invalid argument length` for more than 2 arguments, so
+          **the "submit for validation anyway" confirmation on questionnaire templates has been throwing, not
+          prompting, since the bootbox upgrade.** Rebuilt on `bvp.showModal` with its intended
+          `okCaption`/`cancelCaption` labels, which had never reached the screen. This is a second, independent cause
+          behind the group 5 "Questionnaire template is broken" item — that item is about the carousel data
+          attributes and stays open.
+        - `admin/tools.gsp` 187–188 read `data-confirm` / `data-cancel` into local variables that were never passed
+          to bootbox. No markup in the repo sets either attribute (grep: 0 hits). Dead code, removed with the
+          conversion.
+        - `validationRule/list.gsp` 75 assigned to an undeclared global `_result` that nothing reads. Removed. The
+          same line in `template/edit.gsp` 320 **is** load-bearing — it is a re-entry guard for a second click — and
+          is preserved as `_result = true`.
+    - `digivol-stageImage.js` 176 was the only `alert` with a dismiss callback (re-try the upload after re-login).
+      Rebuilt on `showModal` with a button callback rather than adding a callback parameter to `bvp.alert`.
+      `project/index.gsp` 367's tutorial `bootbox.dialog` likewise became `showModal({message})`, which is why the
+      wrapper gained a `message` option for inline content — one option, one consumer each, rather than two new APIs.
+    - a11y: the generated markup carries `aria-labelledby` pointing at the title, a real `.btn-close` with an
+      `aria-label`, and `tabindex="-1"` on the root. The helper disposes the Modal instance and removes the element
+      on `hidden.bs.modal`, so nothing is left in the DOM.
+    - **Correction, same day.** This entry originally claimed the `aria-hidden` warnings were "resolved by deletion"
+      of bootbox. They were not — reported still occurring on `#bvp-confirm`:
+      *"Blocked aria-hidden on an element because its descendant retained focus."* The cause is Bootstrap 5.0.2
+      itself, which sets `aria-hidden="true"` on the modal root while focus is still on the button that dismissed it;
+      it is unrelated to bootbox and would have appeared on any native modal. Fixed by capturing
+      `document.activeElement` before opening and, on `hide.bs.modal`, blurring any control still focused inside the
+      modal and restoring focus to the opener — which is the correct focus behaviour regardless. The 8 hand-written
+      page modals are not covered by this and are now a tracked follow-up. Lesson: "we deleted the library" is not
+      evidence a symptom is gone; the symptom needs re-testing.
+    - **Second correction, 2026-09-25.** The fix above was still incomplete: the warning was reported again on
+      `#moveFieldModal` and `#bvp-confirm`, this time with the modal root *itself* holding focus
+      (`Element with focus: <div.modal fade#moveFieldModal>`). The blur was working; the restore was undoing it.
+      Bootstrap 5.0.2's `hide()` dispatches `hide.bs.modal` and only *then* calls
+      `EventHandler.off(document, EVENT_FOCUSIN)` (`bootstrap.bundle.js:4532-4550`), so the focus trap is still armed
+      while our handler runs: `opener.focus()` fires a `focusin`, the trap sees a target outside the modal and calls
+      `element.focus()`, and focus lands on the modal root just before `aria-hidden` is applied. Restoration moved to
+      `hidden.bs.modal`, where the trap is gone; the blur stays on `hide` because it must precede `aria-hidden`.
+      Lesson: when a fix aimed at a warning leaves the warning in place, re-read *which* element it now names — the
+      change of subject from a descendant to the root was the whole diagnosis.
+    - Native `window.confirm()` swept at the same time, since the new convention forbids it. **8 sites across 7
+      files**, not the 2 reported: `template/manageFields.gsp` 184 and 210, `forum/viewForumTopic.gsp` 104 and 115,
+      `newsItem/edit.gsp` 147, `user/edit.gsp` 103, `picklist/edit.gsp` 48, `templateField/edit.gsp` 148. The first
+      five were inline `if (confirm(…)) { … }` blocks and converted directly. The last three were
+      `<g:actionSubmit onclick="return confirm(…)">`, where the browser dialog was load-bearing for form submission:
+      these took the same re-entry-guard pattern already used at `template/edit.gsp` 319 — prevent default, confirm,
+      then re-click the submit input so Grails still receives the `_action_delete` parameter. `picklist/edit.gsp`
+      had no script block and gained one. Left alone: `codemirror/5.0/addon/search/search.js` 61, vendored.
+    - `bvp.hideModal()` was `bootbox.hideAll()`. The first rewrite used `document.querySelectorAll('.modal.show')`,
+      which would also have closed the 8 hand-written page modals — a behaviour widening. Corrected before commit to
+      track only elements the helper opened.
+    - Verified with `./gradlew assetCompile` and `./gradlew compileGroovy`, both clean, and a repo-wide grep for
+      `bootbox` returning **0** source hits. Note `build/assets/*` still contains bootbox in stale hashed artifacts
+      from builds before 2026-09-25; same artefact-vs-source distinction recorded for `btn-file` on 2026-09-23.
+    - Deliberately not done: the 8 hand-written `.modal` blocks in GSPs are untouched — they are page markup, not
+      library usage, and restyling them belongs with the alert/table work. No modal taglib.
+- 2026-09-25 — Phase 8 group 2: "Tag styles" completed for the BS3 `label` half. New `scss/modules/_badges.scss`.
+    - **This was a bug fix, not a restyle.** `.label` has had no CSS since Bootstrap 4, and the only rules the app
+      had were nine `.label-<colour>` blocks in `digivol-custom.css` setting `background-color` and nothing else. So
+      every tag in DigiVol — project status, task status, label categories, counters — has been rendering as
+      unpadded, body-coloured text on a bare colour block. **Visible change on every page that shows a tag.**
+    - 27 `label label-*` sites migrated across 17 views plus `VolunteerTagLib` 382–395. Two modifier vocabularies,
+      per the conventions section: semantic status, and a palette mirroring the `LabelColour` enum.
+    - The palette values moved verbatim from `digivol-custom.css` 373–408 so label-category colours are unchanged;
+      only the missing box model is new. The `.badge` radius moved with them from the same file, which loads after
+      the SCSS and would otherwise have kept winning; it was dropped from the inherited `1em` pill to `0.5em` on
+      review the same day, the pill being the older style.
+    - Contrast fixed while in scope: `--yellow`, `--green`, `--inactive` and `--validated` take `color: #212529`.
+      BS5's `.badge` forces `color: #fff`, which against `#f0ad4e` and `#5cb85c` is ~2.2:1 and ~2.4:1 — below WCAG
+      1.4.3. Signed off before implementation.
+    - Inconsistency fixed while in scope: `institution/index.gsp` 60 rendered "inactive" as `label-info` (blue) while
+      `project/index.gsp` 64, `task/adminList.gsp` 24 and `layouts/digivol-projectSettings.gsp` 21 rendered the same
+      status as `label-warning` (amber). Both now `badge--inactive`. This is exactly the drift semantic modifiers
+      exist to prevent — with colour-named classes there was nothing to make the two agree.
+    - `VolunteerTagLib` had a latent bug in the same block: `badgeClass` was initialised to the bare string `"label"`
+      for the "Not yet validated" case, which rendered an unstyled tag. Now `badge badge--neutral`.
+    - Dead code removed: `ProjectController.LABEL_COLOURS` (27), `catColourMap` (557), the `labelColourMap` model key
+      at 540 and 721, and the `var labelColourMap = <cl:json …>` declaration at `project/editGeneralSettings.gsp`
+      232. Committed separately — controller code, not styling.
+    - **Correction to the 2026-09-25 decision entry.** That entry stated "**no GSP reads that model key**". Wrong —
+      `project/editGeneralSettings.gsp` 232 declared a JS variable from it. The conclusion (dead) still holds,
+      because the variable was never read: its only consumer was a commented-out
+      `.addClass(labelColourMap[item.category])` three lines further down. But the evidence given was false, and it
+      was false for the **fifth** time in this phase for the same reason — the grep that produced it combined five
+      alternations and hit the 20-result cap, so the one GSP hit sorted below the cut. The deletion was only caught
+      because a post-change grep for the symbol still returned a hit. Per-term greps, every time.
+    - Also corrected: the same entry described the `.pill--*` migration as part of this task. It is not — see the
+      new follow-up. The pill modifiers do double duty as filter-control state, and filter-nav is out of scope by
+      decision, so migrating the tag half alone would duplicate every colour value.
+    - Verified with `./gradlew compileGroovy` and `./gradlew assetCompile`, both clean; all 16 modifiers present in
+      the compiled `digivol.css`; repo-wide greps for `label label-`, `label-<colour>`, `LABEL_COLOURS`,
+      `catColourMap` and `labelColourMap` all return 0.
+    - Mid-task error worth recording: an edit intended to delete the `LABEL_COLOURS` line instead replaced it with a
+      duplicate `class ProjectController {` declaration. Caught immediately by reading the file back rather than by
+      the compiler, which had not yet been run. Reading back after a structural edit is cheaper than the compile.
+- 2026-09-25 — Phase 8 group 2 closed out: alerts, dropdown carets and the BS2 progress bar. **Group 2 is complete
+  apart from the notebook-2 pill migration and the unreproduced double caret, both tracked as follow-ups.**
+    - Badge radius reduced from the inherited `1em` pill to `0.5em` on review — the pill was the older style.
+    - Alerts: `alert-block` (BS2, no CSS since BS4) removed from 5 sites. Two of those were `class="alert alert-block"`
+      with **no variant at all** (`transcribe/_imageSelectWidget.gsp` 9, `transcribe/_cameratrapWidget.gsp` 9) — a
+      bare `.alert` in BS5 has a transparent border and no background, so the "Warnings:" blocks on the transcribe
+      widgets have been rendering as invisible boxes. Both now `alert-warning`. `picklist/wildcount.gsp` 50
+      (flash message) took `alert-info`.
+    - `project/_projectDetailsTable.gsp` 176 used `<tr class="alert">` — `.alert` is a block component, never a table
+      row, and it contributed padding and a transparent border to a `<tr>`. Now `table-warning`, which is the BS5
+      row variant and what the warning icon beside it always implied.
+    - **Duplicate × found and fixed:** 5 `.btn-close` elements carried a literal `&times;`. Bootstrap 5 draws the ×
+      as a background image, so every one of them rendered **two** × glyphs
+      (`institutionAdmin/applications.gsp` 108, `institutionAdmin/index.gsp` 149, `picklist/manage.gsp` 107,
+      `picklist/wildcount.gsp` 51, `transcribe/_imageSelectWidget.gsp` 10). This may be what the "double caret"
+      report actually referred to — see the follow-up.
+    - a11y in the same fix: four of those close buttons had `aria-hidden="true"` on a focusable control, and the
+      fifth was an `<a href="#">` rather than a button. All now `<button type="button" … aria-label="Close">`. Same
+      defect class as the modal `aria-hidden` issue fixed earlier the same day.
+    - Dropdowns: 11 `<span class="caret">` removed. They were **invisible, not duplicated** — `.caret` has had no
+      CSS since BS4 and none exists anywhere in the pipeline. The double caret was not reproduced; what was ruled
+      out is recorded on the follow-up item so the next attempt doesn't repeat the search.
+    - Progress bar: `picklist/wildcount.gsp` 62–65 converted from BS2 `.progress.progress-striped.active > .bar` to
+      `.progress > .progress-bar.progress-bar-striped.progress-bar-animated`, and both JS handlers (now 128/133)
+      retargeted. The CSV upload bar had no fill at all. Added `role="progressbar"`, `aria-valuemin/max/now` and an
+      `aria-label`; the handlers now update `aria-valuenow` alongside the width, so the value is actually announced.
+    - **Correction to the group 2 task list:** it named `picklist/wildcount.gsp` as *the* `.progress > .bar` site.
+      There were two. `achievementDescription/_form.gsp` 89–93 had the same BS2 markup and was found only by a
+      post-change verification grep, not by the audit. Its uploader was broken twice over: the BS2 classes have had
+      no CSS since BS4, **and** the handler at 223 selected `$('#upload-progress bar')` — a bare *element* selector
+      for a `<bar>` tag that does not exist, so it had never matched anything even when the CSS did work. Both
+      fixed. Sixth instance this phase of a single-site claim that was really multi-site.
+    - Verified with `./gradlew assetCompile` and `./gradlew compileGroovy`, both clean. Greps confirm 0 remaining
+      `alert-block`, 0 `<span class="caret">`, 0 `&times;` inside `.btn-close`, 0 BS2 progress markup, and 1
+      intentional bare `.alert` (the runtime-variant S3 placeholder).
