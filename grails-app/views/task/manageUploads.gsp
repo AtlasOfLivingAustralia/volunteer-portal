@@ -215,21 +215,30 @@ jQuery(function($) {
             encodeURIComponent(q);
     }
 
-    function bindConfirm(selector, messageFn) {
+    function bindConfirm(selector, safe, messageFn) {
+        if (safe === undefined) {
+            safe = false;
+        }
         $(selector).click(function(e) {
             var href = $(this).data('href');
             var name = $(this).data('imageName');
-            bvp.confirm(messageFn(name), function() {
-                $.postGo(href);
-            });
+            if (safe) {
+                bvp.confirmSafe(messageFn(name), function() {
+                    $.postGo(href);
+                });
+            } else {
+                bvp.confirm(messageFn(name), function() {
+                    $.postGo(href);
+                });
+            }
         });
     }
 
-    bindConfirm('.delete-task-descriptor', function(name) {
+    bindConfirm('.delete-task-descriptor', false, function(name) {
       return 'Are you sure you wish to delete the task descriptor (image upload) for "' + name + '"?';
     });
 
-    bindConfirm('.reset-task-descriptor', function() {
+    bindConfirm('.reset-task-descriptor', true, function() {
       return 'Are you sure you wish to reset the retries remaining for this task descriptor (image upload)?';
     });
 

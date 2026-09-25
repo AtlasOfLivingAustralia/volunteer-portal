@@ -72,7 +72,7 @@ function cameratrap(smImageInfos, smItems, recordValues, placeholders, transcrib
         // check if we're don't confirm and confirm
         var dontConfirm = amplify.store("bvp_transcribe_dontconfirm");
         if (dontConfirm) {
-          bvp.confirm('Do you wish to record "' + answer + '" as your answer?', function() {
+          bvp.confirmSafe('Do you wish to record "' + answer + '" as your answer?', function() {
             $btnSave.click();
           });
         } else {

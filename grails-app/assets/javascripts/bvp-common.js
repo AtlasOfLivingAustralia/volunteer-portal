@@ -227,19 +227,31 @@ let bvp = {};
         });
     };
 
-    /**
-     * Confirmation dialog. onConfirm runs only when the user confirms.
-     */
-    lib.confirm = function(message, onConfirm) {
+    function confirmWith(message, onConfirm, confirmClassName) {
         lib.showModal({
             id: 'bvp-confirm',
             title: 'Please confirm',
             message: message,
             buttons: {
                 cancel: { label: 'Cancel', className: 'btn-outline-secondary' },
-                confirm: { label: 'OK', className: 'btn-danger', callback: onConfirm }
+                confirm: { label: 'OK', className: confirmClassName, callback: onConfirm }
             }
         });
+    }
+
+    /**
+     * Confirmation before a destructive action (delete, archive, permanent removal).
+     * onConfirm runs only when the user confirms.
+     */
+    lib.confirm = function(message, onConfirm) {
+        confirmWith(message, onConfirm, 'btn-danger');
+    };
+
+    /**
+     * Confirmation before a reversible action. Neutral OK button.
+     */
+    lib.confirmSafe = function(message, onConfirm) {
+        confirmWith(message, onConfirm, 'btn-primary');
     };
 
     /**

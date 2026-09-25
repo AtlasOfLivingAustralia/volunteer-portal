@@ -58,7 +58,7 @@
                             </div>
                             <button class="confirmation-required btn btn-sm btn-warning" data-href="${createLink(action: 'reindexAllTasks')}"
                                     data-message="reindex all Task objects?  This will take a long time.">Reindex all tasks</button>
-                            <button class="confirmation-required btn btn-sm btn-danger" data-href="${createLink(action: 'rebuildIndex')}"
+                            <button class="confirmation-required btn btn-sm btn-warning" data-href="${createLink(action: 'rebuildIndex')}"
                                     data-message="destroy and recreate the search index?  This will take a long time.">Recreate index</button>
 
                             <div>
@@ -183,7 +183,7 @@
 
     jQuery(function ($) {
         $('button.confirmation-required').click(function (e) {
-            bvp.confirm("Are you sure you want to " + e.target.dataset.message, function () {
+            bvp.confirmSafe("Are you sure you want to " + e.target.dataset.message, function () {
                 window.open(e.target.dataset.href, "_self");
             });
         });
