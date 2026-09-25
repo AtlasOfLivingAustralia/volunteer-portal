@@ -65,12 +65,12 @@
                     </div>
                 </th>
                 <td data-key="status">
-                <g:if test="${achievementAwarded}">
-                    <div><button class="pill pill--bg-green">Achieved</button> <span class="badge-list-table__rarity-description">Awarded ${achievementAwarded.format("dd-MM-yyyy")}</span></div>
-                </g:if>
-                <g:else>
-                    <button class="pill pill--bg-orange">Not Achieved</button>
-                </g:else>
+                    <g:if test="${achievementAwarded}">
+                        <div><span class="badge badge--achieved">Achieved</span> <span class="badge-list-table__rarity-description">Awarded ${achievementAwarded.format("dd-MM-yyyy")}</span></div>
+                    </g:if>
+                    <g:else>
+                        <span class="badge badge--not-achieved">Not Achieved</span>
+                    </g:else>
 
                 </td>
                 <td class="td--text-right" data-key="percentage-achieved">

@@ -112,6 +112,19 @@
 	background-color: #4b5359;
 }
 
+/* Achievement status - semantic */
+
+.badge--achieved {
+	background-color: #5cb85c;
+	color: #212529;
+}
+
+.badge--not-achieved {
+	background-color: #e67e22;
+}
+
+/* Project info on project list */
+
 .not-a-badge,
 .not-a-badge:hover {
 	color: var(--brand-primary);
