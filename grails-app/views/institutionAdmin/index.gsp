@@ -46,7 +46,7 @@
             <cl:ifSiteAdmin>
             <div class="row">
                 <div class="col-md-3">
-                    <g:select class="form-control statusFilter" name="statusFilter" from="${[[key: 'active', value: 'Active Institutions'], [key: 'inactive', value: 'Inactive Institutions']]}"
+                    <g:select class="form-select statusFilter" name="statusFilter" from="${[[key: 'active', value: 'Active Institutions'], [key: 'inactive', value: 'Inactive Institutions']]}"
                               optionKey="key"
                               optionValue="value"
                               value="${params?.statusFilter}"
@@ -154,7 +154,7 @@
             <div class="modal-body">
                 <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
                       method="POST">
-                    <select name="cid" id="cid" class="form-control">
+                    <select name="cid" id="cid" class="form-select">
                     </select>
                 </form>
             </div>

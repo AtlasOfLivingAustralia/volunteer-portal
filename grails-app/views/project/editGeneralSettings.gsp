@@ -44,7 +44,7 @@
     <div class="form-group">
         <label class="form-label col-md-3" for="institutionId">Expedition institution</label>
         <div class="col-md-6">
-        <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
+        <g:select class="form-select" name="institutionId" id="institution" from="${institutionList}"
           optionKey="id"
           value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
@@ -84,7 +84,7 @@
         <label class="form-label col-md-3" for="template">Template</label>
 
         <div class="col-md-6">
-            <select name="template" id="template" class="form-control">
+            <select name="template" id="template" class="form-select">
                 <cl:templateSelectOptions currentTemplateId="${projectInstance.template?.id}" templateList="${templates}" />
             </select>
         </div>
@@ -106,7 +106,7 @@
 
         <div class="col-md-6">
             <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
-                      optionValue="label" optionKey="id" class="form-control"/>
+                      optionValue="label" optionKey="id" class="form-select"/>
         </div>
     </div>
 

@@ -94,7 +94,7 @@
                                         <label class="form-label col-sm-2" for="searchType">Search Type</label>
 
                                         <div class="col-sm-10">
-                                            <select id="searchType" class="form-control" name="searchType">
+                                            <select id="searchType" class="form-select" name="searchType">
                                                 <option value="dfs_query_then_fetch">DFS Query then Fetch</option>
                                                 <option value="dfs_query_and_fetch">DFS Query and Fetch</option>
                                                 <option value="query_then_fetch" selected>Query then Fetch</option>

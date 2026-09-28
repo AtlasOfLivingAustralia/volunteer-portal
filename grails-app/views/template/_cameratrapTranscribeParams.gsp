@@ -48,7 +48,7 @@
 
     <div class="col-md-6">
         <g:select from="${picklists}" name="animalsPicklistId" optionKey="id" optionValue="uiLabel"
-                  class="form-control"/>
+                  class="form-select"/>
     </div>
     <div class="col-md-3">
         <button type="button" class="btn btn-sm btn-outline-secondary btn-view-ct-picklist">

@@ -32,7 +32,7 @@
         <g:message code="institution.label" default="Institution"/>
     </label>
     <div class="col-md-6">
-        <g:select class="form-control institution" name="institution" from="${institutionList}"
+        <g:select class="form-select institution" name="institution" from="${institutionList}"
                   optionKey="id" optionValue="name"
                   disabled="${(disableEdit || institutionMessageInstance?.institution?.id)}"
                   value="${institutionMessageInstance?.institution?.id}" />
@@ -46,7 +46,7 @@
         <g:message code="institutionMessage.recipientType.label" default="Recipient Type"/>
     </label>
     <div class="col-md-6">
-        <g:select class="form-control recipient-type" optionKey="key" optionValue="value"
+        <g:select class="form-select recipient-type" optionKey="key" optionValue="value"
                   disabled="${(disableEdit)}"
                   name="recipientType" from="${recipientTypeList}" value="${recipientType}" />
     </div>

@@ -45,7 +45,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <g:select class="form-control institutionFilter"
+                    <g:select class="form-select institutionFilter"
                               name="institutionFilter"
                               from="${institutionList}"
                               optionKey="id"

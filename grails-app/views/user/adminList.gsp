@@ -37,7 +37,7 @@
             <div class="row">
                 <div class="col-md-3">
 
-                    <g:select class="form-control labelFilter" name="labelFilter" from="${userLabels}"
+                    <g:select class="form-select labelFilter" name="labelFilter" from="${userLabels}"
                               optionKey="id"
                               optionValue="value"
                               value="${params?.labelFilter}"

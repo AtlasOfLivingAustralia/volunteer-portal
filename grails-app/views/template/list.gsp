@@ -69,7 +69,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
-                    <g:select class="form-control" name="institution" id="institution" from="${Institution.listApproved(sort: 'name', order: 'asc')}"
+                    <g:select class="form-select" name="institution" id="institution" from="${Institution.listApproved(sort: 'name', order: 'asc')}"
                               optionKey="id"
                               value="${params?.institution}" noSelection="['all':'- View ALL Institutions -']" />
                 </div>
@@ -86,11 +86,11 @@
                     <input type="text" id="searchbox" class="form-control" value="${params.q}" placeholder="Filter by template name ..."/>
                 </div>
                 <div class="col-md-${viewFilterWidth}">
-                    <g:select class="form-control" name="viewName" id="viewName" from="${viewFilter}"
+                    <g:select class="form-select" name="viewName" id="viewName" from="${viewFilter}"
                               value="${params?.viewName}" noSelection="['':'- View ALL views -']" />
                 </div>
                 <div class="col-md-2">
-                    <g:select class="form-control" name="status" id="status" from="${statusFilter}"
+                    <g:select class="form-select" name="status" id="status" from="${statusFilter}"
                         optionKey="key" optionValue="value"
                               value="${params?.status}" noSelection="['':'- View ALL templates -']" />
                 </div>

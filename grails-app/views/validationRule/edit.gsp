@@ -47,7 +47,7 @@
                         <div class="form-group ${hasErrors(bean: rule, field: 'validationType', 'has-error')}">
                             <label for="validationType" class="form-label col-md-3"><g:message code="validationRule.validationType.label" default="Validation Type"/></label>
                             <div class="col-md-4">
-                                <g:select name="validationType" class="form-control" from="${au.org.ala.volunteer.ValidationType.values()}"
+                                <g:select name="validationType" class="form-select" from="${au.org.ala.volunteer.ValidationType.values()}"
                                           value="${rule.validationType}"/>
                             </div>
                         </div>

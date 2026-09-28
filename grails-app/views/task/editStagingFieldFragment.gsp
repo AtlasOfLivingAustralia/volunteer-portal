@@ -2,7 +2,7 @@
     <label class="form-label col-md-3" for="fieldType">Field type</label>
 
     <div class="col-md-6">
-        <g:select class="fieldType form-control" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
+        <g:select class="fieldType form-select" name="fieldType" from="${au.org.ala.volunteer.FieldDefinitionType.values()}"
                   value="${fieldDefinition?.fieldDefinitionType}"/>
     </div>
     <div class="col-md-3">
@@ -29,7 +29,7 @@
             <g:textField name="definition" value="${fieldDefinition?.format}" class="form-control"/>
 
             <g:if test="${hasDataFile && dataFileColumns}">
-                <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" class="form-control"/>
+                <g:select name="dataFileColumn" from="${dataFileColumns}" value="${fieldDefinition?.format}" class="form-select"/>
             </g:if>
         </div>
     </div>
@@ -40,7 +40,7 @@
 
     <div class="col-md-6">
         <g:select name="fieldName" from="${au.org.ala.volunteer.DarwinCoreField.values().sort({ it.name() })}"
-                  value="${fieldDefinition?.fieldName}" class="form-control"/>
+                  value="${fieldDefinition?.fieldName}" class="form-select"/>
     </div>
 </div>
 

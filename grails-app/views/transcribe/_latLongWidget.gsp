@@ -1,7 +1,7 @@
 <div class="latLongWidget ${cssClass}" targetField="${field.fieldType}">
     <div class="row">
         <div class="col-md-12">
-            <g:select tabindex="${tabindex}" class="form-control latLongFormatSelector" optionKey="value"
+            <g:select tabindex="${tabindex}" class="form-select latLongFormatSelector" optionKey="value"
                       optionValue="label" name="${field.fieldType}.format" value=""
                       from="${[[label: "D°M'S\"", value: "DMS"], [label: "Decimal", value: "DD"]]}"/>
         </div>
@@ -32,7 +32,7 @@
                 <g:else>
                     <g:set var="directionFrom" value="${["", "E", "W"]}"/>
                 </g:else>
-                <g:select tabindex="${tabindex}" class="form-control direction" name="${field.fieldType}.direction"
+                <g:select tabindex="${tabindex}" class="form-select direction" name="${field.fieldType}.direction"
                           value="" from="${directionFrom}"/>
             </div>
         </div>

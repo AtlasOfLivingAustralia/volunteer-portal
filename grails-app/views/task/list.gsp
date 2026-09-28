@@ -58,8 +58,8 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <g:select class="form-control statusFilter" name="statusFilter" from="${statusFilterList}"
-                              optionKey="key" optionValue="value" style="height:32px"
+                    <g:select class="form-select statusFilter" name="statusFilter" from="${statusFilterList}"
+                              optionKey="key" optionValue="value"
                               value="${params?.statusFilter}" noSelection="['':'All tasks']" />
 
                 </div>

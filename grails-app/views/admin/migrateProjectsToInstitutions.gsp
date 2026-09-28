@@ -48,7 +48,7 @@
 
                             <td class="col-md-4">
                                 <form id="select-${project.id}">
-                                    <select name="inst-${project.id}" id="inst-${project.id}" class="form-control">
+                                    <select name="inst-${project.id}" id="inst-${project.id}" class="form-select">
                                         <g:each in="${project.scores}" var="score" status="j">
                                             <option <g:if test="${j == 0}">selected </g:if>value="${score.id}">${score.name}</option>
                                         </g:each>

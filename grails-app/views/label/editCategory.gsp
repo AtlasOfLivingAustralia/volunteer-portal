@@ -73,7 +73,7 @@
                             </label>
                             <div class="col-md-4" style="vertical-align: middle;">
                                 <g:select name="labelColour" id="label-colour"
-                                          class="form-control"
+                                          class="form-select"
                                           from="${LabelColour.values()}"
                                           keys="${LabelColour.values()*.name()}"
                                           required=""

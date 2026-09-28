@@ -71,7 +71,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <g:select class="form-control institutitonFilter" name="institution" from="${institutionList}"
+                        <g:select class="form-select institutitonFilter" name="institution" from="${institutionList}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Filter by Institution -']" />
                     </div>

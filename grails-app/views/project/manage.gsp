@@ -100,14 +100,14 @@
             <div class="row">
                 <div class="col-md-6">
 
-                        <g:select class="form-control institutitonFilter" name="institutionFilter" from="${institutionList}"
+                        <g:select class="form-select institutitonFilter" name="institutionFilter" from="${institutionList}"
                                   optionKey="id"
                                   value="${params?.institutionFilter}" noSelection="['':'- Filter by Institution -']" />
 
                 </div>
                 <div class="col-md-3">
 
-                        <g:select class="form-control statusFilter" name="statusFilter" from="${statusFilterList}"
+                        <g:select class="form-select statusFilter" name="statusFilter" from="${statusFilterList}"
                                     optionKey="key" optionValue="value"
                                   value="${params?.statusFilter}" noSelection="['':'- Filter by Status -']" />
 

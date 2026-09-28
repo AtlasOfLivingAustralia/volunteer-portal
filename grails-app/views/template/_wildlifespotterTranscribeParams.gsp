@@ -41,7 +41,7 @@
         </cl:helpText>
     </label>
     <div class="col-md-6">
-        <g:select class="form-control"
+        <g:select class="form-select"
                   name="autoValidationType"
                   from="${AutoValidationType.values()}"
                   optionValue="label"

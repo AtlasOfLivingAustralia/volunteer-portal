@@ -24,7 +24,7 @@
         <g:message code="achievementDescription.type.label" default="Type"/>    </label>
 
     <div class="col-md-6">
-        <g:select name="type" class="form-control" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required=""
+        <g:select name="type" class="form-select" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required=""
                   value="${achievementDescriptionInstance?.type?.name()}"/>
     </div>
 </div>

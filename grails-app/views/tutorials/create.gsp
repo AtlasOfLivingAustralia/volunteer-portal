@@ -50,11 +50,11 @@
                             <label class="form-label col-md-3" for="institutionId">Institution*</label>
                             <div class="col-md-6">
                             <cl:ifSiteAdmin>
-                                <g:select class="form-control" name="institutionId" id="institutionId" from="${institutionList}"
+                                <g:select class="form-select" name="institutionId" id="institutionId" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" />
                             </cl:ifSiteAdmin>
                             <cl:ifNotSiteAdmin>
-                                <g:select class="form-control" name="institutionId" id="institutionId" from="${institutionList}"
+                                <g:select class="form-select" name="institutionId" id="institutionId" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
                             </cl:ifNotSiteAdmin>
                             </div>

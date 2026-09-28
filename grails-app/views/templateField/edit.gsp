@@ -37,7 +37,7 @@
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'has-error')}">
                             <label for="fieldType" class="col-md-2 form-label"><g:message code="templateField.fieldType.label" default="Field Type"/></label>
                             <div class="col-md-6">
-                                <g:select name="fieldType" class="form-control"
+                                <g:select name="fieldType" class="form-select"
                                           from="${au.org.ala.volunteer.DarwinCoreField?.values()?.sort { it.name() }}"
                                           keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()?.sort { it }}"
                                           value="${templateFieldInstance?.fieldType?.name()}"/>
@@ -92,7 +92,7 @@
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'has-error')}">
                             <label for="validationRule" class="col-md-2 form-label"><g:message code="templateField.validationRule.label" default="Validation Rule"/></label>
                             <div class="col-md-6">
-                                <g:select name="validationRule" class="form-control" from="${validationRules}"
+                                <g:select name="validationRule" class="form-select" from="${validationRules}"
                                           value="${templateFieldInstance.validationRule}"/>
                             </div>
                         </div>
@@ -100,7 +100,7 @@
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'template', 'has-error')}">
                             <label for="template" class="col-md-2 form-label"><g:message code="templateField.template.label" default="Template"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-control" name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id"
+                                <g:select class="form-select" name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id"
                                           value="${templateFieldInstance?.template?.id}" noSelection="['null': '']"/>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'category', 'has-error')}">
                             <label for="category" class="col-md-2 form-label"><g:message code="templateField.category.label" default="Category"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-control" name="category" from="${au.org.ala.volunteer.FieldCategory?.values()}"
+                                <g:select class="form-select" name="category" from="${au.org.ala.volunteer.FieldCategory?.values()}"
                                           keys="${au.org.ala.volunteer.FieldCategory?.values()*.name()}"
                                           value="${templateFieldInstance?.category?.name()}"/>
                             </div>
@@ -125,7 +125,7 @@
                         <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'type', 'has-error')}">
                             <label for="type" class="col-md-2 form-label"><g:message code="templateField.type.label" default="Type"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-control" name="type" from="${au.org.ala.volunteer.FieldType?.values()}"
+                                <g:select class="form-select" name="type" from="${au.org.ala.volunteer.FieldType?.values()}"
                                           keys="${au.org.ala.volunteer.FieldType?.values()*.name()}"
                                           value="${templateFieldInstance?.type?.name()}"/>
                             </div>

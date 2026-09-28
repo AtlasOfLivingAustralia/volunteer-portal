@@ -40,7 +40,7 @@
                 <g:select name="labelFilter"
                           from="${userLabelList}"
                           optionKey="id"
-                          class="input-sm form-control col-md-9"
+                          class="input-sm form-select col-md-9"
                           optionValue="value"
                           noSelection="['':'- Filter by Tag -']"/>
             </div>

@@ -31,7 +31,7 @@
                         <div class="form-group ${hasErrors(bean: picklistInstance, field: 'name', 'has-error')}">
                             <label class="form-label col-md-2" for="name"><g:message code="picklist.name.label" default="Name"/></label>
                             <div class="col-md-4">
-                                <g:select name="name" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
+                                <g:select name="name" class="form-select" from="${DarwinCoreField.values().sort({ it.name() })}"/>
                             </div>
                         </div>
 

@@ -50,7 +50,7 @@
                                 <g:message code="frontPage.projectOfTheDay.label"
                                     default="Expedition of the day"/></label>
                             <div class="col-md-9">
-                                <select name="projectOfTheDay" id="projectOfTheDay" class="form-control">
+                                <select name="projectOfTheDay" id="projectOfTheDay" class="form-select">
                                     <option value="">- Select an Expedition -</option>
                                     <cl:projectSelectGrouped archiveFlag="${false}" inactiveFlag="${false}"
                                                              selectedProject="${frontPage.projectOfTheDay?.id}" />

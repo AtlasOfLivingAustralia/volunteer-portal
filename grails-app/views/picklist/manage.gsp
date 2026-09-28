@@ -29,7 +29,7 @@
                             <label class="col-md-2 form-label" for="picklistId">Picklist</label>
 
                             <div class="col-md-4">
-                                <g:select name="picklistId" class="form-control"
+                                <g:select name="picklistId" class="form-select"
                                           from="${picklistInstanceList}"
                                           optionKey="id" optionValue="uiLabel"
                                           noSelection="['':'- Select a Picklist -']"
@@ -47,7 +47,7 @@
                             <label class="form-label col-md-2" for="institutionCode">Collection Code</label>
 
                             <div class="col-md-4">
-                                <g:select name="institutionCode" class="form-control"
+                                <g:select name="institutionCode" class="form-select"
                                           from="${collectionCodes}"
                                           noSelection="['':'- Select a Collection Code -']"
                                           value="${institutionCode}"/>
@@ -115,7 +115,7 @@
                             <label class="form-label col-md-3" for="upPicklistId">Picklist</label>
 
                             <div class="col-md-6">
-                                <g:select id="upPicklistId" class="form-control" name="picklistId" from="${picklistInstanceList}" optionKey="id"
+                                <g:select id="upPicklistId" class="form-select" name="picklistId" from="${picklistInstanceList}" optionKey="id"
                                           optionValue="uiLabel" value="${params.picklistId}"/>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                             <label class="form-label col-md-3" for="upInstitutionCode">Collection Code</label>
 
                             <div class="col-md-6">
-                                <g:select id="upInstitutionCode" class="form-control" name="institutionCode" from="${collectionCodes}"
+                                <g:select id="upInstitutionCode" class="form-select" name="institutionCode" from="${collectionCodes}"
                                           value="${institutionCode}"/>
                             </div>
                         </div>

@@ -25,7 +25,7 @@
 
             <h5>Coordinate Uncertainty</h5>
             <label for="infoUncert">Adjust uncertainty</label>
-            <select class="form-control" id="infoUncert">
+            <select class="form-select" id="infoUncert">
                 <g:set var="coordinateUncertaintyPL"
                        value="${Picklist.findByName('coordinateUncertaintyInMeters')}"/>
                 <g:each in="${PicklistItem.findAllByPicklistAndInstitutionCodeIsNull(coordinateUncertaintyPL)}" var="item">

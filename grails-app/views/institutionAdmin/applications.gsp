@@ -113,7 +113,7 @@
             <div class="modal-body">
                 <form id="quick-create-form" action="${createLink(controller: 'institutionAdmin', action: 'quickCreate')}"
                       method="POST">
-                    <select name="cid" id="cid" class="form-control">
+                    <select name="cid" id="cid" class="form-select">
                     </select>
                 </form>
             </div>

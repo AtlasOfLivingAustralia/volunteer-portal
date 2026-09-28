@@ -68,7 +68,7 @@
                             <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <g:if test="${availableViews}">
-                                    <g:select from="${availableViews}" name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
+                                    <g:select from="${availableViews}" name="viewName" class="form-select" value="${templateInstance?.viewName}"/>
                                 </g:if>
                                 <g:else>
                                     <g:textField name="viewName" class="form-control" value="${templateInstance?.viewName}"/>

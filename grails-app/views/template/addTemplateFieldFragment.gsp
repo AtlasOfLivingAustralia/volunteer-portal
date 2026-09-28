@@ -3,7 +3,7 @@
 <form>
     <div class="form-group">
         <label class="form-label" for="fieldName">Field:</label>
-        <g:select name="fieldName" class="form-control" from="${DarwinCoreField.values().sort({ it.name() })}"/>
+        <g:select name="fieldName" class="form-select" from="${DarwinCoreField.values().sort({ it.name() })}"/>
     </div>
 
     <div class="form-group">
@@ -18,12 +18,12 @@
 
     <div class="form-group">
         <label class="form-label" for="category">Category:</label>
-        <g:select class="form-control" name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
+        <g:select class="form-select" name="category" from="${FieldCategory?.values()}" value="${FieldCategory.none}"/>
     </div>
 
     <div class="form-group">
         <label class="form-label" for="type">Type:</label>
-        <g:select class="form-control" name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
+        <g:select class="form-select" name="type" from="${FieldType?.values()}" keys="${FieldType?.values()*.name()}"
                   value="${FieldType.text}"/>
     </div>
 

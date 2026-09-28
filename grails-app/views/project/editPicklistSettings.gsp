@@ -28,7 +28,7 @@
         </label>
 
         <div class="col-md-6">
-            <g:select class="form-control" name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
+            <g:select class="form-select" name="picklistInstitutionCode" from="${picklistInstitutionCodes}"
                       value="${projectInstance?.picklistInstitutionCode}"/>
         </div>
 

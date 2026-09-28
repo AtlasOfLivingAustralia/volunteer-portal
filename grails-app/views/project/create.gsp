@@ -52,7 +52,7 @@
                         <div class="form-group">
                             <label class="form-label col-md-3" for="institutionId">Expedition institution*</label>
                             <div class="col-md-6">
-                                <g:select class="form-control" name="institutionId" id="institution" from="${institutionList}"
+                                <g:select class="form-select" name="institutionId" id="institution" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
                             </div>
                             <div id="institution-link-icon" class="col-md-3 form-label text-start">
@@ -90,7 +90,7 @@
 
                             <div class="col-md-6">
                                 <g:select name="template" from="${[]}" id="template" required="required"
-                                          class="form-control" value="${params?.template}" noSelection="['':'- Select a Template -']"/>
+                                          class="form-select" value="${params?.template}" noSelection="['':'- Select a Template -']"/>
                             </div>
                         </div>
 
@@ -99,7 +99,7 @@
 
                             <div class="col-md-6">
                                 <g:select name="projectType" from="${projectTypes}" optionValue="label" optionKey="id"
-                                          class="form-control"  value="${params?.projectType}" noSelection="['':'- Select a Project type -']" required="required"/>
+                                          class="form-select"  value="${params?.projectType}" noSelection="['':'- Select a Project type -']" required="required"/>
                             </div>
                         </div>
 

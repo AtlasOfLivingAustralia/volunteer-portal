@@ -302,7 +302,7 @@ class TranscribeTagLib {
                         optionKey:'value',
                         value: existingValue ?: field?.defaultValue,
                         noSelection:['':''],
-                        'class': "$cssClass form-control",
+                        'class': "$cssClass form-select",
                         validationRule: validationRule?.name,
                         tabindex: tabindex
                     )

@@ -112,7 +112,7 @@
                             direction = e.value < 0 ? 'W' : 'E';
                             directionFrom = ['E', 'W'];
                         }
-                        htmlStr += '<select class="form-control direction latlon" id="'+name+'-direction" name="'+name+'.direction" data-field="'+name+'">';
+                        htmlStr += '<select class="form-select direction latlon" id="'+name+'-direction" name="'+name+'.direction" data-field="'+name+'">';
                         for (let i = 0; i < directionFrom.length; ++i) {
                             htmlStr += '<option value="'+directionFrom[i]+'" ';
                             if (direction === directionFrom[i]) {

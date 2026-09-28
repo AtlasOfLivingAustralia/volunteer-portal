@@ -14,7 +14,7 @@
     <div class="row">
     <cl:ifSiteAdmin>
         <div class="col-md-3">
-            <g:select class=" form-control statusFilter" name="statusFilter" from="${[[key: 'all', value: 'All Reports'], [key: 'active', value: 'Available Reports'], [key: 'archived', value: 'Archived Reports']]}"
+            <g:select class=" form-select statusFilter" name="statusFilter" from="${[[key: 'all', value: 'All Reports'], [key: 'active', value: 'Available Reports'], [key: 'archived', value: 'Archived Reports']]}"
                       optionKey="key"
                       optionValue="value"
                       value="${params?.statusFilter}"
@@ -22,7 +22,7 @@
         </div>
     </cl:ifSiteAdmin>
         <div class="col-md-3">
-            <g:select class="form-control reportFilter" name="reportFilter" from="${reportFilterList}"
+            <g:select class="form-select reportFilter" name="reportFilter" from="${reportFilterList}"
                       value="${params?.reportFilter}"
                       noSelection="['':'- Filter by Report -']" />
         </div>

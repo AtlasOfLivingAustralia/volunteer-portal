@@ -214,7 +214,7 @@
 
                             <div class="form-group" ng-repeat="c in tcc.model.categories">
                                 <label>{{c.name}}</label>
-                                <select class="form-control" ng-options="e.name as e.name for e in c.entries"
+                                <select class="form-select" ng-options="e.name as e.name for e in c.entries"
                                         ng-model="a.categories[c.name]">
                                     <option value="">Other</option>
                                 </select>
