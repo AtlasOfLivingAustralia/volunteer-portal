@@ -377,24 +377,6 @@ Log entry for that date.*
 - [X] Field-level validation feedback is absent. **Completed 2026-09-28** — 65 fields across 10 views migrated to
   `is-invalid` on the control plus a `<cl:fieldError>` block. Decided: messages come from the **server-side Grails
   bean-errors path only**; there is no client-side constraint validation to hook (see the Forms conventions).
-- [ ] The form-level error summaries now duplicate the new field-level messages. Every one of the 10 migrated views
-  also renders `<g:renderErrors as="list">` or a `<g:eachError>` block at the top of the form, so a single validation
-  failure prints its message twice — once in the summary, once under the field. Left in place deliberately: the
-  summary is currently the only thing that surfaces **object-level (global) errors**, which have no field to attach
-  to, so deleting it outright would lose them.
-    - Prompt: "Decide what the form-level summary becomes now that fields carry their own messages: delete it, or
-      narrow it to `bean.errors.globalErrors` only. If narrowing, note `<g:renderErrors>` and `<g:eachError>` both
-      iterate *all* errors and neither can filter to global-only, so this needs either a new tag or an inline
-      `<g:if test="${bean.errors.globalErrorCount}">`."
-- [ ] `transcribe/transcribe-validation.js` 9-10 still sets `errorClass: 'has-error'` / `warningClass: 'has-warning'`
-  and applies them to the closest `.form-group` (`markFieldInvalid`, 291-300). This is the **only** surviving
-  `has-error` in first-party code. Deliberately not migrated on 2026-09-28: BS5 wants `is-invalid` on the *control*
-  not the wrapper, so this is a behaviour change on transcribe pages, and BS5 has no `has-warning` equivalent for
-  form controls (only `is-invalid`/`is-valid`), so the warning tier needs a decision of its own. The validator's
-  visible output — an appended `alert` div — works today and is unaffected.
-    - Prompt: "Decide whether transcribe field validation adopts `is-invalid` on the control (and what replaces the
-      warning tier — a custom `is-warning`, or fold warnings into the existing alert only). Do this with the Phase 8
-      group 8 manual transcribe review, not before, since it puts new red borders on the transcribe forms."
 - [ ] Bare checkboxes that took `is-invalid` on 2026-09-28 but have no `form-check-input`, so BS5 draws no red
   state on them (the `<cl:fieldError>` message still renders, because `.is-invalid ~ .invalid-feedback` is
   class-agnostic): `template/edit.gsp` supportMultipleTranscriptions / isGlobal / isHidden,
@@ -655,6 +637,15 @@ Log entry for that date.*
 
 - [ ] Transcribe pages
   - [ ] Review each transcription template view (manually, no AI).
+    - [ ] `transcribe/transcribe-validation.js` 9-10 still sets `errorClass: 'has-error'` / `warningClass: 'has-warning'`
+        and applies them to the closest `.form-group` (`markFieldInvalid`, 291-300). This is the **only** surviving
+        `has-error` in first-party code. Deliberately not migrated on 2026-09-28: BS5 wants `is-invalid` on the *control*
+        not the wrapper, so this is a behaviour change on transcribe pages, and BS5 has no `has-warning` equivalent for
+        form controls (only `is-invalid`/`is-valid`), so the warning tier needs a decision of its own. The validator's
+        visible output — an appended `alert` div — works today and is unaffected.
+      - Prompt: "Decide whether transcribe field validation adopts `is-invalid` on the control (and what replaces the
+        warning tier — a custom `is-warning`, or fold warnings into the existing alert only). Do this with the Phase 8
+        group 8 manual transcribe review, not before, since it puts new red borders on the transcribe forms."
   - [ ] **Inspect the 2026-09-24 `.well` → `.card` conversions.** 25 containers that rendered flat now draw a border
     and background. Highest risk: `admin/tools.gsp` and `admin/mappingTool.gsp`, where the new cards sit inside an
     existing `.card` > `.card-body` (card-in-card); and the 10 transcribe sections, which also gain the
@@ -1220,6 +1211,17 @@ parallel. Ships this release.
   feedback on that page cannot work until this is fixed, since the bean never reaches the view.
     - Prompt: "Confirm by submitting the landing-page form with a blank required field, then align the model key.
       Check `saveProjectLabels()` 65-69 for the same mismatch."
+- [ ] The form-level error summaries now duplicate the new field-level messages. Every one of the 10 migrated views
+  also renders `<g:renderErrors as="list">` or a `<g:eachError>` block at the top of the form, so a single validation
+  failure prints its message twice — once in the summary, once under the field. Left in place deliberately: the
+  summary is currently the only thing that surfaces **object-level (global) errors**, which have no field to attach
+  to, so deleting it outright would lose them.
+  - Some of the migrated views have no supporting code in the controller to populate the errors list. This needs to be
+    revisited and fixed.
+  - Prompt: "Decide what the form-level summary becomes now that fields carry their own messages: delete it, or
+    narrow it to `bean.errors.globalErrors` only. If narrowing, note `<g:renderErrors>` and `<g:eachError>` both
+    iterate *all* errors and neither can filter to global-only, so this needs either a new tag or an inline
+    `<g:if test="${bean.errors.globalErrorCount}">`."
 
 ---
 
