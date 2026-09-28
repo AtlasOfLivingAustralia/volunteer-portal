@@ -229,12 +229,13 @@ Work one numbered step at a time. After each step:
 When the task is done, update doc/bootstrap5-migration-plan.md:
 
 - tick the task checkbox
-- add/extend the conventions section (single source of truth, no duplication of what's already documented)
+- add/extend the conventions section (single source of truth, no duplication of what's already documented). Only update if updates were required to adhere to the widely-accepted conventions; don't add a new convention just because you think it would be nice.
 - add a dated Tracking Log entry covering: what was standardised, what was retired, bugs fixed while in scope, and any
   correction to a previous entry
 - add new unchecked follow-up items for everything found but deliberately not done, each with enough detail (file +
   line + symptom) to action cold
 - for follow-ups needing a judgement call, include a "Prompt:" line stating the decision to be made
+- Try not to be too wordy. Be concise and to the point. No fluff.
 
 #### Constraints
 
@@ -450,7 +451,7 @@ Log entry for that date.*
   Scope: 17 native file inputs in total, with 15 updated and 2 pre-existing (`achievementDescription/_form.gsp`,
   `picklist/wildcount.gsp`).
 
-  | Input                                                   | Endpoint                                     | Server list                                            | Implemented `accept`                               |
+  | Input                                                   | Endpoint                                     | Server list                                            | Implemented `accept`                                |
   |---------------------------------------------------------|----------------------------------------------|--------------------------------------------------------|-----------------------------------------------------|
   | `newsItem/create.gsp` 81, `edit.gsp` 107                | `NewsItemController` 144 / 226               | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
   | `institutionAdmin/uploadInstitutionImageFragment.gsp` 9 | `InstitutionAdminController` 475             | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
