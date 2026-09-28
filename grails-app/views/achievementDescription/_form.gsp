@@ -1,21 +1,23 @@
 <%@ page import="au.org.ala.volunteer.AggregationType; au.org.ala.volunteer.AchievementType; au.org.ala.volunteer.AchievementDescription" %>
-<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'has-error')} required">
+<div class="form-group required">
     <label class="form-label col-md-3" for="name">
         <g:message code="achievementDescription.name.label" default="Name"/>
     </label>
 
     <div class="col-md-6">
-        <g:textField class="form-control" name="name" required="" value="${achievementDescriptionInstance?.name}"/>
+        <g:textField class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'is-invalid')}" name="name" required="" value="${achievementDescriptionInstance?.name}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="name"/>
     </div>
 </div>
 
-<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'has-error')} required">
+<div class="form-group required">
     <label class="form-label col-md-3" for="description">
         <g:message code="achievementDescription.description.label" default="Description"/>    </label>
 
     <div class="col-md-6">
-        <g:textArea class="form-control" rows="5" name="description" required=""
+        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'is-invalid')}" rows="5" name="description" required=""
                     value="${achievementDescriptionInstance?.description}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="description"/>
     </div>
 </div>
 
@@ -29,48 +31,52 @@
     </div>
 </div>
 
-<div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'searchQuery', 'has-error')}">
+<div class="form-group esType">
     <label class="form-label col-md-3" for="searchQuery">
         <g:message code="achievementDescription.searchQuery.label" default="Search Query"/>    </label>
 
     <div class="col-md-9">
-        <g:textArea class="form-control" rows="10" name="searchQuery"
+        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'searchQuery', 'is-invalid')}" rows="10" name="searchQuery"
                     value="${achievementDescriptionInstance?.searchQuery}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="searchQuery"/>
     </div>
 </div>
 
-<div class="form-group esType ${hasErrors(bean: achievementDescriptionInstance, field: 'count', 'has-error')}">
+<div class="form-group esType">
     <label class="form-label col-md-3" for="count">
         <g:message code="achievementDescription.count.label" default="Count"/>    </label>
 
     <div class="col-md-6">
-        <g:field class="form-control" name="count" type="number" min="0"
+        <g:field class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'count', 'is-invalid')}" name="count" type="number" min="0"
                  value="${achievementDescriptionInstance?.count}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="count"/>
     </div>
 </div>
 
-<div class="form-group agType ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationQuery', 'has-error')}">
+<div class="form-group agType">
     <label class="form-label col-md-3" for="aggregationQuery">
         <g:message code="achievementDescription.aggregationQuery.label" default="Aggregation Query"/>    </label>
 
     <div class="col-md-9">
-        <g:textArea class="form-control" rows="10" name="aggregationQuery"
+        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'aggregationQuery', 'is-invalid')}" rows="10" name="aggregationQuery"
                     value="${achievementDescriptionInstance?.aggregationQuery}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="aggregationQuery"/>
     </div>
 </div>
 
-<div class="form-group grType ${hasErrors(bean: achievementDescriptionInstance, field: 'code', 'has-error')}">
+<div class="form-group grType">
     <label class="form-label col-md-3" for="code">
         <g:message code="achievementDescription.badge.label" default="Code"/>
         <span class="d-none required-indicator">*</span>
     </label>
 
     <div class="col-md-9">
-        <g:textArea class="form-control" rows="10" name="code" value="${achievementDescriptionInstance?.code}"/>
+        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'code', 'is-invalid')}" rows="10" name="code" value="${achievementDescriptionInstance?.code}"/>
+        <cl:fieldError bean="${achievementDescriptionInstance}" field="code"/>
     </div>
 </div>
 
-<div class="form-group ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'has-error')}">
+<div class="form-group">
     <label class="form-label col-md-3" for="file-select">
         <g:message code="achievementDescription.badge.label" default="Badge"/>
     </label>
@@ -80,8 +86,9 @@
         <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
              width="140" height="140"/>
         <div class="input-group">
-            <input type="file" class="form-control" id="file-select" accept="image/*"/>
+            <input type="file" class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'is-invalid')}" id="file-select" accept="image/*"/>
             <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
+            <cl:fieldError bean="${achievementDescriptionInstance}" field="badge"/>
         </div>
     </div>
 </div>

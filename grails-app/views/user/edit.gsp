@@ -50,47 +50,51 @@
                             </div>
                         </div>
 
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'transcribedCount', 'has-error')}">
+                        <div class="form-group">
                             <label for="transcribedCount" class="form-label col-md-3">
                                 <g:message code="user.transcribedCount.label" default="Transcribed Count"/>
                             </label>
 
                             <div class="col-md-6">
-                                <g:textField name="transcribedCount" class="form-control"
+                                <g:textField name="transcribedCount" class="form-control ${hasErrors(bean: userInstance, field: 'transcribedCount', 'is-invalid')}"
                                              value="${fieldValue(bean: userInstance, field: 'transcribedCount')}"/>
+                                <cl:fieldError bean="${userInstance}" field="transcribedCount"/>
                             </div>
                         </div>
 
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'validatedCount', 'has-error')}">
+                        <div class="form-group">
                             <label for="validatedCount" class="form-label col-md-3">
                                 <g:message code="user.validatedCount.label" default="Validated Count"/>
                             </label>
 
                             <div class="col-md-6">
-                                <g:textField name="validatedCount" class="form-control"
+                                <g:textField name="validatedCount" class="form-control ${hasErrors(bean: userInstance, field: 'validatedCount', 'is-invalid')}"
                                              value="${fieldValue(bean: userInstance, field: 'validatedCount')}"/>
+                                <cl:fieldError bean="${userInstance}" field="validatedCount"/>
                             </div>
                         </div>
 
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'userId', 'has-error')}">
+                        <div class="form-group">
                             <label for="userId" class="form-label col-md-3">
                                 <g:message code="user.userId.label" default="User Id"/>
                             </label>
 
                             <div class="col-md-6">
-                                <g:textField name="transcribedCount" class="form-control" disabled="disabled"
+                                <g:textField name="transcribedCount" class="form-control ${hasErrors(bean: userInstance, field: 'userId', 'is-invalid')}" disabled="disabled"
                                              value="${fieldValue(bean: userInstance, field: 'userId')}"/>
+                                <cl:fieldError bean="${userInstance}" field="userId"/>
                             </div>
                         </div>
 
-                        <div class="form-group  ${hasErrors(bean: userInstance, field: 'email', 'has-error')}">
+                        <div class="form-group">
                             <label for="email" class="form-label col-md-3">
                                 <g:message code="user.email.label" default="Email Address"/>
                             </label>
 
                             <div class="col-md-6">
-                                <g:textField name="email" class="form-control"
+                                <g:textField name="email" class="form-control ${hasErrors(bean: userInstance, field: 'email', 'is-invalid')}"
                                              value="${fieldValue(bean: userInstance, field: 'email')}"/>
+                                <cl:fieldError bean="${userInstance}" field="email"/>
                             </div>
                         </div>
 

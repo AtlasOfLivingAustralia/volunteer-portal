@@ -38,7 +38,7 @@ class Template implements Serializable {
 
     String toString() {
         //return "Template: ${name}, [view: ${viewName}, isGlobal: ${isGlobal}, isHidden: ${isHidden}, Project Count: ${projects.size()}]"
-        return "${name}" + (isGlobal ? " (Global)" : "") + (isHidden ? " (Hidden)" : "") + (projects.size() == 0 ? " (Unassigned)" : "")
+        return "${name}" + (isGlobal ? " (Global)" : "") + (isHidden ? " (Hidden)" : "") + (projects?.size() == 0 ? " (Unassigned)" : "")
     }
 
     def getTemplateMap() {

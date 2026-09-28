@@ -28,23 +28,25 @@
                         </div>
                     </g:hasErrors>
                     <g:form action="save">
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
+                        <div class="form-group">
                             <label for="name" class="col-md-2 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="true" value="${templateInstance?.name}"/>
+                                <cl:fieldError bean="${templateInstance}" field="name"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
+                        <div class="form-group">
                             <label for="viewName" class="col-md-2 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <g:if test="${availableViews}">
-                                    <g:select from="${availableViews}" name="viewName" class="form-select"
+                                    <g:select from="${availableViews}" name="viewName" class="form-select ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}"
                                               value="${templateInstance?.viewName}"/>
                                 </g:if>
                                 <g:else>
-                                    <g:textField name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
+                                    <g:textField name="viewName" class="form-control ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
                                 </g:else>
+                                <cl:fieldError bean="${templateInstance}" field="viewName"/>
                             </div>
                         </div>
 

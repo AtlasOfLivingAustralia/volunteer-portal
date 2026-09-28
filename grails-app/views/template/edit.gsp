@@ -53,10 +53,11 @@
                         <g:hiddenField name="id" value="${templateInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'name', 'has-error')}">
+                        <div class="form-group">
                             <label for="name" class="col-md-3 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control" maxlength="200" required="true" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="true" value="${templateInstance?.name}"/>
+                                <cl:fieldError bean="${templateInstance}" field="name"/>
                             </div>
                             <div class="col-md-3">
                                 <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
@@ -64,33 +65,34 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'viewName', 'has-error')}">
+                        <div class="form-group">
                             <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
                             <div class="col-md-6">
                                 <g:if test="${availableViews}">
-                                    <g:select from="${availableViews}" name="viewName" class="form-select" value="${templateInstance?.viewName}"/>
+                                    <g:select from="${availableViews}" name="viewName" class="form-select ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
                                 </g:if>
                                 <g:else>
-                                    <g:textField name="viewName" class="form-control" value="${templateInstance?.viewName}"/>
+                                    <g:textField name="viewName" class="form-control ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
                                 </g:else>
+                                <cl:fieldError bean="${templateInstance}" field="viewName"/>
                             </div>
                         </div>
 
                         <div id="row-view-params-form" style="display: none;">
                         </div>
 
-                        <div id="row-view-params-json"
-                             class="form-group ${hasErrors(bean: templateInstance, field: 'viewParams', 'error')}">
+                        <div id="row-view-params-json" class="form-group">
                             <label class="col-md-3 form-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
                                                                                          default="Template View Parameters:"/></label>
 
                             <div class="col-md-6">
-                                <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control"
+                                <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control ${hasErrors(bean: templateInstance, field: 'viewParams', 'is-invalid')}"
                                             value="${templateInstance.viewParams as grails.converters.JSON}" />
+                                <cl:fieldError bean="${templateInstance}" field="viewParams"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'has-error')}">
+                        <div class="form-group">
                             <label class="col-md-3 form-label" for="supportMultipleTranscriptions">
                                 <g:message code="template.multipletanscriptions.label"
                                            default="Support multiple transcriptions per task?"/>
@@ -98,41 +100,44 @@
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="supportMultipleTranscriptions" checked="${templateInstance.supportMultipleTranscriptions}"/> &nbsp;&nbsp;
+                                    <g:checkBox name="supportMultipleTranscriptions" class="${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'is-invalid')}" checked="${templateInstance.supportMultipleTranscriptions}"/> &nbsp;&nbsp;
                                     <cl:helpText>
                                         <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
                                     </cl:helpText>
+                                    <cl:fieldError bean="${templateInstance}" field="supportMultipleTranscriptions"/>
                                 </div>
                             </div>
                         </div>
 
                         <cl:ifSiteAdmin>
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'isGlobal', 'has-error')}">
+                        <div class="form-group">
                             <label class="col-md-3 form-label" for="isGlobal">
                                 <g:message code="template.isglobal.label"
                                            default="Is a Global Template?"/>
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="isGlobal" checked="${templateInstance.isGlobal}"/>&nbsp;&nbsp;
+                                    <g:checkBox name="isGlobal" class="${hasErrors(bean: templateInstance, field: 'isGlobal', 'is-invalid')}" checked="${templateInstance.isGlobal}"/>&nbsp;&nbsp;
                                     <cl:helpText>
                                         <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
                                     </cl:helpText>
+                                    <cl:fieldError bean="${templateInstance}" field="isGlobal"/>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateInstance, field: 'isHidden', 'has-error')}">
+                        <div class="form-group">
                             <label class="col-md-3 form-label" for="isHidden">
                                 <g:message code="template.ishidden.label"
                                            default="Hide Template?"/>
                             </label>
                             <div class="col-md-6">
                                 <div style="padding-top: 10px">
-                                    <g:checkBox name="isHidden" checked="${templateInstance.isHidden}"/>&nbsp;&nbsp;
+                                    <g:checkBox name="isHidden" class="${hasErrors(bean: templateInstance, field: 'isHidden', 'is-invalid')}" checked="${templateInstance.isHidden}"/>&nbsp;&nbsp;
                                     <cl:helpText>
                                         <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
                                     </cl:helpText>
+                                    <cl:fieldError bean="${templateInstance}" field="isHidden"/>
                                 </div>
                             </div>
                         </div>

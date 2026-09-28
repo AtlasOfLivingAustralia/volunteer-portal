@@ -30,46 +30,52 @@
                         <g:hiddenField name="id" value="${rule?.id}"/>
                         <g:hiddenField name="version" value="${rule?.version}"/>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'name', 'has-error')}">
+                        <div class="form-group">
                             <label for="name" class="form-label col-md-3"><g:message code="validationRule.name.label" default="Name"/></label>
                             <div class="col-md-4">
-                                <g:textField name="name" class="form-control" value="${rule?.name}"/>
+                                <g:textField name="name" class="form-control ${hasErrors(bean: rule, field: 'name', 'is-invalid')}" value="${rule?.name}"/>
+                                <cl:fieldError bean="${rule}" field="name"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'description', 'has-error')}">
+                        <div class="form-group">
                             <label for="description" class="form-label col-md-3"><g:message code="validationRule.description.label" default="Description"/></label>
                             <div class="col-md-4">
-                                <g:textField name="description" class="form-control" value="${rule?.description}"/>
+                                <g:textField name="description" class="form-control ${hasErrors(bean: rule, field: 'description', 'is-invalid')}" value="${rule?.description}"/>
+                                <cl:fieldError bean="${rule}" field="description"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'validationType', 'has-error')}">
+                        <div class="form-group">
                             <label for="validationType" class="form-label col-md-3"><g:message code="validationRule.validationType.label" default="Validation Type"/></label>
                             <div class="col-md-4">
-                                <g:select name="validationType" class="form-select" from="${au.org.ala.volunteer.ValidationType.values()}"
+                                <g:select name="validationType" class="form-select ${hasErrors(bean: rule, field: 'validationType', 'is-invalid')}" from="${au.org.ala.volunteer.ValidationType.values()}"
                                           value="${rule.validationType}"/>
+                                <cl:fieldError bean="${rule}" field="validationType"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'regularExpression', 'has-error')}">
+                        <div class="form-group">
                             <label for="regularExpression" class="form-label col-md-3"><g:message code="validationRule.regularExpression.label" default="Pattern"/></label>
                             <div class="col-md-4">
-                                <g:textField name="regularExpression" class="form-control" value="${rule?.regularExpression}"/>
+                                <g:textField name="regularExpression" class="form-control ${hasErrors(bean: rule, field: 'regularExpression', 'is-invalid')}" value="${rule?.regularExpression}"/>
+                                <cl:fieldError bean="${rule}" field="regularExpression"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'testEmptyValues', 'has-error')}">
+                        <div class="form-group">
                             <label for="testEmptyValues" class="form-label col-md-3"><g:message code="validationRule.testEmptyValues.label" default="Test empty/blank values"/></label>
                             <div class="col-md-4">
-                                <g:checkBox name="testEmptyValues" class="form-check-input" value="${rule?.testEmptyValues}"/>
+                                <g:checkBox name="testEmptyValues" class="form-check-input ${hasErrors(bean: rule, field: 'testEmptyValues', 'is-invalid')}" value="${rule?.testEmptyValues}"/>
+                                <cl:fieldError bean="${rule}" field="testEmptyValues"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: rule, field: 'message', 'has-error')}">
+                        <div class="form-group">
                             <label for="message" class="form-label col-md-3"><g:message code="validationRule.message.label" default="Message"/></label>
                             <div class="col-md-4">
-                                <g:textField name="message" class="form-control" value="${rule?.message}"/>
+                                <g:textField name="message" class="form-control ${hasErrors(bean: rule, field: 'message', 'is-invalid')}" value="${rule?.message}"/>
+                                <cl:fieldError bean="${rule}" field="message"/>
                             </div>
                         </div>
 

@@ -28,19 +28,21 @@
                         </div>
                     </g:hasErrors>
                     <g:form action="save">
-                        <div class="form-group ${hasErrors(bean: picklistInstance, field: 'name', 'has-error')}">
+                        <div class="form-group">
                             <label class="form-label col-md-2" for="name"><g:message code="picklist.name.label" default="Name"/></label>
                             <div class="col-md-4">
-                                <g:select name="name" class="form-select" from="${DarwinCoreField.values().sort({ it.name() })}"/>
+                                <g:select name="name" class="form-select ${hasErrors(bean: picklistInstance, field: 'name', 'is-invalid')}" from="${DarwinCoreField.values().sort({ it.name() })}"/>
+                                <cl:fieldError bean="${picklistInstance}" field="name"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: picklistInstance, field: 'fieldTypeClassifier', 'has-error')}">
+                        <div class="form-group">
                             <label class="form-label col-md-2" for="fieldTypeClassifier"><g:message
                                     code="picklist.fieldTypeClassifier.label" default="Classifier"/></label>
 
                             <div class="col-md-4">
-                                <g:textField name="fieldTypeClassifier" class="form-control"/>
+                                <g:textField name="fieldTypeClassifier" class="form-control ${hasErrors(bean: picklistInstance, field: 'fieldTypeClassifier', 'is-invalid')}"/>
+                                <cl:fieldError bean="${picklistInstance}" field="fieldTypeClassifier"/>
                             </div>
                         </div>
 

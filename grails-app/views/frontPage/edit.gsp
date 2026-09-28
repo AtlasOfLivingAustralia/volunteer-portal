@@ -26,11 +26,12 @@
                         </div>
                     </g:hasErrors>
                     <g:form action="save">
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}">
+                        <div class="form-group">
                             <label for="systemMessage" class="form-label col-md-3"><g:message code="frontPage.systemMessage.label"
                                                                                               default="System message"/></label>
                             <div class="col-md-9">
-                                <g:textArea class="form-control" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
+                                <g:textArea class="form-control ${hasErrors(bean: frontPage, field: 'systemMessage', 'is-invalid')}" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
+                                <cl:fieldError bean="${frontPage}" field="systemMessage"/>
                                 <span class="float-end badge badge--neutral count_message" id="count_message"></span>
                                 <span class="form-text">(Displayed on every page)</span>
                             </div>
@@ -66,47 +67,52 @@
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'showAchievements', 'has-error')}">
+                        <div class="form-group">
 
                             <div class="col-md-9">
-                                <g:checkBox name="showAchievements" class="form-check-input" value="${frontPage.showAchievements}"/>
+                                <g:checkBox name="showAchievements" class="form-check-input ${hasErrors(bean: frontPage, field: 'showAchievements', 'is-invalid')}" value="${frontPage.showAchievements}"/>
                                 <label for="useGlobalNewsItem" class="form-label col-md-9"><g:message code="frontPage.showAchievements.label"
                                                                                                       default="Show achievements on User stats page"/></label>
+                                <cl:fieldError bean="${frontPage}" field="showAchievements"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'has-error')}">
+                        <div class="form-group">
 
                             <div class="col-md-9">
-                                <g:checkBox name="enableTaskComments" class="form-check-input" value="${frontPage.enableTaskComments}"/>
+                                <g:checkBox name="enableTaskComments" class="form-check-input ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'is-invalid')}" value="${frontPage.enableTaskComments}"/>
                                 <label for="enableTaskComments" class="form-label col-md-9"><g:message code="frontPage.enableTaskComments.label"
                                                                                                        default="Enable task commenting"/></label>
+                                <cl:fieldError bean="${frontPage}" field="enableTaskComments"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}">
+                        <div class="form-group">
 
                             <div class="col-md-9">
-                                <g:checkBox name="enableForum" class="form-check-input" value="${frontPage.enableForum}"/>
+                                <g:checkBox name="enableForum" class="form-check-input ${hasErrors(bean: frontPage, field: 'enableForum', 'is-invalid')}" value="${frontPage.enableForum}"/>
                                 <label for="enableForum" class="form-label col-md-9"><g:message code="frontPage.enableForum.label"
                                                                                                 default="Enable the ${message(code: "default.application.name")} Forum"/></label>
+                                <cl:fieldError bean="${frontPage}" field="enableForum"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'has-error')}">
+                        <div class="form-group">
                             <label for="numberOfContributors" class="form-label col-md-9"><g:message code="frontPage.numberOfContributors.label"
                                                                                                default="The number of contributors to show on the front page"/></label>
                             <div class="col-md-9">
-                                <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control" value="${frontPage.numberOfContributors}"/>
+                                <g:field name="numberOfContributors" type="number" min="0" max="20" class="form-control ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'is-invalid')}" value="${frontPage.numberOfContributors}"/>
+                                <cl:fieldError bean="${frontPage}" field="numberOfContributors"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: frontPage, field: 'attributionText', 'has-error')}">
+                        <div class="form-group">
                             <label for="heroImageAttribution" class="form-label col-md-9">
                                 <g:message code="frontPage.heroImageAttribution" default="Hero Image Attribution Text" />
                             </label>
                             <div class="col-md-9">
-                                <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control" value="${frontPage.heroImageAttribution}" />
+                                <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control ${hasErrors(bean: frontPage, field: 'heroImageAttribution', 'is-invalid')}" value="${frontPage.heroImageAttribution}" />
+                                <cl:fieldError bean="${frontPage}" field="heroImageAttribution"/>
                                 <span class="float-end badge badge--neutral count_message" id="hero_count_message"></span>
                             </div>
                         </div>

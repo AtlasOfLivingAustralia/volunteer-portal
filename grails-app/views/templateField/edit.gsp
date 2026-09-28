@@ -34,108 +34,121 @@
                         <g:hiddenField name="id" value="${templateFieldInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateFieldInstance?.version}"/>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'has-error')}">
+                        <div class="form-group">
                             <label for="fieldType" class="col-md-2 form-label"><g:message code="templateField.fieldType.label" default="Field Type"/></label>
                             <div class="col-md-6">
-                                <g:select name="fieldType" class="form-select"
+                                <g:select name="fieldType" class="form-select ${hasErrors(bean: templateFieldInstance, field: 'fieldType', 'is-invalid')}"
                                           from="${au.org.ala.volunteer.DarwinCoreField?.values()?.sort { it.name() }}"
                                           keys="${au.org.ala.volunteer.DarwinCoreField?.values()*.name()?.sort { it }}"
                                           value="${templateFieldInstance?.fieldType?.name()}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="fieldType"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'fieldTypeClassifier', 'has-error')}">
+                        <div class="form-group">
                             <label for="fieldTypeClassifier" class="col-md-2 form-label"><g:message code="templateField.fieldTypeClassifier.label" default="Classifier"/></label>
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"/>
+                                <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'fieldTypeClassifier', 'is-invalid')}" name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="fieldTypeClassifier"/>
                             </div>
                             <div class="col-md-4">
                                 <cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'label', 'has-error')}">
+                        <div class="form-group">
                             <label for="label" class="col-md-2 form-label"><g:message code="templateField.label.label" default="Label"/></label>
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="label" value="${templateFieldInstance?.label}"/>
+                                <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'label', 'is-invalid')}" name="label" value="${templateFieldInstance?.label}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="label"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'defaultValue', 'has-error')}">
+                        <div class="form-group">
                             <label for="defaultValue" class="col-md-2 form-label"><g:message code="templateField.defaultValue.label" default="Default Value"/></label>
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="defaultValue" maxlength="200" value="${templateFieldInstance?.defaultValue}"/>
+                                <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'defaultValue', 'is-invalid')}" name="defaultValue" maxlength="200" value="${templateFieldInstance?.defaultValue}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="defaultValue"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'mandatory', 'has-error')}">
+                        <div class="form-group">
                             <label for="mandatory" class="col-md-2 form-label"><g:message code="templateField.mandatory.label" default="Mandatory"/></label>
                             <div class="col-md-6 form-control-static">
-                                <g:checkBox class="" name="mandatory" value="${templateFieldInstance?.mandatory}"/>
+                                <g:checkBox class="${hasErrors(bean: templateFieldInstance, field: 'mandatory', 'is-invalid')}" name="mandatory" value="${templateFieldInstance?.mandatory}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="mandatory"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'multiValue', 'has-error')}">
+                        <div class="form-group">
                             <label for="multiValue" class="col-md-2 form-label"><g:message code="templateField.multiValue.label" default="Multi Value"/></label>
                             <div class="col-md-6 form-control-static">
-                                <g:checkBox class="" name="multiValue" value="${templateFieldInstance?.multiValue}"/>
+                                <g:checkBox class="${hasErrors(bean: templateFieldInstance, field: 'multiValue', 'is-invalid')}" name="multiValue" value="${templateFieldInstance?.multiValue}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="multiValue"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'helpText', 'has-error')}">
+                        <div class="form-group">
                             <label for="helpText" class="col-md-2 form-label"><g:message code="templateField.helpText.label" default="Help Text"/></label>
                             <div class="col-md-6">
-                                <g:textArea class="form-control" name="helpText" rows="4" value="${templateFieldInstance?.helpText}"/>
+                                <g:textArea class="form-control ${hasErrors(bean: templateFieldInstance, field: 'helpText', 'is-invalid')}" name="helpText" rows="4" value="${templateFieldInstance?.helpText}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="helpText"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'has-error')}">
+                        <div class="form-group">
                             <label for="validationRule" class="col-md-2 form-label"><g:message code="templateField.validationRule.label" default="Validation Rule"/></label>
                             <div class="col-md-6">
-                                <g:select name="validationRule" class="form-select" from="${validationRules}"
+                                <g:select name="validationRule" class="form-select ${hasErrors(bean: templateFieldInstance, field: 'validationRule', 'is-invalid')}" from="${validationRules}"
                                           value="${templateFieldInstance.validationRule}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="validationRule"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'template', 'has-error')}">
+                        <div class="form-group">
                             <label for="template" class="col-md-2 form-label"><g:message code="templateField.template.label" default="Template"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-select" name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id"
+                                <g:select class="form-select ${hasErrors(bean: templateFieldInstance, field: 'template', 'is-invalid')}" name="template.id" from="${au.org.ala.volunteer.Template.list()}" optionKey="id"
                                           value="${templateFieldInstance?.template?.id}" noSelection="['null': '']"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="template"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'displayOrder', 'has-error')}">
+                        <div class="form-group">
                             <label for="displayOrder" class="col-md-2 form-label"><g:message code="templateField.displayOrder.label" default="Display Order"/></label>
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="displayOrder"
+                                <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'displayOrder', 'is-invalid')}" name="displayOrder"
                                              value="${fieldValue(bean: templateFieldInstance, field: 'displayOrder')}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="displayOrder"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'category', 'has-error')}">
+                        <div class="form-group">
                             <label for="category" class="col-md-2 form-label"><g:message code="templateField.category.label" default="Category"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-select" name="category" from="${au.org.ala.volunteer.FieldCategory?.values()}"
+                                <g:select class="form-select ${hasErrors(bean: templateFieldInstance, field: 'category', 'is-invalid')}" name="category" from="${au.org.ala.volunteer.FieldCategory?.values()}"
                                           keys="${au.org.ala.volunteer.FieldCategory?.values()*.name()}"
                                           value="${templateFieldInstance?.category?.name()}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="category"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'type', 'has-error')}">
+                        <div class="form-group">
                             <label for="type" class="col-md-2 form-label"><g:message code="templateField.type.label" default="Type"/></label>
                             <div class="col-md-6">
-                                <g:select class="form-select" name="type" from="${au.org.ala.volunteer.FieldType?.values()}"
+                                <g:select class="form-select ${hasErrors(bean: templateFieldInstance, field: 'type', 'is-invalid')}" name="type" from="${au.org.ala.volunteer.FieldType?.values()}"
                                           keys="${au.org.ala.volunteer.FieldType?.values()*.name()}"
                                           value="${templateFieldInstance?.type?.name()}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="type"/>
                             </div>
                         </div>
 
-                        <div class="form-group ${hasErrors(bean: templateFieldInstance, field: 'layoutClass', 'has-error')}">
+                        <div class="form-group">
                             <label for="layoutClass" class="col-md-2 form-label"><g:message code="templateField.layoutClass.label" default="Layout Class"/></label>
                             <div class="col-md-6">
-                                <g:textField class="form-control" name="layoutClass"
+                                <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'layoutClass', 'is-invalid')}" name="layoutClass"
                                              value="${fieldValue(bean: templateFieldInstance, field: 'layoutClass')}"/>
+                                <cl:fieldError bean="${templateFieldInstance}" field="layoutClass"/>
                             </div>
                         </div>
 

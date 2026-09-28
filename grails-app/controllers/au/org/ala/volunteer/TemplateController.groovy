@@ -169,6 +169,7 @@ class TemplateController {
                          args: [message(code: 'template.label', default: 'Template'), template.name]) as String
                 redirect(action: "edit", id: template.id)
             } else {
+                log.info("Template has errors: ${template.errors}")
                 render(view: "edit", model: [templateInstance: template])
             }
         } else {

@@ -8,6 +8,7 @@ import grails.util.Metadata
 import groovy.time.TimeCategory
 import groovy.xml.MarkupBuilder
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.util.HtmlUtils
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -40,6 +41,33 @@ class VolunteerTagLib {
         def appName = g.message(code: 'default.application.name').toString().toUpperCase()
         def pageName = attrs.title ?: 'Home'
         out << "$appName | $pageName"
+    }
+
+    /**
+     * Renders a Bootstrap 5 invalid-feedback block for one field, or nothing when that field has no errors.
+     *
+     * Must be rendered as a sibling *following* the control carrying `is-invalid`: Bootstrap reveals the block
+     * with `.is-invalid ~ .invalid-feedback` (bootstrap.css 2842), a general sibling selector. Placing it in a
+     * different parent, or before the control, renders it permanently hidden.
+     *
+     * Messages are escaped explicitly rather than with encodeAsHTML(): `grails.views.gsp.codecs.taglib` is `none`
+     * (application.yml 67), so nothing encodes taglib output for us, and a validation message can interpolate the
+     * rejected value - which is user input.
+     *
+     * @attr bean REQUIRED The domain or command object carrying the errors. May be null on an unpopulated form.
+     * @attr field REQUIRED The property name, matching the `field` passed to hasErrors().
+     */
+    def fieldError = { attrs ->
+        String field = attrs.field?.toString()
+        if (!field) return
+
+        def errors = attrs.bean?.errors?.getFieldErrors(field)
+        log.debug("fieldError: bean=${attrs.bean}, field=${field}, errors=${errors}")
+        if (!errors) return
+
+        out << '<div class="invalid-feedback">'
+        out << errors.collect { HtmlUtils.htmlEscape(g.message(error: it).toString()) }.join('<br/>')
+        out << '</div>'
     }
 
     def showCurrentUserName = {attrs, body ->
