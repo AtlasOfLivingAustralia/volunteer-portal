@@ -374,13 +374,6 @@ Log entry for that date.*
   field) and was deleted on 2026-09-23.
 - [X] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
   the `height: 25px` era. Removed 2026-09-28 with the `form-select` sweep. (Actual line 62; the select starts at 61.)
-- [ ] `project/_projectDetailsTable.gsp` 35, 47, 98 — three `<select>` with **no class at all**, deliberately left out
-  of the 2026-09-28 sweep. Their sibling fields use BS2 `input-xxlarge` (26, 58, 68, 87), so this fragment is a
-  pre-BS5 island; adding `form-select` to the selects alone would style three controls to match nothing around them.
-  Lines 110 and 119 also contain `<g:select>` but are inside `%{-- --}%` comments — dead, delete with the rest.
-    - Prompt: "Decide whether `_projectDetailsTable.gsp` is migrated to BS5 form markup as a unit (labels,
-      `input-xxlarge` → `form-control`, selects → `form-select`) or left as legacy. It is an admin details table, so
-      check it still renders before restyling."
 - [X] Field-level validation feedback is absent. **Completed 2026-09-28** — 65 fields across 10 views migrated to
   `is-invalid` on the control plus a `<cl:fieldError>` block. Decided: messages come from the **server-side Grails
   bean-errors path only**; there is no client-side constraint validation to hook (see the Forms conventions).
@@ -402,11 +395,6 @@ Log entry for that date.*
     - Prompt: "Decide whether transcribe field validation adopts `is-invalid` on the control (and what replaces the
       warning tier — a custom `is-warning`, or fold warnings into the existing alert only). Do this with the Phase 8
       group 8 manual transcribe review, not before, since it puts new red borders on the transcribe forms."
-- [ ] 16 `hasErrors(bean:…, 'errors')` sites remain — a third dead validation class, found 2026-09-28 while sweeping
-  `has-error`. All are the BS2 table-cell shape `<td class="value ${…}">`, not form-groups:
-  `project/_projectDetailsTable.gsp` (14, of which 109 and 118 are inside `%{-- --}%` comments) and
-  `picklist/edit.gsp` 35. `.errors` has no CSS either. Fold into the `_projectDetailsTable.gsp` item above — the two
-  files share the same legacy table shape and should convert together.
 - [ ] Bare checkboxes that took `is-invalid` on 2026-09-28 but have no `form-check-input`, so BS5 draws no red
   state on them (the `<cl:fieldError>` message still renders, because `.is-invalid ~ .invalid-feedback` is
   class-agnostic): `template/edit.gsp` supportMultipleTranscriptions / isGlobal / isHidden,
@@ -2001,3 +1989,4 @@ parallel. Ships this release.
       rejects where Windows reports `.csv` as `application/vnd.ms-excel`.
     - Security caveat remains open and intentionally separate from this styling task: `accept` is a picker filter,
       not enforcement. The unrestricted-upload follow-up in Phase 8a stays open.
+    - Removed `project/_projectDetailsTable.gsp` and `picklist/edit.gsp` as unused dead code.

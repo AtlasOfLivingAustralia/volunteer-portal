@@ -323,62 +323,6 @@ class PicklistController {
         }
     }
 
-    def edit () {
-        if (!userService.isInstitutionAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        def picklist = Picklist.get(params.long('id'))
-        if (!picklist) {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
-            redirect(action: "list")
-        }
-        else {
-            return [picklistInstance: picklist]
-        }
-    }
-
-    @Transactional
-    def update () {
-        if (!userService.isInstitutionAdmin()) {
-            render(view: '/notPermitted')
-            return
-        }
-
-        def picklist = Picklist.get(params.long('id'))
-        if (picklist) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (picklist.version > version) {
-
-                    picklist.errors.rejectValue("version",
-                            "default.optimistic.locking.failure",
-                            [message(code: 'picklist.label', default: 'Picklist')] as Object[],
-                            "Another user has updated this Picklist while you were editing")
-                    render(view: "edit", model: [picklistInstance: picklist])
-                    return
-                }
-            }
-
-            // picklistInstance.properties = params
-            bindData(picklist, params)
-
-            if (!picklist.hasErrors() && picklist.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message',
-                         args: [message(code: 'picklist.label', default: 'Picklist'), picklist.id]) as String
-                redirect(action: "show", id: picklist.id)
-            } else {
-                render(view: "edit", model: [picklistInstance: picklist])
-            }
-        } else {
-            flash.message = message(code: 'default.not.found.message',
-                     args: [message(code: 'picklist.label', default: 'Picklist'), params.id]) as String
-            redirect(action: "list")
-        }
-    }
-
     def delete () {
         if (!userService.isInstitutionAdmin()) {
             render(view: '/notPermitted')

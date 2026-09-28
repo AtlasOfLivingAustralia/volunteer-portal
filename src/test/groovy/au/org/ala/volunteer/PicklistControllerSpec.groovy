@@ -33,17 +33,6 @@ class PicklistControllerSpec extends Specification implements ControllerUnitTest
             view == "/notPermitted"
     }
 
-    def "Test a user without Admin permission cannot update a picklist"() {
-        when:"The update action is executed with a valid instance"
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'POST'
-
-        controller.update()
-
-        then: "User is redirected to the home page"
-            view == "/notPermitted"
-    }
-
     def "Test a user without Admin permission cannot delete a picklist"() {
         when:"The delete action is executed with a valid instance"
             request.contentType = FORM_CONTENT_TYPE
