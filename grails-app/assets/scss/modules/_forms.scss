@@ -27,6 +27,18 @@ form {
   padding: 5px 8px;
 }
 
+// Selects must size like text inputs. Bootstrap gives .form-select its own
+// padding (0.375rem 2.25rem 0.375rem 0.75rem), so without this every <select>
+// sits ~2px taller than the <input> beside it. Right padding is
+// 8px edge + 16px arrow + 4px gap; background-position must move with it or
+// the arrow overlaps the text. -moz-padding-start is Bootstrap's Firefox
+// correction and outranks `padding` there, so it has to follow too.
+.form-select {
+  padding: 5px 28px 5px 8px;
+  -moz-padding-start: calc(8px - 3px);
+  background-position: right 8px center;
+}
+
 // File inputs use Bootstrap 5's native browse button. Bootstrap bleeds it to the
 // edge of the control with a negative margin equal to .form-control's padding,
 // so this must mirror the padding above or the button overhangs the border.
