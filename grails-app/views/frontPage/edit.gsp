@@ -26,7 +26,7 @@
                         </div>
                     </g:hasErrors>
                     <g:form action="save">
-                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}>
+                        <div class="form-group ${hasErrors(bean: frontPage, field: 'systemMessage', 'has-error')}">
                             <label for="systemMessage" class="form-label col-md-3"><g:message code="frontPage.systemMessage.label"
                                                                                               default="System message"/></label>
                             <div class="col-md-9">
@@ -66,7 +66,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'showAchievements', 'has-error')}>
+                        <div class="form-group ${hasErrors(bean: frontPage, field: 'showAchievements', 'has-error')}">
 
                             <div class="col-md-9">
                                 <g:checkBox name="showAchievements" class="form-check-input" value="${frontPage.showAchievements}"/>
@@ -75,7 +75,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'has-error')}>
+                        <div class="form-group ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'has-error')}">
 
                             <div class="col-md-9">
                                 <g:checkBox name="enableTaskComments" class="form-check-input" value="${frontPage.enableTaskComments}"/>
@@ -84,7 +84,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}>
+                        <div class="form-group ${hasErrors(bean: frontPage, field: 'enableForum', 'has-error')}">
 
                             <div class="col-md-9">
                                 <g:checkBox name="enableForum" class="form-check-input" value="${frontPage.enableForum}"/>
@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'has-error')}>
+                        <div class="form-group ${hasErrors(bean: frontPage, field: 'numberOfContributors', 'has-error')}">
                             <label for="numberOfContributors" class="form-label col-md-9"><g:message code="frontPage.numberOfContributors.label"
                                                                                                default="The number of contributors to show on the front page"/></label>
                             <div class="col-md-9">

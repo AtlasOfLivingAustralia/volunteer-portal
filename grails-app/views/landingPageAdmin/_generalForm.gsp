@@ -42,7 +42,7 @@
        </div>
    </div>
 
-    <div class="form-group"  ${hasErrors(bean: landingPageInstance, field: 'projectType', 'has-error')}>
+    <div class="form-group ${hasErrors(bean: landingPageInstance, field: 'projectType', 'has-error')}">
         <label class="form-label col-md-3" for="projectType"><g:message code="landingPage.projectType.label"
                                                                            default="Description"/></label>
 
