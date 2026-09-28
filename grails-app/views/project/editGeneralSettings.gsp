@@ -41,24 +41,24 @@
     <g:hiddenField name="version" value="${projectInstance?.version}"/>
     <g:hiddenField name="formType" value="${Project.EDIT_SECTION_GENERAL}" />
 
-    <div class="form-group">
+    <div class="form-group required">
         <label class="form-label col-md-3" for="institutionId">Expedition institution</label>
         <div class="col-md-6">
         <g:select class="form-select" name="institutionId" id="institution" from="${institutionList}"
-          optionKey="id"
+          optionKey="id" required="required"
           value="${projectInstance?.institution?.id}" noSelection="['':'- Select an Institution -']" />
         </div>
-        <div id="institution-link-icon" class="col-md-3 form-label text-start">
-            <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
-                action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
-        </div>
+    </div>
+    <div id="institution-link-icon" class="col-md-3 form-label text-start">
+        <i class="fa fa-home"></i> <a id="institution-link" href="${createLink(controller: 'institution',
+            action: 'index', id: projectInstance?.institution?.id)}" target="_blank">Institution Page</a>
     </div>
 
-    <div class="form-group">
+    <div class="form-group required">
         <label class="form-label col-md-3" for="name">Expedition name</label>
 
         <div class="col-md-6">
-            <g:textField class="form-control" name="name" value="${projectInstance.name}"/>
+            <g:textField class="form-control" required="required" name="name" value="${projectInstance.name}"/>
         </div>
     </div>
 
@@ -80,11 +80,11 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group required">
         <label class="form-label col-md-3" for="template">Template</label>
 
         <div class="col-md-6">
-            <select name="template" id="template" class="form-select">
+            <select name="template" id="template" required="required" class="form-select">
                 <cl:templateSelectOptions currentTemplateId="${projectInstance.template?.id}" templateList="${templates}" />
             </select>
         </div>
@@ -101,12 +101,12 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group required">
         <label class="form-label col-md-3" for="projectType">Expedition type</label>
 
         <div class="col-md-6">
             <g:select name="projectType" from="${projectTypes}" value="${projectInstance.projectType?.id}"
-                      optionValue="label" optionKey="id" class="form-select"/>
+                      optionValue="label" optionKey="id" required="required" class="form-select"/>
         </div>
     </div>
 

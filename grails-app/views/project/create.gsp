@@ -49,8 +49,8 @@
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="save">
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="institutionId">Expedition institution*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="institutionId">Expedition institution</label>
                             <div class="col-md-6">
                                 <g:select class="form-select" name="institutionId" id="institution" from="${institutionList}"
                                           optionKey="id" value="${params?.institutionId}" noSelection="['':'- Select an Institution -']" required="required" />
@@ -61,8 +61,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="name">Expedition name*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="name">Expedition name</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" name="name" value="${params?.name}" required="required"/>
@@ -85,8 +85,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="template">Template*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="template">Template</label>
 
                             <div class="col-md-6">
                                 <g:select name="template" from="${[]}" id="template" required="required"
@@ -94,8 +94,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="projectType">Expedition type*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="projectType">Expedition type</label>
 
                             <div class="col-md-6">
                                 <g:select name="projectType" from="${projectTypes}" optionValue="label" optionKey="id"

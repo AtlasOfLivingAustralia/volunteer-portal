@@ -67,7 +67,6 @@
 <div class="form-group grType">
     <label class="form-label col-md-3" for="code">
         <g:message code="achievementDescription.badge.label" default="Code"/>
-        <span class="d-none required-indicator">*</span>
     </label>
 
     <div class="col-md-9">
@@ -133,10 +132,8 @@ jQuery(function($) {
     function toggleGroovyFields(on) { toggleFields('.grType', on) }
 
     function toggleFields(selector, on) {
+        // The asterisk comes from .form-group.required in modules/_forms.scss - one mechanism, no indicator span.
         $(selector).toggleClass('required', on).toggleClass('d-none', !on);
-        $(selector + ' span.required-indicator').toggleClass('d-none', !on);
-        //$(selector + ' input, ' + selector + ' textarea').prop('required', on);
-        //else $(selector + ' input').removeProp('required');
     }
 
     var searchEditor = CodeMirror.fromTextArea(document.getElementById("searchQuery"), {

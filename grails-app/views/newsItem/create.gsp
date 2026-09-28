@@ -38,31 +38,31 @@
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="save" enctype="multipart/form-data">
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="title">Title*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="title">Title</label>
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="60" name="title" id="title" value="${params?.title}" required="required"/>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="content">Content*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="content">Content</label>
 
                             <div class="col-md-6">
-                                <g:textArea name="content" id="content" class="mce form-control" rows="10" value="${params?.content}" />
+                                <g:textArea name="content" id="content" class="mce form-control" rows="10" value="${params?.content}" aria-required="true"/>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="isActive">Is Active*</label>
+                            <label class="form-label col-md-3" for="isActive">Is Active</label>
                             <div class="col-md-6">
                                 <g:set var="initIsActive" value="${params?.isActive ?: true}"/>
                                 <g:checkBox name="isActive" id="isActive" class="form-check-input" checked="${initIsActive}"/>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires</label>
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <input type="text" class="form-control datepicker" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${params?.dateExpiresPicker ?: ''}"/>

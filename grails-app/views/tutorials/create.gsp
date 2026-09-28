@@ -46,8 +46,8 @@
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="save" enctype="multipart/form-data">
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="institutionId">Institution*</label>
+                        <div class="form-group <cl:ifNotSiteAdmin>required</cl:ifNotSiteAdmin>">
+                            <label class="form-label col-md-3" for="institutionId">Institution</label>
                             <div class="col-md-6">
                             <cl:ifSiteAdmin>
                                 <g:select class="form-select" name="institutionId" id="institutionId" from="${institutionList}"
@@ -60,8 +60,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="name">Tutorial name*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="name">Tutorial name</label>
 
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="130" name="name" id="name" value="${params?.name}" required="required"/>
@@ -76,7 +76,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group required">
                             <label class="form-label col-md-3" for="tutorialFile">Upload Tutorial File</label>
 
                             <div class="col-md-6">

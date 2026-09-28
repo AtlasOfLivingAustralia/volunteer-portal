@@ -42,8 +42,8 @@
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="saveCategory">
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="categoryName"><g:message code="default.label.category.label" default="${entityName}"/> Name*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="categoryName"><g:message code="default.label.category.label" default="${entityName}"/> Name</label>
                             <div class="col-md-9">
                                 <g:textField class="form-control" id="categoryName" name="name" value="${params?.name}" required="required"/>
                             </div>

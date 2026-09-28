@@ -368,36 +368,84 @@ Log entry for that date.*
 
 *Finishes the form conventions established 2026-09-22; everything here was explicitly deferred from that task.*
 
-- [ ] `form-control` on `<select>` should be `form-select` (~40+ sites). The `frontPage/edit.gsp` 230–232 half of this
-  item is resolved — that block was dead (the page has no date field) and was deleted on 2026-09-23. Remaining known
-  sites include `report/userReport.gsp` 80 and `task/list.gsp` 60.
-- [ ] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
-  the `height: 25px` era; the same select appears without it in `task/adminList.gsp` 119, `newsItem/manage.gsp` 33,
-  `tutorials/manage.gsp` 94,
-  `task/manageUploads.gsp` 48 and `project/manage.gsp` 110. Fold into the
-  `form-control` → `form-select` sweep.
-- [ ] Field-level validation feedback is absent. `hasErrors(bean:…, 'has-error')`
-  appears throughout the GSPs but `has-error` is BS3 and has zero CSS anywhere;
-  `help-block` has zero occurrences. Invalid fields render no visual feedback.
-    - Prompt: "Migrate `has-error` to BS5 `is-invalid` + `invalid-feedback`. Decide whether the message comes from the
-      Grails `hasErrors`/`fieldError`
-      server-side path, client-side constraint validation, or both."
-- [ ] Required-field marking is inconsistent. Only a few `.form-group`s carry
-  `required` (e.g. `achievementDescription/_form.gsp` 2, 12, 22); many fields set the HTML `required` attribute with no
-  class and show no asterisk; others hard-code `*` in the label text (`newsItem/create.gsp` 57, 64, 72, 80), which would
-  double up if the class were added.
-  - Prompt: "Pick one source of truth — derive the asterisk from the `required`
-    attribute, or apply `.form-group.required` everywhere — then strip the hard-coded asterisks. Confirm the
-    requirement is announced to screen readers, since a CSS `:after` asterisk is not."
+- [X] `form-control` on `<select>` should be `form-select`. **67 sites**, not "~40+" — completed 2026-09-28. The
+  `frontPage/edit.gsp` 230–232 half of this item was resolved earlier: that block was dead (the page has no date
+  field) and was deleted on 2026-09-23.
+- [X] `task/list.gsp` 60 — `style="height:32px"` on `<select class="form-control statusFilter">`. The last survivor of
+  the `height: 25px` era. Removed 2026-09-28 with the `form-select` sweep. (Actual line 62; the select starts at 61.)
+- [ ] `project/_projectDetailsTable.gsp` 35, 47, 98 — three `<select>` with **no class at all**, deliberately left out
+  of the 2026-09-28 sweep. Their sibling fields use BS2 `input-xxlarge` (26, 58, 68, 87), so this fragment is a
+  pre-BS5 island; adding `form-select` to the selects alone would style three controls to match nothing around them.
+  Lines 110 and 119 also contain `<g:select>` but are inside `%{-- --}%` comments — dead, delete with the rest.
+    - Prompt: "Decide whether `_projectDetailsTable.gsp` is migrated to BS5 form markup as a unit (labels,
+      `input-xxlarge` → `form-control`, selects → `form-select`) or left as legacy. It is an admin details table, so
+      check it still renders before restyling."
+- [X] Field-level validation feedback is absent. **Completed 2026-09-28** — 65 fields across 10 views migrated to
+  `is-invalid` on the control plus a `<cl:fieldError>` block. Decided: messages come from the **server-side Grails
+  bean-errors path only**; there is no client-side constraint validation to hook (see the Forms conventions).
+- [ ] The form-level error summaries now duplicate the new field-level messages. Every one of the 10 migrated views
+  also renders `<g:renderErrors as="list">` or a `<g:eachError>` block at the top of the form, so a single validation
+  failure prints its message twice — once in the summary, once under the field. Left in place deliberately: the
+  summary is currently the only thing that surfaces **object-level (global) errors**, which have no field to attach
+  to, so deleting it outright would lose them.
+    - Prompt: "Decide what the form-level summary becomes now that fields carry their own messages: delete it, or
+      narrow it to `bean.errors.globalErrors` only. If narrowing, note `<g:renderErrors>` and `<g:eachError>` both
+      iterate *all* errors and neither can filter to global-only, so this needs either a new tag or an inline
+      `<g:if test="${bean.errors.globalErrorCount}">`."
+- [ ] `transcribe/transcribe-validation.js` 9-10 still sets `errorClass: 'has-error'` / `warningClass: 'has-warning'`
+  and applies them to the closest `.form-group` (`markFieldInvalid`, 291-300). This is the **only** surviving
+  `has-error` in first-party code. Deliberately not migrated on 2026-09-28: BS5 wants `is-invalid` on the *control*
+  not the wrapper, so this is a behaviour change on transcribe pages, and BS5 has no `has-warning` equivalent for
+  form controls (only `is-invalid`/`is-valid`), so the warning tier needs a decision of its own. The validator's
+  visible output — an appended `alert` div — works today and is unaffected.
+    - Prompt: "Decide whether transcribe field validation adopts `is-invalid` on the control (and what replaces the
+      warning tier — a custom `is-warning`, or fold warnings into the existing alert only). Do this with the Phase 8
+      group 8 manual transcribe review, not before, since it puts new red borders on the transcribe forms."
+- [ ] 16 `hasErrors(bean:…, 'errors')` sites remain — a third dead validation class, found 2026-09-28 while sweeping
+  `has-error`. All are the BS2 table-cell shape `<td class="value ${…}">`, not form-groups:
+  `project/_projectDetailsTable.gsp` (14, of which 109 and 118 are inside `%{-- --}%` comments) and
+  `picklist/edit.gsp` 35. `.errors` has no CSS either. Fold into the `_projectDetailsTable.gsp` item above — the two
+  files share the same legacy table shape and should convert together.
+- [ ] Bare checkboxes that took `is-invalid` on 2026-09-28 but have no `form-check-input`, so BS5 draws no red
+  state on them (the `<cl:fieldError>` message still renders, because `.is-invalid ~ .invalid-feedback` is
+  class-agnostic): `template/edit.gsp` supportMultipleTranscriptions / isGlobal / isHidden,
+  `landingPageAdmin/_generalForm.gsp` enabled, and `templateField/edit.gsp` mandatory / multiValue — the last two
+  also sit in a `col-md-6 form-control-static`, which is a BS3 class with no CSS since BS4.
+    - Prompt: "Give these six checkboxes `form-check-input` and retire `form-control-static`. Check the layout
+      inside the `padding-top: 10px` wrappers in `template/edit.gsp` before and after."
+- [X] Required-field marking is inconsistent. **Completed 2026-09-28.** Standardised on `.form-group.required`,
+  which was already the only mechanism with any CSS behind it. 26 required fields now marked one way; the 5
+  `required-indicator` spans and 17 hard-coded label asterisks are gone, and every asterisk is backed by a
+  `required` or `aria-required` attribute so it is announced, not just drawn.
+- [ ] The HTML `required` attribute is written four ways across 34 sites: `required=""` (9), `required="required"`
+  (14), `required="true"` (4) and bare `required` (6). All are truthy so all work, and on a Grails tag
+  `required="true"` renders the literal string `"true"`. Cosmetic only — noted 2026-09-28 during the required-marking
+  sweep and deliberately left alone rather than churn 34 lines for no behaviour change.
+- [ ] Conditionally-required fields on `achievementDescription/_form.gsp` are marked but not announced. The JS
+  `toggleFields` (now 135-138) adds `.required` to `.esType` / `.agType` / `.grType` as the achievement type
+  changes, so the asterisk appears and disappears correctly, but the controls inside never gain `required` or
+  `aria-required` — so a screen-reader user is never told those fields became mandatory. The file previously carried
+  two commented-out lines attempting exactly this with `.prop('required', on)`; they were removed with the sweep,
+  because native `required` on a field inside a `d-none` group makes the form unsubmittable with a non-focusable
+  validation target.
+    - Prompt: "Toggle `aria-required` (not `required`) alongside the `.required` class in `toggleFields`, so the
+      conditional requirement is announced without blocking submit on hidden fields."
+- [ ] `report/userReport.gsp` 30 — `<label for="dateSelect">` points at an element that does not exist; the date
+  range is two inputs (`dateStart` / `dateEnd`) and there is no `dateSelect` id on the page. The label is therefore
+  unclickable and unassociated. Found 2026-09-28. Fold into the a11y sweep, or fix with the other `userReport`
+  residue items above.
 - [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
   `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
   item, renders no feedback. Fold into the field-level validation item.
-- [ ] `report/userReport.gsp` 68/76/86 and `report/projectSummary.gsp` 24 put
+- [ ] `report/userReport.gsp` 31/39/49 and `report/projectSummary.gsp` 24 put
   `input-group` and `col-*` on the same element (latent layout bug), and use BS3 `col-sm-offset-3` instead of
-  `offset-sm-3` (currently a no-op).
-- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at 69, 71, 80 (class
-  has no CSS since BS4), and `.float-right` at 37–47, which redefines a BS3 float utility as an absolutely-positioned
-  overlay. Rename to something that isn't a Bootstrap class name.
+  `offset-sm-3` (currently a no-op). Line numbers corrected 2026-09-28 — the item said 68/76/86, which predate the
+  datepicker task's deletions. `userReport.gsp` 43 also carries `col-md-9` on the select *inside* the `col-md-8`
+  input-group, which is the same defect a level down.
+- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at **32, 34 and 43**
+  (class has no CSS since BS4). Line numbers corrected 2026-09-28; the item said 69/71/80. The `.float-right` half of
+  this item is **already resolved** — the page `<style>` block (9–11) is now empty, so the absolutely-positioned
+  redefinition of the BS3 float utility is gone; nothing to rename.
 - [ ] No `accept` attribute on any of the 13 remaining native file inputs. Two were added on 2026-09-23 where the
   client already enforced the same rule (`achievementDescription/_form.gsp` `image/*`, `picklist/wildcount.gsp`
   `.csv`). The rest accept anything and fail server-side.
@@ -405,6 +453,14 @@ Log entry for that date.*
       is a filter, not validation — server-side checks must stay."
 - [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload
   button looks like it is taller than the control creating the whitespace.
+- [ ] `TranscribeTagLib` 320 — the `FieldType.radio` branch emits `class: 'form-control'` on a `g.radioGroup`. The
+  Forms conventions list `form-control` on a checkbox or radio under "do not reintroduce", and the 2026-09-22 form
+  sweep fixed exactly this on the checkbox branch but not this one. Each radio needs `form-check-input` with
+  `form-check`/`form-check-label` around it; the taglib currently renders them as
+  `<span class="radio-item">${it.radio}&nbsp;${it.label}</span>` (325), so the wrapper markup has to change too.
+  Found during the `form-select` sweep 2026-09-28.
+    - Note: the branch also drops `cssClass`, the same defect already tracked for checkboxes in Phase 8a. Fix both
+      together — it is one edit to the same `switch`.
 
 #### 4. Chrome: navbar, breadcrumbs, footer
 
@@ -590,9 +646,12 @@ Log entry for that date.*
 Each needs an answer before the group it blocks starts. All still ship this release — deciding is the work, not
 deferring.
 
-- [ ] Design decision: should required-field labels be bold? A
-  `.form-control.required .form-label { font-weight: bold }` rule existed but had never matched, so it was deleted
-  rather than silently activated. *(Blocks group 3.)*
+- [X] Design decision: should required-field labels be bold? **Decided 2026-09-28: no — asterisk only.** A
+  `.form-control.required .form-label { font-weight: bold }` rule existed but had never matched (`.form-label` is
+  never a descendant of `.form-control`), so it was deleted rather than silently activated. Reinstating it as
+  `.form-group.required .form-label` would have been a new visual convention nobody had seen, and weight alone is
+  not an accessible signal. The asterisk plus the control's `required`/`aria-required` attribute carries the
+  meaning. *(Unblocks group 3 — no longer blocking.)*
 - [ ] Volunteer search forms have no `action` and no hidden inputs, so they are still JS-only and the `<form>` is
   decorative on submit.
     - Prompt: "Decide whether volunteer search should work without JS. If so, give each form a real GET action plus
@@ -835,14 +894,98 @@ There is one `.form-control` size. `.form-control-sm` / `.form-control-lg` are i
 unqualified `padding: 5px 8px` that beats Bootstrap's modifier padding at equal specificity. Do not use them, and do
 not scope the override to re-enable them. Use `.form-condensed` if a form needs to be tighter.
 
+`.form-select` is sized to match `.form-control` in `modules/_forms.scss` (immediately after it, so the two stay
+adjacent). Three declarations, all load-bearing: `padding: 5px 28px 5px 8px` (the 28px right gutter is 8px + the
+16px arrow + a 4px gap); `-moz-padding-start`, which Bootstrap sets to `calc(0.75rem - 3px)` and which is *more
+specific than `padding` in Firefox only*, so without overriding it Firefox alone keeps 12px of left padding; and
+`background-position: right 8px center`, because Bootstrap pins the arrow at `right 0.75rem` and it would otherwise
+sit inside the new gutter and clip the text. Changing `.form-control`'s padding means changing all three.
+
+Selects enhanced by Tom Select (`bvpSelect.init`) carry **no class** — the widget hides the original `<select>` and
+renders its own markup, so `form-select` would style an invisible element. The four sites are `#recipient`
+(`institutionMessage/_form.gsp`), `#byproj` (`admin/manageUserRoles.gsp`), `#tag-select` (`user/edit.gsp`) and
+`#tag` (`landingPageAdmin/editSelections.gsp`).
+
+The app has no `<select multiple>` or `[size]` anywhere. If one is added, note Bootstrap's `.form-select[multiple]`
+resets `padding-right` and drops the arrow, and is more specific than our override — so the override above would not
+reach it.
+
 Focus rings are themed on `$focus-ring-color` (= `$link-color`) so form controls match `a:focus-visible` in
 `base/_base.scss`. Never `outline: none`
 or `outline: 0` on a focusable control (WCAG 2.4.7).
 
+#### Required fields
+
+One mechanism: **`.form-group.required`**, which renders the asterisk via
+`.form-group.required .form-label:after { content: "*" }` (`modules/_forms.scss` 74-76). It is the only required
+marking with any CSS behind it, and the only one permitted.
+
+**The asterisk is decoration; the attribute carries the meaning.** CSS `::after` content is not reliably exposed to
+assistive technology, so every `.form-group.required` must contain a control carrying `required` — or
+`aria-required="true"` where native `required` is unsuitable. Two cases where it is unsuitable, both real here:
+
+- **TinyMCE-backed textareas** (`class="mce"`). TinyMCE hides the real `<textarea>`, and the browser refuses to
+  submit a form containing an invalid control it cannot focus, so native `required` makes the form permanently
+  unsubmittable. Use `aria-required="true"` and let the server enforce it (`newsItem/create.gsp`, `edit.gsp`).
+- **Conditionally-shown fields.** Same problem — a `required` control inside a `d-none` group blocks submit with a
+  non-focusable validation target.
+
+**Do not mark a boolean checkbox required.** `nullable: false` on a Boolean is satisfied by `false`, so the field
+is never actually mandatory, and native `required` on a checkbox means "must be ticked" — a different and wrong
+constraint. The asterisks on `NewsItem.isActive` and `LandingPage.enabled` were removed on this basis.
+
+A field marked required must genuinely be required — check the domain constraints, not the existing markup. Several
+asterisks in the app were decorative fiction before this was standardised.
+
+**Removed — do not reintroduce:** `.required-indicator` (a span containing a literal `*`; it never had any CSS and
+rendered only as text, so it double-printed wherever `.form-group.required` was also present); asterisks hard-coded
+into label text or into a `<g:message default="…">`; `font-weight` as a required signal.
+
+#### Field-level validation
+
+Validation feedback is **server-side only**. Grails controllers re-render the form with errors on the bean; there is
+no client-side constraint validation to hook. The `validate[required]` class `TranscribeTagLib` 215 emits targets
+jQuery validationEngine, which **is not in this codebase** — it is inert markup. The only client-side validator is
+the home-grown `transcribeValidation` module, which is a separate mechanism on transcribe pages and keys off the
+`validationRule` attribute, not off these classes.
+
+The pattern, per field:
+
+```gsp
+<div class="form-group">
+    <label class="form-label col-md-3" for="name">…</label>
+    <div class="col-md-6">
+        <g:textField name="name" class="form-control ${hasErrors(bean: bean, field: 'name', 'is-invalid')}" …/>
+        <cl:fieldError bean="${bean}" field="name"/>
+    </div>
+</div>
+```
+
+**`is-invalid` goes on the control, not the wrapper.** This is the one thing that makes the migration from BS3 more
+than a rename: BS3's `has-error` was a `.form-group` class, whereas Bootstrap 5 styles `.form-control.is-invalid` /
+`.form-select.is-invalid` / `.form-check-input.is-invalid` and reveals the message with
+`.is-invalid ~ .invalid-feedback` (`bootstrap.css` 2842) — a **general sibling** selector. The feedback block must
+therefore follow the control *in the same parent*. In an `.input-group`, put it inside the group as the last child;
+Bootstrap explicitly excludes it from the border-radius selectors (`bootstrap.css` 2723).
+
+`<cl:fieldError>` (`VolunteerTagLib`) renders the `invalid-feedback` div, or nothing when the field has no errors.
+It escapes messages explicitly with `HtmlUtils.htmlEscape` rather than `encodeAsHTML()`, because
+`grails.views.gsp.codecs.taglib` is `none` (`application.yml` 67) so nothing encodes taglib output for us — and a
+Grails validation message interpolates the **rejected value**, which is user input.
+
+No custom CSS is needed or wanted: Bootstrap's invalid-state rules out-specify our sizing overrides
+(`.form-select.is-invalid:not([multiple]):not([size])` is (0,4,0) and `.form-control.is-invalid` is (0,2,0), against
+(0,1,0) for our unqualified `.form-control` / `.form-select`), so Bootstrap's error-icon padding and the select's
+two-icon layout apply correctly in the invalid state while our padding applies in the normal state. Do not add
+`.is-invalid` or `.invalid-feedback` rules to the SCSS.
+
 **Removed — do not reintroduce:**
 `form-horizontal`, `control-group`, `controls`, `control-label`, `input-xlarge`/`-large`/`-medium`/`-small`, `uneditable-input` (BS2);
-`has-error`, `help-block` (BS3 — use `is-invalid` / `invalid-feedback` / `form-text`); `form-control` on a checkbox or radio; fixed
-`height` on `.form-control`; `select[type="text"]` (matches nothing), `form-control-sm`, `form-control-lg`.
+`has-error`, `help-block` (BS3 — use `is-invalid` / `invalid-feedback` / `form-text`); `hasErrors(…, 'errors')` and
+`hasErrors(…, 'error')` (same dead-class shape, neither has any CSS); `is-invalid` on a `.form-group` wrapper
+(it belongs on the control); `form-control` on a checkbox or radio;
+`form-control` on a `<select>` (use `form-select`); fixed
+`height` on `.form-control`; inline `style="height:…"` on a select; `select[type="text"]` (matches nothing), `form-control-sm`, `form-control-lg`.
 
 Note: `form-control` **is** correct on `<input type="file">` — Bootstrap 5 styles it. See "File uploads" below. An
 earlier version of this list banned it, which was a BS3 carry-over.
@@ -1022,6 +1165,17 @@ parallel. Ships this release.
     - `digivol-task.gsp` sets `submitRequiresConfirmation` as a default of false, which is overridden by
       `wildlifespotter.js` as true. However, when the transcription is saved, the value is false.
 - [ ] Template/manageFields - Move to any position is 1 index out (enter 3, it moves to 2).
+- [ ] `user/edit.gsp` 81 — the "User Id" field renders `<g:textField name="transcribedCount" …>`, a copy-paste
+  duplicate of the field three rows above. Its `<label for="userId">` therefore points at nothing, and the page emits
+  two controls with `id="transcribedCount"`. It is `disabled`, so nothing is submitted and no data is corrupted, but
+  the label is unclickable and the duplicate id is invalid HTML. Found 2026-09-28 during the `is-invalid` migration.
+- [ ] `LandingPageAdminController.save()` 106-118 chains to `create`/`edit` with model key **`landingPage`**, but
+  `landingPageAdmin/_generalForm.gsp` reads **`landingPageInstance`** — and reads it without safe navigation
+  (`landingPageInstance.title`, line 8). On a validation failure the bean is therefore null and the form should throw
+  rather than re-render with errors. Found 2026-09-28 while migrating that form to `is-invalid`; the new field-level
+  feedback on that page cannot work until this is fixed, since the bean never reaches the view.
+    - Prompt: "Confirm by submitting the landing-page form with a blank required field, then align the model key.
+      Check `saveProjectLabels()` 65-69 for the same mismatch."
 
 ---
 
@@ -1645,3 +1799,139 @@ parallel. Ships this release.
     - Verified with `./gradlew assetCompile` and `./gradlew compileGroovy`, both clean. Greps confirm 0 remaining
       `alert-block`, 0 `<span class="caret">`, 0 `&times;` inside `.btn-close`, 0 BS2 progress markup, and 1
       intentional bare `.alert` (the runtime-variant S3 placeholder).
+- 2026-09-28 — Phase 8 group 3: `form-control` → `form-select` sweep completed, plus the `task/list.gsp` inline
+  height. 42 files, 69 insertions / 69 deletions.
+    - **67 sites, not the "~40+" the item estimated.** The old figure came from grepping single lines; `<g:select>`
+      routinely wraps its attributes across three or four lines, so any count taken from a line-oriented grep
+      undercounts. Every number in this entry comes from a parser that reads the whole tag body.
+    - Same method corrected two other counts: there were **7** pre-existing `form-select` sites, not 4
+      (`label/editCategory.gsp` 236 and `landingPageAdmin/_generalForm.gsp` 50 had been missed), and
+      `project/_projectDetailsTable.gsp` has **3** live classless selects, not 5 — the other two (110, 119) are
+      inside `%{-- --}%` comments. Final state: 74 `form-select`, 0 `form-control` on a select.
+    - `.form-select` sizing was added to `modules/_forms.scss` 26–40 in a prior step, immediately after
+      `.form-control`. The `-moz-padding-start` and `background-position` declarations are not padding-matching
+      boilerplate — see the Forms conventions for why each is required.
+    - **The four Tom Select targets were never in scope, contrary to the plan for this task.** `bvpSelect.init`
+      (`assets/javascripts/bvp-select.js` 28) is the only `new TomSelect` call and resolves its targets by id;
+      all four ids point at bare `<g:select>` with no class, so there was nothing to convert. Recorded in the
+      conventions so the next sweep doesn't "fix" them.
+    - Also confirmed: no code anywhere reads `data-live-search`. The attribute appears on four selects and is
+      completely inert — residue from bootstrap-select, retired in Phase 7. Not removed in this task; it is dead
+      markup, not a style defect.
+    - `TranscribeTagLib` 305 converted. 273 and 342 are text inputs and stay `form-control`; **320 is a
+      `radioGroup` carrying `form-control`**, which the conventions ban — new follow-up in group 3, to be fixed with
+      the Phase 8a checkbox `cssClass` bug since both live in the same `switch`.
+    - Deliberately not done: `project/_projectDetailsTable.gsp` (BS2 island — new follow-up with a prompt);
+      `forum/index.gsp` 89, whose select is `nav-dropdown filter-nav__list-item` — filter-nav is out of scope by the
+      2026-09-25 decision, and `form-select` would fight the notebook-2 styling.
+    - Two process failures, both caught by verification rather than by the edit:
+        - **Line endings.** `validationRule/edit.gsp` is the repo's one CRLF GSP. Editing it in text mode silently
+          rewrote all 90 lines to LF — a one-token change presenting as a whole-file diff. Caught by
+          `git diff --numstat` showing 90/90; reverted and re-applied at byte level. Check `--numstat` after any
+          scripted edit: the diff *size* is the tell, not the diff content.
+        - **Overlapping edits.** `transcribe/_latLongWidget.gsp` 6 contains `D°M'S\"` — an apostrophe inside a
+          double-quoted attribute. A naive quote-tracker treats it as an opening quote and runs past the end of the
+          tag; here it swallowed the select at line 35, so the outer replacement overwrote the inner one. **The
+          script reported line 35 as converted when it was not.** Found by re-running the audit afterwards instead of
+          trusting the sweep's own output. Related to the capped-grep lesson repeated five times this phase, but
+          distinct: this was a tool reporting success for work it had undone.
+    - Verified with `./gradlew compileGroovy` and `./gradlew compileGroovyPages` (both BUILD SUCCESSFUL), a re-run of
+      the audit (0 remaining), and a pairwise diff check confirming all 67 changed line pairs differ **only** by
+      `form-control` → `form-select` — i.e. none of the `<input>` elements sharing those files was touched.
+    - Not verified: runtime appearance. The two Angular template-config pages (`wildlifeTemplateConfig.gsp` 232,
+      `audioTemplateConfig.gsp` 217) and the JS-built select in `transcribe/_dynamicDatasetRows.gsp` 115 render at
+      runtime, so compilation says nothing about them. The transcribe widgets are the ones to load first.
+    - Corrected while in scope: stale line numbers on both `report/userReport.gsp` items (`input-sm` is 32/34/43, not
+      69/71/80; the `input-group` + `col-*` sites are 31/39/49, not 68/76/86). The `.float-right` half of the BS3
+      residue item is already resolved — that page's `<style>` block is now empty.
+- 2026-09-28 — Phase 8 group 3: `has-error` → `is-invalid` + `invalid-feedback` completed. 65 fields across 10 views,
+  one new taglib tag, one new spec. **Invalid fields now show feedback for the first time** — a bug fix, not a
+  restyle.
+    - **Not a rename — a relocation.** BS3's `has-error` was a `.form-group` wrapper class; Bootstrap 5 styles the
+      *control* (`.form-control.is-invalid` etc.) and reveals the message via `.is-invalid ~ .invalid-feedback`, a
+      general sibling selector. Each of the 65 fields therefore needed three coordinated edits — strip the wrapper
+      class, add the interpolation to the control's own `class`, and insert the feedback block as a following
+      sibling in the same parent. See the Forms conventions for the canonical shape.
+    - **Decision taken (the item's open Prompt): server-side only.** There is no client-side constraint validation
+      to integrate with. `validate[required]`, emitted by `TranscribeTagLib` 215 for mandatory fields, targets
+      jQuery validationEngine — **which is not in this codebase**; separate greps for `validationEngine`,
+      `jquery.validate` and `novalidate` all return 0. It has been inert markup for years. Recorded rather than
+      removed: it is dead markup, not a style defect, and belongs with the Phase 8a `TranscribeTagLib` item.
+    - New `<cl:fieldError bean field>` in `VolunteerTagLib`. Justified by 65 call sites, not speculative generality:
+      the alternative was 65 copies of a four-line `<g:hasErrors><g:eachError>` block. It renders nothing when the
+      bean is null or the field is clean, so it is safe on unpopulated create forms.
+    - **Escaping is explicit and load-bearing.** The first implementation used `encodeAsHTML()`; the spec caught it
+      passing `<script>` through unescaped. Cause: `grails.views.gsp.codecs.taglib` is `none` (`application.yml` 67)
+      so taglib output is not auto-encoded, and `encodeAsHTML()` was a no-op on the codec-marked value returned by
+      `g.message`. Switched to `HtmlUtils.htmlEscape`. This matters because a Grails validation message interpolates
+      the **rejected value**, i.e. user input — so the naive version was a real, if narrow, injection path. The test
+      was written before the fix, which is the only reason it was caught.
+    - `VolunteerTagLibSpec` added: 6 AAA cases — renders the message, joins multiple errors with `<br/>`, renders
+      nothing for a clean field / null bean / missing field attribute, and escapes markup. Full suite green.
+    - **No CSS was written, deliberately.** Bootstrap's invalid-state rules out-specify our sizing overrides:
+      `.form-select.is-invalid:not([multiple]):not([size])` is (0,4,0) and `.form-control.is-invalid` is (0,2,0),
+      against (0,1,0) for our unqualified `.form-select` / `.form-control`. So Bootstrap's error-icon `padding-right`
+      and the select's two-icon `background-position` win in the invalid state, while the `.form-select` padding
+      added earlier in this phase still governs the normal state. Verified in the compiled `digivol.css`: 5
+      `invalid-feedback` and 17 `is-invalid` rules present, including the reveal selector.
+    - **Two more dead validation classes found, beyond the one the item named.** The item was written against
+      `has-error`; enumerating the third argument of *every* `hasErrors()` call turned up `'errors'` (16 sites) and
+      `'error'` (1). Neither has any CSS. The single `'error'` (`template/edit.gsp` 83) was a form-group in a file
+      already being converted and was swept in, taking the total to 65. The 16 `'errors'` are the BS2 table-cell
+      shape and are deferred to the `_projectDetailsTable.gsp` item. Lesson: the recurring failure in this phase has
+      been a *capped* grep; this one was a grep for the wrong *term*. Enumerating the argument rather than searching
+      for the expected value is what found them.
+    - Bug fixed while in scope: `frontPage/edit.gsp` 104 checked `hasErrors(field: 'attributionText')`, but
+      `FrontPage` has no such property — it is `heroImageAttribution` (domain 19). That check could never have
+      fired. Rebound to the real property, so Hero Image Attribution can now show feedback.
+    - Deliberately not done, each now a tracked follow-up: the duplication between the new field-level messages and
+      the existing form-level summaries; `transcribe-validation.js`, the only remaining first-party `has-error`; the
+      six bare checkboxes that took `is-invalid` without `form-check-input`; and the 16 `'errors'` table cells.
+    - Two behaviour bugs found and **not** silently fixed, filed in Phase 8a: `user/edit.gsp` 81 renders the User Id
+      field as `name="transcribedCount"` (duplicate id, orphaned label); and `LandingPageAdminController.save()`
+      chains with model key `landingPage` while `_generalForm.gsp` reads `landingPageInstance` without safe
+      navigation, so that form cannot currently re-render after a validation failure — which also blocks the new
+      feedback on that one page.
+    - Verified with `./gradlew compileGroovy`, `compileGroovyPages`, `assetCompile` and the full `test` task, all
+      clean; a div-balance check on all 10 edited views; per-file `--numstat` proportionate to field counts (both
+      13-field files are 39/26, i.e. 13 wrappers + 13 controls changed and 13 blocks added); and CRLF confirmed
+      intact on `validationRule/edit.gsp`, which was the line-ending trap from the previous step.
+    - Final counts: 0 `has-error` in GSPs/taglibs, 67 `is-invalid` interpolations (65 fields — `viewName` in
+      `template/create` and `template/edit` emits it twice because of a `g:if`/`g:else` pair), 65 `<cl:fieldError>`.
+- 2026-09-28 — Phase 8 group 3: required-field marking standardised on `.form-group.required`. 10 views, 26 required
+  fields. **Also closes the "should required labels be bold?" open decision — no, asterisk only.**
+    - Four mutually inconsistent mechanisms were in play. Only one had any CSS:
+      `.form-group.required .form-label:after` (`modules/_forms.scss` 74-76), used at 6 sites. The other three were
+      `.required-indicator` spans (5 sites, **no CSS at all** — they rendered only because the span contained a
+      literal `*`), asterisks hard-coded into label text (17 sites), and the HTML `required` attribute on its own
+      (34 sites, no visual marking). Everything now routes through the CSS mechanism.
+    - **A live double-asterisk bug, exactly the one the item predicted as hypothetical.** The item warned that
+      hard-coded asterisks "would double up if the class were added". In `achievementDescription/_form.gsp` that
+      had already happened: `toggleFields` adds `.required` to `.grType` *and* un-hid a `required-indicator` span in
+      the same label, so selecting the Groovy achievement type rendered **Code \*\***. Fixed by deleting the span,
+      which is the same edit the standardisation required anyway.
+    - **Asterisks that were lying, now corrected against the domain constraints rather than the markup:**
+        - `NewsItem.isActive` and `LandingPage.enabled` are boolean checkboxes. `nullable: false` on a Boolean is
+          satisfied by `false`, so neither is ever actually mandatory — asterisks removed. This also resolves a
+          create/edit inconsistency: `newsItem/edit.gsp` already had no asterisk on `isActive` while
+          `create.gsp` did.
+        - `tutorials/create.gsp` and `edit.gsp` marked Institution required unconditionally, but only the
+          `ifNotSiteAdmin` branch sets `required` and `Tutorial.institution` is `nullable: true`. The class is now
+          emitted conditionally, matching the branch that enforces it. `<cl:ifNotSiteAdmin>` inside a class
+          attribute follows existing precedent in `transcribe/_wildlifeSpotterWidget.gsp` 7/13.
+        - `tutorials/create.gsp` file upload was `required` with **no** asterisk — the inverse error. Now marked.
+        - `report/userReport.gsp` date range had an asterisk and no `required` on either input; both are pre-filled
+          with defaults, so adding it is truthful and cannot fire in practice.
+    - a11y: the item's Prompt asked to confirm the requirement is announced, since a CSS `:after` asterisk is not.
+      Every one of the 26 is now backed by `required` or `aria-required` — verified by script, 0 unbacked. Two
+      fields use `aria-required` rather than native `required` because they are TinyMCE-backed textareas, where a
+      hidden invalid control makes the form unsubmittable; see the Forms conventions.
+    - Deliberately not done, now tracked: the conditional `achievementDescription` groups still aren't announced
+      (needs `aria-required` toggling in the legacy JS); the four spellings of the `required` attribute are left
+      alone as cosmetic; `report/userReport.gsp` 30's `<label for="dateSelect">` points at a non-existent element.
+    - Verified with `compileGroovy`, `compileGroovyPages` and the full `test` task, all clean; a script confirming
+      all 26 `.required` groups contain a `.form-label` for the `::after` to attach to (0 missing) and that 0
+      asterisks remain hard-coded in labels and 0 `required-indicator` references survive; per-file `--numstat`
+      proportionate; CRLF intact.
+    - No CSS was changed. The existing rule was already correct and already loaded; the work was making the markup
+      agree with it.

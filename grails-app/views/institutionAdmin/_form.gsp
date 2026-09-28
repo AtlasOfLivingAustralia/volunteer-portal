@@ -1,9 +1,8 @@
 <%@ page import="au.org.ala.volunteer.Institution" %>
 <input type="hidden" name="entry" value="${entry}" />
-<div class="form-group">
+<div class="form-group required">
     <label class="form-label col-md-3" for="name">
         <g:message code="institution.name.label" default="Name"/>
-        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
         <g:textField class="form-control ${hasErrors(bean: institutionInstance, field: 'name', 'is-invalid')}" name="name" required="" value="${institutionInstance?.name}"/>
@@ -11,10 +10,9 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="form-group required">
     <label class="form-label col-md-3" for="acronym">
         <g:message code="institution.acronym.label" default="Acronym"/>
-        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
         <g:textField class="form-control ${hasErrors(bean: institutionInstance, field: 'acronym', 'is-invalid')}" name="acronym" required="" value="${institutionInstance?.acronym}"/>
@@ -42,10 +40,9 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="form-group required">
     <label class="form-label col-md-3" for="contactName">
         <g:message code="institution.contactName.label" default="Contact Name"/>
-        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
         <g:textField name="contactName" class="form-control ${hasErrors(bean: institutionInstance, field: 'contactName', 'is-invalid')}" value="${institutionInstance?.contactName}" required=""/>
@@ -53,10 +50,9 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="form-group required">
     <label class="form-label col-md-3" for="contactEmail">
         <g:message code="institution.contactEmail.label" default="Contact Email"/>
-        <span class="required-indicator">*</span>
     </label>
     <div class="col-md-6">
         <g:field type="email" name="contactEmail" class="form-control inst-contact-email ${hasErrors(bean: institutionInstance, field: 'contactEmail', 'is-invalid')}" value="${institutionInstance?.contactEmail}" required=""/>

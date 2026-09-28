@@ -26,12 +26,12 @@
     </div>
 
     <g:form action="requestUserReport" method="POST">
-        <div class="form-group">
-            <label for="dateSelect" class="col-md-3 form-label">Date Range*</label>
+        <div class="form-group required">
+            <label for="dateSelect" class="col-md-3 form-label">Date Range</label>
             <div class="col-md-8 input-daterange input-group" id="datepicker">
-                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" />
+                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" required="required" />
                 <span class="input-group-text">to</span>
-                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultEndDate}" name="dateEnd" />
+                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultEndDate}" name="dateEnd" required="required" />
             </div>
         </div>
         <div class="form-group">

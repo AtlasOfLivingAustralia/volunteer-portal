@@ -86,13 +86,13 @@ class Project implements Serializable {
     static constraints = {
         name maxSize: 200
         description nullable: true, maxSize: 20000, widget: 'textarea'
-        template nullable: true
+        template nullable: false
         created nullable: true
         showMap nullable: true
         tutorialLinks nullable: true, maxSize: 2000, widget: 'textarea'
         featuredLabel nullable: true
         featuredOwner nullable: true
-        institution nullable: true
+        institution nullable: false
         shortDescription nullable: true, maxSize: 500
         disableNewsItems nullable: true
         leaderIconIndex nullable: true
@@ -102,7 +102,7 @@ class Project implements Serializable {
         collectionEventLookupCollectionCode nullable: true
         localityLookupCollectionCode nullable: true
         picklistInstitutionCode nullable: true
-        projectType nullable: true
+        projectType nullable: false
         mapInitZoomLevel nullable: true
         mapInitLatitude nullable: true
         mapInitLongitude nullable: true

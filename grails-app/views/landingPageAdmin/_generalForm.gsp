@@ -5,7 +5,7 @@
        <label for="title" class="form-label col-md-3"><g:message code="landingPage.title.label"
                                                                       default="Title"/></label>
        <div class="col-md-9">
-           <g:field name="title" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'title', 'is-invalid')}" value="${landingPageInstance.title}"/>
+           <g:field name="title" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'title', 'is-invalid')}" value="${landingPageInstance.title}" required=""/>
            <cl:fieldError bean="${landingPageInstance}" field="title"/>
        </div>
     </div>
@@ -14,12 +14,12 @@
         <label for="shortUrl" class="form-label col-md-3"><g:message code="landingPage.shortUrl.label"
                                                                      default="Title"/></label>
         <div class="col-md-9">
-            <g:field name="shortUrl" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'is-invalid')}" value="${landingPageInstance.shortUrl}"/>
+            <g:field name="shortUrl" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'is-invalid')}" value="${landingPageInstance.shortUrl}" required=""/>
             <cl:fieldError bean="${landingPageInstance}" field="shortUrl"/>
         </div>
     </div>
 
-    <div class="form-group required">
+    <div class="form-group">
        <label for="enabled" class="form-label col-md-3"><g:message code="landingPage.enabled.label"
                                                                       default="Is this landing page enabled?"/></label>
         <div class="col-md-9">

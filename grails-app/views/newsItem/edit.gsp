@@ -51,18 +51,18 @@
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="update" id="${newsItem?.id}" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="title">Title*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="title">Title</label>
                             <div class="col-md-6">
                                 <g:textField class="form-control" maxlength="60" name="title" id="title" value="${newsItem?.title}" required="required"/>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="content">Content*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="content">Content</label>
 
                             <div class="col-md-6">
-                                <g:textArea name="content" id="content" class="mce form-control" rows="10" value="${newsItem?.content}" />
+                                <g:textArea name="content" id="content" class="mce form-control" rows="10" value="${newsItem?.content}" aria-required="true"/>
                             </div>
                         </div>
 
@@ -74,8 +74,8 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires*</label>
+                        <div class="form-group required">
+                            <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires</label>
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy') ?: ''}"/>
