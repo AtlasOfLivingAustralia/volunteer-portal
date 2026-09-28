@@ -32,7 +32,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 text-start">
                     <label class="form-label" for="heroImage">Select file</label>
-                    <input id="heroImage" name="heroImage" type="file" class="form-control"/>
+                    <input id="heroImage" class="form-control" name="heroImage" type="file" accept="image/jpeg,image/png"/>
                 </div>
             </div>
 

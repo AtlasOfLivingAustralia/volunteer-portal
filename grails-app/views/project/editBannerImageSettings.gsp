@@ -35,7 +35,7 @@
         <label class="form-label col-md-3" for="featuredImage">Expedition Image</label>
 
         <div class="col-md-9">
-            <input type="file" class="form-control" name="featuredImage" id="featuredImage"/>
+            <input type="file" class="form-control" name="featuredImage" id="featuredImage" accept="image/jpeg,image/png"/>
         </div>
     </div>
 

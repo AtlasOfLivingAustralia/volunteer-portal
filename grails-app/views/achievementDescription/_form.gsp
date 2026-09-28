@@ -85,7 +85,7 @@
         <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
              width="140" height="140"/>
         <div class="input-group">
-            <input type="file" class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'is-invalid')}" id="file-select" accept="image/*"/>
+            <input type="file" class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'is-invalid')}" id="file-select" accept="image/jpeg,image/png"/>
             <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
             <cl:fieldError bean="${achievementDescriptionInstance}" field="badge"/>
         </div>

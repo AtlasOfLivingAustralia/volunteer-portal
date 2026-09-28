@@ -133,7 +133,7 @@
                             <label class="form-label col-md-3" for="picklistFile">Picklist file</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" id="picklistFile" name="picklistFile"/>
+                                <input type="file" class="form-control" id="picklistFile" name="picklistFile" accept=".csv,text/csv,text/plain"/>
                             </div>
                         </div>
                     </div>

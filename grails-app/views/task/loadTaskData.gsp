@@ -36,7 +36,7 @@
                             <g:form controller="task" action="uploadTaskDataFile" method="post" enctype="multipart/form-data">
                                 <label class="form-label" for="dataFile">Data file</label>
                                 <div class="input-group">
-                                    <input type="file" class="form-control" name="dataFile" id="dataFile"/>
+                                    <input type="file" class="form-control" name="dataFile" id="dataFile" accept=".csv,text/csv,text/plain"/>
                                     <g:submitButton class="btn btn-sm btn-secondary" name="Upload Data File"/>
                                 </div>
                                 <g:hiddenField name="projectId" value="${projectInstance.id}"/>

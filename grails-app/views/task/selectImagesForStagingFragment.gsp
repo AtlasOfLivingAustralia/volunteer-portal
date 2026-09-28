@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.volunteer.ProjectType" %>
 <div class="alert alert-info">
     Depending on your connection speed and the size of your images, it might be a good idea to stage images in batches of 200 or less.
 </div>
@@ -7,7 +8,10 @@
     <div class="form-group">
         <div class="col-md-12">
             <label class="form-label" for="imageFile">Select images to stage</label>
-            <input type="file" class="form-control" name="imageFile" id="imageFile" multiple="multiple"/>
+            <input type="file" class="form-control" name="imageFile" id="imageFile" multiple="multiple"
+                   accept="${projectInstance.projectType?.name == ProjectType.PROJECT_TYPE_AUDIO
+                           ? 'audio/aac,audio/wav,audio/mpeg,audio/x-m4a,audio/ogg,audio/vnd.dlna.adts'
+                           : 'image/jpeg,image/gif,image/png'}"/>
         </div>
     </div>
 

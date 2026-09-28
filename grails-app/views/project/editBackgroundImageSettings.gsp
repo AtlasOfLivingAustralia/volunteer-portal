@@ -41,7 +41,7 @@
         <label class="form-label col-md-3" for="backgroundImage">Background Image</label>
 
         <div class="col-md-9">
-            <input type="file" class="form-control" name="backgroundImage" id="backgroundImage"/>
+            <input type="file" class="form-control" name="backgroundImage" id="backgroundImage" accept="image/jpeg,image/png"/>
         </div>
     </div>
 

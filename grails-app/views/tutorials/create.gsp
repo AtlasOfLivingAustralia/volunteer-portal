@@ -80,7 +80,7 @@
                             <label class="form-label col-md-3" for="tutorialFile">Upload Tutorial File</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" required="required"/>
+                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" required="required" accept="application/pdf,.pdf"/>
                             </div>
                         </div>
 

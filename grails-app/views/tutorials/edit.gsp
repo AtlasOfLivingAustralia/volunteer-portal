@@ -97,7 +97,7 @@
                             <label class="form-label col-md-3" for="tutorialFile">Upload New Tutorial File</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" />
+                                <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" accept="application/pdf,.pdf"/>
                             </div>
                         </div>
 

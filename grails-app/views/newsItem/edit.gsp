@@ -104,7 +104,7 @@
                             <label class="form-label col-md-3" for="newsItemThumb">Upload Thumbnail</label>
 
                             <div class="col-md-6">
-                                <input type="file" class="form-control" name="newsItemThumb" id="newsItemThumb"/>
+                                <input type="file" class="form-control" name="newsItemThumb" id="newsItemThumb" accept="image/jpeg,image/png"/>
                             </div>
                             </cl:ifNewsItemHasNoImage>
                         </div>

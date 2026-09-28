@@ -446,11 +446,44 @@ Log entry for that date.*
   (class has no CSS since BS4). Line numbers corrected 2026-09-28; the item said 69/71/80. The `.float-right` half of
   this item is **already resolved** — the page `<style>` block (9–11) is now empty, so the absolutely-positioned
   redefinition of the BS3 float utility is gone; nothing to rename.
-- [ ] No `accept` attribute on any of the 13 remaining native file inputs. Two were added on 2026-09-23 where the
-  client already enforced the same rule (`achievementDescription/_form.gsp` `image/*`, `picklist/wildcount.gsp`
-  `.csv`). The rest accept anything and fail server-side.
-    - Prompt: "Confirm the permitted types per upload endpoint, then add matching `accept` attributes. Note `accept`
-      is a filter, not validation — server-side checks must stay."
+- [X] `accept` attributes on the native file inputs. Implemented 2026-09-28 from endpoint `allowedMimeTypes`.
+  Scope: 17 native file inputs in total, with 15 updated and 2 pre-existing (`achievementDescription/_form.gsp`,
+  `picklist/wildcount.gsp`).
+
+  | Input                                                   | Endpoint                                     | Server list                                            | Implemented `accept`                               |
+  |---------------------------------------------------------|----------------------------------------------|--------------------------------------------------------|-----------------------------------------------------|
+  | `newsItem/create.gsp` 81, `edit.gsp` 107                | `NewsItemController` 144 / 226               | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
+  | `institutionAdmin/uploadInstitutionImageFragment.gsp` 9 | `InstitutionAdminController` 475             | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
+  | `project/editBannerImageSettings.gsp` 38                | `ProjectController` 951                      | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
+  | `project/editBackgroundImageSettings.gsp` 44            | `ProjectController` 990                      | `image/jpeg, image/png`                                | `image/jpeg,image/png`                              |
+  | `tutorials/create.gsp` 83, `edit.gsp` 100               | `TutorialsController` 155 / 280              | `application/pdf`                                      | `application/pdf,.pdf`                              |
+  | `task/loadTaskData.gsp` 39                              | `uploadTaskDataFile` 581                     | `text/plain, text/csv`                                 | `.csv,text/csv,text/plain`                          |
+  | `task/uploadDataFileFragment.gsp` 7                     | `uploadStagingDataFile` 551                  | + `application/octet-stream, application/vnd.ms-excel` | `.csv,text/csv,text/plain,application/vnd.ms-excel` |
+  | `task/selectImagesForStagingFragment.gsp` 10            | `AjaxController` 654 **or** 659              | image **or** audio                                     | conditional — see below                             |
+  | `picklist/manage.gsp` 136                               | `PicklistController.uploadCsvFile` 43        | **none**                                               | `.csv,text/csv,text/plain`                          |
+  | `template/manageFields.gsp` 37                          | `TemplateController.importFieldsFromCSV` 508 | **none**                                               | `.csv,text/csv,text/plain`                          |
+  | `landingPageAdmin/editImage.gsp` 35                     | `LandingPageAdminController` 146             | **none**                                               | `image/jpeg,image/png`                              |
+  | `frontPage/edit.gsp` 150, 182                           | `FrontPageController` 104 / 135              | **none**                                               | `image/jpeg,image/png`                              |
+
+    - Always list file extensions alongside the MIME types for the CSV uploads. Browsers report `.csv`
+      inconsistently (Windows commonly sends `application/vnd.ms-excel`), which is precisely why
+      `uploadStagingDataFile` tolerates four types where `uploadTaskDataFile` tolerates two.
+    - **The staging input must be conditional.** `digivol-stageImage.js` 137 chooses the image or the audio endpoint
+      from `config.isAudioProject`, so one fixed `accept` would be wrong for half of all projects. Note
+      `isAudioProject` is only passed by the `staging` action (`TaskController` 484-493) and does **not** reach this
+      fragment, so derive it from `projectInstance.projectType` instead. Image list is
+      `image/jpeg,image/gif,image/png`; audio is the six types at `AjaxController` 659. The image endpoint's list
+      also contains `text/plain`, which appears to be resumable-chunk handling rather than an intended upload type —
+      leave it out of `accept`.
+    - **Four of these endpoints have no server-side type check at all** (`PicklistController.uploadCsvFile`,
+      `TemplateController.importFieldsFromCSV`, `LandingPageAdminController` 146, `FrontPageController` 104 and
+      135), so the Prompt's caveat "server-side checks must stay" has nothing to keep there. `accept` is a picker
+      filter and is trivially bypassed, so adding it to those four must not be mistaken for constraining them — see
+      the Phase 8a upload-security item.
+- [X] `achievementDescription/_form.gsp` 88 now uses `accept="image/jpeg,image/png"`, matching
+  `AchievementDescriptionController` `allowedMimeTypes`.
+- [X] `uploadTaskDataFile` (`TaskController` 581) CSV MIME handling was aligned with staging upload handling to avoid
+  platform-dependent rejects for Windows `.csv` uploads reported as `application/vnd.ms-excel`.
 - [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload
   button looks like it is taller than the control creating the whitespace.
 - [ ] `TranscribeTagLib` 320 — the `FieldType.radio` branch emits `class: 'form-control'` on a `g.radioGroup`. The
@@ -1164,6 +1197,28 @@ parallel. Ships this release.
 - [ ] Wildlife spotter no longer asking for submit confirmation
     - `digivol-task.gsp` sets `submitRequiresConfirmation` as a default of false, which is overridden by
       `wildlifespotter.js` as true. However, when the transcription is saved, the value is false.
+- [ ] **Unrestricted file upload on four admin endpoints, with an attacker-controlled saved filename.** Found
+  2026-09-28 while deriving `accept` attributes. Security, not styling — does not belong in Phase 8.
+    - `FileUploadService.uploadFile(File, MultipartFile)` (57-61) names the stored file `f.originalFilename`
+      **verbatim** — no sanitisation, no extension allow-list, no path-segment stripping. Reached from
+      `FrontPageController` 104 (hero image) and 135 (`addLogoImage`, via `uploadImages`), and
+      `LandingPageAdminController` 148 (hero image), all through the two-argument `uploadImage`. The three-argument
+      overload (47-55) is safe by comparison because each caller supplies a `renameFile` closure that builds the
+      name from a content hash.
+    - None of those four endpoints checks `getContentType()`, and neither does
+      `PicklistController.uploadCsvFile` (43) or `TemplateController.importFieldsFromCSV` (508). The six
+      controllers that *do* check (`NewsItem`, `Tutorials`, `Task` ×2, `Project` ×2, `InstitutionAdmin`,
+      `AchievementDescription`, `Ajax` ×2) establish the pattern these are missing.
+    - `FileUploadService.extension(MultipartFile)` (85-91) falls back to the extension of the **user-supplied**
+      `originalFilename`, then to `'jpg'` — so even where the name is rebuilt, the extension can still come from the
+      uploader.
+    - Separate bug in the same method: `uploadImage` 40 guards `mpf.name.length() > 255`, but `name` is the *form
+      field* name, not the filename. The 255-character limit it is trying to enforce never applies to
+      `originalFilename`.
+    - Prompt: "Decide the fix shape: give the two-argument `uploadFile` the same hash-based rename the
+      three-argument overload gets, or sanitise `originalFilename` at the service boundary. Then add
+      `getContentType()` allow-lists to the six unguarded actions, matching the existing six that have them. Treat
+      `accept` attributes as unrelated — they are a picker convenience and are trivially bypassed."
 - [ ] Template/manageFields - Move to any position is 1 index out (enter 3, it moves to 2).
 - [ ] `user/edit.gsp` 81 — the "User Id" field renders `<g:textField name="transcribedCount" …>`, a copy-paste
   duplicate of the field three rows above. Its `<label for="userId">` therefore points at nothing, and the page emits
@@ -1935,3 +1990,13 @@ parallel. Ships this release.
       proportionate; CRLF intact.
     - No CSS was changed. The existing rule was already correct and already loaded; the work was making the markup
       agree with it.
+- 2026-09-28 — Phase 8 group 3: `accept` attributes implemented from endpoint `allowedMimeTypes` (Step 6).
+    - 15 native file inputs were updated (17 total in app; 2 already had `accept`).
+    - Mapping landed for image, PDF and CSV uploads, including extension+MIME pairs for CSV and conditional
+      `accept` on staging upload (image vs audio).
+    - `achievementDescription/_form.gsp` was tightened from `image/*` to `image/jpeg,image/png` to match its
+      controller allow-list.
+    - `uploadTaskDataFile` MIME handling was aligned with staging CSV handling to avoid platform-dependent
+      rejects where Windows reports `.csv` as `application/vnd.ms-excel`.
+    - Security caveat remains open and intentionally separate from this styling task: `accept` is a picker filter,
+      not enforcement. The unrestricted-upload follow-up in Phase 8a stays open.

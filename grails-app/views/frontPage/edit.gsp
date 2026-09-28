@@ -147,7 +147,7 @@
                                          src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/hero/${frontPage.heroImage}"/>
 
                                 </g:if>
-                                <input id="heroImage" class="form-control" name="heroImage" type="file" />
+                                <<input id="heroImage" class="form-control" name="heroImage" type="file" accept="image/jpeg,image/png"/>
                             </div>
                         </div>
 
@@ -179,7 +179,7 @@
                     <g:uploadForm controller="frontPage" action="addLogoImage">
                     <div class="form-group">
                         <div class="col-sm-6 logos">
-                            <input id="uploadLogo" class="form-control" name="uploadLogo" type="file" multiple />
+                            <input id="uploadLogo" class="form-control" name="uploadLogo" type="file" multiple accept="image/jpeg,image/png"/>
                         </div>
                     </div>
                     <div class="form-group">

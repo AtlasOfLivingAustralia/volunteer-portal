@@ -34,7 +34,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="input-group">
-                            <input type="file" class="form-control" id="uploadFile" name="uploadFile"/>
+                            <input type="file" class="form-control" id="uploadFile" name="uploadFile" accept=".csv,text/csv,text/plain"/>
                             <button class="btn btn-sm btn-secondary" id="btnImportFromCSV">Import from CSV</button>
                         </div>
                     </div>

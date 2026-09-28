@@ -6,7 +6,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-6">
                 <label class="form-label" for="imagefile">Image file</label>
-                <input type="file" class="form-control" id="imagefile" name="imagefile"/>
+                <input type="file" class="form-control" id="imagefile" name="imagefile" accept="image/jpeg,image/png"/>
             </div>
         </div>
         <div class="form-group">

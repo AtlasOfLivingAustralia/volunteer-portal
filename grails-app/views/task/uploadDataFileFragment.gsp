@@ -4,7 +4,8 @@
         <label for="dataFile" class="form-label col-md-3">Select a data file:</label>
 
         <div class="col-md-9">
-            <input type="file" class="form-control" name="dataFile" id="dataFile"/>
+            <input type="file" class="form-control" name="dataFile" id="dataFile"
+                   accept=".csv,text/csv,text/plain,application/vnd.ms-excel"/>
         </div>
     </div>
     <br/>
