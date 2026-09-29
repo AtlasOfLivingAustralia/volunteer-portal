@@ -399,10 +399,9 @@ Log entry for that date.*
   because native `required` on a field inside a `d-none` group makes the form unsubmittable with a non-focusable
   validation target. **Completed 2026-09-29** by toggling `aria-required` in `toggleFields` alongside the
   `.required` class.
-- [ ] `report/userReport.gsp` 30 — `<label for="dateSelect">` points at an element that does not exist; the date
+- [X] `report/userReport.gsp` 30 — `<label for="dateSelect">` points at an element that does not exist; the date
   range is two inputs (`dateStart` / `dateEnd`) and there is no `dateSelect` id on the page. The label is therefore
-  unclickable and unassociated. Found 2026-09-28. Fold into the a11y sweep, or fix with the other `userReport`
-  residue items above.
+  unclickable and unassociated. Found 2026-09-28. **Completed 2026-09-29**
 - [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
   `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
   item, renders no feedback. Fold into the field-level validation item.
