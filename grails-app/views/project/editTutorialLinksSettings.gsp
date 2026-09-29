@@ -51,7 +51,7 @@
             <table class="table table-striped">
                 <g:each in="${tutorialList}" var="tutorial">
                     <tr>
-                        <td><g:checkBox name="tutorials" value="${tutorial.id}" checked="${projectInstance.tutorials.contains(tutorial)}"/></td>
+                        <td><g:checkBox name="tutorials" value="${tutorial.id}" class="form-check-input" checked="${projectInstance.tutorials.contains(tutorial)}"/></td>
                         <td>${tutorial.name} <cl:tutorialLink tutorial="${tutorial}" /></td>
                     </tr>
                 </g:each>

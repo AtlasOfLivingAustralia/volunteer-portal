@@ -151,18 +151,18 @@
                                         <div class="ct-sub-item" id="ct-unlisted">
 
                                             <div class="row">
-                                                <div class="form-group">
+                                                <div class="form-check">
                                                     <div class="col-sm-offset-2 col-sm-10">
                                                         <div class="checkbox">
                                                             <label>
-                                                                <g:checkBox name="recordValues.0.unknown" checked="${recordValues[0]?.unknown}"/> ${message(code: 'cameratrap.unknown.radio.yes.label', default: 'I don\'t know what the animal is')}
+                                                                <g:checkBox name="recordValues.0.unknown" class="form-check-input" checked="${recordValues[0]?.unknown}"/> ${message(code: 'cameratrap.unknown.radio.yes.label', default: 'I don\'t know what the animal is')}
                                                             </label>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-offset-2 col-sm-10">
                                                         <div class="checkbox">
                                                             <label>
-                                                                <g:checkBox name="recordValues.0.otherunlisted" checked="${recordValues[0]?.unknown}"/> ${message(code: 'cameratrap.unknown.radio.no.label', default: 'I know what the animal is but it is not in the lists.  Enter details below:')}
+                                                                <g:checkBox name="recordValues.0.otherunlisted" class="form-check-input" checked="${recordValues[0]?.unknown}"/> ${message(code: 'cameratrap.unknown.radio.no.label', default: 'I know what the animal is but it is not in the lists.  Enter details below:')}
                                                             </label>
                                                         </div>
                                                     </div>

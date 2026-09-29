@@ -291,11 +291,11 @@
                 <div class="col-sm-12">
                     <p><g:message code="transcribe.task.submit.confirm" default="Submit your selections?"/></p>
                 </div>
-                <div class="form-group">
+                <div class="form-check">
                     <div class="col-sm-offset-1 col-sm-11">
                         <div class="checkbox">
-                            <label>
-                                <input id="submit-dont-confirm" name="dont-confirm" type="checkbox"> Don't ask me again
+                            <label class="form-check-label">
+                                <input id="submit-dont-confirm" class="form-check-input" name="dont-confirm" type="checkbox"> Don't ask me again
                             </label>
                         </div>
                     </div>

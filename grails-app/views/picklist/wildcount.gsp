@@ -94,7 +94,7 @@
                             <input type="text" id="key-${i}" name="key-${i}" value="${item.value}">
                         </td>
                         <td>
-                            <g:checkBox name="reference-${i}" checked="${obj.reference}"/>
+                            <g:checkBox name="reference-${i}" class="form-check-input" checked="${obj.reference}"/>
                         </td>
                         <td>
                             <g:each in="${obj.nightImages}" var="img">
@@ -109,10 +109,10 @@
                             <g:hiddenField name="dayImages-${i}" value="${obj.dayImages}"/>
                         </td>
                         <td>
-                            <g:textField name="tags-${i}" value="${obj.tags}"/>
+                            <g:textField name="tags-${i}" class="form-control" value="${obj.tags}"/>
                         </td>
                         <td>
-                            <g:textField name="similarSpecies-${i}" value="${obj.similarSpecies}"/>
+                            <g:textField name="similarSpecies-${i}" class="form-control" value="${obj.similarSpecies}"/>
                         </td>
                         <td>
                             <div class="btn-group">

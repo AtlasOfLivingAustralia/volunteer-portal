@@ -1383,7 +1383,7 @@ function notify() {
         def mb = new MarkupBuilder(out)
         mb.a([href: tutorialService.getTutorialUrl(tutorial), target: "_blank"]) {
             if (!hideLinkIcon) {
-                mkp.yieldUnescaped("&nbsp;<span class='fa fa-external-link'></span>&nbsp;")
+                mkp.yieldUnescaped("&nbsp;<span title='Open tutorial in new window' class='fa fa-external-link'></span>&nbsp;")
             }
             mkp.yieldUnescaped(body())
         }

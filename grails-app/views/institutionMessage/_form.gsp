@@ -56,12 +56,12 @@
         <g:message code="institutionMessage.recipient.label" default="Recipient"/>
     </label>
     <div class="col-md-6">
-        <div class="clearfix loading-recipient d-none hidden">
+        <div class="clearfix loading-recipient d-none">
             <div class="loader" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-        <span id="recipient-container" class="d-none hidden">
+        <span id="recipient-container" class="d-none">
         <select name="recipient"
                 data-live-search="true"
                 title="Select a recipient"
@@ -81,18 +81,18 @@
                      value="${institutionMessageInstance?.subject}"/>
     </div>
 </div>
-<div class="form-group">
-    <label for="includeContact" class="form-label col-md-3">
-        <g:message code="institutionMessage.includeContact.label" default="Include Institution Contact" /><br />
-        <small id="includeContactHelp" class="form-text text-muted"><g:message code="institutionMessage.includeContact.help" default="Include Contact Details in Message" /></small>
-    </label>
+<div class="form-check">
     <div class="col-md-6">
         <g:checkBox name="includeContact"
-                    class="form-control"
+                    class="form-check-input"
                     id="includeContact"
                     style="margin-top: 9px;"
                     disabled="${(disableEdit)}"
                     value="${institutionMessageInstance?.includeContact}" />
+        <label for="includeContact" class="form-label">
+            <g:message code="institutionMessage.includeContact.label" default="Include Institution Contact" /><br />
+            <small id="includeContactHelp" class="form-text text-muted"><g:message code="institutionMessage.includeContact.help" default="Include Contact Details in Message" /></small>
+        </label>
     </div>
 </div>
 <div class="form-group">

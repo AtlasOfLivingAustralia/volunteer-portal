@@ -377,13 +377,13 @@ Log entry for that date.*
 - [X] Field-level validation feedback is absent. **Completed 2026-09-28** — 65 fields across 10 views migrated to
   `is-invalid` on the control plus a `<cl:fieldError>` block. Decided: messages come from the **server-side Grails
   bean-errors path only**; there is no client-side constraint validation to hook (see the Forms conventions).
-- [ ] Bare checkboxes that took `is-invalid` on 2026-09-28 but have no `form-check-input`, so BS5 draws no red
+- [X] Bare checkboxes that took `is-invalid` on 2026-09-28 but have no `form-check-input`, so BS5 draws no red
   state on them (the `<cl:fieldError>` message still renders, because `.is-invalid ~ .invalid-feedback` is
   class-agnostic): `template/edit.gsp` supportMultipleTranscriptions / isGlobal / isHidden,
   `landingPageAdmin/_generalForm.gsp` enabled, and `templateField/edit.gsp` mandatory / multiValue — the last two
-  also sit in a `col-md-6 form-control-static`, which is a BS3 class with no CSS since BS4.
-    - Prompt: "Give these six checkboxes `form-check-input` and retire `form-control-static`. Check the layout
-      inside the `padding-top: 10px` wrappers in `template/edit.gsp` before and after."
+  also sit in a `col-md-6 form-control-static`, which is a BS3 class with no CSS since BS4. **Completed 2026-09-28**
+  by adding `form-check-input` to all six checkboxes, removing `form-control-static` from the two
+  `templateField/edit.gsp` wrappers, and dropping the checkbox-row `&nbsp;&nbsp;` separators in `template/edit.gsp`.
 - [X] Required-field marking is inconsistent. **Completed 2026-09-28.** Standardised on `.form-group.required`,
   which was already the only mechanism with any CSS behind it. 26 required fields now marked one way; the 5
   `required-indicator` spans and 17 hard-coded label asterisks are gone, and every asterisk is backed by a
@@ -1992,3 +1992,11 @@ parallel. Ships this release.
     - Security caveat remains open and intentionally separate from this styling task: `accept` is a picker filter,
       not enforcement. The unrestricted-upload follow-up in Phase 8a stays open.
     - Removed `project/_projectDetailsTable.gsp` and `picklist/edit.gsp` as unused dead code.
+- 2026-09-28 — Phase 8 group 3: bare checkbox invalid-state styling fix completed.
+    - Updated six checkbox controls to `form-check-input` so Bootstrap 5 draws the invalid state on the control, not
+      only the adjacent feedback message.
+    - Scope: `template/edit.gsp` (`supportMultipleTranscriptions`, `isGlobal`, `isHidden`),
+      `landingPageAdmin/_generalForm.gsp` (`enabled`), `templateField/edit.gsp` (`mandatory`, `multiValue`).
+    - Retired two dead BS3 `form-control-static` wrappers in `templateField/edit.gsp`.
+    - In `template/edit.gsp`, removed the three checkbox-row `&nbsp;&nbsp;` separators inside the existing
+      `padding-top: 10px` wrappers; wrapper/layout structure otherwise unchanged by decision.

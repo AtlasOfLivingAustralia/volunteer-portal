@@ -1,29 +1,25 @@
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
+<div class="form-check">
         <div class="checkbox">
-            <g:checkBox name="exportGroupByIndex" data-default="true"/>
-            <label for="exportGroupByIndex">
+            <g:checkBox class="form-check-input" name="exportGroupByIndex" data-default="true"/>
+            <label class="form-label" for="exportGroupByIndex">
                 <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
             </label>
         </div>
-    </div>
 </div>
 
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
-        <div class="checkbox">
-            <g:checkBox name="hideNames" data-default="false"/>
-            <label for="hideNames">
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="hideNames" data-default="false"/>
+        <label class="form-label" for="hideNames">
                 <g:message code="template.hideNames.label" default="Hide Individual Fields Section"/>
             </label>
         </div>
     </div>
 </div>
 
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
-        <div class="checkbox">
-            <g:checkBox name="doublePage" data-default="false"/>
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="doublePage" data-default="false"/>
             <label for="doublePage">
                 <g:message code="template.doublePage.label" default="Double page"/>
             </label>

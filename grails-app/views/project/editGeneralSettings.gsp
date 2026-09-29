@@ -68,7 +68,9 @@
         <div class="col-md-6">
             %{-- <g:textField class="form-control" maxlength="500" name="shortDescription" value="${projectInstance.shortDescription}"/> --}%
             <g:textArea class="form-control" name="shortDescription" maxlength="500" rows="5" value="${projectInstance.shortDescription}" />
-            <span class="float-end badge badge--neutral" id="count_message"></span>
+            <div class="char-counter">
+                <span class="float-end badge badge--neutral" id="count_message"></span>
+            </div>
         </div>
     </div>
 
@@ -90,11 +92,11 @@
         </div>
 
         <div class="col-md-3">
-            <a class="btn btn-sm btn-outline-secondary" title="Edit Template" style="margin: 5px;"
+            <a class="btn btn-sm btn-outline-secondary" title="Edit Template" style="margin: 5px;" target="_blank"
                href="${createLink(controller: 'template', action: 'edit', id: projectInstance?.template?.id)}">
                 <i class="fa fa-pencil"></i>
             </a>
-            <a class="btn btn-sm btn-outline-secondary" title="View All Templates"
+            <a class="btn btn-sm btn-outline-secondary" title="View All Templates" target="_blank"
                href="${createLink(controller: 'template', action: 'list')}">
                 <i class="fa fa-list"></i>
             </a>
@@ -146,28 +148,28 @@
 
     </div>
 
-    <div class="form-group">
+    <div class="form-check">
         <div class="col-md-9 col-md-offset-3">
-            <label for="imageSharingEnabled" class="checkbox">
-                <g:checkBox name="imageSharingEnabled"
+            <label for="imageSharingEnabled" class="form-label">
+                <g:checkBox name="imageSharingEnabled" class="form-check-input"
                             checked="${projectInstance.imageSharingEnabled}"/>&nbsp;Enable buttons to share images from this project to social networks
             </label>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-check">
         <div class="col-md-9 col-md-offset-3">
-            <label for="harvestableByAla" class="checkbox">
-                <g:checkBox name="harvestableByAla"
+            <label for="harvestableByAla" class="form-label">
+                <g:checkBox name="harvestableByAla" class="form-check-input"
                             checked="${projectInstance.harvestableByAla}"/>&nbsp;Data from this expedition should be harvested by the Atlas of Living Australia
             </label>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-check">
         <div class="col-md-9 col-md-offset-3">
-            <label for="extractImageExifData" class="checkbox">
-                <g:checkBox name="extractImageExifData"
+            <label for="extractImageExifData" class="form-label">
+                <g:checkBox name="extractImageExifData" class="form-check-input"
                             checked="${projectInstance.extractImageExifData}"/>&nbsp;EXIF data from staged images should be included in project exports
             </label>
         </div>

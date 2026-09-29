@@ -1,35 +1,29 @@
 <%@ page import="au.org.ala.volunteer.Picklist" %>
 <g:set var="picklists" value="${Picklist.list()}"/>
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
+<div class="form-check">
         <div class="checkbox">
-            <g:checkBox name="hideDefaultButtons" data-default="true"/>
-            <label>
+            <g:checkBox class="form-check-input" name="hideDefaultButtons" data-default="true"/>
+            <label class="form-label" for="hideDefaultButtons">
                 <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
             </label>
         </div>
+</div>
+
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="hideSectionNumbers" data-default="true"/>
+        <label class="form-label" for="hideSectionNumbers">
+            <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
+        </label>
     </div>
 </div>
 
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
-        <div class="checkbox">
-            <g:checkBox name="hideSectionNumbers" data-default="true"/>
-            <label for="hideSectionNumbers">
-                <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
-            </label>
-        </div>
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-6">
-        <div class="checkbox">
-            <g:checkBox name="exportGroupByIndex" data-default="true"/>
-            <label for="exportGroupByIndex">
-                <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
-            </label>
-        </div>
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="exportGroupByIndex" data-default="true"/>
+        <label class="form-label" for="exportGroupByIndex">
+            <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
+        </label>
     </div>
 </div>
 

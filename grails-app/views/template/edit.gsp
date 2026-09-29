@@ -6,22 +6,18 @@
     <g:set var="entityName" value="${message(code: 'template.label', default: 'Template')}"/>
     <title><g:message code="default.edit.label" args="[entityName]"/></title>
     <style>
-        input[type="checkbox"] {
-            margin-left: 0px !important;
-        }
+        /*h4.card-title {*/
+        /*    font-size: 12px;*/
 
-        h4.card-title {
-            font-size: 12px;
-
-        }
+        /*}*/
 
         .card-title:hover {
             cursor: pointer;
         }
 
-        .card {
-            margin: 5px !important;
-        }
+        /*.card {*/
+        /*    margin: 5px !important;*/
+        /*}*/
 
         .collapse-toggle {
             border-radius: 5px;
@@ -92,53 +88,46 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-md-3 form-label" for="supportMultipleTranscriptions">
-                                <g:message code="template.multipletanscriptions.label"
-                                           default="Support multiple transcriptions per task?"/>
-
-                            </label>
+                        <div class="form-check">
                             <div class="col-md-6">
-                                <div style="padding-top: 10px">
-                                    <g:checkBox name="supportMultipleTranscriptions" class="${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'is-invalid')}" checked="${templateInstance.supportMultipleTranscriptions}"/> &nbsp;&nbsp;
-                                    <cl:helpText>
-                                        <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
-                                    </cl:helpText>
-                                    <cl:fieldError bean="${templateInstance}" field="supportMultipleTranscriptions"/>
-                                </div>
+                                <g:checkBox name="supportMultipleTranscriptions" class="form-check-input ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'is-invalid')}" checked="${templateInstance.supportMultipleTranscriptions}"/>
+                                <label class="form-label" for="supportMultipleTranscriptions">
+                                    <g:message code="template.multipletanscriptions.label"
+                                               default="Support multiple transcriptions per task?"/>
+                                </label>
+                                <cl:helpText>
+                                    <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
+                                </cl:helpText>
+                                <cl:fieldError bean="${templateInstance}" field="supportMultipleTranscriptions"/>
                             </div>
                         </div>
 
                         <cl:ifSiteAdmin>
-                        <div class="form-group">
-                            <label class="col-md-3 form-label" for="isGlobal">
-                                <g:message code="template.isglobal.label"
-                                           default="Is a Global Template?"/>
-                            </label>
+                        <div class="form-check">
                             <div class="col-md-6">
-                                <div style="padding-top: 10px">
-                                    <g:checkBox name="isGlobal" class="${hasErrors(bean: templateInstance, field: 'isGlobal', 'is-invalid')}" checked="${templateInstance.isGlobal}"/>&nbsp;&nbsp;
-                                    <cl:helpText>
-                                        <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
-                                    </cl:helpText>
-                                    <cl:fieldError bean="${templateInstance}" field="isGlobal"/>
-                                </div>
+                                <g:checkBox name="isGlobal" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isGlobal', 'is-invalid')}" checked="${templateInstance.isGlobal}"/>
+                                <label class="form-label" for="isGlobal">
+                                    <g:message code="template.isglobal.label"
+                                               default="Is a Global Template?"/>
+                                </label>
+                                <cl:helpText>
+                                    <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
+                                </cl:helpText>
+                                <cl:fieldError bean="${templateInstance}" field="isGlobal"/>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-md-3 form-label" for="isHidden">
-                                <g:message code="template.ishidden.label"
-                                           default="Hide Template?"/>
-                            </label>
+                        <div class="form-check">
                             <div class="col-md-6">
-                                <div style="padding-top: 10px">
-                                    <g:checkBox name="isHidden" class="${hasErrors(bean: templateInstance, field: 'isHidden', 'is-invalid')}" checked="${templateInstance.isHidden}"/>&nbsp;&nbsp;
-                                    <cl:helpText>
-                                        <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
-                                    </cl:helpText>
-                                    <cl:fieldError bean="${templateInstance}" field="isHidden"/>
-                                </div>
+                                <g:checkBox name="isHidden" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isHidden', 'is-invalid')}" checked="${templateInstance.isHidden}"/>
+                                <label class="form-label" for="isHidden">
+                                    <g:message code="template.ishidden.label"
+                                               default="Hide Template?"/>
+                                </label>
+                                <cl:helpText>
+                                    <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
+                                </cl:helpText>
+                                <cl:fieldError bean="${templateInstance}" field="isHidden"/>
                             </div>
                         </div>
                         </cl:ifSiteAdmin>
@@ -158,14 +147,14 @@
                     </g:form>
 
                     <div class="form-group" style="padding-top: 10px;">
-                        <label class="col-md-6 form-label" style="padding-top: 5px;">
+                        <label class="col-md-12 form-label" style="padding-top: 5px;">
                             <g:message code="template.project.label"
                                        default="Projects that use this template:"/>
                             &nbsp;
                             <button class="btn btn-sm btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
                         </label>
 
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             %{-- Accordian display --}%
                             <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
                             <g:set var="instCounter" value="0"/>

@@ -67,6 +67,11 @@ form {
   box-shadow: 0 0 0 0.25rem rgba($focus-ring-color, 0.25);
 }
 
+.form-check {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .form-switch-lg {
   font-size: $font-size-xl;
 }

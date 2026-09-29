@@ -19,11 +19,11 @@
         </div>
     </div>
 
-    <div class="form-group">
-       <label for="enabled" class="form-label col-md-3"><g:message code="landingPage.enabled.label"
-                                                                      default="Is this landing page enabled?"/></label>
+    <div class="form-check">
         <div class="col-md-9">
-            <g:checkBox name="enabled" class="${hasErrors(bean: landingPageInstance, field: 'enabled', 'is-invalid')}" checked="${landingPageInstance?.enabled}"/>
+            <g:checkBox name="enabled" class="form-check-input ${hasErrors(bean: landingPageInstance, field: 'enabled', 'is-invalid')}" checked="${landingPageInstance?.enabled}"/>
+            <label for="enabled" class="form-label col-md-9"><g:message code="landingPage.enabled.label"
+                                                                        default="Is this landing page enabled?"/></label>
             <cl:fieldError bean="${landingPageInstance}" field="enabled"/>
         </div>
     </div>

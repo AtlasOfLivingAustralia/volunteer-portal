@@ -46,13 +46,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="fieldTypeClassifier" class="col-md-2 form-label"><g:message code="templateField.fieldTypeClassifier.label" default="Classifier"/></label>
+                            <label for="fieldTypeClassifier" class="form-label"><g:message code="templateField.fieldTypeClassifier.label" default="Classifier"/></label>
+                            <cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText>
                             <div class="col-md-6">
                                 <g:textField class="form-control ${hasErrors(bean: templateFieldInstance, field: 'fieldTypeClassifier', 'is-invalid')}" name="fieldTypeClassifier" value="${templateFieldInstance?.fieldTypeClassifier}"/>
                                 <cl:fieldError bean="${templateFieldInstance}" field="fieldTypeClassifier"/>
-                            </div>
-                            <div class="col-md-4">
-                                <cl:helpText><g:message code="field.classifier.help" default="Distinguishes multiple fields with the same type but only works on select templates"/></cl:helpText>
                             </div>
                         </div>
 
@@ -72,18 +70,19 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="mandatory" class="col-md-2 form-label"><g:message code="templateField.mandatory.label" default="Mandatory"/></label>
-                            <div class="col-md-6 form-control-static">
-                                <g:checkBox class="${hasErrors(bean: templateFieldInstance, field: 'mandatory', 'is-invalid')}" name="mandatory" value="${templateFieldInstance?.mandatory}"/>
+                        <div class="form-check">
+
+                            <div class="col-md-6">
+                                <g:checkBox class="form-check-input ${hasErrors(bean: templateFieldInstance, field: 'mandatory', 'is-invalid')}" name="mandatory" value="${templateFieldInstance?.mandatory}"/>
+                                <label for="mandatory" class="col-md-6 form-label"><g:message code="templateField.mandatory.label" default="Mandatory"/></label>
                                 <cl:fieldError bean="${templateFieldInstance}" field="mandatory"/>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="multiValue" class="col-md-2 form-label"><g:message code="templateField.multiValue.label" default="Multi Value"/></label>
-                            <div class="col-md-6 form-control-static">
-                                <g:checkBox class="${hasErrors(bean: templateFieldInstance, field: 'multiValue', 'is-invalid')}" name="multiValue" value="${templateFieldInstance?.multiValue}"/>
+                        <div class="form-check">
+                            <div class="col-md-6">
+                                <g:checkBox class="form-check-input ${hasErrors(bean: templateFieldInstance, field: 'multiValue', 'is-invalid')}" name="multiValue" value="${templateFieldInstance?.multiValue}"/>
+                                <label for="multiValue" class="col-md-6 form-label"><g:message code="templateField.multiValue.label" default="Multi Value"/></label>
                                 <cl:fieldError bean="${templateFieldInstance}" field="multiValue"/>
                             </div>
                         </div>

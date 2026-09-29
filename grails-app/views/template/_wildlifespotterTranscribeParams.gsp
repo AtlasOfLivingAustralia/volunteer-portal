@@ -1,34 +1,28 @@
 <%@ page import="au.org.ala.volunteer.AutoValidationType" %>
-<div class="form-group">
-    <label class="col-md-3 form-label" for="exportGroupByIndex">
-        <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
-    </label>
-    <div class="col-md-6">
+<div class="form-check">
         <div class="checkbox">
-            <g:checkBox name="hideDefaultButtons" data-default="true"/>
+            <g:checkBox class="form-check-input" name="hideDefaultButtons" data-default="true"/>
+            <label class="form-label" for="hideDefaultButtons">
+                <g:message code="template.hideDefaultButtons.label" default="Hide Default Buttons"/>
+            </label>
         </div>
+</div>
+
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="hideSectionNumbers" data-default="true"/>
+        <label class="form-label" for="hideSectionNumbers">
+            <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
+        </label>
     </div>
 </div>
 
-<div class="form-group">
-    <label class="col-md-3 form-label" for="exportGroupByIndex">
-        <g:message code="template.hideSectionNumbers.label" default="Hide Section Numbers"/>
-    </label>
-    <div class="col-md-6">
-        <div class="checkbox">
-            <g:checkBox name="hideSectionNumbers" data-default="true"/>
-        </div>
-    </div>
-</div>
-
-<div class="form-group">
-    <label class="col-md-3 form-label" for="exportGroupByIndex">
-        <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
-    </label>
-    <div class="col-md-6" style="padding-bottom: 10px;">
-        <div class="checkbox">
-                <g:checkBox name="exportGroupByIndex" data-default="true"/>
-        </div>
+<div class="form-check">
+    <div class="checkbox">
+        <g:checkBox class="form-check-input" name="exportGroupByIndex" data-default="true"/>
+        <label class="form-label" for="exportGroupByIndex">
+            <g:message code="template.exportGroupByIndex.label" default="Group fields by index in CSV export"/>
+        </label>
     </div>
 </div>
 

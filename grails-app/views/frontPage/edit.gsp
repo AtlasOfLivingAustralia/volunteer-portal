@@ -32,13 +32,14 @@
                             <div class="col-md-9">
                                 <g:textArea class="form-control ${hasErrors(bean: frontPage, field: 'systemMessage', 'is-invalid')}" maxlength="255" rows="4" name="systemMessage" value="${frontPage?.systemMessage}"/>
                                 <cl:fieldError bean="${frontPage}" field="systemMessage"/>
-                                <span class="float-end badge badge--neutral count_message" id="count_message"></span>
+                                <div class="char-counter">
+                                    <span class="float-end badge badge--neutral count_message" id="count_message"></span>
+                                </div>
                                 <span class="form-text">(Displayed on every page)</span>
                             </div>
                         </div>
 
                         <div class="form-group">
-
                             <div class="col-md-9">
                                 <g:checkBox name="randomProjectOfTheDay" class="form-check-input" id="randomProjectToggle" value="${frontPage.randomProjectOfTheDay}" />
                                 <label for="randomProjectOfTheDay" class="form-label col-md-6">
@@ -68,7 +69,6 @@
                         </div>
 
                         <div class="form-group">
-
                             <div class="col-md-9">
                                 <g:checkBox name="showAchievements" class="form-check-input ${hasErrors(bean: frontPage, field: 'showAchievements', 'is-invalid')}" value="${frontPage.showAchievements}"/>
                                 <label for="useGlobalNewsItem" class="form-label col-md-9"><g:message code="frontPage.showAchievements.label"
@@ -78,7 +78,6 @@
                         </div>
 
                         <div class="form-group">
-
                             <div class="col-md-9">
                                 <g:checkBox name="enableTaskComments" class="form-check-input ${hasErrors(bean: frontPage, field: 'enableTaskComments', 'is-invalid')}" value="${frontPage.enableTaskComments}"/>
                                 <label for="enableTaskComments" class="form-label col-md-9"><g:message code="frontPage.enableTaskComments.label"
@@ -88,7 +87,6 @@
                         </div>
 
                         <div class="form-group">
-
                             <div class="col-md-9">
                                 <g:checkBox name="enableForum" class="form-check-input ${hasErrors(bean: frontPage, field: 'enableForum', 'is-invalid')}" value="${frontPage.enableForum}"/>
                                 <label for="enableForum" class="form-label col-md-9"><g:message code="frontPage.enableForum.label"
@@ -113,7 +111,9 @@
                             <div class="col-md-9">
                                 <g:field name="heroImageAttribution" type="text" maxlength="255" class="form-control ${hasErrors(bean: frontPage, field: 'heroImageAttribution', 'is-invalid')}" value="${frontPage.heroImageAttribution}" />
                                 <cl:fieldError bean="${frontPage}" field="heroImageAttribution"/>
-                                <span class="float-end badge badge--neutral count_message" id="hero_count_message"></span>
+                                <div class="char-counter">
+                                    <span class="float-end badge badge--neutral count_message" id="hero_count_message"></span>
+                                </div>
                             </div>
                         </div>
 
