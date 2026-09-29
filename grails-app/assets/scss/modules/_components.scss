@@ -747,17 +747,23 @@ h2.body-heading {
 		}
 	}
 }
+
 .achievements {
 	padding-top: 20px;
 	margin-top: 10px;
 	border-top: 1px solid $divider-grey;
 }
+
 .badges {
 	margin-top: 20px;
 	img {
 		max-width: 70px;
 		margin: 0 20px 20px 0;
 	}
+}
+
+.admin-badge-display {
+	padding: 0.25rem;
 }
 
 .tab-content-bg {

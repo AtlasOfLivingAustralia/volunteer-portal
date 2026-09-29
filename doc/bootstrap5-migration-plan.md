@@ -457,8 +457,10 @@ Log entry for that date.*
   `AchievementDescriptionController` `allowedMimeTypes`.
 - [X] `uploadTaskDataFile` (`TaskController` 581) CSV MIME handling was aligned with staging upload handling to avoid
   platform-dependent rejects for Windows `.csv` uploads reported as `application/vnd.ms-excel`.
-- [ ] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload
-  button looks like it is taller than the control creating the whitespace.
+- [X] `achievementDescription/_form.gsp` line 83-84 - there is a whitespace gap inside the bordered control. The Upload
+  button looks like it is taller than the control creating the whitespace. **Completed 2026-09-29** by switching the
+  upload control to a Bootstrap button element (`<button class="btn btn-secondary">`) and updating
+  `modules/_forms.scss` so the native file selector button fills the file control height.
 - [ ] `TranscribeTagLib` 320 — the `FieldType.radio` branch emits `class: 'form-control'` on a `g.radioGroup`. The
   Forms conventions list `form-control` on a checkbox or radio under "do not reintroduce", and the 2026-09-22 form
   sweep fixed exactly this on the checkbox branch but not this one. Each radio needs `form-check-input` with

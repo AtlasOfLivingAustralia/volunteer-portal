@@ -77,16 +77,16 @@
 
 <div class="form-group">
     <label class="form-label col-md-3" for="file-select">
-        <g:message code="achievementDescription.badge.label" default="Badge"/>
+        <g:message code="achievementDescription.badge.label" default="Badge image"/>
     </label>
 
     <div class="col-md-9">
         <g:hiddenField name="badge" value="${achievementDescriptionInstance?.badge}"/>
-        <img id="badge-image" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
-             width="140" height="140"/>
+        <img id="badge-image" class="admin-badge-display" src="<cl:achievementBadgeUrl achievement="${achievementDescriptionInstance}"/>"
+             width="140" height="140" alt="Badge Image"/>
         <div class="input-group">
             <input type="file" class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'badge', 'is-invalid')}" id="file-select" accept="image/jpeg,image/png"/>
-            <input type="button" id="upload-button" class="btn btn-primary" value="Upload"/>
+            <button type="button" id="upload-button" class="btn btn-secondary">Upload</button>
             <cl:fieldError bean="${achievementDescriptionInstance}" field="badge"/>
         </div>
     </div>

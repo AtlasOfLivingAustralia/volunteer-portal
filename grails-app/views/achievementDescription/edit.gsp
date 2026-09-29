@@ -22,9 +22,6 @@
 </content>
 
 <div id="edit-achievementDescription" class="content scaffold-edit" role="main">
-%{--<g:if test="${flash.message}">--}%
-%{--<div class="message" role="status">${flash.message}</div>--}%
-%{--</g:if>--}%
     <g:hasErrors bean="${achievementDescriptionInstance}">
         <ul class="errors" role="alert">
             <g:eachError bean="${achievementDescriptionInstance}" var="error">
@@ -40,23 +37,23 @@
             <div class="col-md-offset-3 col-md-9">
                 <g:actionSubmit class="save btn btn-primary" action="update"
                                 value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                <button type="button" class="btn btn-danger ms-2" id="deleteButton">Delete</button>
             </div>
         </div>
     </g:form>
-    <g:form class="d-inline-block pe-2" action="delete"
+    <g:form class="d-none delete-form" action="delete"
             id="${achievementDescriptionInstance?.id}" method="delete">
-        <g:submitButton class="btn btn-danger" id="deleteButton" name="Delete"/>
     </g:form>
 </div>
+
 <asset:javascript src="codemirror/codemirror-groovy-js-sublime.js" asset-defer="" />
 <asset:script type="text/javascript" asset-defer="">
     $(function() {
 
         $('#deleteButton').on('click', function(e) {
             e.preventDefault();
-            const self = this;
             bvp.confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?', args: [entityName])}', function() {
-                $(self).closest('form').submit();
+                $('form.delete-form').submit();
             });
         });
 

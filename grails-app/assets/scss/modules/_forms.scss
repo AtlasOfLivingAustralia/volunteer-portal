@@ -48,6 +48,8 @@ form {
 .form-control::file-selector-button {
   margin: -5px -8px;
   margin-inline-end: 8px;
+  // Keep the file selector button flush with the parent control height.
+  height: calc(100% + 10px);
   padding: 5px 8px;
   color: $black;
   background-color: $background-grey;
