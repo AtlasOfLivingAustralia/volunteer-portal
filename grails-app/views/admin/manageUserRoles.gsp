@@ -60,10 +60,10 @@
             <g:form controller="admin" action="addUserRole" method="POST">
             <div class="form-group">
                 <div class="form-row">
-                    <div class="form-group col-md-2">
-                        <label for="userRole_role">Role Type</label>
+                    <div class="form-group col-md-2 required">
+                        <label class="form-label" for="userRole_role">Role Type</label>
                         <g:select name="userRole_role" from="${Role.findAllByNameInList([BVPRole.VALIDATOR, BVPRole.FORUM_MODERATOR])}"
-                                  optionKey="id" class="form-select" required="true" optionValue="name"
+                                  optionKey="id" class="form-select" required="required" optionValue="name"
                                   noSelection="['':'- Select a Role -']" />
                     </div>
                     <div class="form-group col-md-2" style="white-space: nowrap;">
@@ -78,23 +78,24 @@
                                 Expedition</label>
                         </div>
                     </div>
-                    <div class="form-group col-md-5">
-                        <label>Institution/Expedition</label>
+                    <div class="form-group col-md-5 required">
                         <div class="s1 byinst">
+                            <label for="institution" class="form-label">Institution</label>
                             <g:select class="form-select" name="institution" from="${institutionList}"
                                       optionKey="id" id="byinst" data-live-search="true"
                                       value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                         </div>
                         <div class="s1 byproj">
+                            <label for="project" class="form-label">Expedition</label>
                             <g:select name="project" from="${projectList}" id="byproj"
-                                      optionKey="id" class=""
+                                      optionKey="id"
                                       optionValue="featuredLabel" data-live-search="true"
                                       noSelection="${['': '- Select an Expedition -']}" />
                         </div>
                     </div>
                     <div class="form-group col-md-3">
-                        <label>User's Name</label>
-                        <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required autocomplete="off"/>
+                        <label for="user" class="form-label">User's Name</label>
+                        <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required="required" autocomplete="off"/>
                         <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                         <input id="userId" name="userId" type="hidden" value="${userId}"/>
                     </div>

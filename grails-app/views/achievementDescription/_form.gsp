@@ -5,7 +5,7 @@
     </label>
 
     <div class="col-md-6">
-        <g:textField class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'is-invalid')}" name="name" required="" value="${achievementDescriptionInstance?.name}"/>
+        <g:textField class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'name', 'is-invalid')}" name="name" required="required" value="${achievementDescriptionInstance?.name}"/>
         <cl:fieldError bean="${achievementDescriptionInstance}" field="name"/>
     </div>
 </div>
@@ -15,7 +15,7 @@
         <g:message code="achievementDescription.description.label" default="Description"/>    </label>
 
     <div class="col-md-6">
-        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'is-invalid')}" rows="5" name="description" required=""
+        <g:textArea class="form-control ${hasErrors(bean: achievementDescriptionInstance, field: 'description', 'is-invalid')}" rows="5" name="description" required="required"
                     value="${achievementDescriptionInstance?.description}"/>
         <cl:fieldError bean="${achievementDescriptionInstance}" field="description"/>
     </div>
@@ -26,7 +26,7 @@
         <g:message code="achievementDescription.type.label" default="Type"/>    </label>
 
     <div class="col-md-6">
-        <g:select name="type" class="form-select" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required=""
+        <g:select name="type" class="form-select" from="${AchievementType?.values()}" keys="${AchievementType.values()*.name()}" required="required"
                   value="${achievementDescriptionInstance?.type?.name()}"/>
     </div>
 </div>
@@ -133,7 +133,9 @@ jQuery(function($) {
 
     function toggleFields(selector, on) {
         // The asterisk comes from .form-group.required in modules/_forms.scss - one mechanism, no indicator span.
-        $(selector).toggleClass('required', on).toggleClass('d-none', !on);
+        var $group = $(selector);
+        $group.toggleClass('required', on).toggleClass('d-none', !on);
+        $group.find('input,textarea,select').attr('aria-required', on ? 'true' : null);
     }
 
     var searchEditor = CodeMirror.fromTextArea(document.getElementById("searchQuery"), {

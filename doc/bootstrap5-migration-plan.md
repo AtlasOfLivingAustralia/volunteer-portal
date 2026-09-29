@@ -231,7 +231,7 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - tick the task checkbox
 - add/extend the conventions section (single source of truth, no duplication of what's already documented). Only update if updates were required to adhere to the widely-accepted conventions; don't add a new convention just because you think it would be nice.
 - add a dated Tracking Log entry covering: what was standardised, what was retired, bugs fixed while in scope, and any
-  correction to a previous entry
+  correction to a previous entry - Be careful, there could be multiple entries for the same date. Make sure you are adding to the correct spot.
 - add new unchecked follow-up items for everything found but deliberately not done, each with enough detail (file +
   line + symptom) to action cold
 - for follow-ups needing a judgement call, include a "Prompt:" line stating the decision to be made
@@ -388,19 +388,17 @@ Log entry for that date.*
   which was already the only mechanism with any CSS behind it. 26 required fields now marked one way; the 5
   `required-indicator` spans and 17 hard-coded label asterisks are gone, and every asterisk is backed by a
   `required` or `aria-required` attribute so it is announced, not just drawn.
-- [ ] The HTML `required` attribute is written four ways across 34 sites: `required=""` (9), `required="required"`
-  (14), `required="true"` (4) and bare `required` (6). All are truthy so all work, and on a Grails tag
-  `required="true"` renders the literal string `"true"`. Cosmetic only — noted 2026-09-28 during the required-marking
-  sweep and deliberately left alone rather than churn 34 lines for no behaviour change.
-- [ ] Conditionally-required fields on `achievementDescription/_form.gsp` are marked but not announced. The JS
+- [X] The HTML `required` attribute is written four ways across 34 sites: `required=""` (9), `required="required"`
+  (14), `required="true"` (4) and bare `required` (6). **Completed 2026-09-29** by standardising all 34 to
+  `required="required"` with no behaviour change.
+- [X] Conditionally-required fields on `achievementDescription/_form.gsp` are marked but not announced. The JS
   `toggleFields` (now 135-138) adds `.required` to `.esType` / `.agType` / `.grType` as the achievement type
   changes, so the asterisk appears and disappears correctly, but the controls inside never gain `required` or
   `aria-required` — so a screen-reader user is never told those fields became mandatory. The file previously carried
   two commented-out lines attempting exactly this with `.prop('required', on)`; they were removed with the sweep,
   because native `required` on a field inside a `d-none` group makes the form unsubmittable with a non-focusable
-  validation target.
-    - Prompt: "Toggle `aria-required` (not `required`) alongside the `.required` class in `toggleFields`, so the
-      conditional requirement is announced without blocking submit on hidden fields."
+  validation target. **Completed 2026-09-29** by toggling `aria-required` in `toggleFields` alongside the
+  `.required` class.
 - [ ] `report/userReport.gsp` 30 — `<label for="dateSelect">` points at an element that does not exist; the date
   range is two inputs (`dateStart` / `dateEnd`) and there is no `dateSelect` id on the page. The label is therefore
   unclickable and unassociated. Found 2026-09-28. Fold into the a11y sweep, or fix with the other `userReport`
@@ -1222,7 +1220,9 @@ parallel. Ships this release.
     narrow it to `bean.errors.globalErrors` only. If narrowing, note `<g:renderErrors>` and `<g:eachError>` both
     iterate *all* errors and neither can filter to global-only, so this needs either a new tag or an inline
     `<g:if test="${bean.errors.globalErrorCount}">`."
-
+- [ ] `admin/manageUserRoles.gsp` The institution or expedition is required for a role but the form toggles between
+  selects depending on the radio buttons. Fix so that the toggle action switches the required between the selected
+  select.
 ---
 
 ## Phase 9 - NTH
@@ -2000,3 +2000,14 @@ parallel. Ships this release.
     - Retired two dead BS3 `form-control-static` wrappers in `templateField/edit.gsp`.
     - In `template/edit.gsp`, removed the three checkbox-row `&nbsp;&nbsp;` separators inside the existing
       `padding-top: 10px` wrappers; wrapper/layout structure otherwise unchanged by decision.
+- 2026-09-29 — Phase 8 group 3: required-attribute cleanup + conditional required-field announcement completed.
+  - Standardised all `required` attributes to one shape: `required="required"`.
+    Updated 20 controls that were previously `required=""`, `required="true"` or bare `required`; 14 controls
+    were already in the canonical form.
+  - Scope of the syntax cleanup: `achievementDescription/_form.gsp`, `label/editCategory.gsp`,
+    `landingPageAdmin/_generalForm.gsp`, `institutionAdmin/_form.gsp`, `institutionMessage/_form.gsp`,
+    `admin/manageInstitutionAdmins.gsp`, `admin/manageUserRoles.gsp`, `template/edit.gsp`,
+    `template/create.gsp`, `user/listOptOut.gsp`, `user/addOptOutFragment.gsp`.
+  - `achievementDescription/_form.gsp`: `toggleFields` now toggles `aria-required` on descendant
+    `input, textarea, select` controls when `.esType` / `.agType` / `.grType` groups are shown/hidden, so the
+    conditional requirement is announced without applying native `required` to hidden controls.

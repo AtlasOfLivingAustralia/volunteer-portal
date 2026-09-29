@@ -49,10 +49,10 @@
                         <g:hiddenField name="id" value="${templateInstance?.id}"/>
                         <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
-                        <div class="form-group">
+                        <div class="form-group required">
                             <label for="name" class="col-md-3 form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
-                                <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="true" value="${templateInstance?.name}"/>
+                                <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
                                 <cl:fieldError bean="${templateInstance}" field="name"/>
                             </div>
                             <div class="col-md-3">

@@ -22,12 +22,12 @@
         <div class="card-body">
             <h3 style="margin-block-start: 0.5em;">Add User Opt-out</h3>
         <g:form controller="user" action="addUserOptOut" method="POST">
-            <div class="form-group">
+            <div class="form-group required">
                 <label class="form-label col-md-1" for="user">
                     Add User:
                 </label>
                 <div class="col-md-4">
-                    <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required autocomplete="off"/>
+                    <input class="form-control" id="user" type="text" placeholder="Enter user's name" value="${displayName}" required="required" autocomplete="off"/>
                     <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
@@ -118,21 +118,6 @@
             var name = $this.data('user-name');
             bvp.confirm("Are you sure you wish to delete the opt-out request for \"" + name + "\"?", function() {
                 $.postGo(href);
-            });
-        });
-
-        $("#btnAddOptOut").click(function(e) {
-            e.preventDefault();
-            bvp.newOptoutUser = "";
-            bvp.showModal({
-                title:'Add Opt-out request',
-                url: "addOptOutFragment",
-                onClose: function() {
-                    if (bvp.newOptoutUser) {
-                        // refresh page
-                        location.reload();
-                    }
-                }
             });
         });
     });

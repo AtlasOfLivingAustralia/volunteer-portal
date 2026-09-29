@@ -5,7 +5,7 @@
        <label for="title" class="form-label col-md-3"><g:message code="landingPage.title.label"
                                                                       default="Title"/></label>
        <div class="col-md-9">
-           <g:field name="title" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'title', 'is-invalid')}" value="${landingPageInstance.title}" required=""/>
+           <g:field name="title" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'title', 'is-invalid')}" value="${landingPageInstance.title}" required="required"/>
            <cl:fieldError bean="${landingPageInstance}" field="title"/>
        </div>
     </div>
@@ -14,7 +14,7 @@
         <label for="shortUrl" class="form-label col-md-3"><g:message code="landingPage.shortUrl.label"
                                                                      default="Title"/></label>
         <div class="col-md-9">
-            <g:field name="shortUrl" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'is-invalid')}" value="${landingPageInstance.shortUrl}" required=""/>
+            <g:field name="shortUrl" type="text" class="form-control ${hasErrors(bean: landingPageInstance, field: 'shortUrl', 'is-invalid')}" value="${landingPageInstance.shortUrl}" required="required"/>
             <cl:fieldError bean="${landingPageInstance}" field="shortUrl"/>
         </div>
     </div>

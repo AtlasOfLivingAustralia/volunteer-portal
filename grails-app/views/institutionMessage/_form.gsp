@@ -69,7 +69,7 @@
         </span>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group required">
     <label class="form-label col-md-3" for="subject">
         <g:message code="institutionMessage.subject.label" default="Subject"/>
     </label>
@@ -77,7 +77,7 @@
         <g:textField class="form-control"
                      name="subject"
                      disabled="${(disableEdit)}"
-                     required=""
+                     required="required"
                      value="${institutionMessageInstance?.subject}"/>
     </div>
 </div>

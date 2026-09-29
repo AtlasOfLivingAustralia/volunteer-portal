@@ -54,7 +54,7 @@
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
                     <g:form controller="label" action="updateCategory" method="POST">
-                    <div class="form-group">
+                    <div class="form-group required">
                         <label class="form-label col-md-2" for="name">
                             Category Name:
                         </label>
@@ -63,12 +63,12 @@
                             <input class="form-control" id="name" name="name" type="text"
                                    placeholder="Enter the category name"
                                    value="${labelCategory.name}"
-                                   ${(isProtected ? "disabled='disabled'" : '')} required/>
+                                   ${(isProtected ? "disabled='disabled'" : '')} required="required"/>
                             <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
                         </div>
                     </div>
-                        <div class="form-group">
-                            <label class="form-label col-md-2" for="name">
+                        <div class="form-group required">
+                            <label class="form-label col-md-2" for="labelColour">
                                 Tag Colour:
                             </label>
                             <div class="col-md-4" style="vertical-align: middle;">
@@ -76,11 +76,11 @@
                                           class="form-select"
                                           from="${LabelColour.values()}"
                                           keys="${LabelColour.values()*.name()}"
-                                          required=""
+                                          required="required"
                                           noSelection="['':'- Select a Tag Colour -']"
                                           value="${labelCategory?.labelColour}"/>
                             </div>
-                            <div class="form-label col-md-1" id="example-tag-display">
+                            <div class="col-md-1" id="example-tag-display">
                                 <g:set var="labelColourClass" value="${(!labelCategory.labelColour ? 'base' : labelCategory.labelColour)}"/>
                                 <span class="badge badge--${labelColourClass}" id="example-tag">Example Tag</span>
                             </div>
@@ -116,14 +116,14 @@
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
                     <g:form controller="label" action="saveNewLabel" method="POST">
-                        <div class="form-group">
+                        <div class="form-group required">
                             <label class="form-label col-md-2" for="value">
                                 Add ${entityName}:
                             </label>
                             <div class="col-md-4">
                                 <input class="form-control" id="value" name="value" type="text"
                                        placeholder="Enter the ${entityName} name"
-                                       required/>
+                                       required="required"/>
                                 <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
                             </div>
                             <input type="submit" class="save btn btn-sm btn-primary" id="addLabelButton"

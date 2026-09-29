@@ -27,15 +27,15 @@
                 Authorisation system and import them into DigiVol.
             </p>
             <g:form controller="admin" action="addInstituionAdmin" method="POST">
-            <div class="form-group">
+            <div class="form-group required">
                 <div class="col-md-4">
-                        <g:select class="form-select" name="institution" required="true" from="${Institution.listApproved([sort: 'name', order: 'asc'])}"
+                        <g:select class="form-select" name="institution" required="required" from="${Institution.listApproved([sort: 'name', order: 'asc'])}"
                                   optionKey="id"
                                   value="${params?.institution}" noSelection="['':'- Select an Institution -']"/>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 required">
                     <label class="visually-hidden" for="user">Search for user</label>
-                    <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search for user..." value="${displayName}" required autocomplete="new-password"/>
+                    <input class="form-control" id="user" name="userSearch" type="text" placeholder="Search for user..." value="${displayName}" required="required" autocomplete="new-password"/>
                     <i id="ajax-spinner" class="fa fa-cog fa-spin d-none"></i>
                     <input id="userId" name="userId" type="hidden" value="${userId}"/>
                 </div>
