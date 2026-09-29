@@ -78,13 +78,15 @@
                             <label class="form-label col-md-3" for="dateExpiresPicker">Date Expires</label>
                             <div class="col-md-3">
                                 <div class="input-group">
-                                    <g:set var="dateExpiresPicker" value="${newsItem?.dateExpires?.format('dd/MM/yyyy') ?: ''}"/>
-                                    <input type="text" class="form-control datepicker" name="dateExpiresPicker" id="dateExpiresPicker" required="required" value="${dateExpiresPicker}"/>
+                                    <g:set var="dateExpiresPicker" value="${params?.dateExpiresPicker ?: newsItem?.dateExpires?.format('dd/MM/yyyy') ?: ''}"/>
+                                    <input type="text" class="form-control datepicker ${hasErrors(bean: newsItem, field: 'dateExpires', 'is-invalid')}" name="dateExpiresPicker" id="dateExpiresPicker" required="required" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" title="Use format dd/MM/yyyy" aria-describedby="dateExpiresPickerHelp" value="${dateExpiresPicker}"/>
                                     <button type="button" class="btn btn-outline-secondary datepicker-trigger">
                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                         <span class="visually-hidden">Choose date expires</span>
                                     </button>
                                 </div>
+                                <div id="dateExpiresPickerHelp" class="form-text">Format: dd/MM/yyyy</div>
+                                <cl:fieldError bean="${newsItem}" field="dateExpires"/>
                             </div>
                         </div>
 

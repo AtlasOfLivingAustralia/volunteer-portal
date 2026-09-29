@@ -7,7 +7,6 @@ import spock.lang.*
 import javax.servlet.http.HttpServletResponse
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 class NewsItemControllerSpec extends Specification implements ControllerUnitTest<NewsItemController>, DomainUnitTest<NewsItem> {
 
@@ -76,6 +75,26 @@ class NewsItemControllerSpec extends Specification implements ControllerUnitTest
         flash.message.contains("created")
     }
 
+    void "save should reject dateExpiresPicker when format is not dd/MM/yyyy"() {
+        given:
+        def userServiceStub = Stub(UserService) {
+            isSiteAdmin() >> true
+        }
+        controller.userService = userServiceStub
+        params.title = "Valid News Item"
+        params.dateExpiresPicker = "2026-03-01"
+        params.isActive = true
+        params.content = "This is a valid news item content."
+
+        when:
+        controller.save()
+
+        then:
+        view == '/newsItem/create'
+        model.newsItem.errors.getFieldError('dateExpires') != null
+        model.newsItem.errors.getFieldError('dateExpires').defaultMessage == 'Date Expires must use dd/MM/yyyy'
+    }
+
     void "save should not persist invalid news item"() {
         given:
         def userServiceStub = Stub(UserService) {
@@ -119,6 +138,26 @@ class NewsItemControllerSpec extends Specification implements ControllerUnitTest
         then:
         response.redirectedUrl == '/newsItem/manage'
         flash.message.contains("updated")
+    }
+
+    void "update should reject dateExpiresPicker when format is not dd/MM/yyyy"() {
+        given:
+        def userServiceStub = Stub(UserService) {
+            isSiteAdmin() >> true
+        }
+        controller.userService = userServiceStub
+        def newsItem = new NewsItem(title: "Existing News Item", content: "This is existing content.", isActive: true)
+        newsItem.dateCreated = new Date()
+        newsItem.createdBy = new User([id: 123L])
+        params.dateExpiresPicker = "2026-03-01"
+
+        when:
+        controller.update(newsItem)
+
+        then:
+        view == '/newsItem/edit'
+        model.newsItem.errors.getFieldError('dateExpires') != null
+        model.newsItem.errors.getFieldError('dateExpires').defaultMessage == 'Date Expires must use dd/MM/yyyy'
     }
 
     void "update should not persist invalid news item"() {

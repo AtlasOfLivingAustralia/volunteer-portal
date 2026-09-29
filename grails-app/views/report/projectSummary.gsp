@@ -21,7 +21,7 @@
 
 <g:form action="requestProjectSummaryReport" method="POST">
     <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-8 input-group">
+        <div class="offset-sm-3 col-sm-8">
             <g:actionSubmit class="save btn btn-primary" action="requestProjectSummaryReport"
                             value="${message(code: 'admin.report.button.label', default: 'Generate Report')}"/>
         </div>

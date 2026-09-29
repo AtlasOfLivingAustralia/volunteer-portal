@@ -402,18 +402,23 @@ Log entry for that date.*
 - [X] `report/userReport.gsp` 30 — `<label for="dateSelect">` points at an element that does not exist; the date
   range is two inputs (`dateStart` / `dateEnd`) and there is no `dateSelect` id on the page. The label is therefore
   unclickable and unassociated. Found 2026-09-28. **Completed 2026-09-29**
-- [ ] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
+- [X] Date inputs are `type="text"` `required` with no `pattern` and no visible format hint, while the server parses
   `dd/MM/yyyy` (`NewsItemController` 122–124, 205–207). A typed `2026-03-01` fails server-side and, per the `has-error`
-  item, renders no feedback. Fold into the field-level validation item.
-- [ ] `report/userReport.gsp` 31/39/49 and `report/projectSummary.gsp` 24 put
+  item, renders no feedback. Fold into the field-level validation item. **Completed 2026-09-29** by adding a
+  literal `dd/MM/yyyy` hint + `pattern` on the input, and server-side parse error handling that attaches a field-level
+  bean error instead of throwing.
+- [X] `report/userReport.gsp` 31/39/49 and `report/projectSummary.gsp` 24 put
   `input-group` and `col-*` on the same element (latent layout bug), and use BS3 `col-sm-offset-3` instead of
   `offset-sm-3` (currently a no-op). Line numbers corrected 2026-09-28 — the item said 68/76/86, which predate the
   datepicker task's deletions. `userReport.gsp` 43 also carries `col-md-9` on the select *inside* the `col-md-8`
-  input-group, which is the same defect a level down.
-- [ ] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at **32, 34 and 43**
+  input-group, which is the same defect a level down. **Completed 2026-09-29** by moving grid classes to wrappers,
+  retaining existing widths, replacing `col-sm-offset-3` with `offset-sm-3`, and dropping the nested `col-md-9` on
+  the select.
+- [X] `report/userReport.gsp` — BS3 residue left in place during the date picker task: `input-sm` at **32, 34 and 43**
   (class has no CSS since BS4). Line numbers corrected 2026-09-28; the item said 69/71/80. The `.float-right` half of
   this item is **already resolved** — the page `<style>` block (9–11) is now empty, so the absolutely-positioned
-  redefinition of the BS3 float utility is gone; nothing to rename.
+  redefinition of the BS3 float utility is gone; nothing to rename. **Completed 2026-09-29** by removing `input-sm`
+  from the two date inputs and the tag select.
 - [X] `accept` attributes on the native file inputs. Implemented 2026-09-28 from endpoint `allowedMimeTypes`.
   Scope: 17 native file inputs in total, with 15 updated and 2 pre-existing (`achievementDescription/_form.gsp`,
   `picklist/wildcount.gsp`).
@@ -2010,3 +2015,12 @@ parallel. Ships this release.
   - `achievementDescription/_form.gsp`: `toggleFields` now toggles `aria-required` on descendant
     `input, textarea, select` controls when `.esType` / `.agType` / `.grType` groups are shown/hidden, so the
     conditional requirement is announced without applying native `required` to hidden controls.
+- 2026-09-29 — Phase 8 group 3: report-form BS3 residue + date-format validation follow-up completed.
+  - `report/userReport.gsp` and `report/projectSummary.gsp`: removed `input-group` + `col-*` class mixing by moving
+    grid classes to wrappers and updating `col-sm-offset-3` to `offset-sm-3`, while preserving current visual width.
+  - `report/userReport.gsp`: removed dead BS3 `input-sm` classes and dropped the nested `col-md-9` from the select
+    inside the `col-md-8` wrapper.
+  - `newsItem/create.gsp` and `edit.gsp`: `dateExpiresPicker` now has visible format guidance (`Format: dd/MM/yyyy`),
+    a `pattern` for early client feedback, and field-level invalid display via `is-invalid` + `<cl:fieldError>`.
+  - `NewsItemController.save()` / `update()`: invalid `dateExpiresPicker` values no longer throw parse exceptions;
+    they now reject `dateExpires` with a field error and re-render the form with datepicker range defaults.

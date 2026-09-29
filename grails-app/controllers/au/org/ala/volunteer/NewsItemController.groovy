@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 
@@ -118,12 +119,19 @@ class NewsItemController {
             return
         }
         def newsItem = new NewsItem(params)
+        def datePickerRanges = getDatePickerRanges()
 
         if (params.dateExpiresPicker) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
-            newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            try {
+                LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
+                newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            } catch (DateTimeParseException e) {
+                newsItem.errors.rejectValue('dateExpires', 'newsItem.dateExpires.invalid', 'Date Expires must use dd/MM/yyyy')
+                render view: 'create', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
+                return
+            }
         }
 
         newsItem.createdBy = userService.getCurrentUser()
@@ -131,7 +139,7 @@ class NewsItemController {
 
         if (!newsItem.validate()) {
             log.debug("NewsItem has errors: ${newsItem.errors}")
-            render view: 'create', model: [newsItem: newsItem]
+            render view: 'create', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
             return
         }
 
@@ -201,17 +209,24 @@ class NewsItemController {
             return
         }
         log.debug("Updating news item with params: ${params}")
+        def datePickerRanges = getDatePickerRanges()
 
         if (params.dateExpiresPicker) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
-            newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            try {
+                LocalDate localDate = LocalDate.parse(params.dateExpiresPicker as String, formatter)
+                newsItem.dateExpires = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                log.debug("Parsed date: ${newsItem.dateExpires}, ${newsItem.dateExpires.class.name}")
+            } catch (DateTimeParseException e) {
+                newsItem.errors.rejectValue('dateExpires', 'newsItem.dateExpires.invalid', 'Date Expires must use dd/MM/yyyy')
+                render view: 'edit', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
+                return
+            }
         }
 
         if (!newsItem.validate()) {
             log.debug("NewsItem has errors: ${newsItem.errors}")
-            render view: 'edit', model: [newsItem: newsItem]
+            render view: 'edit', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
             return
         }
 

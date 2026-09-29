@@ -28,25 +28,29 @@
     <g:form action="requestUserReport" method="POST">
         <div class="form-group required">
             <label for="dateStart" class="col-md-3 form-label">Date Range</label>
-            <div class="col-md-8 input-daterange input-group" id="datepicker">
-                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultStartDate}" name="dateStart" required="required" />
-                <span class="input-group-text">to</span>
-                <input type="text" class="input-sm col-sm-3 form-control" value="${defaultEndDate}" name="dateEnd" required="required" />
+            <div class="col-md-8">
+                <div class="input-daterange input-group" id="datepicker">
+                    <input type="text" class="form-control" value="${defaultStartDate}" name="dateStart" required="required" />
+                    <span class="input-group-text">to</span>
+                    <input type="text" class="form-control" value="${defaultEndDate}" name="dateEnd" required="required" />
+                </div>
             </div>
         </div>
         <div class="form-group">
             <label for="labelFilter" class="col-md-3 form-label">Filter by User Tag</label>
-            <div class="col-md-8 input-group">
-                <g:select name="labelFilter"
-                          from="${userLabelList}"
-                          optionKey="id"
-                          class="input-sm form-select col-md-9"
-                          optionValue="value"
-                          noSelection="['':'- Filter by Tag -']"/>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <g:select name="labelFilter"
+                              from="${userLabelList}"
+                              optionKey="id"
+                              class="form-select"
+                              optionValue="value"
+                              noSelection="['':'- Filter by Tag -']"/>
+                </div>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-8 input-group">
+            <div class="offset-sm-3 col-sm-8">
                 <g:actionSubmit class="save btn btn-primary" action="requestUserReport"
                                 value="${message(code: 'admin.report.button.label', default: 'Generate Report')}"/>
             </div>
