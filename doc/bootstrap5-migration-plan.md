@@ -474,18 +474,16 @@ Log entry for that date.*
 
 *Global; touching it mid-page-work would invalidate page screenshots.*
 
-- [ ] Navbar fixes
-    - [ ] Main Navbar background should be white
-    - [ ] Condensed nav doesn't line up with top of the page and it should centered (left half is the back button, right half is the title and profile drop down)
-    - [ ] Breadcrumbs are not vertically centered in its section.
-    - [ ] Breadcrumbs - truncate long project names, add ellipsis in middle of breadcrumb trail so we see the start and end
+- [X] Navbar fixes
+    - [X] Main Navbar background should be white
+    - [X] Condensed nav doesn't line up with top of the page and it should centered (left half is the back button, right half is the title and profile drop down)
+    - [X] Breadcrumbs are not vertically centered in its section.
+    - [X] Breadcrumbs - truncate long project names, add ellipsis in middle of breadcrumb trail so we see the start and end
         of the name, and add `title` attribute for full name on hover.
-    - [ ] `.digivol-logo { font-size: 0.5rem }` (`layouts/_nav.scss` 26)
+    - [X] `.digivol-logo { font-size: 0.5rem }` (`layouts/_nav.scss` 26)
       - The element's only child is a block-level `<img>` at `width: 100%`, so this declaration appears to be dead or a
       whitespace-collapse hack.
-      - Prompt: "Determine whether .digivol-logo's font-size is load-bearing; remove it if not. Check the navbar brand at
-        all breakpoints."
-- [ ] Footer logo image has the red bar on the right of the image. This was fixed for the logo in the navbar but not the footer.
+- [X] Footer logo image has the red bar on the right of the image. This was fixed for the logo in the navbar but not the footer.
 
 #### 5. Page-level layout fixes
 
@@ -2026,3 +2024,16 @@ parallel. Ships this release.
     a `pattern` for early client feedback, and field-level invalid display via `is-invalid` + `<cl:fieldError>`.
   - `NewsItemController.save()` / `update()`: invalid `dateExpiresPicker` values no longer throw parse exceptions;
     they now reject `dateExpires` with a field error and re-render the form with datepicker range defaults.
+- 2026-09-30 - Phase 8 group 4: Fixed navbar and condensedNav for multiple display dimensions.
+  - Add breadcrumb label wrappers for all crumbs with hover titles in `VolunteerTagLib`.
+  - Implement CSS-driven long-label truncation structure (middle-ellipsis rendering) in nav styles.
+  - Improve breadcrumb vertical centering in section layout styles.
+  - Align condensed nav top/row behavior and left-right balancing hooks.
+  - Remove .digivol-logo font-size rule and enforce white navbar background.
+  - Apply footer logo style-only fix to match navbar image rendering pattern.
+  - Remove condensed-nav white background only.
+  - Keep condensed-nav content aligned to the centered main container width.
+  - Left-align the back button and tab within their respective columns.
+  - Remove top gap above the condensed tab.
+  - Updated action buttons on project index page for mobile displays
+

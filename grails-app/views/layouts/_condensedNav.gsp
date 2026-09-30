@@ -1,15 +1,17 @@
-<nav class="navbar navbar-light bg-light fixed-top">
-    <div class="expedition-tab">
+<nav class="navbar navbar-light fixed-top condensed-navbar">
+    <div class="expedition-tab mx-auto">
         <div class="container">
-            <div class="row">
-                <div class="col-sm-6 d-none d-sm-block">
+            <div class="row condensed-nav-row">
+                <div class="col-sm-6 d-none d-sm-block condensed-nav-back">
                     <g:ifPageProperty name="page.includeBack">
                         <g:set var="includeBackGrey" value="${false}"/>
                         <g:ifPageProperty name="page.includeBackGrey" equals="true"><g:set var="includeBackGrey" value="${true}"/></g:ifPageProperty>
-                        <a href="${g.pageProperty(name:'page.backHref')}" class="btn btn-outline-${includeBackGrey ? 'secondary' :'light'} transcription-back"><i class="fa fa-long-arrow-left"></i>&nbsp;${g.pageProperty(name:'page.backText')}</a>
+                        <a href="${g.pageProperty(name:'page.backHref')}" class="btn btn-outline-${includeBackGrey ? 'secondary' :'light'} transcription-back">
+                            <i class="fa fa-long-arrow-left"></i>&nbsp;${g.pageProperty(name:'page.backText')}
+                        </a>
                     </g:ifPageProperty>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6 condensed-nav-meta">
                     <div class="digivol-tab">
                         <g:link uri="/" class="tab-brand">A <asset:image src="logoDigivolInverted.png" /> <g:message code="suffix.expedition" /></g:link>
                         <ul class="navbar-short">

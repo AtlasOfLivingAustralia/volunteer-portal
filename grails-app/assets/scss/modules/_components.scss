@@ -114,6 +114,10 @@
 			color: white;
 		}
 
+		h1 {
+			padding-top: 1rem;
+		}
+
 		.progress-summary {
 			border-top: 1px solid #444;
 
@@ -222,7 +226,7 @@
 	}
 }
 
-@media (min-width: $screen-sm) {
+@media (min-width: $screen-sm) and (max-width: $screen-lg) {
 	.a-feature {
 		&.expedition {
 			padding-top: 8%;
@@ -243,6 +247,30 @@
 			h2 {
 				line-height: 36px;
 				margin: 0;
+			}
+		}
+	}
+}
+
+@media (min-width: $screen-xs) and (max-width: $screen-sm) {
+	.a-feature {
+		&.expedition {
+			padding-top: 15%;
+
+			.btn {
+				margin-bottom: 0.5rem;
+			}
+		}
+	}
+}
+
+@media (max-width: $screen-sm) {
+	.a-feature {
+		&.expedition {
+			padding-top: 15%;
+
+			h1 {
+				padding-top: 1rem;
 			}
 		}
 	}

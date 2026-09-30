@@ -113,11 +113,11 @@
                 <cl:hasNoProjectBackgroundImage project="${projectInstance}">
                     <cl:featuredImage project="${projectInstance}" alt="expedition icon" title="${projectInstance.name}" class="thumb-old img-fluid" />
                 </cl:hasNoProjectBackgroundImage>
-                <div class="projectActionLinks" >
+                <div class="projectActionLinks">
                     <cl:isLoggedIn>
                         <cl:ifInstitutionAdmin project="${projectInstance}">
-                            <g:link class="btn btn-outline-secondary" controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-table"></i> Task Admin</g:link>&nbsp;
-                            <g:link class="btn btn-outline-secondary" controller="project" action="edit" id="${projectInstance.id}"><i class="fa fa-cog"></i> Settings</g:link>&nbsp;
+                            <g:link class="btn btn-outline-secondary" controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-table"></i> Task Admin</g:link>
+                            <g:link class="btn btn-outline-secondary" controller="project" action="edit" id="${projectInstance.id}"><i class="fa fa-cog"></i> Settings</g:link>
                         </cl:ifInstitutionAdmin>
                     </cl:isLoggedIn>
                     <cl:ifValidator project="${projectInstance}">

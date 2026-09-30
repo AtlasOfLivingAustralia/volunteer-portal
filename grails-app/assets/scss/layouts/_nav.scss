@@ -5,6 +5,23 @@
 	border-bottom: none;
 	border-left: none;
 	border-right: none;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.navbar.navbar-light.bg-light {
+	background-color: white !important;
+}
+
+.condensed-navbar {
+	background-color: transparent !important;
+	border-top-width: 3px;
+	border-top-style: solid;
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 .navbar-brand {
@@ -20,11 +37,6 @@
 	&:hover {
 		background-color: $brand-color;
 	}
-}
-
-// icon glyph size, not text — see typography conventions
-.digivol-logo {
-	font-size: 0.5rem;
 }
 
 .navbar-brand.digivol-logo img {
@@ -59,11 +71,39 @@
 }
 
 .expedition-tab {
-	margin-bottom: -40px;
+	margin-bottom: 0;
 	background-color: transparent !important;
 	color: $body-copy-on-black;
+
+	.container {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	@media (min-width: $screen-lg) {
+		.container {
+			width: 1170px;
+		}
+	}
+
+	.condensed-nav-row {
+		align-items: center;
+	}
+
+	.condensed-nav-back,
+	.condensed-nav-meta {
+		display: flex;
+		align-items: center;
+		min-height: 56px;
+	}
+
+	.condensed-nav-meta {
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
 	.transcription-back {
-		margin-top: 8px;
+		margin-top: 0.5rem;
 	}
 }
 
@@ -71,6 +111,9 @@
 	background-color: $black;
 	padding: 10px 15px;
 	border-radius: 0 0 5px 5px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
 
 	a {
 		color: #aaa;
@@ -94,7 +137,9 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		float: right;
+		float: none;
+		display: flex;
+		align-items: center;
 		> li {
 			display: inline-block;
 			padding: 0 10px 0 10px;
@@ -236,12 +281,17 @@ ul.profile-links {
 }
 
 .breadcrumb-list {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
 		list-style: none;
 		margin: 0;
 		padding: 0;
 
 	li {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		max-width: 100%;
 
 		.fa {
 			margin-right: 5px;
@@ -250,10 +300,49 @@ ul.profile-links {
 		}
 	}
 
+	a {
+		display: inline-flex;
+		align-items: center;
+		max-width: 100%;
+	}
+
 	li.active {
 		font-weight: 500;
 		color: $black;
 	}
+}
+
+.breadcrumb-label {
+	display: inline-block;
+	max-width: min(32ch, 65vw);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+}
+
+.breadcrumb-label.is-truncated {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.1rem;
+}
+
+.breadcrumb-label.is-truncated .breadcrumb-label-start,
+.breadcrumb-label.is-truncated .breadcrumb-label-end {
+	flex: 1 1 50%;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.breadcrumb-label.is-truncated .breadcrumb-label-end {
+	direction: rtl;
+	text-align: left;
+}
+
+.breadcrumb-label.is-truncated .breadcrumb-label-ellipsis {
+	flex: 0 0 auto;
 }
 
 //.navbar-fixed-bottom .navbar-collapse, .navbar-fixed-top .navbar-collapse {
@@ -289,6 +378,21 @@ ul.profile-links {
  * Mobile dimenions
  ************************************************************/
 @media (max-width: $screen-md) {
+	.condensed-navbar .expedition-tab .container {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+
+	.condensed-navbar .expedition-tab .condensed-nav-meta {
+		min-height: auto;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.condensed-navbar .digivol-tab {
+		border-radius: 0;
+	}
+
 	.transcription {
 		.navbar {
 			background-color: transparent;
@@ -338,6 +442,20 @@ ul.profile-links {
 
 	.collapsing {
 		overflow: hidden!important;
+	}
+}
+
+@media (min-width: $screen-sm) {
+	.condensed-navbar .expedition-tab .condensed-nav-back,
+	.condensed-navbar .expedition-tab .condensed-nav-meta {
+		align-self: flex-start !important;
+		justify-content: flex-start;
+	}
+}
+
+@media (max-width: $screen-lg) {
+	.expedition-tab {
+		width: 100%;
 	}
 }
 

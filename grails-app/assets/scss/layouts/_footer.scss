@@ -7,8 +7,12 @@ section#footer {
 	    padding: 0;
 	    background-color: $brand-color;
 	    display: inline-block;
+	    line-height: 0;
+	    overflow: hidden;
 	    img {
 	        max-width: 130px;
+	        width: 100%;
+	        display: block;
 	        margin: 0;
 	    }
 	    &:hover {

@@ -483,6 +483,8 @@ class VolunteerTagLib {
             sitemesh.parameter(name: 'selectedNavItem', value: attrs.selectedNavItem)
         }
 
+        final int maxBreadcrumbLabelLength = 42
+
         sitemesh.captureContent(tag:'page-header') {
 
             def crumbList = []
@@ -513,7 +515,28 @@ class VolunteerTagLib {
                                         mkp.yield(' ')
                                     }
                                     a(href: item.link) {
-                                        mkp.yield(item.label)
+                                        String itemLabel = item.label?.toString() ?: ''
+                                        boolean truncateItemLabel = itemLabel.length() > maxBreadcrumbLabelLength
+                                        if (truncateItemLabel) {
+                                            span(class: 'breadcrumb-label is-truncated', title: itemLabel) {
+                                                span(class: 'visually-hidden') {
+                                                    mkp.yield(itemLabel)
+                                                }
+                                                span(class: 'breadcrumb-label-start', 'aria-hidden': 'true') {
+                                                    mkp.yield(itemLabel)
+                                                }
+                                                span(class: 'breadcrumb-label-ellipsis', 'aria-hidden': 'true') {
+                                                    mkp.yield('...')
+                                                }
+                                                span(class: 'breadcrumb-label-end', 'aria-hidden': 'true') {
+                                                    mkp.yield(itemLabel)
+                                                }
+                                            }
+                                        } else {
+                                            span(class: 'breadcrumb-label', title: itemLabel) {
+                                                mkp.yield(itemLabel)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -522,7 +545,28 @@ class VolunteerTagLib {
                             span(class: 'fa fa-angle-right') {
                                 mkp.yield(' ')
                             }
-                            mkp.yield(crumbLabel)
+                            String activeLabel = crumbLabel?.toString() ?: ''
+                            boolean truncateActiveLabel = activeLabel.length() > maxBreadcrumbLabelLength
+                            if (truncateActiveLabel) {
+                                span(class: 'breadcrumb-label is-truncated', title: activeLabel) {
+                                    span(class: 'visually-hidden') {
+                                        mkp.yield(activeLabel)
+                                    }
+                                    span(class: 'breadcrumb-label-start', 'aria-hidden': 'true') {
+                                        mkp.yield(activeLabel)
+                                    }
+                                    span(class: 'breadcrumb-label-ellipsis', 'aria-hidden': 'true') {
+                                        mkp.yield('...')
+                                    }
+                                    span(class: 'breadcrumb-label-end', 'aria-hidden': 'true') {
+                                        mkp.yield(activeLabel)
+                                    }
+                                }
+                            } else {
+                                span(class: 'breadcrumb-label', title: activeLabel) {
+                                    mkp.yield(activeLabel)
+                                }
+                            }
                         }
                     }
                 }

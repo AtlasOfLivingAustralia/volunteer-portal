@@ -21,6 +21,7 @@ section {
 		padding: 0;
 	}
 }
+
 section#expedition-feature {
 	background-color: white;
 	h3 {
@@ -35,6 +36,7 @@ section#expedition-feature {
 		margin-bottom: 20px;
 	}
 }
+
 section#what-you-do {
 	h3 {
 		font-size: $font-size-sm;
@@ -48,20 +50,28 @@ section#what-you-do {
 		margin-bottom: 30px;
 	}
 }
+
 section#breadcrumb {
 	padding: 85px 0 10px 0;
 	border-bottom: 1px solid $divider-grey;
+	display: flex;
+	align-items: center;
+
+	.container {
+		width: 100%;
+	}
 }
+
 section#record-locations {
 	padding: 0;
 }
+
 @media (max-width: 1200px) {
 	section#breadcrumb {
 		padding-top: 65px;
-
 	}
-
 }
+
 section#institution-progress {
 	padding: 40px 0;
 	background-color: #fff;
@@ -70,6 +80,7 @@ section#institution-progress {
 		margin-top: 5px;
 	}
 }
+
 section#logos-institutions {
 	img {
 		max-height: 80px;
@@ -77,9 +88,11 @@ section#logos-institutions {
 	}
 
 }
+
 section#footer {
 	
 }
+
 section#map {
 	min-height: 300px;
 }
