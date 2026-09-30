@@ -461,14 +461,10 @@ Log entry for that date.*
   button looks like it is taller than the control creating the whitespace. **Completed 2026-09-29** by switching the
   upload control to a Bootstrap button element (`<button class="btn btn-secondary">`) and updating
   `modules/_forms.scss` so the native file selector button fills the file control height.
-- [ ] `TranscribeTagLib` 320 — the `FieldType.radio` branch emits `class: 'form-control'` on a `g.radioGroup`. The
-  Forms conventions list `form-control` on a checkbox or radio under "do not reintroduce", and the 2026-09-22 form
-  sweep fixed exactly this on the checkbox branch but not this one. Each radio needs `form-check-input` with
-  `form-check`/`form-check-label` around it; the taglib currently renders them as
-  `<span class="radio-item">${it.radio}&nbsp;${it.label}</span>` (325), so the wrapper markup has to change too.
-  Found during the `form-select` sweep 2026-09-28.
-    - Note: the branch also drops `cssClass`, the same defect already tracked for checkboxes in Phase 8a. Fix both
-      together — it is one edit to the same `switch`.
+- [X] `TranscribeTagLib` 320 — the `FieldType.radio` branch emitted `class: 'form-control'` on a `g.radioGroup`.
+  **Completed 2026-09-30** by switching radio inputs to `form-check-input`, wrapping each option in
+  `form-check` + `form-check-label`, and restoring `cssClass` propagation in the same `switch` so mandatory
+  classes are preserved on both checkbox and radio branches.
 
 #### 4. Chrome: navbar, breadcrumbs, footer
 
@@ -845,7 +841,7 @@ striped and animated variants. BS2's `.progress-striped.active > .bar` is gone. 
 `aria-valuenow` too, or screen readers report a bar frozen at its initial value.
 
 **Removed — do not reintroduce:** `alert-block` (BS2); a bare `class="alert"` with no variant; `&times;` inside
-`.btn-close`; `aria-hidden` on a close button; `<a href="#" class="btn-close">` (use a `<button>`);
+`.btn-close`; `aria-hidden` on a close button; `<a href="#">` (use a `<button>`);
 `<span class="caret">`; `.progress-striped`, `.progress.active`, `.bar`; `<tr class="alert">` (use `table-warning`).
 
 #### Typography:
@@ -1152,11 +1148,10 @@ parallel. Ships this release.
 
 ### Tasks
 
-- [ ] `TranscribeTagLib` drops `cssClass` for checkbox fields. Every other branch emits `"$cssClass form-control"`; the
-  checkbox branch emits only a class literal, so `validate[required]` is lost — **mandatory checkbox fields are not
-  validated**. Behaviour bug, not styling.
-  - Prompt: "Confirm whether mandatory checkbox fields were ever meant to be enforced, then restore `cssClass` on the
-    checkbox branch and cover it."
+- [X] `TranscribeTagLib` drops `cssClass` for checkbox fields. Every other branch emits `"$cssClass form-control"`; the
+  checkbox branch emitted only a class literal, so `validate[required]` was lost.
+  **Completed 2026-09-30** alongside the Phase 8 group 3 radio item in the same `TranscribeTagLib` `switch` edit,
+  with focused taglib-spec coverage for checkbox/radio class emission.
 - [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
   `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query string. Every other `doSearch()` in
   the app encodes. Behaviour bug.
@@ -1267,6 +1262,10 @@ parallel. Ships this release.
   - [ ] `layouts/digivol-task.gsp`
   - [ ] `task/manageUploads.gsp`
   - [ ] `template/manageFields.gsp`
+- [ ] Retire legacy `validate[required]` class emission from `TranscribeTagLib.getWidgetHtml()` (`cssClass` build,
+  currently line ~215) after confirming no runtime transcribe dependency remains.
+  - Prompt: "Verify `transcribeValidation` and any remaining transcribe JS selectors do not depend on
+    `validate[required]`, then remove the class emission and update/extend tests."
 ---
 
 ## Tracking Log
@@ -2024,6 +2023,12 @@ parallel. Ships this release.
     a `pattern` for early client feedback, and field-level invalid display via `is-invalid` + `<cl:fieldError>`.
   - `NewsItemController.save()` / `update()`: invalid `dateExpiresPicker` values no longer throw parse exceptions;
     they now reject `dateExpires` with a field error and re-render the form with datepicker range defaults.
+- 2026-09-30 - Phase 8 group 3: `TranscribeTagLib` radio + checkbox class alignment completed.
+  - `FieldType.radio`: replaced `form-control` with `form-check-input` and changed option wrappers from
+    `radio-item` spans to Bootstrap 5 `form-check` + `form-check-label` markup.
+  - Restored `cssClass` propagation on both radio and checkbox branches so mandatory-field classes are not dropped.
+  - Added focused spec coverage in `src/test/groovy/au/org/ala/volunteer/TranscribeTagLibSpec.groovy`.
+  - Follow-up added to Phase 9: decide and execute retirement of legacy `validate[required]` emission.
 - 2026-09-30 - Phase 8 group 4: Fixed navbar and condensedNav for multiple display dimensions.
   - Add breadcrumb label wrappers for all crumbs with hover titles in `VolunteerTagLib`.
   - Implement CSS-driven long-label truncation structure (middle-ellipsis rendering) in nav styles.
@@ -2036,4 +2041,3 @@ parallel. Ships this release.
   - Left-align the back button and tab within their respective columns.
   - Remove top gap above the condensed tab.
   - Updated action buttons on project index page for mobile displays
-

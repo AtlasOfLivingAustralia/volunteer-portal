@@ -289,7 +289,7 @@ class TranscribeTagLib {
                     value: checked,
                     validationRule: validationRule?.name,
                     tabindex: tabindex,
-                    class: 'form-check-input'
+                    class: "$cssClass form-check-input"
                 )
                 break;
             case FieldType.select:
@@ -317,12 +317,11 @@ class TranscribeTagLib {
                         value: existingValue ?:field?.defaultValue,
                         values: labels,
                         labels: labels,
-                        class: 'form-control',
-                        // 'class':cssClass,
+                        class: "$cssClass form-check-input",
                         validationRule:validationRule?.name,
                         tabindex: tabindex
                     ) {
-                        out << "<span class=\"radio-item\">${it.radio}&nbsp;${it.label}</span>"
+                        out << "<div class=\"form-check\"><label class=\"form-check-label\">${it.radio} ${it.label}</label></div>"
                     }
                     break
                 }
@@ -330,7 +329,6 @@ class TranscribeTagLib {
                 cssClass = cssClass + " autocomplete"
             case FieldType.text: // fall through
             default:
-
                 if (noAutoCompleteList?.contains(name)) {
                     cssClass += ' noAutoComplete'
                 }
