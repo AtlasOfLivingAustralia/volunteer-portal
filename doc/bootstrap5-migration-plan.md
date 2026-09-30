@@ -486,21 +486,28 @@ Log entry for that date.*
 
 *Consumes the conventions from groups 2–4.*
 
-- [ ] Project index page with info cards
-  - [ ] Add a card background with transparency to the container div for the project info. If the project has a background image, the buttons and some text are unreadable. 
-  - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Reviewed, etc.)
+- [X] Project index page with info cards
+  - [X] Add a card background with transparency to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
+  - [X] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.).
+    - Completed 2026-09-30 by adding a translucent `project-info-panel`, rendering the progress bar full width, and moving the summary counts into Bootstrap cards.
+- [ ] Institution index page with info cards
+    - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.) similar to the project index page.
+- [ ] Institution/Project/Custom landing page lists
+  - [ ] `institution/list.gsp` 
+    - [ ] each row should be 2 cards
+    - [ ] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+    - [ ] Grid layout, project image is 404/broken
+  - [ ] `project/list.gsp` - Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+  - [ ] `project/list.gsp` - Table layout image does not resize correctly.
+  - [ ] `project/customLandingPage.gsp` - Mirror updates to `project/list.gsp` for the grid layout settings icon and table layout image resizing.
+  - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
+    above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
 - [ ] Review Index page
   - [ ] Fix honourboard/contributor styles
-- [ ] Stats page
+- [ ] `stats/index.gsp` Updates
   - [ ] Tab background colour is not correct (should be white)
   - [ ] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
   - [ ] As does .container (or p tag). See `stats/index.gsp` line 23-27
-- [ ] Institution/Project/Custom landing page lists
-  - [ ] Institution list - each row should be 2 cards
-  - [ ] Project list - Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
-  - [ ] Project list - Table layout image does not resize correctly.
-  - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
-    above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
 - [ ] Template edit collapsable list - each list should be the width of the page
 - [ ] Custom landing page admin
   - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
@@ -2042,3 +2049,4 @@ parallel. Ships this release.
   - Left-align the back button and tab within their respective columns.
   - Remove top gap above the condensed tab.
   - Updated action buttons on project index page for mobile displays
+  - 2026-09-30 - Phase 8 group 5: Project index page with info cards completed.

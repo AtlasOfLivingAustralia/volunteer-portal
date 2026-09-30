@@ -10,17 +10,19 @@
         </div>
     </div>
 
-    <div class="progress-legend">
-        <div class="row">
-            <div class="col-4 col-sm-4">
-                <b>${projectSummary.percentValidated}%</b> <g:message code="validated.label" />
-            </div>
-            <div class="col-4 col-sm-4">
-                <b>${projectSummary.percentTranscribed}%</b> <g:message code="transcribed.label" />
-            </div>
-            <div class="col-4 col-sm-4">
-                <b>${projectSummary.taskCount}</b> <g:message code="tasks.label" />
+    <g:if test="${showLegend != false}">
+        <div class="progress-legend">
+            <div class="row">
+                <div class="col-4 col-sm-4">
+                    <b>${projectSummary.percentValidated}%</b> <g:message code="validated.label" />
+                </div>
+                <div class="col-4 col-sm-4">
+                    <b>${projectSummary.percentTranscribed}%</b> <g:message code="transcribed.label" />
+                </div>
+                <div class="col-4 col-sm-4">
+                    <b>${projectSummary.taskCount}</b> <g:message code="tasks.label" />
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 </div>

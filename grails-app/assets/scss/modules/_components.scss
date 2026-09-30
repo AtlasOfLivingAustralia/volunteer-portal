@@ -131,6 +131,54 @@
 			font-size: $font-size-sm;
 			line-height: 18px;
 		}		
+
+		.project-info-panel {
+			background-color: rgba(255, 255, 255, 0.88);
+			border-radius: 0.5rem;
+			padding: 1.5rem;
+			margin-bottom: 1.5rem;
+
+			h1,
+			h2,
+			p,
+			a.forum-link,
+			.image-origin {
+				color: $body-copy;
+			}
+
+			a.forum-link:hover {
+				color: $link-hover-color;
+			}
+
+			.image-origin {
+				padding-top: 1.5rem;
+			}
+		}
+
+		.project-stat-cards {
+			margin-top: 1rem;
+		}
+
+		.project-stat-card {
+			border: 0;
+			border-top: 0.25rem solid var(--brand-primary, #{$brand-color});
+			box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.08);
+		}
+
+		.project-stat-value {
+			font-size: $font-size-2xl;
+			font-weight: 600;
+			line-height: 1.1;
+			color: var(--brand-primary, #{$brand-color});
+		}
+
+		.project-stat-label {
+			margin-top: 0.25rem;
+			font-size: $font-size-xs;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--brand-primary, #{$brand-color});
+		}
 	}
 
 	&.expedition.old {

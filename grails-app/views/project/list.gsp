@@ -115,7 +115,7 @@
             </div>
         </div>
     </section>
-<asset:javascript src="digivol-image-resize" asset-defer=""/>
+<asset:javascript src="digivol-image-resize.js" asset-defer=""/>
 <asset:script>
 
     $(function() {

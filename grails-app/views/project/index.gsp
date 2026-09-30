@@ -49,11 +49,11 @@
 </cl:hasNoProjectBackgroundImage>
 
 <div class="a-feature expedition ${divClass}">
-    <div class="container">
+    <div class="container project-info-panel">
         <div class="row">
             <div class="col-sm-12">
                 <div class="logo-holder">
-                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id?:-1}"/>" class="img-fluid institution-logo-main">
+                    <img src="<cl:institutionLogoUrl id="${projectInstance.institution?.id?:-1}"/>" class="img-fluid institution-logo-main" alt="${projectInstance.institution?.name ?: projectInstance.name}">
                 </div>
             </div>
         </div>
@@ -140,16 +140,43 @@
     <div class="progress-summary">
         <div class="container">
             <div class="row">
-                <div class="col-sm-6">
-                    <g:render template="projectSummaryProgressBar" model="${[projectSummary: projectSummary]}"/>
+                <div class="col-12">
+                    <g:render template="projectSummaryProgressBar" model="${[projectSummary: projectSummary, showLegend: false]}"/>
                 </div>
+            </div>
 
-                <div class="col-sm-3 col-6">
-                    <h3><b>${transcriberCount}</b>Volunteers</h3>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 project-stat-cards">
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${transcriberCount}</div>
+                            <div class="project-stat-label">Volunteers</div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="col-sm-3 col-6">
-                    <h3><b>${projectInstance.tasks?.size()}</b>Tasks</h3>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${tasksTotal}</div>
+                            <div class="project-stat-label">Tasks</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${tasksDone}</div>
+                            <div class="project-stat-label">Transcribed</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${projectSummary?.validatedCount ?: 0}</div>
+                            <div class="project-stat-label">Validated</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
