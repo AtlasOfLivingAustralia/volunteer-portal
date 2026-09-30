@@ -27,6 +27,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
     DateFormat dateFormat
     String defaultUserId = '1234'
     Date defaultTranscriptionDate
+    long nextTaskId = 1L
+    long nextTranscriptionId = 1L
 
     def setup() {
         multimediaService = Mock(MultimediaService)
@@ -44,6 +46,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
         dateFormat = new SimpleDateFormat('dd-MMM-yyyy')
         dateTimeFormat = new SimpleDateFormat('dd/MM/yyyy HH:mm:ss')
         defaultTranscriptionDate = dateTimeFormat.parse("01/03/2019 10:30:00"/*'01-Mar-2019 10:30:00'*/)
+        nextTaskId = 1L
+        nextTranscriptionId = 1L
         setupData()
     }
 
@@ -58,6 +62,7 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
 
     private Task createTask(String externalIdentifier = '') {
         Task task = new Task(transcriptions: new HashSet(), multimedia: new HashSet(), project: project, externalIdentifier: externalIdentifier)
+        task.id = nextTaskId++
         Multimedia mm = new Multimedia().tap {
             filePath = "filepath.jpg"
             filePathToThumbnail = "filepath_thumb.jpg"
@@ -72,7 +77,8 @@ class ExportServiceSpec extends Specification implements ServiceUnitTest<ExportS
     }
 
     private List<Field> transcribeTask(Task task, List<Map> allFieldData, String userId = defaultUserId, Date transcriptionDate = defaultTranscriptionDate ) {
-        Transcription transcription = new Transcription(id:2, task:task, project:project, fullyTranscribedBy: userId, dateFullyTranscribed: transcriptionDate)
+        Transcription transcription = new Transcription(task:task, project:project, fullyTranscribedBy: userId, dateFullyTranscribed: transcriptionDate)
+        transcription.id = nextTranscriptionId++
         mockDomain(Transcription, [transcription])
         task.transcriptions.add(transcription)
         List fields = []
