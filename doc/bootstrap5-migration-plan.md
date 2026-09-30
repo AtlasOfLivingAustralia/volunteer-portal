@@ -235,6 +235,7 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 - add new unchecked follow-up items for everything found but deliberately not done, each with enough detail (file +
   line + symptom) to action cold
 - for follow-ups needing a judgement call, include a "Prompt:" line stating the decision to be made
+- Provide a concise commit message for the changes, suitable for a single commit. Include the task number and a short description of what was done.
 - Try not to be too wordy. Be concise and to the point. No fluff.
 
 #### Constraints
@@ -486,7 +487,7 @@ Log entry for that date.*
 *Consumes the conventions from groups 2–4.*
 
 - [ ] Project index page with info cards
-  - [ ] Add a card background to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
+  - [ ] Add a card background with transparency to the container div for the project info. If the project has a background image, the buttons and some text are unreadable. 
   - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Reviewed, etc.)
 - [ ] Review Index page
   - [ ] Fix honourboard/contributor styles
