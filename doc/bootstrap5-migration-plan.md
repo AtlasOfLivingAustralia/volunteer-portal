@@ -494,16 +494,19 @@ Log entry for that date.*
     - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.) similar to the project index page.
 - [ ] Institution/Project/Custom landing page lists
   - [ ] `institution/list.gsp` 
-    - [ ] each row should be 2 cards
+    - [ ] each row should be 2 cards - modernise the cards with accent like project index?
+  - [ ] `institution/index.gsp`
     - [ ] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
-    - [ ] Grid layout, project image is 404/broken
-  - [ ] `project/list.gsp` - Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
-  - [ ] `project/list.gsp` - Table layout image does not resize correctly.
+    - [ ] Grid layout, project image is 404/broken - possible bug with `digivol-image-resize.js`
+    - [ ] Stats card layout at this size for consistency?
+  - [ ] `project/list.gsp` 
+    - [ ] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+    - [ ] Table layout image does not resize correctly.
   - [ ] `project/customLandingPage.gsp` - Mirror updates to `project/list.gsp` for the grid layout settings icon and table layout image resizing.
   - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
     above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
 - [ ] Review Index page
-  - [ ] Fix honourboard/contributor styles
+  - [ ] Fix honourboard/contributor styles - Modernise layout with BS5
 - [ ] `stats/index.gsp` Updates
   - [ ] Tab background colour is not correct (should be white)
   - [ ] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
