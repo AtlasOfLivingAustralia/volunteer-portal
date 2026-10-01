@@ -187,7 +187,7 @@
     <section id="record-locations">
         <div class="container">
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-12 col-lg-4">
                     <div class="map-header">
                         <h2 class="heading">Record Locations</h2>
                         <p>On this map you'll find all the location of transcribed records of the ${projectInstance.name} expedition</p>
@@ -203,7 +203,7 @@
 <section id="main-content">
     <div class="container">
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-xl-8">
                 <div class="row">
                     <div class="col-sm-12">
                         <h2 class="heading">
@@ -214,21 +214,78 @@
 
                 <g:if test="${roles.find{it.members?.size()}}">
                     <div class="expedition-team">
-                        <div class="row">
+                        <div class="row g-4">
                             <g:each in="${roles}" status="i" var="role">
-                                <g:set var="roleIcon" value="${role.icons[0]}"/>
-                                <div class="col-3 col-sm-2 roleIcon">
-                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-fluid" title="${roleIcon?.name}" alt="${roleIcon?.name}">
+%{--                                <g:set var="roleIcon" value="${role.icons[0]}"/>--}%
+%{--                                <div class="col-3 col-sm-2 roleIcon">--}%
+%{--                                    <img src='<g:resource file="${roleIcon?.icon}"/>' width="100" height="99" class="img-fluid" title="${roleIcon?.name}" alt="${roleIcon?.name}">--}%
+%{--                                </div>--}%
+%{--                                <div class="col-9 col-sm-4 roleList">--}%
+%{--                                    <h3>${role.name}</h3>--}%
+%{--                                    <ul>--}%
+%{--                                        <g:each in="${role.members}" var="member">--}%
+%{--                                            <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>--}%
+%{--                                            </li>--}%
+%{--                                        </g:each>--}%
+%{--                                    </ul>--}%
+%{--                                </div>--}%
+
+                                <g:set var="largeList" value="${role.members.size() > 7}"/>
+                                <div class="col-lg-6">
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <div class="card-header bg-role text-white d-flex align-items-center ${largeList ? 'justify-content-between' : ''} gap-2 py-3">
+                                            <g:if test="${largeList}">
+                                            <div class="d-flex align-items-center gap-2">
+                                            </g:if>
+                                            <g:if test="${i == 0}"><i class="fa fa-compass fs-5"></i></g:if>
+                                            <g:elseif test="${i == 1}"><i class="fa fa-flask fs-5"></i></g:elseif>
+                                            <g:elseif test="${i == 2}"><i class="fa fa-address-book fs-5"></i></g:elseif>
+                                            <g:else><i class="fa fa-gear fs-5"></i></g:else>
+                                            <h6 class="card-title mb-0 fw-bold">${role.name}</h6>
+                                            <g:if test="${largeList}">
+                                            </div>
+                                            <span class="badge bg-light text-dark rounded-pill">${role.members.size()}</span>
+                                            </g:if>
+                                        </div>
+
+                                    <g:if test="${!largeList}">
+                                        <div class="card-body p-0">
+                                            <ul class="list-group list-group-flush">
+                                                <g:if test="${role.members.size() > 0}">
+                                                <g:each in="${role.members}" var="member">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                                        <a href="#" class="text-decoration-none text-dark fw-medium">${member.name}</a>
+                                                        <span class="badge bg-primary-subtle text-primary rounded-pill">${member.count}</span>
+                                                    </li>
+                                                </g:each>
+                                                </g:if>
+                                                <g:else>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                                        No volunteers in this role.
+                                                    </li>
+                                                </g:else>
+                                            </ul>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="card-body p-0 overflow-auto" style="max-height: 280px;">
+                                            <ul class="list-group list-group-flush">
+                                                <g:each in="${role.members}" var="member">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                                    <a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}"
+                                                       class="text-decoration-none text-dark fw-medium">${member.name}</a>
+                                                    <span class="badge bg-primary-subtle text-primary rounded-pill">${member.count}</span>
+                                                </li>
+                                                </g:each>
+                                            </ul>
+                                        </div>
+                                    </g:else>
+
+                                    </div>
                                 </div>
-                                <div class="col-9 col-sm-4 roleList">
-                                    <h3>${role.name}</h3>
-                                    <ul>
-                                        <g:each in="${role.members}" var="member">
-                                            <li><a href="${createLink(controller: 'user', action: 'show', id: member.id, params: [projectId: projectInstance.id])}">${member.name} (${member.count})</a>
-                                            </li>
-                                        </g:each>
-                                    </ul>
-                                </div>
+
+
+
                             </g:each>
                         </div>
                     </div>
@@ -238,7 +295,7 @@
                 </g:else>
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-xl-4">
                 %{-- mini leaderboard --}%
                 <g:render template="/leaderBoard/stats" model="[disableStats: true, disableHonourBoard: true, disableContribution: true, projectId: projectInstance.id, maxContributors: 2]"/>
             </div>

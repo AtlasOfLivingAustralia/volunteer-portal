@@ -2064,3 +2064,4 @@ parallel. Ships this release.
   - Project home page updated with responsive breakpoints aligned to lg.
   - Home page updated with stat info cards and responsive breakpoints aligned to lg.
   - Fixed navbar in responsive breakpoints.
+  - Updated `project/index.gsp` expedition team members for BS5 card layout.

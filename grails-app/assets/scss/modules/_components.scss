@@ -469,6 +469,12 @@
 	}
 }
 
+.expedition-team {
+	.bg-role {
+		background-color: rgba(#6c757d, 0.75)
+	}
+}
+
 .key {
 	display: inline-block;
 	height: 10px;
@@ -960,10 +966,10 @@ table thead th {
 }
 .map-header {
 	position: relative;
-	margin: 40px 0 -500px 50px;
+	margin: 40px 0 -500px 0px;
 	z-index: 1000;
 	background: white;
-	padding: 30px 30px 25px 30px;
+	padding: 20px 20px 15px 20px;
 	border-radius: 4px;
 	opacity: 0.8;
 	color: #393939;
