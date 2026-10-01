@@ -59,6 +59,31 @@
 			font-size: $font-size-sm;
 			line-height: 18px;
 		}	
+
+		.project-stat-cards {
+			margin-top: 1rem;
+		}
+
+		.project-stat-card {
+			border: 0;
+			border-top: 0.25rem solid var(--brand-primary, #{$brand-color});
+			box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.08);
+		}
+
+		.project-stat-value {
+			font-size: $font-size-2xl;
+			font-weight: 600;
+			line-height: 1.1;
+			color: var(--brand-primary, #{$brand-color});
+		}
+
+		.project-stat-label {
+			margin-top: 0.25rem;
+			font-size: $font-size-xs;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--brand-primary, #{$brand-color});
+		}
 	}
 
 	&.simple-header {
@@ -383,9 +408,6 @@
 				vertical-align: middle;
 			}
 		}
-		.caption {
-			padding-top: 0;
-		}
 	}
 	&.row-style {
 		margin-bottom: 15px;
@@ -404,7 +426,7 @@
 }
 
 .progress {
-	.progress-bar-success{
+	.progress-bar-success {
 		background-color: rgba( $brand-color, .5 );
 	}
 	.progress-bar-transcribed{

@@ -1,25 +1,25 @@
 <div class="row">
 <g:each in="${projects}" var="projectSummary" status="i">
     <div class="col-sm-12 col-md-6">
-        <div class="thumbnail">
-            <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
-            <div class="expedition-thumb-settings-btn-group">
-                <div class="btn-group ">
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle " data-bs-toggle="dropdown" href="#">
-                        <i class="fa fa-lg fa-cog"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="fa fa-cog"></i>&nbsp;<g:message code="expedition.settings.label" /></a>
-                        </li>
-                        <li>
-                            <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="fa fa-wrench"></i>&nbsp;<g:message code="expedition.administration.label" /></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            </cl:ifInstitutionAdmin>
-            <div class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
+        <div class="thumbnail shadow-sm">
+                <div class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''} position-relative">
+                    <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
+                        <div class="position-absolute top-0 end-0 p-2" style="z-index: 2;">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-light border-secondary dropdown-toggle shadow-sm" data-bs-toggle="dropdown" href="#">
+                                    <i class="fa fa-lg fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end bg-white shadow">
+                                    <li>
+                                        <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="fa fa-cog"></i>&nbsp;<g:message code="expedition.settings.label" /></a>
+                                    </li>
+                                    <li>
+                                        <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="fa fa-wrench"></i>&nbsp;<g:message code="expedition.administration.label" /></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </cl:ifInstitutionAdmin>
                 <g:link controller="project" action="index" class="thumbImg" id="${projectSummary.project?.id}">
                     <cl:featuredImage project="${projectSummary.project}"
                                       preLoad="true"
@@ -28,7 +28,7 @@
                                       data-error-url="${resource(file: '/banners/default-expedition-large.jpg')}"/>
                 </g:link>
                 <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: false, extraParams: extraParams]" />
-            </div>
+                </div>
         </div>
     </div>
     <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>

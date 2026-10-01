@@ -12,7 +12,7 @@
     <asset:script>
 
         $(document).ready(function () {
-            $$("#searchForm").on('submit', function (e) {
+            $("#searchForm").on('submit', function (e) {
                 e.preventDefault();
                 doSearch();
             });
@@ -34,7 +34,7 @@
     <%pageScope.crumbs = [[link: createLink(controller: 'institution', action: 'list'), label: message(code: 'default.institutions.label', default: 'Institutions')]] %>
     <div class="row">
         <div class="col-sm-4 col-sm-push-8">
-            <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>" class="img-fluid institution-logo-main">
+            <img src="<cl:institutionLogoUrl id="${institutionInstance.id}"/>" class="img-fluid institution-logo-main" alt="${institutionInstance.name}">
             <table class="table table-striped contact">
                 <tbody>
                 <g:if test="${institutionInstance?.displayContact}">
@@ -76,7 +76,7 @@
     <div class="progress-summary ">
         <div class="container">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-12">
                     <div class="expedition-progress">
                         <g:set var="tv" value="${(taskCounts?.percentTranscribed as Integer) - (taskCounts?.percentValidated as Integer)}"/>
                         <div class="progress">
@@ -87,28 +87,52 @@
                                 <span class="visually-hidden">${tv}% Complete</span>
                             </div>
                         </div>
-                        <div class="progress-legend">
-                            <div class="row">
-                                <div class="col-4">
-                                    <b>${taskCounts?.percentValidated}%</b> Validated
-                                </div>
-                                <div class="col-4">
-                                    <b>${taskCounts?.percentTranscribed}%</b> Transcribed
-                                </div>
-                                <div class="col-4">
-                                    <b>${taskCounts?.taskCount}</b> Tasks
-                                </div>
-                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3 project-stat-cards">
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${underwayProjects}</div>
+                            <div class="project-stat-label">Underway Expeditions</div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-3 col-6">
-                    <h3><b>${underwayProjects} Expeditions</b>Underway</h3>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${completedProjects}</div>
+                            <div class="project-stat-label">Completed Expeditions</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3 col-6">
-                    <h3><b>${completedProjects} Expeditions</b>Completed</h3>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${taskCounts?.percentTranscribed ?: 0}%</div>
+                            <div class="project-stat-label">Transcribed</div>
+                        </div>
+                    </div>
                 </div>
-                <a name="expeditionList"></a>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${taskCounts?.percentValidated ?: 0}%</div>
+                            <div class="project-stat-label">Validated</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card project-stat-card h-100 text-center">
+                        <div class="card-body">
+                            <div class="project-stat-value">${taskCounts?.taskCount ?: 0}</div>
+                            <div class="project-stat-label">Tasks</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="expeditionList"></div>
             </div>
         </div>
     </div>

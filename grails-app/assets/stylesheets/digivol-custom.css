@@ -310,6 +310,10 @@ span.expedition.disabledMenuItem {
     min-height: 226px;
 }
 
+.thumbnail.institution .caption {
+    padding-top: 16px;
+}
+
 .thumbnail .projectDescription {
     min-height: 44px;
 }

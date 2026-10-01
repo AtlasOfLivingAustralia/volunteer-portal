@@ -88,47 +88,46 @@
                     </div>
                 </div>
 
-                <g:each in="${institutions}" status="i" var="inst">
-                    <div class="col-md-6">
-                        <div class="thumbnail institution">
-                            <div class="institution-settings-btn">
-                                <cl:ifInstitutionAdmin institution="${inst}">
-                                    <a class="btn btn-outline-secondary btn-sm float-end" title="Settings" data-bs-toggle="tooltip" href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}">
-                                        <i class="fa fa-cog"></i>
-                                    </a>
-                                </cl:ifInstitutionAdmin>
-                            </div>
-                            <div class="logo-centre">
-                                <a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">
-                                    <img class="img-fluid cropme" src="<cl:institutionLogoUrl id="${inst.id}"/>" style="max-height: 200px;"/>
-                                </a>
-                            </div>
-                            <div class="caption">
-                                <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
+                <div class="row">
+                    <g:each in="${institutions}" status="i" var="inst">
+                        <div class="col-md-6">
+                            <div class="thumbnail institution shadow-sm">
+                                <div class="institution-settings-btn">
+                                    <cl:ifInstitutionAdmin institution="${inst}">
+                                        <a class="btn btn-outline-secondary btn-sm float-end" title="Settings" data-bs-toggle="tooltip" href="${createLink(controller: 'institutionAdmin', action: 'edit', id: inst.id)}">
+                                            <i class="fa fa-cog"></i>
+                                        </a>
+                                    </cl:ifInstitutionAdmin>
+                                </div>
+                                <g:link controller="institution" action="index" id="${inst.id}" class="thumbImg">
+                                    <img class="img-fluid cropme" src="<cl:institutionLogoUrl id="${inst.id}"/>" style="max-height: 200px;" alt="${inst.name}"/>
+                                </g:link>
+                                <div class="caption">
+                                    <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
 
-                                <div class="expedition-progress">
-                                    <div class="progress-legend">
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
-                                                <strong>${projectCount}</strong> Expedition${projectCount == 1 ? '' : 's'}
-                                            </div>
-                                            <div class="col-4">
-                                                <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
-                                                <strong>${volunteerCount}</strong> Volunteers
-                                            </div>
-                                            <div class="col-4">
-                                                <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
-                                                <strong>${taskCount}</strong> Tasks
+                                    <div class="expedition-progress">
+                                        <div class="progress-legend">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
+                                                    <strong>${projectCount}</strong> Expedition${projectCount == 1 ? '' : 's'}
+                                                </div>
+                                                <div class="col-4">
+                                                    <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
+                                                    <strong>${volunteerCount}</strong> Volunteers
+                                                </div>
+                                                <div class="col-4">
+                                                    <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
+                                                    <strong>${taskCount}</strong> Tasks
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
-                </g:each>
+                    </g:each>
+                </div>
 
 
                 %{--</div>--}%

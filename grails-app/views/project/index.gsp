@@ -70,7 +70,7 @@
                     <g:if test="${percentComplete < 100}">
                         <a href="${createLink(controller: 'transcribe', action: 'index', id: projectInstance.id)}" class="btn btn-primary btn-lg" role="button">Get Started <span class="fa fa-arrow-right"></span></a>
                         <g:if test="${projectInstance.tutorialLinks || projectInstance.tutorials.size() > 0}">
-                            <a href="#tutorial" class="btn btn-lg btn-outline-${oldClass} tutorial">Tutorial Information</a>
+                            <a href="#tutorial" class="btn btn-lg btn-outline-secondary tutorial">Tutorial Information</a>
                             <div id="tutorialContent" class="d-none">
                                 <g:if test="${projectInstance.tutorialLinks}">
                                 <h4>Expedition Tutorial Information</h4>
