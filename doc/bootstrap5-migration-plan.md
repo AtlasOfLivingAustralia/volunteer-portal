@@ -2063,3 +2063,4 @@ parallel. Ships this release.
   - Project list and customLandingPage list now has updated stat cards and responsive breakpoints aligned to lg.
   - Project home page updated with responsive breakpoints aligned to lg.
   - Home page updated with stat info cards and responsive breakpoints aligned to lg.
+  - Fixed navbar in responsive breakpoints.
