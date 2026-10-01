@@ -2,6 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
+    <content tag="pageType">institution</content>
     <g:set var="entityName" value="${message(code: 'institutions.label', default: 'Institution')}"/>
     <title><cl:pageTitle title="${g.message(code:'default.list.label', args:[entityName])}" /></title>
     <style type="text/css">
@@ -39,12 +40,13 @@
         <div class="col-sm-2">
             <a class="btn btn-secondary" href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage</a>
     </cl:ifSiteAdmin>
+
 </cl:headerContent>
 
 <section id="main-content">
     <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-lg-12 col-xl-8">
                 <div class="row">
                     <div class="col-sm-6">
                         <h2 class="heading">
@@ -105,20 +107,32 @@
                                 <div class="caption">
                                     <h4><a href="${createLink(controller: 'institution', action: 'index', id: inst.id)}">${inst.name}</a></h4>
 
-                                    <div class="expedition-progress">
-                                        <div class="progress-legend">
-                                            <div class="row">
-                                                <div class="col-4">
-                                                    <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
-                                                    <strong>${projectCount}</strong> Expedition${projectCount == 1 ? '' : 's'}
+                                    <g:set var="projectCount" value="${projectCounts[inst] ?: 0}"/>
+                                    <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
+                                    <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
+
+                                    <div class="row row-cols-1 row-cols-sm-3 g-3 project-stat-cards">
+                                        <div class="col">
+                                            <div class="card project-stat-card h-100 text-center">
+                                                <div class="card-body">
+                                                    <div class="project-stat-value">${projectCount}</div>
+                                                    <div class="project-stat-label">Expeditions</div>
                                                 </div>
-                                                <div class="col-4">
-                                                    <g:set var="volunteerCount" value="${projectVolunteers[inst.id] ?: 0}"/>
-                                                    <strong>${volunteerCount}</strong> Volunteers
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card project-stat-card h-100 text-center">
+                                                <div class="card-body">
+                                                    <div class="project-stat-value">${volunteerCount}</div>
+                                                    <div class="project-stat-label">Volunteers</div>
                                                 </div>
-                                                <div class="col-4">
-                                                    <g:set var="taskCount" value="${taskCounts[inst.id] ?: 0}"/>
-                                                    <strong>${taskCount}</strong> Tasks
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card project-stat-card h-100 text-center">
+                                                <div class="card-body">
+                                                    <div class="project-stat-value">${taskCount}</div>
+                                                    <div class="project-stat-label">Tasks</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -127,22 +141,24 @@
                             </div>
                         </div>
                     </g:each>
+
+                    <cl:paginate total="${totalInstitutions}" params="${[q: params.q]}"/>
                 </div>
+%{--                <div class="row">--}%
+%{--                    <div class="col-sm-12">--}%
+%{--                        --}%
+%{--                    </div>--}%
+%{--                </div>--}%
 
+            </div>
 
-                %{--</div>--}%
-            </div><!-- /.col-sm-8 -->
-
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-12 col-xl-4">
                 <g:render template="/leaderBoard/stats" model="[disableContribution: true, disableForumActivity: true]"/>
             </div>
+
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <cl:paginate total="${totalInstitutions}" params="${[q: params.q]}"/>
-        </div>
-    </div><!-- /.row -->
+
 </section>
 </body>
 </html>

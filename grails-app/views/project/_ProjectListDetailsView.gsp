@@ -5,7 +5,7 @@
                 <div class="col-sm-12">
                     <div class="thumbnail row-style shadow-sm">
                         <div class="row">
-                            <div class="col-3 position-relative">
+                            <div class="d-none d-md-block col-md-3 position-relative">
                                 <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
                                     <div class="position-absolute top-0 start-1 p-3" style="z-index: 2;">
                                         <div class="btn-group">
@@ -27,7 +27,7 @@
                                     <cl:featuredImage project="${projectSummary.project}" class="img-fluid cropme${projectSummary.project?.inactive ? ' expedition-inactive' : ''}" />
                                 </a>
                             </div>
-                            <div class="col-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
+                            <div class="col-12 col-md-9 ${projectSummary.project?.inactive ? 'expedition-inactive' : ''}">
                                 <g:render template="/project/projectSummary" model="[projectSummary: projectSummary, includeDescription: true, maxDescriptionLen: 250]" />
                             </div>
                         </div>

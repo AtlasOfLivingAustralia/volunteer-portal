@@ -19,7 +19,7 @@
     <section id="main-content">
         <div class="container">
             <div class="row">
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-12 col-xl-8">
                     <div class="row">
                         <div class="col-sm-6">
                             <h2 class="heading">
@@ -109,7 +109,7 @@
                         <g:render template="ProjectListDetailsView" model="${model}" />
                     </g:else>
                 </div>
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-12 col-xl-4">
                     <g:render template="/leaderBoard/stats" model="[disableContribution: true, disableForumActivity: true]"/>
                 </div>
             </div>

@@ -95,6 +95,7 @@ class InstitutionController {
         }
 
         def projectCounts = institutionService.getProjectCounts(institutions)
+        def totalProjects = institutionService.getTotalProjectCount()
         def projectVolunteers = institutionService.getTranscriberCounts(institutions)
         def taskCounts = institutionService.countTasksForInstitutions(institutions)
 
@@ -102,6 +103,7 @@ class InstitutionController {
             institutions: institutions,
             totalInstitutions: totalCount,
             projectCounts: projectCounts,
+            totalProjects: totalProjects,
             projectVolunteers: projectVolunteers,
             taskCounts: taskCounts
         ]

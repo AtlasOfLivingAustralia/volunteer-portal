@@ -48,7 +48,7 @@
     <section id="main-content">
         <div class="container">
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-12 col-lg-12 col-xl-8">
                     <div class="row">
                         <div class="col-sm-6">
                             <g:if test="${params.q}">
@@ -107,7 +107,7 @@
                             </div>
 
                             <cl:ifAdmin>
-                                <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px; margin-top: -20px;">
+                                <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px; margin-top: 2px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                                         <g:set var="isActive" value="${activeFilterMode.toString() == mode?.toString()}" />
@@ -126,9 +126,8 @@
                         <g:render template="ProjectListDetailsView" model="${model}" />
                     </g:else>
                 </div>
-                <div class="col-sm-4">
-                    %{--<g:set var="model" value="${[institutionName: 'Wildlife Spotter', projectType: projectType, tagName, tags]}" />--}%
-                    <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType, disableContribution: true, disableForumActivity: true]" />
+                <div class="col-12 col-lg-12 col-xl-4">
+                     <g:render template="/leaderBoard/stats" model="[institutionName: landingPageInstance.title, tagName: tags, projectType: projectType, disableContribution: true, disableForumActivity: true]" />
                 </div>
             </div>
         </div>

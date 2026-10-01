@@ -263,6 +263,21 @@ class InstitutionService {
         }
     }
 
+    def getTotalProjectCount(boolean includeDeactivated = false) {
+        def c = Project.createCriteria()
+        c.get {
+            if (!includeDeactivated) {
+                or {
+                    isNull("inactive")
+                    eq("inactive", false)
+                }
+            }
+            projections {
+                countDistinct('id')
+            }
+        }
+    }
+
     def getProjectUnderwayCount(Institution institution) {
         def c = Project.createCriteria()
         c.get {

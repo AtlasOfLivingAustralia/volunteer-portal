@@ -490,22 +490,27 @@ Log entry for that date.*
   - [X] Add a card background with transparency to the container div for the project info. If the project has a background image, the buttons and some text are unreadable.
   - [X] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.).
     - Completed 2026-09-30 by adding a translucent `project-info-panel`, rendering the progress bar full width, and moving the summary counts into Bootstrap cards.
-- [ ] Institution index page with info cards
-    - [ ] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.) similar to the project index page.
+- [X] Institution index page with info cards
+  - [X] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.) similar to the project index page.
+    - Completed 2026-10-01 by rendering the institution stats as Bootstrap cards on `institution/index.gsp` and `institution/list.gsp`.
 - [ ] Institution/Project/Custom landing page lists
-  - [ ] `institution/list.gsp` 
-    - [ ] each row should be 2 cards - modernise the cards with accent like project index?
-  - [ ] `institution/index.gsp`
-    - [ ] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
-    - [ ] Grid layout, project image is 404/broken - possible bug with `digivol-image-resize.js`
-    - [ ] Stats card layout at this size for consistency?
-  - [ ] `project/list.gsp` 
-    - [ ] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
-    - [ ] Table layout image does not resize correctly.
-  - [ ] `project/customLandingPage.gsp` - Mirror updates to `project/list.gsp` for the grid layout settings icon and table layout image resizing.
+  - [X] `institution/list.gsp`
+    - [X] each row should be 2 cards - modernise the cards with accent like project index?
+      - Completed 2026-10-01 by switching the institution list to the shared stat-card style and per-card metrics.
+  - [X] `institution/index.gsp`
+    - [X] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+    - [X] Grid layout, project image is 404/broken - possible bug with `digivol-image-resize.js`
+    - [X] Stats card layout at this size for consistency?
+      - Completed 2026-10-01 by aligning the institution page stats with the project-summary card pattern.
+  - [X] `project/list.gsp` 
+    - [X] Grid layout settings icon should be on the right side of the card, not the left and over the top of the image.
+    - [X] Table layout image does not resize correctly.
+  - [X] `project/customLandingPage.gsp` - Mirror updates to `project/list.gsp` for the grid layout settings icon and table layout image resizing.
   - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
     above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
+- [ ] Navbar disappears between 1400px and 992px.
 - [ ] Review Index page
+  - [ ] Check News display
   - [ ] Fix honourboard/contributor styles - Modernise layout with BS5
 - [ ] `stats/index.gsp` Updates
   - [ ] Tab background colour is not correct (should be white)
@@ -2052,4 +2057,9 @@ parallel. Ships this release.
   - Left-align the back button and tab within their respective columns.
   - Remove top gap above the condensed tab.
   - Updated action buttons on project index page for mobile displays
-  - 2026-09-30 - Phase 8 group 5: Project index page with info cards completed.
+- 2026-09-30 - Phase 8 group 5: Project index page with info cards completed.
+- 2026-10-01 - Institution list cards now use shared stat-card metrics; institution index/list responsive breakpoints were aligned to lg.
+  - Institution home page has updated progress bar and stat cards. Project cards updated with stat info cards and responsive breakpoints aligned to lg.
+  - Project list and customLandingPage list now has updated stat cards and responsive breakpoints aligned to lg.
+  - Project home page updated with responsive breakpoints aligned to lg.
+  - Home page updated with stat info cards and responsive breakpoints aligned to lg.
