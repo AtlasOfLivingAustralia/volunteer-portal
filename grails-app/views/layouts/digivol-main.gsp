@@ -23,7 +23,7 @@
     <![endif]-->
 </head>
 <body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-xl navbar-light bg-light fixed-top">
     <div class="container">
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                 aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation" role="button">
@@ -81,7 +81,7 @@
                         <g:render template="/layouts/profileDropDown"/>
                     </li>
                     <cl:ifAdmin>
-                        <li class="nav-item ${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
+                        <li class="nav-item flex-nowrap ${pageProperty(name: 'page.selectedNavItem') == 'bvpadmin' ? 'active' : ''}">
                             <a class="nav-link" href="${g.createLink(controller: 'admin')}"><i class="fa fa-cog fa-lg"></i> Admin</a>
                         </li>
                     </cl:ifAdmin>
@@ -100,9 +100,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <cl:messages/>
-                    %{--<div>--}%
                     <g:pageProperty name="page.page-header"/>
-                    %{--</div>--}%
                 </div>
             </div>
         </div>
@@ -112,11 +110,7 @@
 <g:if test="${g.pageProperty(name: "page.page-title")}">
     <div class="a-feature ${g.pageProperty(name: "page.pageType", default: "simple-header")}">
         <div class="container">
-            %{--<div class="row">--}%
-                %{--<div class="col-sm-10">--}%
                     <g:pageProperty name="page.page-title"/>
-                %{--</div>--}%
-            %{--</div>--}%
         </div>
     </div>
 </g:if>
@@ -156,9 +150,6 @@
                 <asset:image src="institutions/logoAustMus@2x.png"/>
                 <asset:image src="institutions/logoCSIRO.svg"/>
                 <cl:insitutionLogos />
-                %{--<asset:image src="institutions/logoMelbourneVictoria@2x.png"/>--}%
-                %{--<asset:image src="institutions/logoVermont@2x.png"/>--}%
-                %{--<asset:image src="institutions/logoSmithsonian@2x.png"/>--}%
             </div>
 
         </div>
@@ -231,9 +222,7 @@
 </section>
 
 <g:render template="/layouts/associatedBrands" />
-
 <g:render template="/layouts/notifications" />
-
 <g:render template="/layouts/ga" />
 <g:render template="/layouts/fathom" />
 

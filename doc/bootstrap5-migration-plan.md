@@ -493,7 +493,7 @@ Log entry for that date.*
 - [X] Institution index page with info cards
   - [X] Widen the progress bar to the full width and put statistics in info cards underneath (e.g. Volunteers, Tasks, Transcribed, Validated, etc.) similar to the project index page.
     - Completed 2026-10-01 by rendering the institution stats as Bootstrap cards on `institution/index.gsp` and `institution/list.gsp`.
-- [ ] Institution/Project/Custom landing page lists
+- [X] Institution/Project/Custom landing page lists
   - [X] `institution/list.gsp`
     - [X] each row should be 2 cards - modernise the cards with accent like project index?
       - Completed 2026-10-01 by switching the institution list to the shared stat-card style and per-card metrics.
@@ -508,7 +508,7 @@ Log entry for that date.*
   - [X] `project/customLandingPage.gsp` - Mirror updates to `project/list.gsp` for the grid layout settings icon and table layout image resizing.
   - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
     above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
-- [ ] Navbar disappears between 1400px and 992px.
+- [X] Navbar disappears between 1400px and 992px.
 - [ ] Review Index page
   - [ ] Check News display
   - [ ] Fix honourboard/contributor styles - Modernise layout with BS5

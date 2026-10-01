@@ -147,7 +147,7 @@
                                          src="${grailsApplication.config.getProperty('server.url', String)}/${grailsApplication.config.getProperty('images.urlPrefix', String)}/hero/${frontPage.heroImage}"/>
 
                                 </g:if>
-                                <<input id="heroImage" class="form-control" name="heroImage" type="file" accept="image/jpeg,image/png"/>
+                                <input id="heroImage" class="form-control" name="heroImage" type="file" accept="image/jpeg,image/png"/>
                             </div>
                         </div>
 

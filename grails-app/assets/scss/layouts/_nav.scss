@@ -37,6 +37,7 @@
 	&:hover {
 		background-color: $brand-color;
 	}
+	margin-right: 0.1rem;
 }
 
 .navbar-brand.digivol-logo img {
@@ -52,22 +53,22 @@
 }
 
 .navbar-nav>li>a.nav-link {
-	padding: 25px 15px !important;
+	padding: 25px 11px !important;
 }
 
 .navbar-nav {
 	order: 1;
 }
 
-.navbar-expand-lg .navbar-nav>.active>a,
-.navbar-expand-lg .navbar-nav>.active>a:focus,
-.navbar-expand-lg .navbar-nav>.active>a:hover {
+.navbar-expand-xl .navbar-nav>.active>a,
+.navbar-expand-xl .navbar-nav>.active>a:focus,
+.navbar-expand-xl .navbar-nav>.active>a:hover {
 	background-color: $background-grey;
 	color: $black;
 }
 
 .navbar-toggler {
-	border-radius: 40px;
+	//border-radius: 5px;
 }
 
 .expedition-tab {
@@ -377,7 +378,7 @@ ul.profile-links {
 /************************************************************
  * Mobile dimenions
  ************************************************************/
-@media (max-width: $screen-md) {
+@media (max-width: $screen-lg-max) {
 	.condensed-navbar .expedition-tab .container {
 		padding-left: 15px;
 		padding-right: 15px;
@@ -409,7 +410,7 @@ ul.profile-links {
 	}
 
 	.navbar-toggler {
-		display: block;
+		display: block !important;
 	}
 
 	.navbar-collapse {
@@ -459,7 +460,7 @@ ul.profile-links {
 	}
 }
 
-@media (max-width: $screen-md) {
+@media (max-width: $screen-lg-max) {
 	.navbar .navbar-collapse.collapse:not(.show) {
 		display: none !important;
 	}
@@ -467,9 +468,23 @@ ul.profile-links {
 	.navbar .navbar-collapse.collapse.show {
 		display: block !important;
 	}
+
+	nav.navbar {
+		padding: 0.5rem 0;
+	}
+
+	.navbar-nav > li > a.nav-link {
+		padding: 10px 11px !important;
+	}
 }
 
-@media (min-width: $screen-md) and (max-width: $screen-lg) {
+@media (min-width: $screen-xl) {
+	.navbar-expand-xl .navbar-toggler {
+		display: none;
+	}
+}
+
+@media (min-width: $screen-md) and (max-width: $screen-lg-max) {
 	#navbar {
 		flex-wrap: wrap !important;
 	}

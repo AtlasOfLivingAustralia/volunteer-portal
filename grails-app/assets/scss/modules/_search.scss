@@ -6,13 +6,13 @@
   }
 }
 
-@media (min-width: $screen-md) and (max-width: $screen-lg) {
+@media (min-width: $screen-md) and (max-width: $screen-lg-max) {
   .custom-search-input {
     width: 100% !important;
     order: 2 !important;
     float: none !important;
     margin-top: 10px;
-    margin-left: 60px !important;
+    margin-left: 10px !important;
   }
 }
 

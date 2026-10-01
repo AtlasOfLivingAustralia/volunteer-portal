@@ -90,7 +90,7 @@
                             </div>
 
                             <cl:ifAdmin>
-                                <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px;margin-top: -20px;">
+                                <div class="btn-group float-end" role="group" aria-label="Filter by activity" style="padding-right: 10px; margin-bottom: 10px;margin-top: -10px;">
                                     <g:each in="${ProjectActiveFilterType.values()}" var="mode">
                                         <g:set var="href" value="?${(urlParams + [activeFilter: mode]).collect { it }.join('&')}" />
                                         <g:set var="isActive" value="${activeFilterMode.toString() == mode?.toString()}" />
