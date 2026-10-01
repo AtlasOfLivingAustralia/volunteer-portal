@@ -1,6 +1,6 @@
 <div class="row">
 <g:each in="${projects}" var="projectSummary" status="i">
-    <div class="col-sm-12 col-md-6">
+    <div class="col-12 col-lg-6">
         <div class="thumbnail shadow-sm">
                 <div class="${projectSummary.project?.inactive ? 'expedition-inactive' : ''} position-relative">
                     <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
@@ -31,7 +31,7 @@
                 </div>
         </div>
     </div>
-    <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-md-block"></div></g:if>
+    <g:if test="${(i+1) % 2 == 0}"><div class="d-none d-lg-block"></div></g:if>
 </g:each>
 <g:if test="${!disablePagination}">
 

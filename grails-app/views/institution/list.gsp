@@ -44,7 +44,7 @@
 <section id="main-content">
     <div class="container">
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-12 col-lg-8">
                 <div class="row">
                     <div class="col-sm-6">
                         <h2 class="heading">
@@ -90,7 +90,7 @@
 
                 <div class="row">
                     <g:each in="${institutions}" status="i" var="inst">
-                        <div class="col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="thumbnail institution shadow-sm">
                                 <div class="institution-settings-btn">
                                     <cl:ifInstitutionAdmin institution="${inst}">
@@ -133,7 +133,7 @@
                 %{--</div>--}%
             </div><!-- /.col-sm-8 -->
 
-            <div class="col-sm-4">
+            <div class="col-12 col-lg-4">
                 <g:render template="/leaderBoard/stats" model="[disableContribution: true, disableForumActivity: true]"/>
             </div>
         </div>
