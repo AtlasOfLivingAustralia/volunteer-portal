@@ -1100,6 +1100,18 @@ table thead th {
 	padding-top: 0.5rem;
 }
 
+.admin-card-header {
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	h4 {
+		float: none;
+		margin-bottom: 0;
+	}
+}
+
 /* Index Styles */
 .index-news-nav {
 	padding: $card-footer-padding;
@@ -1186,3 +1198,4 @@ a.fieldHelp {
 	color: white;
 	background-color: darken(darkgrey, 20%);
 }
+

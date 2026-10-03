@@ -72,7 +72,7 @@
                 </cl:isNotLoggedIn>
                 <cl:isLoggedIn>
                     <li class="nav-item dropdown ${pageProperty(name: 'page.selectedNavItem') == 'userDashboard' ? 'active' : ''}">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="profileDropdownMenuLink">
                             <span class="fa fa-user"></span>
                            <!-- My Profile -->
                             <g:message code="action.myProfile" />

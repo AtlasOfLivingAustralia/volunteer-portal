@@ -53,58 +53,60 @@
 
                 <div class="col-md-9">
                     <div class="card subpanel">
-                        <div class="card-header text-end" >
+                        <div class="admin-card-header card-header text-end" >
                             <h4 class="float-start">${projectInstance.name} - <g:pageProperty name="page.pageTitle"/></h4>
-                            <g:form name="activationForm" controller="project" action="update">
-                                <g:hiddenField name="id" value="${projectInstance.id}"/>
-                                <g:if test="${projectInstance.inactive}">
-                                    <g:hiddenField name="inactive" value="false"/>
-                                </g:if>
-                                <g:else>
-                                    <g:hiddenField name="inactive" value="true"/>
-                                </g:else>
-                                <div class="btn-group">
-                                    <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                <div class="dropdown">
+                                    <a class="btn btn-outline-secondary dropdown-toggle" id="projectSettingsDropdownMenuButton" data-bs-toggle="dropdown" href="#">
                                         <i class="fa fa-cog"></i>&nbsp;Actions
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu" aria-labelledby="projectSettingsDropdownMenuButton">
                                         <li>
                                             <g:if test="${projectInstance.archived}">
-                                                <span class="expedition disabledMenuItem" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off"></i> Activate expedition</span>
+                                                <span class="expedition disabled" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off"></i> Activate expedition</span>
                                             </g:if>
                                             <g:else>
-                                            <a id="btnToggleActivation" class="${projectInstance.inactive ? 'fa fa-toggle-on' : 'fa fa-toggle-off'}"
-                                               href="#"> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}</a>
+                                            <a id="btnToggleActivation" class="dropdown-item" href="#">
+                                                <i id="project-active-toggle-icon" class="fa ${projectInstance.inactive ? 'fa-toggle-on' : 'fa-toggle-off'}"></i> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}
+                                            </a>
                                             </g:else>
                                         </li>
-                                        <li class="divider"></li>
+                                        <li class="dropdown-divider"></li>
                                         <li>
-                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}"><i class="fa fa-share"></i>&nbsp;Expedition administration</g:link>
+                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-share"></i>&nbsp;Expedition administration</g:link>
                                         </li>
                                         <li>
-                                            <g:link controller="project" action="index" id="${projectInstance.id}"><i class="fa fa-home"></i>&nbsp;Expedition home page</g:link>
+                                            <g:link controller="project" action="index" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-home"></i>&nbsp;Expedition home page</g:link>
                                         </li>
-                                        <li class="divider"></li>
+                                        <li class="dropdown-divider"></li>
                                         <li>
-                                            <g:link controller="institutionMessage" action="create" params="${[projectId: projectInstance.id]}">
+                                            <g:link controller="institutionMessage" action="create" params="${[projectId: projectInstance.id]}" class="dropdown-item">
                                                 <i class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers
                                             </g:link>
                                         </li>
-                                        <li class="divider"></li>
+                                        <li class="dropdown-divider"></li>
                                         <li>
-                                            <a id="btnDeleteProject" href="#"><i class="fa fa-trash-o"></i>&nbsp;Delete expedition</a>
+                                            <a id="btnDeleteProject" href="#" class="dropdown-item"><i class="fa fa-trash-o"></i>&nbsp;Delete expedition</a>
                                         </li>
                                     </ul>
                                 </div>
 
-                                <div class="btn-group" style="margin-left: 5px;margin-right: 5px">
-                                    <g:pageProperty name="page.adminButtonBar"/>
-                                </div>
-                            </g:form>
+%{--                                <div class="btn-group" style="margin-left: 5px;margin-right: 5px">--}%
+%{--                                    <g:pageProperty name="page.adminButtonBar"/>--}%
+%{--                                </div>--}%
+
                         </div>
                         <div class="card-body">
                             <g:layoutBody/>
                         </div>
+                        <g:form name="activationForm" controller="project" action="update" class="d-none activation-form">
+                            <g:hiddenField name="id" value="${projectInstance.id}"/>
+                            <g:if test="${projectInstance.inactive}">
+                                <g:hiddenField name="inactive" value="false"/>
+                            </g:if>
+                            <g:else>
+                                <g:hiddenField name="inactive" value="true"/>
+                            </g:else>
+                        </g:form>
                     </div>
                 </div>
             </div>

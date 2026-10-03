@@ -8,16 +8,19 @@
                             <div class="d-none d-md-block col-md-3 position-relative">
                                 <cl:ifInstitutionAdmin institution="${projectSummary.project.institution}">
                                     <div class="position-absolute top-0 start-1 p-3" style="z-index: 2;">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-light border-secondary dropdown-toggle shadow-sm" data-bs-toggle="dropdown" href="#">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-sm btn-light border-secondary dropdown-toggle shadow-sm"
+                                                    id="dropdownSettings${projectSummary.project.id}" data-bs-toggle="dropdown" href="#">
                                                 <i class="fa fa-lg fa-cog"></i>
                                             </button>
-                                            <ul class="dropdown-menu bg-white shadow">
+                                            <ul class="dropdown-menu bg-white shadow" aria-labelledby="dropdownSettings${projectSummary.project.id}">
                                                 <li>
-                                                    <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"><i class="fa fa-cog"></i>&nbsp;Expedition settings</a>
+                                                    <a href="${createLink(controller: 'project', action: 'edit', id: projectSummary.project.id)}"
+                                                       class="dropdown-item"><i class="fa fa-cog"></i>&nbsp;Expedition settings</a>
                                                 </li>
                                                 <li>
-                                                    <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"><i class="fa fa-wrench"></i>&nbsp;Expedition administration</a>
+                                                    <a href="${createLink(controller: 'task', action: 'projectAdmin', id: projectSummary.project.id)}"
+                                                       class="dropdown-item"><i class="fa fa-wrench"></i>&nbsp;Expedition administration</a>
                                                 </li>
                                             </ul>
                                         </div>

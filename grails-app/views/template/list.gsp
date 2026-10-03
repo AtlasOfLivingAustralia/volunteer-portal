@@ -156,7 +156,7 @@
                                     <button class="btn btn-sm btn-outline-secondary" alt="Edit" title="You cannot edit this template" disabled><i class="fa fa-pencil"></i></button>
                             </g:else>
                                     <a class="btn btn-sm btn-outline-secondary" alt="Preview Template" title="Preview Template"
-                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}">
+                                       href="${createLink(controller: 'template', action: 'preview', id: templateInstance.id)}" target="_blank">
                                         <i class="fa fa-tv"></i>
                                     </a>
                             <cl:ifSiteAdmin>

@@ -19,21 +19,21 @@
     %>
 
     <cl:ifSiteAdmin>
-        <div class="btn-group">
-            <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" id="applicationDropdownMenu" aria-expanded="false" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" aria-labelledby="applicationDropdownMenu">
                 <li>
-                    <a href="${createLink(action: "create")}"><i class="fa fa-plus"></i>&nbsp;Add Institution</a>
+                    <a href="${createLink(action: "create")}" class="dropdown-item"><i class="fa fa-plus"></i>&nbsp;Add Institution</a>
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="${createLink(action: "index")}"><i class="fa fa-building-o"></i>&nbsp;Manage Institutions</a>
+                    <a href="${createLink(action: "index")}" class="dropdown-item"><i class="fa fa-building-o"></i>&nbsp;Manage Institutions</a>
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="${createLink(action: "apply")}" target="_blank"><i class="fa fa-share-square-o"></i>&nbsp;Application Form</a>
+                    <a href="${createLink(action: "apply")}" target="_blank" class="dropdown-item"><i class="fa fa-share-square-o"></i>&nbsp;Application Form</a>
                 </li>
             </ul>
         </div>

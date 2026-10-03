@@ -74,19 +74,19 @@
                             <div id="ct-animals-present" class="ct-item active">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="btn-toolbar">
+                                        <div class="btn-toolbar gap-2">
                                             <div class="btn-group">
                                                 <input id="ct-search-input" type="text" class="form-control input-sm"
                                                        style="margin-bottom: 0; height: 34px;"
                                                        placeholder="${message(code: 'default.input.keywordSearch.placeholder', default: "Search by keyword")}">
                                             </div>
                                             <g:each var="cat" in="${wsParams?.categories}" status="i">
-                                                <div class="btn-group category-filter">
-                                                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name}</button>
-                                                    <ul class="dropdown-menu">
+                                                <div class="dropdown category-filter">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" id="categoryDropdownMenu${i}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name}</button>
+                                                    <ul class="dropdown-menu" aria-labelledby="categoryDropdownMenu${i}">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
-                                                                <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}">
+                                                                <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}" class="dropdown-item">
                                                                     <g:if test="${entry.hash}">
                                                                         <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.${entry.ext?:'png'}")}" height="100" width="100" title="${entry.name}" alt="${entry.name}"/>
                                                                     </g:if>
@@ -100,6 +100,7 @@
 
                                                 </div>
                                             </g:each>
+                                            <a role="button" tabindex="-1" class="btn btn-sm btn-secondary" id="clear-filter">Clear filter</a>
                                         </div>
                                         <div id="ct-animals-no-filter">
                                             <p>Researchers are interested in the animals listed below.  If you spot
@@ -224,15 +225,15 @@
         <script id="status-detail-list-template" type="text/x-mustache-template">
             <table class="table table-condensed">
                 <tr style="border-top: 0;">
-                    <th class="col-md-8" style="border-top: 0;">Species Name</th>
+                    <th class="col-md-6" style="border-top: 0;">Species Name</th>
                 <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesWithCount}">
-                    <th class="col-md-2" style="border-top: 0;" colspan="2">Animal Count</th>
+                    <th class="col-md-4" style="border-top: 0;" colspan="2">Animal Count</th>
                 </g:if>
                     <th class="col-md-2" style="border-top: 0;">Actions</th>
                 </tr>
                 {{#selectedAnimals}}
                 <tr data-item-index="{{index}}">
-                    <td class="classificationRow col-md-8" style="border-top: 0;">
+                    <td class="classificationRow col-md-6" style="border-top: 0;">
                         <div class="animalName">{{name}}</div>
                         <div class="classificationComments">{{comment}}</div>
                         <div class="editClassificationComments" style="display: none;">
@@ -257,7 +258,7 @@
                                    tabindex="-1"/>
                         </span>
                     </td>
-                    <td class="col-md-1" style="border-top: 0;">
+                    <td class="col-md-2" style="border-top: 0;">
                         <button type="button" class="btn btn-outline-secondary btn-sm animalCount animalCountPlus" title="Increase count by 1" tabindex="-1">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                             <span class="visually-hidden">Increase count by 1</span>
@@ -342,7 +343,6 @@
                     <li><strong>{{name}}:</strong><span>{{value}}</span></li>
                     {{/categories}}
                 </ul>
-                <a role="button" tabindex="-1" class="text clearall">Clear all</a>
             </div>
         </script>
 

@@ -110,8 +110,8 @@ class VolunteerTagLib {
                     def shortUrl = it.shortUrl //it.id
                     def title = it.title
 
-                    mb.li(class: "nav-item") {
-                        a(href: createLink(mapping: 'landingPage', params: [shortUrl: shortUrl]), class: 'nav-link') {
+                    mb.li(class: "") {
+                        a(href: createLink(mapping: 'landingPage', params: [shortUrl: shortUrl]), class: 'dropdown-item') {
                             mkp.yield(title)
                         }
                     }
@@ -121,13 +121,13 @@ class VolunteerTagLib {
         }
         if (landingPages.size() > numberOfCustomLinksAtTopPage) {
             mb.li(class: "nav-item dropdown") {
-                a([href: "#", class:"nav-link dropdown-toggle", 'data-bs-toggle': "dropdown"]) {
+                a([href: "#", class:"nav-link dropdown-toggle", 'data-bs-toggle': "dropdown", "id": "landingPageDropdownMenuLink"]) {
                     span(class: 'fa fa-camera') {
                         mkp.yield("")
                     }
                     mkp.yield(' Camera Traps')
                 }
-                mb.ul(class: 'dropdown-menu profile-links nav-cameratrap-menu') {
+                mb.ul(class: 'dropdown-menu profile-links nav-cameratrap-menu', "aria-labelledby": "landingPageDropdownMenuLink") {
                     buildLandingPage()
                 }
             }

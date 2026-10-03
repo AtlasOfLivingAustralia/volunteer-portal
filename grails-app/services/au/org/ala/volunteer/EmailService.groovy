@@ -188,6 +188,10 @@ class EmailService {
                 sendMail(message)
                 messageCount++
             }
+            if (Environment.current != Environment.PRODUCTION) {
+                log.debug("Test/Dev environment, sending only 1 message per 11 seconds.")
+                Thread.sleep(11000)  // Sleep for 11 seconds to avoid flooding the SMTP server in test/dev environments
+            }
         }
     }
 

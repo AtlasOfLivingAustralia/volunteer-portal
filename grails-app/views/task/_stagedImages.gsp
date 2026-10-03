@@ -3,26 +3,24 @@
     <div class="col-md-12">
         <h3>Staged <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else> (${images.size()})
 
-            <div class="btn-group float-end">
-                <a class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+            <div class="dropdown float-end">
+                <a class="btn btn-outline-secondary dropdown-toggle" id="stagedImagesDropdownMenuButton" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Actions
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" aria-labelledby="stagedImagesDropdownMenuButton">
                     <g:if test="${!isAudioProject}">
                     <li>
-                        <a href="#" class="btnStageAddFieldDefinition"><i
-                                class="fa fa-plus"></i>&nbsp;Add a column</a>
+                        <a href="#" class="btnStageAddFieldDefinition dropdown-item">
+                            <i class="fa fa-plus"></i>&nbsp;Add a column</a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     </g:if>
                     <li>
-                        <a href="#" id="btnExportTasksCSV"><i
-                                class="fa fa-file"></i>&nbsp;Export staged tasks as CSV</a>
+                        <a href="#" id="btnExportTasksCSV" class="dropdown-item"><i class="fa fa-file"></i>&nbsp;Export staged tasks as CSV</a>
                     </li>
-                    <li class="divider"></li>
                     <li>
-                        <a href="#" id="btnClearStagingArea"><i
-                                class="fa fa-times"></i>&nbsp;Delete all <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else></a>
+                        <a href="#" id="btnClearStagingArea" class="dropdown-item">
+                            <i class="fa fa-times"></i>&nbsp;Delete all <g:if test="${isAudioProject}">audio samples</g:if><g:else>images</g:else></a>
                     </li>
                 </ul>
             </div>

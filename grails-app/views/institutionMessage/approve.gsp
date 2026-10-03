@@ -22,17 +22,17 @@
             ]
         %>
 
-        <div class="btn-group">
-            <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" id="institutionMessageDropdownMenuLink" data-bs-toggle="dropdown" href="#">
                 <i class="fa fa-cog"></i> Tools
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" aria-labelledby="institutionMessageDropdownMenuLink">
                 <li>
-                    <a href="${createLink(action: "create", params: params)}"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
+                    <a href="${createLink(action: "create", params: params)}" class="dropdown-item"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
                 </li>
-                <li class="divider"></li>
+                <li class="dropdown-divider"></li>
                 <li>
-                    <a href="${createLink(action: "index")}"><i class="fa fa-envelope"></i>&nbsp
+                    <a href="${createLink(action: "index")}" class="dropdown-item"><i class="fa fa-envelope"></i>&nbsp
                         ${message(code: 'institutionMessage.list.label', default: 'Institution Messages')}
                     </a>
                 </li>

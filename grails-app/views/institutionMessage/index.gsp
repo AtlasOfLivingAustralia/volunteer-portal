@@ -21,17 +21,17 @@
         %>
 
         <cl:ifSiteAdmin>
-            <div class="btn-group">
-                <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" id="institutionMessageDropdownMenuButton" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-cog"></i> Tools
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" aria-labelledby="institutionMessageDropdownMenuButton">
                     <li>
-                        <a href="${createLink(action: "create", params: params)}"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
+                        <a href="${createLink(action: "create", params: params)}" class="dropdown-item"><i class="fa fa-plus"></i>&nbsp;Create ${entityName}</a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="dropdown-divider"></li>
                     <li>
-                        <a href="${createLink(action: "approve")}"><i class="fa fa-inbox"></i>&nbsp;Approve ${entityName}</a>
+                        <a href="${createLink(action: "approve")}" class="dropdown-item"><i class="fa fa-inbox"></i>&nbsp;Approve ${entityName}</a>
                     </li>
                 </ul>
             </div>

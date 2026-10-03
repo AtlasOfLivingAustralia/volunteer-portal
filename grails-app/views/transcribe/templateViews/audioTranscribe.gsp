@@ -69,19 +69,19 @@
                             <div id="ct-animals-present" class="ct-item active">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="btn-toolbar">
+                                        <div class="btn-toolbar gap-2">
                                             <div class="btn-group">
                                                 <input id="ct-search-input" type="text" class="form-control input-sm"
                                                        style="margin-bottom: 0; height: 34px;"
                                                        placeholder="${message(code: 'default.input.keywordSearch.placeholder', default: "Search by keyword")}">
                                             </div>
                                             <g:each var="cat" in="${wsParams.categories}" status="i">
-                                                <div class="btn-group btn-group-sm category-filter">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name}</button>
-                                                    <ul class="dropdown-menu">
+                                                <div class="dropdown category-filter">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" id="categoryDropdownMenuButton${i}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-idx="$i">${cat.name}</button>
+                                                    <ul class="dropdown-menu" aria-labelledby="categoryDropdownMenuButton${i}">
                                                         <g:each var="entry" in="${cat.entries}" status="j">
                                                             <li>
-                                                                <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}">
+                                                                <a role="button" tabindex="-1" data-cat-idx="${i}" data-entry-idx="${j}" class="dropdown-item">
                                                                     <g:if test="${entry.hash}">
                                                                         <img src="${cl.imageUrlPrefix(type: 'wildlifespotter', name: "${entry.hash}.${entry.ext?:'png'}")}" height="100" width="100" title="${entry.name}">
                                                                     </g:if>
@@ -95,7 +95,8 @@
 
                                                 </div>
                                             </g:each>
-                                            <div class="btn-group btn-group-sm float-end" role="group" aria-label="...">
+                                            <a href="#" class="btn btn-sm btn-secondary" id="clear-filter">Clear filter</a>
+                                            <div class="btn-group btn-group-sm float-end" role="group" aria-label="display-mode">
                                                 <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id])}" aria-label="Display items as grid" class="btn btn-sm btn-outline-secondary ${params.mode == 'list' ? '' : 'active'}"><i class="fa fa-th-large"></i></a>
                                                 <a href="${createLink(controller: pageController, action: pageAction, params:[id: params.id, mode:'list'])}" aria-label="Display items as list" class="btn btn-sm btn-outline-secondary ${params.mode != 'list' ? '' : 'active'}"><i class="fa fa-th-list"></i></a>
                                             </div>
@@ -308,11 +309,11 @@
                     <li><strong>{{name}}:</strong><span>{{value}}</span></li>
                     {{/categories}}
                 </ul>
-                <a role="button" tabindex="-1" class="text clearall">Clear all</a>
+%{--                <a role="button" tabindex="-1" class="text clearall">Clear all</a>--}%
             </div>
         </script>
 
-        <asset:javascript src="transcribe/audiotranscribe" asset-defer=""/>
+        <asset:javascript src="transcribe/audiotranscribe.js" asset-defer=""/>
         <script src="https://unpkg.com/wavesurfer.js"></script>
 
         <asset:script type="text/javascript">

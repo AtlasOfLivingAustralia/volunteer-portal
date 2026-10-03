@@ -38,8 +38,8 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
+            <div class="row g-3">
+
                     <g:hasErrors bean="${templateInstance}">
                         <div class="errors">
                             <g:renderErrors bean="${templateInstance}" as="list"/>
@@ -50,7 +50,7 @@
                         <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
                         <div class="form-group required">
-                            <label for="name" class="col-md-3 form-label"><g:message code="template.name.label" default="Name"/></label>
+                            <label for="name" class="form-label"><g:message code="template.name.label" default="Name"/></label>
                             <div class="col-md-6">
                                 <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
                                 <cl:fieldError bean="${templateInstance}" field="name"/>
@@ -182,7 +182,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+
             </div>
         </div>
     </div>

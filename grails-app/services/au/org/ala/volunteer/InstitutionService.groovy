@@ -28,7 +28,7 @@ class InstitutionService {
         def to = recipient
         if (!recipient) to = grailsApplication.config.getProperty('notifications.default.address', String) as String
         DetailedEmailMessage email = new DetailedEmailMessage(emailAddress: to, subject: title, message: message)
-        emailService.sendMail(email)
+        emailService.pushMessageOnQueue(email)
     }
 
     private boolean uploadtoLocalPathFromUrl(String url, String localPath) {

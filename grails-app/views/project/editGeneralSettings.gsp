@@ -183,7 +183,6 @@
     </div>
 
 </g:form>
-<asset:javascript src="institution-dropdown" asset-defer=""/>
 <asset:javascript src="label-autocomplete" asset-defer=""/>
 <asset:script type="text/javascript">
 

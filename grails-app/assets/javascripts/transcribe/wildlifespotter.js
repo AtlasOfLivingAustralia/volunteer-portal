@@ -255,7 +255,8 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
     }
 
     // clear all filters
-    $('#ct-animals-filter').on('click', 'a.clearall', function() {
+    $('#clear-filter').on('click', function(event) {
+      event.preventDefault();
       for (var cat in categoryFilters) {
         delete categoryFilters[cat];
       }

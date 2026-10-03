@@ -1,4 +1,4 @@
-<ul class="dropdown-menu">
+<ul class="dropdown-menu" aria-labelledby="profileDropdownMenuLink">
     <li class="d-none d-sm-block">
         <div class="navbar-login logged-in">
             <div class="row">
@@ -19,15 +19,15 @@
             </div>
         </div>
     </li>
-    <li class="divider d-none d-sm-block"></li>
+    <li class="dropdown-divider d-none d-sm-block"></li>
     <li>
         <div class="navbar-login navbar-login-session">
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="profile-links">
-                        <li><a href="${cl.urlAppend(base: grailsApplication.config.getProperty('userDetails.url', String), path: 'my-profile')}" class="" target="_blank"><g:message code="action.viewProfile" /></a></li>
-                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class=""><g:message code="action.notebook" /> <span class="d-none unread-count badge bg-danger rounded-pill"></span></a></li>
-                        <li><a href="${g.createLink(uri: '/logout')}" class="">Logout</a></li>
+                        <li><a href="${cl.urlAppend(base: grailsApplication.config.getProperty('userDetails.url', String), path: 'my-profile')}" class="dropdown-item" target="_blank"><g:message code="action.viewProfile" /></a></li>
+                        <li><a href="${g.createLink(controller: 'user', action: 'notebook')}" class="dropdown-item"><g:message code="action.notebook" /></a></li>
+                        <li><a href="${g.createLink(uri: '/logout')}" class="dropdown-item">Logout</a></li>
                     </ul>
                 </div>
             </div>
