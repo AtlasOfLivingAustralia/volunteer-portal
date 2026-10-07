@@ -118,16 +118,16 @@
                 </div>
                 <div class="index-news-nav">
                     <div class="index-news__archive-link">
-                        <g:link controller="newsItem" action="index">View other DigiVol news</g:link>
+                        <g:link class="btn btn-sm btn-outline-secondary" controller="newsItem" action="index">View other DigiVol news</g:link>
                     </div>
                     <div class="index-news__discuss-link">
                         <g:if test="${newsItem.topic}">
-                            <g:link controller="forum" action="viewForumTopic" id="${newsItem.topic.id}">
+                            <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="viewForumTopic" id="${newsItem.topic.id}">
                                 <g:message code="index.news.topic.linkLabel" />
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link controller="forum" action="addForumTopic" params='[title: "${newsItem.title}", linkToNewsItem: newsItem.id]'>
+                            <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="addForumTopic" params='[title: "${newsItem.title}", linkToNewsItem: newsItem.id]'>
                                 <g:message code="index.news.topic.linkLabel" />
                             </g:link>
                         </g:else>

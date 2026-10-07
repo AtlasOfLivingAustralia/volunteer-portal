@@ -38,28 +38,27 @@
 
     <div class="card">
         <div class="card-body">
+            <g:hasErrors bean="${templateInstance}">
+                <div class="errors">
+                    <g:renderErrors bean="${templateInstance}" as="list"/>
+                </div>
+            </g:hasErrors>
+            <g:form method="post">
+                <g:hiddenField name="id" value="${templateInstance?.id}"/>
+                <g:hiddenField name="version" value="${templateInstance?.version}"/>
+
             <div class="row g-3">
-
-                    <g:hasErrors bean="${templateInstance}">
-                        <div class="errors">
-                            <g:renderErrors bean="${templateInstance}" as="list"/>
-                        </div>
-                    </g:hasErrors>
-                    <g:form method="post">
-                        <g:hiddenField name="id" value="${templateInstance?.id}"/>
-                        <g:hiddenField name="version" value="${templateInstance?.version}"/>
-
-                        <div class="form-group required">
-                            <label for="name" class="form-label"><g:message code="template.name.label" default="Name"/></label>
-                            <div class="col-md-6">
-                                <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
-                                <cl:fieldError bean="${templateInstance}" field="name"/>
-                            </div>
-                            <div class="col-md-3">
-                                <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
-                                <button class="btn btn-sm btn-outline-secondary" id="btnPreview">Preview Template</button>
-                            </div>
-                        </div>
+                <div class="form-group required">
+                    <label for="name" class="form-label"><g:message code="template.name.label" default="Name"/></label>
+                    <div class="col-md-6">
+                        <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
+                        <cl:fieldError bean="${templateInstance}" field="name"/>
+                    </div>
+                    <div class="col-md-3">
+                        <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
+                        <button class="btn btn-sm btn-outline-secondary" id="btnPreview">Preview Template</button>
+                    </div>
+                </div>
 
                         <div class="form-group">
                             <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>

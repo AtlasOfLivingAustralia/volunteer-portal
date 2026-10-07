@@ -16,6 +16,8 @@ import javax.sql.DataSource
 
 class LeaderBoardService {
 
+    private static final String SESSION_FILTER_TABLE = 'stats_session_filter'
+
     @Autowired
     Closure<DSLContext> jooqContextFactory
 
@@ -31,7 +33,7 @@ class LeaderBoardService {
     def settingsService
     def userService
 
-    def winner(LeaderBoardCategory category, Institution institution, def pt = null) {
+    def winner(LeaderBoardCategory category, Institution institution, def sessionId = null) {
         def today = todaysDate
 
         def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
@@ -39,22 +41,28 @@ class LeaderBoardService {
         def result = [name: '', score: 0]
         switch (category) {
             case LeaderBoardCategory.daily:
-                result = getLeaderboardWinner(today, today, institution, ineligibleUsers, pt)
+                result = getLeaderboardWinner(today, today, institution, ineligibleUsers, sessionId)
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
-                while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
-                    startDate--;
+                def calendar = Calendar.instance
+                calendar.time = startDate
+                while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1)
                 }
-                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, pt)
+                startDate = calendar.time
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, sessionId)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
-                while (startDate.getAt(Calendar.DAY_OF_MONTH) != 1) {
-                    startDate--;
+                def calendar = Calendar.instance
+                calendar.time = startDate
+                while (calendar.get(Calendar.DAY_OF_MONTH) != 1) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1)
                 }
+                startDate = calendar.time
 
-                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, pt)
+                result = getLeaderboardWinner(startDate, today, institution, ineligibleUsers, sessionId)
                 break;
             case LeaderBoardCategory.alltime:
 
@@ -65,8 +73,8 @@ class LeaderBoardService {
                     } else {
                         result = EMPTY_LEADERBOARD_WINNER
                     }
-                } else if (pt) { //(pt?.size() >= 0) {
-                    def tmp = getTopNForProjectType(1, pt, ineligibleUsers)
+                } else if (sessionId) {
+                    def tmp = getTopNForProjectType(1, sessionId, ineligibleUsers)
                     if (tmp) {
                         result = tmp[0]
                     } else {
@@ -105,17 +113,23 @@ class LeaderBoardService {
                 break;
             case LeaderBoardCategory.weekly:
                 def startDate = (Date) today.clone()
-                while (startDate.getAt(Calendar.DAY_OF_WEEK) != 1) {
-                    startDate--;
+                def calendar = Calendar.instance
+                calendar.time = startDate
+                while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1)
                 }
+                startDate = calendar.time
                 heading = "${headingPrefix} week starting ${startDate.format('dd MMMM yyy')}"
                 results = getTopNForPeriod(startDate, today, maxRows, institution, ineligibleUsers)
                 break;
             case LeaderBoardCategory.monthly:
                 def startDate = (Date) today.clone()
-                while (startDate.getAt(Calendar.DAY_OF_MONTH) != 1) {
-                    startDate--;
+                def calendar = Calendar.instance
+                calendar.time = startDate
+                while (calendar.get(Calendar.DAY_OF_MONTH) != 1) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1)
                 }
+                startDate = calendar.time
                 heading = "${headingPrefix} ${startDate.format('MMMM yyyy')}"
                 results = getTopNForPeriod(startDate, today, maxRows, institution, ineligibleUsers)
                 break;
@@ -140,8 +154,8 @@ class LeaderBoardService {
         [category: category, results: results, heading: heading]
     }
 
-    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = [], def pt = null) {
-        def results = getTopNForPeriod(startDate, endDate, 1, institution, ineligbleUsers, pt)
+    private Map getLeaderboardWinner(Date startDate, Date endDate, Institution institution, List<String> ineligbleUsers = [], def sessionId = null) {
+        def results = getTopNForPeriod(startDate, endDate, 1, institution, ineligbleUsers, sessionId)
         if (results) {
             return results[0]
         }
@@ -157,24 +171,24 @@ class LeaderBoardService {
         return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
-    List getTopNForProjectType(int count, def projectsInLabels = null, List<String> ineligibleUsers = []) {
+    List getTopNForProjectType(int count, def sessionId = null, List<String> ineligibleUsers = []) {
 
-        def scoreMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Transcribed, ineligibleUsers) : [:]
-        def validatedMap = (projectsInLabels?.size() > 0)? getUserCountsForProjectType(projectsInLabels, ActivityType.Validated, ineligibleUsers) : [:]
+        def scoreMap = sessionId ? getUserCountsForProjectType(sessionId, ActivityType.Transcribed, ineligibleUsers) : [:]
+        def validatedMap = sessionId ? getUserCountsForProjectType(sessionId, ActivityType.Validated, ineligibleUsers) : [:]
         return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
     }
 
-    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], def pt = null) {
-        return getTopNForPeriod(startDate, endDate, count, [institution], ineligibleUsers, pt)
+    List getTopNForPeriod(Date startDate, Date endDate, int count, Institution institution, List<String> ineligibleUsers = [], def sessionId = null) {
+        return getTopNForPeriod(startDate, endDate, count, [institution], ineligibleUsers, sessionId)
     }
 
-    List getTopNForPeriod(Date startDate, Date endDate, int count, List<Institution> institutionList, List<String> ineligibleUsers = [], def pt = null) {
-        log.debug("getTopNForPeriod: ${[startDate: startDate, endDate: endDate, count: count, institutionList: institutionList, ineligibleUsers: ineligibleUsers, pt: pt]}")
+    List getTopNForPeriod(Date startDate, Date endDate, int count, List<Institution> institutionList, List<String> ineligibleUsers = [], def sessionId = null) {
+        log.debug("getTopNForPeriod: ${[startDate: startDate, endDate: endDate, count: count, institutionList: institutionList, ineligibleUsers: ineligibleUsers, sessionId: sessionId]}")
         // Get a map of users who transcribed tasks during this period, along with the count
-        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institutionList, ineligibleUsers, pt)
+        def scoreMap = getUserMapForPeriod(startDate, endDate, ActivityType.Transcribed, institutionList, ineligibleUsers, sessionId)
         log.debug("Score Map: ${scoreMap}")
         // Get a map of user who validated tasks during this periodn, along with the count
-        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institutionList, ineligibleUsers, pt)
+        def validatedMap = getUserMapForPeriod(startDate, endDate, ActivityType.Validated, institutionList, ineligibleUsers, sessionId)
         log.debug("Validate Map: ${validatedMap}")
 
         return mergeScores(validatedMap, scoreMap, count, ineligibleUsers)
@@ -239,7 +253,7 @@ class LeaderBoardService {
     }
 
     Map getUserMapForPeriod(Date startDate, Date endDate, ActivityType activityType, List<Institution> institutionList,
-                            List<String> ineligibleUserIds, def projectsInLabels = null) {
+                            List<String> ineligibleUserIds, def sessionId = null) {
         def map = [:]
         def sql = new Sql(dataSource)
 
@@ -262,8 +276,8 @@ class LeaderBoardService {
             }
 
             def projectJoin = ""
-            if (projectsInLabels) {
-                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = transcription.project_id)"
+            if (sessionId) {
+                projectJoin = " join ${SESSION_FILTER_TABLE} on (${SESSION_FILTER_TABLE}.project_id = transcription.project_id and ${SESSION_FILTER_TABLE}.session_id = :sessionId)"
             }
 
             def query = """\
@@ -274,7 +288,11 @@ class LeaderBoardService {
                 where ${filter} 
                 ${groupByClause} """.stripIndent()
 
-            sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
+            def params = [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]
+            if (sessionId) {
+                params.sessionId = sessionId
+            }
+            sql.eachRow(query, params) { row ->
                 map[row[0]] = row[1]
             }
 
@@ -286,8 +304,8 @@ class LeaderBoardService {
             }
 
             def projectJoin = ""
-            if (projectsInLabels) {
-                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = task.project_id)"
+            if (sessionId) {
+                projectJoin = " join ${SESSION_FILTER_TABLE} on (${SESSION_FILTER_TABLE}.project_id = task.project_id and ${SESSION_FILTER_TABLE}.session_id = :sessionId)"
             }
 
             def query = """\
@@ -298,7 +316,11 @@ class LeaderBoardService {
                 where ${filter} 
                 ${groupByClause} """.stripIndent()
 
-            sql.eachRow(query, [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]) { row ->
+            def params = [startDate: startDate.toTimestamp(), endDate: (endDate + 1).toTimestamp()]
+            if (sessionId) {
+                params.sessionId = sessionId
+            }
+            sql.eachRow(query, params) { row ->
                 map[row[0]] = row[1]
             }
 
@@ -359,7 +381,7 @@ class LeaderBoardService {
         return map
     }
 
-    private getUserCountsForProjectType(def projectsInLabels = null, ActivityType activityType, List<String> exceptUsers = []) {
+    private getUserCountsForProjectType(def sessionId = null, ActivityType activityType, List<String> exceptUsers = []) {
         def map = [:]
         def sql = new Sql(dataSource)
 
@@ -373,8 +395,8 @@ class LeaderBoardService {
 
         if (ActivityType.Transcribed == activityType) {
             def projectJoin = ""
-            if (projectsInLabels) {
-                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = transcription.project_id)"
+            if (sessionId) {
+                projectJoin = " join ${SESSION_FILTER_TABLE} on (${SESSION_FILTER_TABLE}.project_id = transcription.project_id and ${SESSION_FILTER_TABLE}.session_id = :sessionId)"
             }
 
             def query = """\
@@ -383,14 +405,18 @@ class LeaderBoardService {
                 ${projectJoin}
                 ${groupByClause} """.stripIndent()
 
-            sql.eachRow(query) { row ->
+            def params = [:]
+            if (sessionId) {
+                params.sessionId = sessionId
+            }
+            sql.eachRow(query, params) { row ->
                 map[row[0]] = row[1]
             }
 
         } else {
             def projectJoin = ""
-            if (projectsInLabels) {
-                projectJoin = " join ${projectsInLabels} on (${projectsInLabels}.project_id = task.project_id)"
+            if (sessionId) {
+                projectJoin = " join ${SESSION_FILTER_TABLE} on (${SESSION_FILTER_TABLE}.project_id = task.project_id and ${SESSION_FILTER_TABLE}.session_id = :sessionId)"
             }
 
             def query = """\
@@ -399,7 +425,11 @@ class LeaderBoardService {
                 ${projectJoin}
                 ${groupByClause} """.stripIndent()
 
-            sql.eachRow(query) { row ->
+            def params = [:]
+            if (sessionId) {
+                params.sessionId = sessionId
+            }
+            sql.eachRow(query, params) { row ->
                 map[row[0]] = row[1]
             }
 

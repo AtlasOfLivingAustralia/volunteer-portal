@@ -40,7 +40,8 @@ class IndexController {
     }
 
     def stats(long institutionId, long projectId, String projectType) {
-        List<String> tags = params.list('tags') ?: []
+        List<String> tags = getTags()
+        log.debug("tags: ${tags}")
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
@@ -50,7 +51,7 @@ class IndexController {
     }
 
     def contributors(long institutionId, long projectId, String projectType) {
-        List<String> tags = params.list('tags') ?: []
+        List<String> tags = getTags()
         def maxContributors = (params.maxContributors as Integer) ?: 5
         def disableStats = params.getBoolean('disableStats', false)
         def disableHonourBoard = params.getBoolean('disableHonourBoard', false)
@@ -59,11 +60,37 @@ class IndexController {
     }
 
     def forumActivity(long institutionId, long projectId, String projectType) {
-        List<String> tags = params.list('tags') ?: []
+        List<String> tags = getTags()
         def maxPosts = (params.maxPosts as Integer) ?: 5
         def disablePosts = params.getBoolean('disablePosts', false)
         def result = volunteerStatsService.generateForumPosts(institutionId, projectId, maxPosts)
         render result as JSON
+    }
+
+    private List<String> getTags() {
+        log.debug("Extracting tags from params: ${params}")
+        List<String> tagList = []
+        [params.tag, params.q].each { value ->
+            def tag = value?.toString()?.trim()
+            log.debug("Processing tag value: ${value} -> ${tag}")
+            if (tag && tag != 'null') {
+                tagList << tag
+                log.debug("Added tag: ${tag}")
+            }
+        }
+
+        params.list('tags').each { value ->
+            value?.toString()?.split(',')?.each { tag ->
+                def normalizedTag = tag?.trim()
+                log.debug("Processing tag value: ${tag} -> ${normalizedTag}")
+                if (normalizedTag && normalizedTag != 'null') {
+                    tagList << normalizedTag
+                    log.debug("Added tag: ${normalizedTag}")
+                }
+            }
+        }
+        log.debug("Final tag list: ${tagList}")
+        return tagList
     }
 
     def notPermitted() {

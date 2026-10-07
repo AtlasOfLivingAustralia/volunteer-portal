@@ -125,10 +125,15 @@
         });
 
         function doSearch() {
-            var q = $("#searchbox").val();
-            var url = "${createLink(controller: 'project', action: 'list')}?mode=${params.mode}&q=" + encodeURIComponent(q);
-                window.location = url;
-            }
+            const q = $("#searchbox").val();
+            const params = ['mode', 'tag', 'statusFilter', 'activeFilter', 'q'];
+            let url = "${createLink(controller: 'project', action: 'list')}";
+            // Check the query string for mode, only append it to the url if it exists
+            url = bvp.getNewLink(url, params, 'q', q);
+            console.log(url);
+
+            window.location = url;
+        }
         });
 
 </asset:script>

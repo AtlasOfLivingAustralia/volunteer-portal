@@ -289,6 +289,7 @@ class ProjectController {
     }
 
     def list() {
+        log.debug("project/list params: ${params}")
         params.max = Math.min(params.max ? params.int('max') : 24, 1000)
         params.sort = params.sort ?: session.expeditionSort ? session.expeditionSort : 'completed'
 
@@ -305,7 +306,8 @@ class ProjectController {
                 statusFilter: params.statusFilter,
                 activeFilter: params.activeFilter,
                 offset: params.offset,
-                max: params.max
+                max: params.max,
+                tag: params.tag
         ]
         log.debug("Query String: ${queryStringParams}")
 

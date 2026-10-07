@@ -5,23 +5,135 @@ import grails.gorm.DetachedCriteria
 import grails.gorm.transactions.Transactional
 import grails.plugin.cache.Cacheable
 import groovy.sql.Sql
-
-import javax.annotation.PostConstruct
-import javax.sql.DataSource
+import java.util.UUID
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static grails.async.Promises.waitAll
 import grails.web.mapping.LinkGenerator
 
 @Transactional
 class VolunteerStatsService {
 
-    DataSource dataSource
+    private static final String SESSION_FILTER_TABLE = 'stats_session_filter'
+
+    def dataSource
     def multimediaService
     def userService
     def leaderBoardService
     def institutionService
     def projectService
     LinkGenerator grailsLinkGenerator
+
+    protected Map<String, Object> runConcurrentTasks(Map<String, Closure> operations) {
+        if (!operations) {
+            return [:]
+        }
+
+        def promises = operations.collect { key, work ->
+            Task.async.withStatelessSession {
+                def sw = Stopwatch.createStarted()
+                try {
+                    [key: key, value: work.call()]
+                } finally {
+                    log.debug("Async task [${key}] took ${sw.stop().elapsed(MILLISECONDS)}ms")
+                }
+            }
+        }
+
+        waitAll(promises).collectEntries { [(it.key): it.value] }
+    }
+
+    private static def emptyLeaderboardWinner() {
+        [userId: 0, name: '', email: '', score: 0]
+    }
+
+    protected Map<String, Object> loadDisabledStats() {
+        [totalTasks: 0,
+         completedTasks: 0,
+         transcriberCount: 0,
+         transcriptionCount: 0,
+         institutionCount: 0,
+         projectCount: 0,
+         templates: 0,
+         speciesTranscribed: 0,
+         avgTranscriptionTime: 0,
+         maxTranscriptionTime: 0]
+    }
+
+    protected Map<String, Object> loadInstitutionStats(Institution institution) {
+        def stats = runConcurrentTasks([
+                totalTasks           : { institutionService.countTasksForInstitution(institution) },
+                completedTasks       : { institutionService.countTranscribedTasksForInstitution(institution) },
+                transcriberCount     : { institutionService.getTranscriberCount(institution) },
+                transcriptionCount   : { institutionService.countTranscriptionsForInstitution(institution) },
+                projectCount         : { institutionService.countProjectsForInstitution(institution) },
+                templates            : { institutionService.countTemplatesForInstitution(institution) },
+                speciesTranscribed   : { institutionService.countSpeciesTranscribedForInstitution(institution) },
+                avgTranscriptionTime : { institutionService.getAverageTranscriptionTimeForInstitution(institution) },
+                maxTranscriptionTime : { institutionService.getMaxTranscriptionTimeForInstitution(institution) }
+        ])
+
+        stats.institutionCount = 1
+        stats
+    }
+
+    protected Map<String, Object> loadSiteStats() {
+        runConcurrentTasks([
+                totalTasks           : { Task.count() },
+                completedTasks       : { Task.countByIsFullyTranscribed(true) },
+                transcriberCount     : { User.countByTranscribedCountGreaterThan(0) },
+                transcriptionCount   : { Transcription.count() },
+                institutionCount     : { Institution.count() },
+                projectCount         : { Project.count() },
+                templates            : { Template.count() },
+                avgTranscriptionTime : { Transcription.executeQuery("select avg(t.timeToTranscribe) from Transcription t where t.timeToTranscribe is not null")?.get(0) as Integer },
+                maxTranscriptionTime : { Transcription.executeQuery("select max(t.timeToTranscribe) from Transcription t where t.timeToTranscribe is not null")?.get(0) as Integer },
+                speciesTranscribed   : {
+                    def count = Field.createCriteria().get {
+                        projections {
+                            countDistinct('value')
+                        }
+                        eq('name', 'scientificName')
+                    } as Integer
+
+                    count ?: 0
+                }
+        ])
+    }
+
+    protected Map<String, Object> loadLeaderBoardStats(Institution institution, String projectTempTable, boolean disableHonourBoard) {
+        if (disableHonourBoard) {
+            return [daily  : emptyLeaderboardWinner(),
+                    weekly : emptyLeaderboardWinner(),
+                    monthly: emptyLeaderboardWinner(),
+                    alltime: emptyLeaderboardWinner()]
+        }
+
+        if (projectTempTable) {
+            return runConcurrentTasks([
+                    daily  : { leaderBoardService.winner(LeaderBoardCategory.daily, institution, projectTempTable) },
+                    weekly : { leaderBoardService.winner(LeaderBoardCategory.weekly, institution, projectTempTable) },
+                    monthly: { leaderBoardService.winner(LeaderBoardCategory.monthly, institution, projectTempTable) },
+                    alltime: { leaderBoardService.winner(LeaderBoardCategory.alltime, institution, projectTempTable) }
+            ])
+        }
+
+        runConcurrentTasks([
+                daily  : { leaderBoardService.winner(LeaderBoardCategory.daily, institution, projectTempTable) },
+                weekly : { leaderBoardService.winner(LeaderBoardCategory.weekly, institution, projectTempTable) },
+                monthly: { leaderBoardService.winner(LeaderBoardCategory.monthly, institution, projectTempTable) },
+                alltime: { leaderBoardService.winner(LeaderBoardCategory.alltime, institution, projectTempTable) }
+        ])
+    }
+
+    protected def withSql(Closure work) {
+        def sql = new Sql(dataSource)
+        try {
+            return work.call(sql)
+        } finally {
+            sql.close()
+        }
+    }
 
     /**
      * Generates a map of stats info, including total transcribers and leaderboard (daily/weekly/monthly)
@@ -38,69 +150,99 @@ class VolunteerStatsService {
     @Cacheable(value = 'MainVolunteerStats', key = { "${institutionId}-${projectTypeName ?: ''}-${tags?.toString() ?: '[]'}-${disableStats}-${disableHonourBoard}" })
     def generateStats(long institutionId, String projectTypeName, List<String> tags, boolean disableStats, boolean disableHonourBoard) {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
+        String sessionId = null
 
-        String projectTempTable = null
+        try {
+            def sw = Stopwatch.createStarted()
+            log.debug("Generating stats for inst id $institutionId, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectTypeName, tags: $tags")
 
-        def sw = Stopwatch.createStarted()
-        log.debug("Generating stats for inst id $institutionId, disableStats: $disableStats, disableHB: $disableHonourBoard, projectType: $projectTypeName")
+            Map stats
+            Map leaderBoardStats
 
-        def totalTasks
-        def completedTasks
-        def transcriberCount
+            if (tags || projectTypeName) {
+                log.debug("Getting tag/project type stats for [tags: ${tags}, projectTypeName: ${projectTypeName}]")
+                sessionId = UUID.randomUUID().toString()
+                def projectStats = getProjectsForLabels(sessionId, tags, projectTypeName)
 
-        if (disableStats) {
-            log.debug("Stats are disabled")
-            totalTasks = 0
-            completedTasks = 0
-            transcriberCount = 0
-        } else if (institution) {
-            log.debug("Getting institution stats for [${institution.name}]")
-            totalTasks = institutionService.countTasksForInstitution(institution)
-            completedTasks = institutionService.countTranscribedTasksForInstitution(institution)
-            transcriberCount = institutionService.getTranscriberCount(institution)
-        } else if (tags || projectTypeName) {
-            log.debug("Getting tag/project type stats for [tags: ${tags}, projectTypeName: ${projectTypeName}]")
-            def stats = getStatsForProjects(tags, projectTypeName)
-            totalTasks = stats.tasks
-            completedTasks = stats.transcriptions
-            transcriberCount = stats.transcribers
-            projectTempTable = stats.projectTempTable
+                def concurrent = runConcurrentTasks([
+                        stats      : { getStatsForProjects(sessionId, projectStats.projectCount as Integer) },
+                        leaderboard: { loadLeaderBoardStats(institution, sessionId, disableHonourBoard) }
+                ])
 
-        } else { // TODO Project stats, not needed for v2.3
-            log.debug("Getting full site stats")
-            totalTasks = Task.count()
-            completedTasks = Task.countByIsFullyTranscribed(true) //Transcription.countByFullyTranscribedByIsNotNull()
-            transcriberCount = User.countByTranscribedCountGreaterThan(0)
+                stats = concurrent.stats
+                leaderBoardStats = concurrent.leaderboard
+                stats.projectCount = projectStats.projectCount
+            } else {
+                def concurrent = runConcurrentTasks([
+                        stats      : {
+                            if (disableStats) {
+                                log.debug("Stats are disabled")
+                                return loadDisabledStats()
+                            }
+
+                            if (institution) {
+                                log.debug("Getting institution stats for [${institution.name}]")
+                                return loadInstitutionStats(institution)
+                            }
+
+                            log.debug("Getting full site stats")
+                            return loadSiteStats()
+                        },
+                        leaderboard: { loadLeaderBoardStats(institution, null, disableHonourBoard) }
+                ])
+
+                stats = concurrent.stats
+                leaderBoardStats = concurrent.leaderboard
+            }
+
+            def percentageComplete = (stats.totalTasks > 0) ? (stats.completedTasks / stats.totalTasks) * 100 : 0
+
+            def avgTranscriptionTimeValue = (stats.avgTranscriptionTime ?: 0) as Integer
+            def avgTranscriptionTimeAsMinutes = avgTranscriptionTimeValue.intdiv(60)
+            if (avgTranscriptionTimeAsMinutes < 1) avgTranscriptionTimeAsMinutes = 0
+            def avgTranscriptionTimeAsSeconds = avgTranscriptionTimeValue % 60
+            def avgTranscriptionTimeString = "${avgTranscriptionTimeAsMinutes}m ${avgTranscriptionTimeAsSeconds}s"
+
+            def avgTimeAsPercentOfMax = 0
+            if (stats.maxTranscriptionTime && stats.maxTranscriptionTime > 0) {
+                avgTimeAsPercentOfMax = (stats.avgTranscriptionTime ?: 0) / stats.maxTranscriptionTime * 100
+                avgTimeAsPercentOfMax = Math.round(avgTimeAsPercentOfMax / 5) * 5
+                if (avgTimeAsPercentOfMax == 0) avgTimeAsPercentOfMax = 1
+            }
+
+            log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate volunteer-stats section")
+            sw.reset().start()
+
+            def daily = leaderBoardStats.daily
+            def weekly = leaderBoardStats.weekly
+            def monthly = leaderBoardStats.monthly
+            def alltime = leaderBoardStats.alltime
+
+            [daily, weekly, monthly, alltime].each { it.email = it.email?.toLowerCase()?.encodeAsMD5() }
+
+            log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
+
+            [
+                    totalTasks                : stats.totalTasks,
+                    completedTasks            : stats.completedTasks,
+                    percentageComplete        : percentageComplete,
+                    transcriberCount          : stats.transcriberCount,
+                    transcriptionCount        : stats.transcriptionCount,
+                    institutionCount          : stats.institutionCount,
+                    projectCount              : stats.projectCount,
+                    templates                 : stats.templates,
+                    speciesTranscribed        : stats.speciesTranscribed,
+                    avgTranscriptionTime      : stats.avgTranscriptionTime,
+                    avgTranscriptionTimeString: avgTranscriptionTimeString,
+                    avgTimeAsPercentOfMax     : avgTimeAsPercentOfMax,
+                    daily                     : daily,
+                    weekly                    : weekly,
+                    monthly                   : monthly,
+                    alltime                   : alltime
+            ]
+        } finally {
+            cleanUpTables(sessionId)
         }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate volunteer-stats section")
-
-        sw.reset().start()
-
-        def daily
-        def weekly
-        def monthly
-        def alltime
-
-        if (disableHonourBoard) {
-            daily = weekly = monthly = alltime = LeaderBoardService.EMPTY_LEADERBOARD_WINNER
-        } else { // TODO Project honour board, not needed for v2.3
-            daily = leaderBoardService.winner(LeaderBoardCategory.daily, institution, /*projectsInLabels*/ projectTempTable)
-            weekly = leaderBoardService.winner(LeaderBoardCategory.weekly, institution, projectTempTable)
-            monthly = leaderBoardService.winner(LeaderBoardCategory.monthly, institution, projectTempTable)
-            alltime = leaderBoardService.winner(LeaderBoardCategory.alltime, institution, projectTempTable)
-        }
-
-        // Encode the email addresses for gravatar before sending to the client to prevent
-        // the client having access to the user's email address info
-        [daily, weekly, monthly, alltime].each { it.email = it.email?.toLowerCase()?.encodeAsMD5() }
-
-        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to generate honour board section")
-
-        cleanUpTables(projectTempTable)
-
-        ['totalTasks': totalTasks, 'completedTasks': completedTasks, 'transcriberCount': transcriberCount,
-         daily: daily, weekly: weekly, monthly: monthly, alltime: alltime]
     }
 
     /**
@@ -163,9 +305,13 @@ class VolunteerStatsService {
         }
 
         def userDetails = userService.detailsForUserIds(latestMessages*.user*.userId).collectEntries { [(it.userId): it] }
-        def messages = latestMessages.collect {
-            def topic = it.topic
+        def messages = latestMessages.collect { ForumMessage it ->
+
+            def topic = ForumTopic.get(it.topicId)
             def topicId = topic.id
+            def topicName = topic.title
+            def topicType = topic.topicType
+            def topicClass = topic.class.simpleName
             def details = userDetails[it.user.userId]
             def timestamp = it.date.time / 1000
             def topicUrl = grailsLinkGenerator.link(controller: 'forum', action: 'viewForumTopic', id: topic.id)
@@ -183,20 +329,28 @@ class VolunteerStatsService {
                 def task = ((TaskForumTopic) topic).task
                 forumName = task.project.name
                 thumbnail = multimediaService.getImageThumbnailUrlForDisplay(task.multimedia?.first())
-                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id, selectedTab: 1])
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'projectForum', params: [projectId: task.project.id])
             } else {
                 forumName = "General Discussion"
-                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'index', params: [selectedTab: 1])
+                forumUrl = grailsLinkGenerator.link(controller: 'forum', action: 'index', params: [])
+            }
+
+            def userEmail = details?.email
+            if (!userEmail) {
+                userEmail = details?.userName ? details?.userName : null
             }
 
             [type        : 'forum',
              topicId     : topicId,
              topicUrl    : topicUrl,
-             forumName   : forumName,
+             topicTitle  : topicName,
+             topicType   : topicType.toString(),
+             topicClass  : topicClass,
              forumUrl    : forumUrl,
+             forumName   : forumName,
              userId      : it.userId,
              displayName : details?.displayName,
-             email       : details?.email?.toLowerCase()?.encodeAsMD5(),
+             email       : userEmail?.toLowerCase()?.encodeAsMD5(),
              thumbnailUrl: thumbnail,
              timestamp   : timestamp]
         }
@@ -205,7 +359,7 @@ class VolunteerStatsService {
     }
 
     /**
-     * Retrieves and collects information from {@link #getContributors(Institution, Project, List<Long>, Integer, String)}
+     * Retrieves and collects information from {@link #getContributors(Institution, Project, String, Integer)}
      *
      * @param institutionId optional institution filter
      * @param projectId optional project filter
@@ -219,18 +373,22 @@ class VolunteerStatsService {
         Institution institution = (institutionId == -1l) ? null : Institution.get(institutionId)
         Project projectInstance = (projectId == -1l) ? null : Project.get(projectId)
 
-        String tempTableName = ""
-        def projectList = []
+        String sessionId = null
+        try {
+            if (projectTypeName || tags) {
+                sessionId = UUID.randomUUID().toString()
+                def projectStats = getProjectsForLabels(sessionId, tags, projectTypeName)
+                if (!projectStats.projectCount) {
+                    return [contributors: []]
+                }
+            }
 
-        if (projectTypeName || tags) {
-            tempTableName = 'stats_projects_for_contributors'
-            projectList = getProjectsForLabels(tempTableName, tags, projectTypeName)
+            List<LinkedHashMap<String, Serializable>> contributors = getContributors(institution, projectInstance, sessionId, maxContributors)
+
+            [contributors: contributors]
+        } finally {
+            cleanUpTables(sessionId)
         }
-
-        List<LinkedHashMap<String, Serializable>> contributors = getContributors(institution, projectInstance, projectList, maxContributors, tempTableName)
-        cleanUpTables(tempTableName)
-
-        [contributors: contributors]
     }
 
     /**
@@ -244,26 +402,22 @@ class VolunteerStatsService {
      * @param projectTempTable collation table containing data
      * @return a map of contributors containing information on their activity
      */
-    def getContributors(Institution institution, Project projectInstance, List<Long> projectIds, Integer maxContributors, String projectTempTable) {
+    def getContributors(Institution institution, Project projectInstance, String sessionId, Integer maxContributors) {
         def sw = Stopwatch.createStarted()
 
         def latestTranscribers = []
-        if (projectTempTable) {
-            def projectJoin = ""
-            if (projectIds) {
-                projectJoin = " join ${projectTempTable} on (${projectTempTable}.project_id = latest_transcribers.project_id) "
-            }
+        if (sessionId) {
             def query = """\
                 select latest_transcribers.project_id,
                     fully_transcribed_by,
                     max_date
                 from latest_transcribers
-                ${projectJoin}
+                join ${SESSION_FILTER_TABLE} on (${SESSION_FILTER_TABLE}.project_id = latest_transcribers.project_id and ${SESSION_FILTER_TABLE}.session_id = :sessionId)
                 order by max_date desc
                 limit ${maxContributors} """.stripIndent()
 
             def sql = new Sql(dataSource)
-            sql.eachRow(query) { row ->
+            sql.eachRow(query, [sessionId: sessionId]) { row ->
                 latestTranscribers.add(LatestTranscribers.findByFullyTranscribedByAndMaxDate(row.fully_transcribed_by as String, (row.max_date as Date).toTimestamp()))
             }
             sql.close()
@@ -318,13 +472,18 @@ class VolunteerStatsService {
             }
             log.debug("Took ${sw2.stop().elapsed(MILLISECONDS)}ms to compile thumbnail info for user ${userId}")
 
+            def userEmail = details?.email
+            if (!userEmail) {
+                userEmail = details?.userName ? details?.userName : null
+            }
+
             [type: 'task',
              projectId: proj.id,
              projectName: proj.name,
              projectType: proj.projectType.name,
              userId: User.findByUserId(userId)?.id ?: -1,
              displayName: details?.displayName,
-             email: details?.email?.toLowerCase()?.encodeAsMD5(),
+             email: userEmail?.toLowerCase()?.encodeAsMD5(),
              transcribedThumbs: thumbnails,
              transcribedItems: tasks.size(),
              timestamp: it.maxDate.time / 1000]
@@ -364,152 +523,226 @@ class VolunteerStatsService {
         }
     }
 
-    def createTempTableForProjectStats(String tempTableName) {
-        log.debug("Executing temp table creation")
-        String query = """\
-            create temp table ${tempTableName} (
-                project_id bigint primary key
-            )
-        """.stripIndent()
-        def sql = new Sql(dataSource)
-        sql.execute(query)
-        sql.close()
-    }
-
-    def cleanUpTables(String tempTableName) {
-        if (!tempTableName) {
+    def cleanUpTables(String sessionId) {
+        if (!sessionId) {
             return
         }
 
-        def query = "drop table if exists " + tempTableName
-        def sql = new Sql(dataSource)
-        sql.execute(query)
-        sql.close()
+        Task.withNewTransaction {
+            def sql = new Sql(dataSource)
+            try {
+                sql.execute("delete from ${SESSION_FILTER_TABLE} where session_id = :sessionId", [sessionId: sessionId])
+            } finally {
+                sql.close()
+            }
+        }
     }
 
-    def getProjectsForLabels(String tempTableName, List<String> tags, String projectType) {
-
-        if (!tempTableName) {
-            tempTableName = "stats_temp_table"
-        }
-        createTempTableForProjectStats(tempTableName)
-
+    def getProjectsForLabels(String sessionId, List<String> tags, String projectType) {
+        def sw = Stopwatch.createStarted()
         def labelJoin = ""
         def projectTypeJoin = ""
         def parameters = [:]
+        parameters.sessionId = sessionId
 
+        def tagParams = [:]
         if (tags?.size() > 0) {
-            def tagParams = tags.withIndex().collectEntries { tag, index ->
+            tagParams = tags.withIndex().collectEntries { tag, index ->
                 [('tag' + index): tag]
             }
             log.debug("Tag string: ${tagParams}")
 
             labelJoin = """\
-                join project_labels on (project_labels.project_id = project.id) 
-                join label on (label.id = project_labels.label_id and label.value in (${tagParams.keySet().collect { ':' + it }.join(',')})) """
+                left outer join project_labels on (project_labels.project_id = project.id) 
+                left outer join label on (label.id = project_labels.label_id) 
+                join institution on (institution.id = project.institution_id)
+                """
 
             parameters.putAll(tagParams)
 
             log.debug("labelJoin: ${labelJoin}")
         }
 
+        // Check that the tag values are project type names, and if so, join on the project_type table to filter by project type.
+        // Project Type should be tags[0]
+        def projectTypeNames = ProjectType.list()*.name
+        if (!projectType && tags?.size() > 0 && projectTypeNames.contains(tags[0])) {
+            projectType = tags[0]
+            log.debug("Project type found in tags: ${projectType}")
+        }
+
         if (projectType) {
             projectTypeJoin = """\
-                join project_type on (project_type.id = project.project_type_id and project_type.name = :projectType)
+                join project_type on (project_type.id = project.project_type_id)
             """
             parameters.projectType = projectType
         }
 
         def query = """\
-            insert into {tempTableName}
-                select distinct project.id
+            insert into ${SESSION_FILTER_TABLE} (session_id, project_id)
+                select distinct :sessionId, project.id
                 from project
                 ${labelJoin}
                 ${projectTypeJoin}
         """
-        // This is SAFE - the variable is not modifiable/input from parameters.
-        query = query.replace("{tempTableName}", tempTableName)
+        if (labelJoin && projectTypeJoin) {
+            query += "where label.value in (${tagParams.keySet().collect { ':' + it }.join(',')}) or project_type.name = :projectType"
 
-        log.debug("Filling temp project table (${tempTableName}): ")
-        log.debug(query)
+            def multiParamClause = buildMultiParamSearchClause(["institution.name", "project.name", "project.short_description", "project.description", "project.featured_owner"], tags, "tag")
+            query += " or " + (multiParamClause.clause as String)
+            parameters.putAll(multiParamClause.params)
+        } else if (labelJoin) {
+            query += "where label.value in (${tagParams.keySet().collect { ':' + it }.join(',')})"
+            def multiParamClause = buildMultiParamSearchClause(["institution.name", "project.name", "project.short_description", "project.description", "project.featured_owner"], tags, "tag")
+            query += " or " + (multiParamClause.clause as String)
+            parameters.putAll(multiParamClause.params)
+        } else if (projectTypeJoin) {
+            query += "where project_type.name = :projectType"
+        }
+
+        log.debug("Filling session project filter (${sessionId}): ")
+        log.debug("Projects for Labels Query ---------------------------------------------------------")
+        log.debug("\n" + query)
         log.debug("Params: tags: ${tags}")
         log.debug("Params: projectType: ${projectType}")
 
-        def sql = new Sql(dataSource)
-        if (parameters.size() > 0) {
-            sql.executeInsert(query, parameters)
-        } else {
-            sql.executeInsert(query)
+        def projectCount = 0
+        Task.withNewTransaction {
+            def sql = new Sql(dataSource)
+            try {
+                sql.execute("delete from ${SESSION_FILTER_TABLE} where session_id = :sessionId", [sessionId: sessionId])
+                sql.execute(query, parameters)
+
+                projectCount = sql.firstRow("""\
+                    select count(*) as project_count
+                    from ${SESSION_FILTER_TABLE}
+                    where session_id = :sessionId
+                """.stripIndent(), [sessionId: sessionId]).project_count as Integer
+            } finally {
+                sql.close()
+            }
         }
-
-        query = """\
-            select project_id 
-            from """ + tempTableName
-
-        def projectList = []
-        sql.eachRow(query) { row ->
-            projectList.add(row.project_id)
-        }
-
-        sql.close()
-
-        projectList
+        log.debug("Got projects list in ${sw.stop().elapsed(MILLISECONDS)}ms")
+        [sessionId: sessionId, projectCount: projectCount]
     }
 
-    private def getTempJoin(String tempTableName, String joinTable) {
-        return "join ${tempTableName} on (${tempTableName}.project_id = ${joinTable}.project_id)"
+    private def buildMultiParamSearchClause(List<String> fieldReference, List<String> values, String paramPrefix) {
+        if (!values || values.isEmpty()) {
+            return ""
+        }
+        def clauseMap = [:]
+        def paramMap = values.withIndex().collectEntries { value, index ->
+            [(paramPrefix + index): "%" + (value as String) + "%"]
+        }
+
+        def clauseList = fieldReference.collectMany { field ->
+            values.withIndex().collect { value, index ->
+                "${field} ilike :${paramPrefix}${index}"
+            }
+        }
+        clauseMap.clause = "(" + clauseList.join(" or ") + ")"
+        clauseMap.params = paramMap
+        return clauseMap
     }
 
-    def getStatsForProjects(List<String> tags, String projectType) {
-        // Tasks
-        // Transcribed Tasks
-        // Transcribers
+    def getStatsForProjects(String sessionId, int projectCount) {
         def sw = Stopwatch.createStarted()
-        String tempTableName = 'stats_projects_for_labels'
-        def projectList = getProjectsForLabels(tempTableName, tags, projectType)
-        def tempJoin = getTempJoin(tempTableName, "task")
         log.debug("Got projects list in ${sw.stop().elapsed(MILLISECONDS)}ms")
         sw.reset().start()
 
-        String query = """\
-            select count(*) as task_count
-            from task
-            ${tempJoin} """
+        if (!projectCount) {
+            return [totalTasks: 0,
+                    completedTasks: 0,
+                    transcriberCount: 0,
+                    projectsInLabels: [],
+                    projectTempTable: SESSION_FILTER_TABLE,
+                    transcriptionCount: 0,
+                    projectCount: projectCount,
+                    templates: 0,
+                    speciesTranscribed: 0,
+                    avgTranscriptionTime: 0,
+                    maxTranscriptionTime: 0,
+                    institutionCount: 0]
+        }
 
-        def sql = new Sql(dataSource)
+        log.info("Getting stats for ${projectCount} projects")
+        def stats = runConcurrentTasks([
+                taskStats          : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select count(*) as task_count,
+                                   count(*) filter (where t.is_fully_transcribed = true) as transcribed_count
+                            from task t
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = t.project_id and pid.session_id = :sessionId
+                        """.toString(), [sessionId: sessionId])
+                    }
+                },
+                transcriptionStats : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select count(*) as transcription_count,
+                                   count(distinct tn.fully_transcribed_by) filter (where tn.fully_transcribed_by is not null) as transcriber_count
+                            from transcription tn
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = tn.project_id and pid.session_id = :sessionId
+                        """.toString(), [sessionId: sessionId])
+                    }
+                },
+                transcriptionAggStats : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select coalesce(avg(tn.time_to_transcribe) filter (where tn.time_to_transcribe is not null), 0) as avg_time,
+                                   coalesce(max(tn.time_to_transcribe) filter (where tn.time_to_transcribe is not null), 0) as max_time
+                            from transcription tn
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = tn.project_id and pid.session_id = :sessionId
+                        """.toString(), [sessionId: sessionId])
+                    }
+                },
+                templateCount      : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select count(distinct p.template_id) as template_count
+                            from project p
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = p.id and pid.session_id = :sessionId
+                        """.toString(), [sessionId: sessionId]).template_count
+                    }
+                },
+                speciesCount       : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select count(distinct f.value) as species_count
+                            from field f
+                            join task t on t.id = f.task_id
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = t.project_id and pid.session_id = :sessionId
+                            where f.name = 'scientificName'
+                        """.toString(), [sessionId: sessionId]).species_count
+                    }
+                },
+                institutionCount   : {
+                    withSql { sql ->
+                        sql.firstRow("""\
+                            select count(distinct p.institution_id) as institution_count
+                            from project p
+                            join ${SESSION_FILTER_TABLE} pid on pid.project_id = p.id and pid.session_id = :sessionId
+                        """.toString(), [sessionId: sessionId]).institution_count
+                    }
+                }
+        ])
 
-        def result = sql.firstRow(query)
-        def taskCount = result.task_count
+        log.debug("Took ${sw.stop().elapsed(MILLISECONDS)}ms to collect project-type stats")
 
-        log.debug("Got task count in ${sw.stop().elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-
-        query = """\
-            select count(is_fully_transcribed) filter (where is_fully_transcribed = true) as transcribed_count
-            from task
-            ${tempJoin} """
-
-        result = sql.firstRow(query)
-        def transcribedTaskCount = result.transcribed_count
-
-        log.debug("Got transcribed task count in ${sw.stop().elapsed(MILLISECONDS)}ms")
-        sw.reset().start()
-
-        tempJoin = getTempJoin(tempTableName, "transcription")
-        query = """\
-            select distinct fully_transcribed_by
-            from transcription
-            ${tempJoin} 
-            where fully_transcribed_by is not null """
-
-        result = sql.rows(query)
-        def transcriberCount = result.size()
-
-        log.debug("Got transcriber count in ${sw.stop().elapsed(MILLISECONDS)}ms")
-
-        sql.close()
-
-        [tasks: taskCount, transcriptions: transcribedTaskCount, transcribers: transcriberCount, projectsInLabels: projectList, projectTempTable: tempTableName]
+        [totalTasks: stats.taskStats.task_count,
+         completedTasks: stats.taskStats.transcribed_count,
+         transcriberCount: stats.transcriptionStats.transcriber_count,
+         projectsInLabels: [],
+         projectTempTable: SESSION_FILTER_TABLE,
+         transcriptionCount: stats.transcriptionStats.transcription_count,
+         projectCount: projectCount,
+         templates: stats.templateCount,
+         speciesTranscribed: stats.speciesCount,
+         avgTranscriptionTime: stats.transcriptionAggStats.avg_time,
+         maxTranscriptionTime: stats.transcriptionAggStats.max_time,
+         institutionCount: stats.institutionCount]
     }
+
 
 }

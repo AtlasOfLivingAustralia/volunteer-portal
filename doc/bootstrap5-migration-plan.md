@@ -509,9 +509,9 @@ Log entry for that date.*
   - Note: table conventions now land in group 7, i.e. after this group. Expect to re-touch the table-layout items
     above once the convention exists; the rework was accepted on 2026-09-25 rather than holding a table item here.
 - [X] Navbar disappears between 1400px and 992px.
-- [ ] Review Index page
-  - [ ] Check News display
-  - [ ] Fix honourboard/contributor styles - Modernise layout with BS5
+- [X] Review Index page
+  - [X] Check News display
+  - [X] Fix honourboard/contributor styles - Modernise layout with BS5
 - [ ] `stats/index.gsp` Updates
   - [ ] Tab background colour is not correct (should be white)
   - [ ] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
@@ -2065,3 +2065,11 @@ parallel. Ships this release.
   - Home page updated with stat info cards and responsive breakpoints aligned to lg.
   - Fixed navbar in responsive breakpoints.
   - Updated `project/index.gsp` expedition team members for BS5 card layout.
+- 2026-10-02 - Updated dropdown menu styles to BS5
+  - Fixed bug on Audio and Wildlife spotter templates where clear filter link was not working correctly.
+  - Fixed issue with EmailService where emails were being sent too fast (some servers have anti spam measures)
+- 2026-10-03 - Stats/Honourboard/Contribution Widgets
+  - Refactored stats/honourboard/contribution widgets to use BS5 card layout.
+  - Expanded stats widget to include more stats and updated the layout.
+    - Added new stats for total transcriptions, projects, institutions, species transcribed, average time to transcribe
+    - New index added to Field table to improve efficiency with stats queries.

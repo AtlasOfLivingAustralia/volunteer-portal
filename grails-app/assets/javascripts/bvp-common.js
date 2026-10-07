@@ -392,6 +392,40 @@ let bvp = {};
 
         lib.showModal(options);
     };
+
+    /**
+     * Builds a new link with the current query params, replacing one of them with a new value. Note: replaceVar is URI
+     * encoded when added to the url, do NOT encode before calling this function
+     * @param url the base url to append to
+     * @param checkParams the list of parameters to check and keep
+     * @param replaceParam the parameter to replace with the new value
+     * @param replaceVar the new value to replace the parameter with
+     * @returns {string}
+     */
+    lib.getNewLink = function(url, checkParams, replaceParam, replaceVar) {
+        console.log(url, checkParams);
+        const params = new URLSearchParams(window.location.search);
+        console.log(params);
+        let goUrl = "";
+
+        for (let checkParam in checkParams) {
+            console.log(checkParams[checkParam]);
+
+            if (replaceParam === checkParams[checkParam]) {
+                goUrl += (goUrl.length === 0) ? "?" : "&";
+                goUrl += checkParams[checkParam] + "=" + encodeURIComponent(replaceVar);
+            } else {
+                if (params.has(checkParams[checkParam])) {
+                    goUrl += (goUrl.length === 0) ? "?" : "&";
+                    goUrl += checkParams[checkParam] + "=" + params.get(checkParams[checkParam]);
+                }
+            }
+            console.log(goUrl);
+        }
+
+        return url + goUrl;
+    };
+
 })(bvp);
 
 

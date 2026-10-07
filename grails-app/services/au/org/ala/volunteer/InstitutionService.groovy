@@ -478,17 +478,43 @@ class InstitutionService {
         Task.executeQuery("select count(*) from Task where project.institution = :institution", [institution: institution])?.get(0)
     }
 
+    int countTranscriptionsForInstitution(Institution institution) {
+        Task.executeQuery("select count(*) from Transcription where project.institution = :institution", [institution: institution])?.get(0)
+    }
+
+    int countProjectsForInstitution(Institution institution) {
+        Project.executeQuery("select count(*) from Project where institution = :institution", [institution: institution])?.get(0)
+    }
+
+    int countTemplatesForInstitution(Institution institution) {
+        Template.executeQuery("select count(distinct template.id) from Project where institution = :institution", [institution: institution])?.get(0)
+    }
+
+    int countSpeciesTranscribedForInstitution(Institution institution) {
+        def count = Field.executeQuery('''
+            select count(distinct f.value)
+            from Field f
+            join f.task t
+            join t.project p
+            where f.name = :fieldName
+              and p.institution = :institution
+        ''', [fieldName: 'scientificName', institution: institution])?.get(0) as Integer
+
+        count ? count : 0
+    }
+
+    int getAverageTranscriptionTimeForInstitution(Institution institution) {
+        Transcription.executeQuery("select avg(t.timeToTranscribe) from Transcription t where t.timeToTranscribe is not null " +
+                "and t.project.institution = :institution", [institution: institution])?.get(0)
+    }
+
+    int getMaxTranscriptionTimeForInstitution(Institution institution) {
+        Transcription.executeQuery("select max(t.timeToTranscribe) from Transcription t where t.timeToTranscribe is not null " +
+                "and t.project.institution = :institution", [institution: institution])?.get(0)
+    }
+
     int countTranscribedTasksForInstitution(Institution institution) {
-
-        // TODO this isn't great, we should probably use either the search index or denormalise a bit and add
-        // a fullyTranscribed flag into the Task table.
-        int transcribedCount = 0
-        List projects = Project.findAllByInstitution(institution)
-        projects.each { project ->
-            transcribedCount += taskService.getNumberOfFullyTranscribedTasks(project)
-
-        }
-        transcribedCount
+        Task.executeQuery("select count(*) from Task where isFullyTranscribed = true and project.institution = :institution", [institution: institution])?.get(0)
     }
 
     int countValidatedTasksForInstitution(Institution institution) {

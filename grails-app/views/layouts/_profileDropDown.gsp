@@ -6,7 +6,7 @@
                     <p class="text-center">
                         <a href="//en.gravatar.com/" class="external" target="_blank" id="gravatarLink" title="${message(code:"avatar.customise.label")}">
                             <img src="//www.gravatar.com/avatar/${cl.showCurrentUserEmail().toLowerCase().encodeAsMD5()}?s=80"
-                                 class="img-circle img-fluid avatar"/>
+                                 class="profile-avatar img-fluid avatar"/>
                         </a>
                     </p>
                 </div>

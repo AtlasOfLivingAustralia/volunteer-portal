@@ -39,6 +39,31 @@
 	}
 }
 
+.btn-outline-primary {
+	color: $btn-primary-bg;
+	border-color: $btn-primary-bg;
+	background-color: transparent;
+
+	&:hover, &:focus {
+		color: #fff;
+		background-color: $btn-primary-bg;
+		border-color: $btn-primary-bg;
+	}
+
+	&:active, &.active, &.show {
+		color: #fff;
+		background-color: $btn-primary-active-bg;
+		border-color: $btn-primary-active-bg;
+		box-shadow: none;
+	}
+
+	&:disabled, &.disabled {
+		color: $btn-primary-bg;
+		background-color: transparent;
+		border-color: $btn-primary-bg;
+	}
+}
+
 .btn-admin-menu {
 	width: 200px;
 }
