@@ -516,7 +516,7 @@ Log entry for that date.*
   - [X] Tab background colour is not correct (should be white)
   - [X] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
   - [X] As does .container (or p tag). See `stats/index.gsp` line 23-27
-- [ ] Template edit collapsable list - each list should be the width of the page
+- [X] Template edit collapsable list - each list should be the width of the page
 - [ ] Custom landing page admin
   - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
 - [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
@@ -2073,3 +2073,5 @@ parallel. Ships this release.
   - Expanded stats widget to include more stats and updated the layout.
     - Added new stats for total transcriptions, projects, institutions, species transcribed, average time to transcribe
     - New index added to Field table to improve efficiency with stats queries.
+- 2026-10-13 - Updated `stats/index.gsp`, updated tabs to BS5, removing the Angular UI tabs and replaced with BS5 tabs. 
+- 2026-10-14 - Fixed accordion on `template/edit.gsp`, updated to BS5 accordion.

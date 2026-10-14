@@ -47,141 +47,142 @@
                 <g:hiddenField name="id" value="${templateInstance?.id}"/>
                 <g:hiddenField name="version" value="${templateInstance?.version}"/>
 
-            <div class="row g-3">
-                <div class="form-group required">
-                    <label for="name" class="form-label"><g:message code="template.name.label" default="Name"/></label>
-                    <div class="col-md-6">
-                        <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
-                        <cl:fieldError bean="${templateInstance}" field="name"/>
+                <div class="row g-3">
+                    <div class="form-group required">
+                        <label for="name" class="form-label"><g:message code="template.name.label" default="Name"/></label>
+                        <div class="col-md-6">
+                            <g:textField name="name" class="form-control ${hasErrors(bean: templateInstance, field: 'name', 'is-invalid')}" maxlength="200" required="required" value="${templateInstance?.name}"/>
+                            <cl:fieldError bean="${templateInstance}" field="name"/>
+                        </div>
+                        <div class="col-md-3">
+                            <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
+                            <button class="btn btn-sm btn-outline-secondary" id="btnPreview">Preview Template</button>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <cl:templateEditableButton template="${templateInstance}" styleClass="btn btn-sm btn-outline-secondary" id="btnEditFields" label="Edit Fields"/>
-                        <button class="btn btn-sm btn-outline-secondary" id="btnPreview">Preview Template</button>
+
+                    <div class="form-group">
+                        <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
+                        <div class="col-md-6">
+                            <g:if test="${availableViews}">
+                                <g:select from="${availableViews}" name="viewName" class="form-select ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
+                            </g:if>
+                            <g:else>
+                                <g:textField name="viewName" class="form-control ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
+                            </g:else>
+                            <cl:fieldError bean="${templateInstance}" field="viewName"/>
+                        </div>
+                    </div>
+
+                    <div id="row-view-params-form" style="display: none;">
+                    </div>
+
+                    <div id="row-view-params-json" class="form-group">
+                        <label class="col-md-3 form-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
+                                                                                     default="Template View Parameters:"/></label>
+
+                        <div class="col-md-6">
+                            <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control ${hasErrors(bean: templateInstance, field: 'viewParams', 'is-invalid')}"
+                                        value="${templateInstance.viewParams as grails.converters.JSON}" />
+                            <cl:fieldError bean="${templateInstance}" field="viewParams"/>
+                        </div>
+                    </div>
+
+                    <div class="form-check">
+                        <div class="col-md-6">
+                            <g:checkBox name="supportMultipleTranscriptions" class="form-check-input ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'is-invalid')}" checked="${templateInstance.supportMultipleTranscriptions}"/>
+                            <label class="form-label" for="supportMultipleTranscriptions">
+                                <g:message code="template.multipletanscriptions.label"
+                                           default="Support multiple transcriptions per task?"/>
+                            </label>
+                            <cl:helpText>
+                                <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
+                            </cl:helpText>
+                            <cl:fieldError bean="${templateInstance}" field="supportMultipleTranscriptions"/>
+                        </div>
+                    </div>
+
+                    <cl:ifSiteAdmin>
+                    <div class="form-check">
+                        <div class="col-md-6">
+                            <g:checkBox name="isGlobal" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isGlobal', 'is-invalid')}" checked="${templateInstance.isGlobal}"/>
+                            <label class="form-label" for="isGlobal">
+                                <g:message code="template.isglobal.label"
+                                           default="Is a Global Template?"/>
+                            </label>
+                            <cl:helpText>
+                                <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
+                            </cl:helpText>
+                            <cl:fieldError bean="${templateInstance}" field="isGlobal"/>
+                        </div>
+                    </div>
+
+                    <div class="form-check">
+                        <div class="col-md-6">
+                            <g:checkBox name="isHidden" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isHidden', 'is-invalid')}" checked="${templateInstance.isHidden}"/>
+                            <label class="form-label" for="isHidden">
+                                <g:message code="template.ishidden.label"
+                                           default="Hide Template?"/>
+                            </label>
+                            <cl:helpText>
+                                <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
+                            </cl:helpText>
+                            <cl:fieldError bean="${templateInstance}" field="isHidden"/>
+                        </div>
+                    </div>
+                    </cl:ifSiteAdmin>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-3 col-md-9">
+                            <g:actionSubmit class="btn btn-primary" action="update"
+                                            value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+                            <cl:ifSiteAdmin>
+                                <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
+                                            disabled="${templateInstance.projects?.size() > 0}"
+                                            title="${(templateInstance.projects?.size() > 0 ? "Delete is not allowed when template is linked to an existing expedition." : "Delete")}"
+                                            value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                            </cl:ifSiteAdmin>
+                        </div>
                     </div>
                 </div>
+            </g:form>
 
-                        <div class="form-group">
-                            <label for="viewName" class="col-md-3 form-label"><g:message code="template.viewName.label" default="View Name"/></label>
-                            <div class="col-md-6">
-                                <g:if test="${availableViews}">
-                                    <g:select from="${availableViews}" name="viewName" class="form-select ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
-                                </g:if>
-                                <g:else>
-                                    <g:textField name="viewName" class="form-control ${hasErrors(bean: templateInstance, field: 'viewName', 'is-invalid')}" value="${templateInstance?.viewName}"/>
-                                </g:else>
-                                <cl:fieldError bean="${templateInstance}" field="viewName"/>
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="form-group" style="padding-top: 10px;">
+                    <label class="col-md-12 form-label" style="padding-top: 5px;">
+                        <g:message code="template.project.label"
+                                   default="Projects that use this template:"/>
+                        &nbsp;
+                        <button class="btn btn-sm btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
+                    </label>
 
-                        <div id="row-view-params-form" style="display: none;">
-                        </div>
-
-                        <div id="row-view-params-json" class="form-group">
-                            <label class="col-md-3 form-label" for="viewParamsJSON"><g:message code="template.viewparams.label"
-                                                                                         default="Template View Parameters:"/></label>
-
-                            <div class="col-md-6">
-                                <g:textArea name="viewParamsJSON" rows="4" cols="40" class="form-control ${hasErrors(bean: templateInstance, field: 'viewParams', 'is-invalid')}"
-                                            value="${templateInstance.viewParams as grails.converters.JSON}" />
-                                <cl:fieldError bean="${templateInstance}" field="viewParams"/>
-                            </div>
-                        </div>
-
-                        <div class="form-check">
-                            <div class="col-md-6">
-                                <g:checkBox name="supportMultipleTranscriptions" class="form-check-input ${hasErrors(bean: templateInstance, field: 'supportMultipleTranscriptions', 'is-invalid')}" checked="${templateInstance.supportMultipleTranscriptions}"/>
-                                <label class="form-label" for="supportMultipleTranscriptions">
-                                    <g:message code="template.multipletanscriptions.label"
-                                               default="Support multiple transcriptions per task?"/>
-                                </label>
-                                <cl:helpText>
-                                    <g:message code="template.multipletanscriptions.helptext" default="Ignored for Specimen and Fieldnote Expedition types."/>
-                                </cl:helpText>
-                                <cl:fieldError bean="${templateInstance}" field="supportMultipleTranscriptions"/>
-                            </div>
-                        </div>
-
-                        <cl:ifSiteAdmin>
-                        <div class="form-check">
-                            <div class="col-md-6">
-                                <g:checkBox name="isGlobal" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isGlobal', 'is-invalid')}" checked="${templateInstance.isGlobal}"/>
-                                <label class="form-label" for="isGlobal">
-                                    <g:message code="template.isglobal.label"
-                                               default="Is a Global Template?"/>
-                                </label>
-                                <cl:helpText>
-                                    <g:message code="template.globaltemplate.helptext" default="A global template is available to all institutions."/>
-                                </cl:helpText>
-                                <cl:fieldError bean="${templateInstance}" field="isGlobal"/>
-                            </div>
-                        </div>
-
-                        <div class="form-check">
-                            <div class="col-md-6">
-                                <g:checkBox name="isHidden" class="form-check-input ${hasErrors(bean: templateInstance, field: 'isHidden', 'is-invalid')}" checked="${templateInstance.isHidden}"/>
-                                <label class="form-label" for="isHidden">
-                                    <g:message code="template.ishidden.label"
-                                               default="Hide Template?"/>
-                                </label>
-                                <cl:helpText>
-                                    <g:message code="template.hidden.helptext" default="Hide this template from all users."/>
-                                </cl:helpText>
-                                <cl:fieldError bean="${templateInstance}" field="isHidden"/>
-                            </div>
-                        </div>
-                        </cl:ifSiteAdmin>
-
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
-                                <g:actionSubmit class="btn btn-primary" action="update"
-                                                value="${message(code: 'default.button.update.label', default: 'Update')}"/>
-                                <cl:ifSiteAdmin>
-                                    <g:actionSubmit class="btn btn-danger delete" action="delete" id="deleteButton"
-                                                disabled="${templateInstance.projects?.size() > 0}"
-                                                title="${(templateInstance.projects?.size() > 0 ? "Delete is not allowed when template is linked to an existing expedition." : "Delete")}"
-                                                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                                </cl:ifSiteAdmin>
-                            </div>
-                        </div>
-                    </g:form>
-
-                    <div class="form-group" style="padding-top: 10px;">
-                        <label class="col-md-12 form-label" style="padding-top: 5px;">
-                            <g:message code="template.project.label"
-                                       default="Projects that use this template:"/>
-                            &nbsp;
-                            <button class="btn btn-sm btn-outline-secondary collapse-toggle" style="float: right;" id="collapse-all-button"><i id="collapse-all" class="fa fa-expand" title="Expand/Collapse all"></i></button>
-                        </label>
-
-                        <div class="col-md-12">
-                            %{-- Accordian display --}%
-                            <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
-                            <g:set var="instCounter" value="0"/>
-                            <g:each in="${projectUsageList}" var="institution">
-                                <div class="card">
-                                    <div class="card-header" role="tab" id="heading${instCounter}">
-                                        <h4 class="card-title" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}">
-                                            ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
-                                        </h4>
-                                    </div>
-                                    <div id="collapse${instCounter}" class="collapse" role="tabpanel" aria-labelledby="heading${instCounter}">
-                                        <div class="card-body">
-                                            <ul>
-                                                <g:each in="${institution.value}" var="project">
-                                                    <li style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
-                                                </g:each>
-                                            </ul>
-                                        </div>
+                    <div class="col-md-12">
+                        %{-- Accordian display --}%
+                        <div class="accordian" id="projectAccordian">
+                        <g:set var="instCounter" value="0"/>
+                        <g:each in="${projectUsageList}" var="institution">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading${instCounter}">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}" aria-expanded="${instCounter == 0 ? 'true' : 'false'}" aria-controls="collapse${instCounter}">
+                                        ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
+                                    </button>
+                                </h2>
+                                <div id="collapse${instCounter}" class="accordion-collapse collapse ${instCounter == 0 ? 'show' : ''}" aria-labelledby="heading${instCounter}">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <g:each in="${institution.value}" var="project">
+                                                <li style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
+                                            </g:each>
+                                        </ul>
                                     </div>
                                 </div>
-                                <%
-                                    instCounter++
-                                %>
-                            </g:each>
                             </div>
+                            <%
+                                instCounter++
+                            %>
+                        </g:each>
                         </div>
                     </div>
-
+                </div>
             </div>
         </div>
     </div>
@@ -192,12 +193,17 @@
 
     $(document).ready(function() {
         $('#collapse-all-button').on('click', function () {
-            bootstrap.Collapse.getOrCreateInstance($('#accordion .collapse')).toggle();
-            if ($('#collapse-all').hasClass('fa-expand')) {
-                $('#collapse-all').removeClass('fa-expand').addClass('fa-compress');
-            } else {
-                $('#collapse-all').removeClass('fa-compress').addClass('fa-expand');
-            }
+            const $collapses = $('#projectAccordian .collapse');
+            const collapseAll = $collapses.filter('.show').length === $collapses.length;
+
+            $collapses.each(function () {
+                const collapse = bootstrap.Collapse.getOrCreateInstance(this, { toggle: false });
+                collapseAll ? collapse.hide() : collapse.show();
+            });
+
+            $('#collapse-all')
+                .toggleClass('fa-expand', collapseAll)
+                .toggleClass('fa-compress', !collapseAll);
         });
 
         $("#btnPreview").click(function(e) {
