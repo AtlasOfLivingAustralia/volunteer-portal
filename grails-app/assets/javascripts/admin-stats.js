@@ -185,7 +185,7 @@ function adminStats(config) {
         self.institutionId = "0";
         self.showInstitutionCounts = false;
 
-        self.active = 0;
+        self.activeTab = 'date';
 
         // Used to hold csv data
         self.activeTranscribers = "";

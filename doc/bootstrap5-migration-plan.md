@@ -512,10 +512,10 @@ Log entry for that date.*
 - [X] Review Index page
   - [X] Check News display
   - [X] Fix honourboard/contributor styles - Modernise layout with BS5
-- [ ] `stats/index.gsp` Updates
-  - [ ] Tab background colour is not correct (should be white)
-  - [ ] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
-  - [ ] As does .container (or p tag). See `stats/index.gsp` line 23-27
+- [X] `stats/index.gsp` Updates
+  - [X] Tab background colour is not correct (should be white)
+  - [X] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
+  - [X] As does .container (or p tag). See `stats/index.gsp` line 23-27
 - [ ] Template edit collapsable list - each list should be the width of the page
 - [ ] Custom landing page admin
   - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)

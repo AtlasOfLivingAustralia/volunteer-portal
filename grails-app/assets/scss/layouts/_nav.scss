@@ -358,7 +358,7 @@ ul.profile-links {
 	width: 100%;
 }
 
-.nav-tabs>li>a {
+.nav-tabs>li>button {
 	padding: 15px 30px !important;
 	text-transform: none;
 	font-size: $font-size-sm;
@@ -366,12 +366,7 @@ ul.profile-links {
 	color: #777 !important;
 }
 
-.nav-tabs {
-	border: none;
-}
-
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover, .nav-tabs>li>a {
-	border: none;
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover, .nav-tabs>li>a, .nav-tabs>li>button {
 	color: $black;
 }
 
