@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.volunteer.AchievementDescription" %>
+<%@ page import="au.org.ala.volunteer.DateConstants; au.org.ala.volunteer.AchievementDescription" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,8 +38,8 @@
                             <g:sortableColumn width="13%" property="projectType" mapping="projectType"
                                               title="${message(code: 'landingPageAdmin.enabled.label', default: 'Expedition Type')}"/>
 
-                            <g:sortableColumn width="20%" property="label.value" mapping="label"
-                                              title="${message(code: 'landingPageAdmin.tags.label', default: 'Tags')}"/>
+%{--                            <g:sortableColumn width="20%" property="label.value" mapping="label"--}%
+%{--                                              title="${message(code: 'landingPageAdmin.tags.label', default: 'Tags')}"/>--}%
 
                             <g:sortableColumn width="15%" property="dateCreated" mapping="dateCreated"
                                               title="${message(code: 'landingPageAdmin.dateCreated.label', default: 'Date Created')}"/>
@@ -47,48 +47,73 @@
                             <g:sortableColumn width="15%" property="lastUpdated" mapping="lastUpdated"
                                               title="${message(code: 'landingPageAdmin.lastUpdated.label', default: 'Last Updated')}"/>
 
+                            <th></th>
+
                         </tr>
                         </thead>
                         <tbody>
                         <g:each in="${landingPageInstanceList}" status="i" var="landingPage">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
                                 <td style="vertical-align: middle;">
-                                    <h3><g:link action="edit"
-                                                id="${landingPage.id}">${fieldValue(bean: landingPage, field: "title")}</g:link></h3>
+                                    <g:link action="edit"
+                                                id="${landingPage.id}">${fieldValue(bean: landingPage, field: "title")}</g:link>
 
-                                    <div>
-                                        <g:if test="${landingPage.bodyCopy}">
-                                            <p><markdown:renderHtml text="${landingPage.bodyCopy}" /></p>
-                                        </g:if>
-                                    </div>
+%{--                                    <div>--}%
+%{--                                        <g:if test="${landingPage.bodyCopy}">--}%
+%{--                                            <p><markdown:renderHtml text="${landingPage.bodyCopy}" /></p>--}%
+%{--                                        </g:if>--}%
+%{--                                    </div>--}%
                                 </td>
 
                                 <td style="vertical-align: middle;">${fieldValue(bean: landingPage, field: "enabled")}</td>
 
                                 <td style="vertical-align: middle;">${landingPage.projectType?.label}</td>
 
-                                <td style="vertical-align: middle;">${(landingPage.label)? landingPage.label*.toMap().value.join(", ") : ''}</td>
+%{--                                <td style="vertical-align: middle;">${(landingPage.label)? landingPage.label*.toMap().value.join(", ") : ''}</td>--}%
 
-                                <td style="vertical-align: middle;"><g:formatDate
+                                <td style="vertical-align: middle;"><g:formatDate format="${DateConstants.DATE_FORMAT_SHORT_REV}"
                                         date="${landingPage.dateCreated}"/></td>
 
-                                <td style="vertical-align: middle;"><g:formatDate
+                                <td class="text-nowrap" style="vertical-align: middle;"><g:formatDate
                                         date="${landingPage.lastUpdated}"/></td>
 
-                                <td style="vertical-align: middle;">
+                                <td class="text-end" style="vertical-align: middle;">
                                     <g:form url="[action: 'delete', id: landingPage.id]" method="DELETE">
-                                        <button type="submit" name="_action_delete"
+                                        <button class="btn btn-sm btn-secondary"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#rowDetails${i}"
+                                                aria-expanded="false"
+                                                aria-controls="rowDetails${i}">
+                                            View Details
+                                        </button>
+                                        <button type="button"
                                                 class="btn btn-sm btn-danger delete-landingPage"
-                                                title="${message(code: 'default.button.delete.label', default: 'Delete')}">
+                                                title="${message(code: 'default.button.delete.label', default: 'Delete')}"
+                                                onclick="bvp.confirm('Are you sure you want to delete this landing page?', function () { this.closest('form').submit(); }.bind(this));">
                                             <i class="fa fa-times"></i>
                                         </button>
-                                        <a class="btn btn-sm btn-outline-secondary"
-                                           href="${createLink(controller: 'landingPageAdmin', action: 'edit', id: landingPage.id)}">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
                                     </g:form>
                                 </td>
 
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="p-0">
+                                    <div id="rowDetails${i}" class="collapse">
+                                        <div class="p-3 bg-light">
+                                            <h5>Description</h5>
+                                            <g:set var="bgurl" value="${landingPage.landingPageImage ? cl.imageUrlPrefix(type: 'landingPage', name: landingPage.landingPageImage) : asset.assetPath(src: 'wildlifespotter.jpg')}" />
+                                            <img src="${bgurl}" class="w-400 img-thumbnail rounded float-end align-top" alt="Landing Page Image"/>
+                                            <p><markdown:renderHtml text="${landingPage.bodyCopy}" /></p>
+                                            <p>
+                                                <g:each in="${landingPage.label}" var="l">
+                                                    <g:set var="labelClassName" value="${l.category.labelColour ?: 'base'}"/>
+                                                    <span class="badge badge--${labelClassName}"> ${l.category.name}/${l.value}</span>
+                                                </g:each>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         </g:each>
                         </tbody>

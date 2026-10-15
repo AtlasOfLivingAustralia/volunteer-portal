@@ -517,8 +517,9 @@ Log entry for that date.*
   - [X] Card header needs a padding-top. Determine if this is a BS5 issue or a custom CSS issue.
   - [X] As does .container (or p tag). See `stats/index.gsp` line 23-27
 - [X] Template edit collapsable list - each list should be the width of the page
-- [ ] Custom landing page admin
-  - [ ] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
+- [X] Custom landing page admin
+  - [X] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
+  - [X] Add a confirmation when deleting a custom landing page. Currently it deletes without confirmation.
 - [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
   - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
 - [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
@@ -536,6 +537,7 @@ Log entry for that date.*
   - [ ] `template/edit.gsp`
   - [ ] `leaderboard/index.gsp`
   - [ ] `stats/index.gsp` (Downloads tab)
+  - [ ] `label/editCategory.gsp` (View tag usage)
 
 #### 6. Accessibility sweep
 
