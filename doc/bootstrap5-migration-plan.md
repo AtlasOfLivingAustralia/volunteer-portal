@@ -532,6 +532,10 @@ Log entry for that date.*
     - Prompt: "Decide whether alert/confirm dialogs should have a title bar. If yes, strip the duplicated inline
       headings from the four message strings above; if no, render those two helpers headerless with just a close
       button."
+- [ ] Large lists migrate to list groups with overflow
+  - [ ] `template/edit.gsp`
+  - [ ] `leaderboard/index.gsp`
+  - [ ] `stats/index.gsp` (Downloads tab)
 
 #### 6. Accessibility sweep
 
@@ -1282,6 +1286,7 @@ parallel. Ships this release.
   currently line ~215) after confirming no runtime transcribe dependency remains.
   - Prompt: "Verify `transcribeValidation` and any remaining transcribe JS selectors do not depend on
     `validate[required]`, then remove the class emission and update/extend tests."
+- [ ] `achievements/awards.gsp` Table is too large, add pagination and move the grant user form to the top. A search box wouldn't go astray either.
 ---
 
 ## Tracking Log
