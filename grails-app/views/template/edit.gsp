@@ -158,21 +158,23 @@
                     <div class="col-md-12">
                         %{-- Accordian display --}%
                         <div class="accordian" id="projectAccordian">
-                        <g:set var="instCounter" value="0"/>
+                        <g:set var="instCounter" value="${0}"/>
                         <g:each in="${projectUsageList}" var="institution">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading${instCounter}">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}" aria-expanded="${instCounter == 0 ? 'true' : 'false'}" aria-controls="collapse${instCounter}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${instCounter}" aria-expanded="false" aria-controls="collapse${instCounter}">
                                         ${(institution.key ? institution.key : "No institution")} ${(institution.value.size() > 0) ? "(${institution.value.size()})" : "" }
                                     </button>
                                 </h2>
-                                <div id="collapse${instCounter}" class="accordion-collapse collapse ${instCounter == 0 ? 'show' : ''}" aria-labelledby="heading${instCounter}">
+                                <div id="collapse${instCounter}" class="accordion-collapse collapse" aria-labelledby="heading${instCounter}">
                                     <div class="accordion-body">
-                                        <ul>
+                                        <div class="overflow-auto" style="max-height: 350px;">
+                                            <ul class="list-group list-group-flush">
                                             <g:each in="${institution.value}" var="project">
-                                                <li style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
+                                                <li class="list-group-item" style="font-size: 0.9em;"><g:link controller="project" action="show" id="${project.id}">${project.name}</g:link></li>
                                             </g:each>
-                                        </ul>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
