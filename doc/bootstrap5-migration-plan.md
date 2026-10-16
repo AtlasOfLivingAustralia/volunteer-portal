@@ -2085,3 +2085,10 @@ parallel. Ships this release.
     - New index added to Field table to improve efficiency with stats queries.
 - 2026-10-13 - Updated `stats/index.gsp`, updated tabs to BS5, removing the Angular UI tabs and replaced with BS5 tabs. 
 - 2026-10-14 - Fixed accordion on `template/edit.gsp`, updated to BS5 accordion.
+- 2026-10-15 - Custom landing page admin
+  - Cleaned up index page (removed edit button, changed link text size)
+  - added accordion to table row for more details (description, tags and image)
+  - added confirmation on delete button where there was none before
+  - Updated edit icons to fa-pencil for consistency
+  - Updated all FA icons to a set width
+  - Updated action buttons on user/adminList to same style as others (btn-outline-secondary)
