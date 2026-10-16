@@ -38,47 +38,47 @@
                     <cl:ifAdmin>
                     <li>
                         <a href="${createLink(controller: 'project', action: 'edit', id: projectInstance.id)}" class="dropdown-item">
-                            <i class="fa fa-edit"></i>&nbsp;Edit project</a>
+                            <i class="fa fa-pencil fa-fw"></i>&nbsp;Edit project</a>
                     </li>
                     <li class="dropdown-divider"></li>
                     <li>
                         <a href="${createLink(controller: 'institutionMessage', action: 'create', params: [projectId: projectInstance.id])}" class="dropdown-item">
-                            <i class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers</a>
+                            <i class="fa fa-envelope-o fa-fw"></i>&nbsp;Send a message to Volunteers</a>
                     </li>
                     <li>
                         <a href="${createLink(controller: 'picklist', id: projectInstance.id)}" class="dropdown-item">
-                            <i class="fa fa-list-alt"></i>&nbsp;Manage picklists
+                            <i class="fa fa-list-alt fa-fw"></i>&nbsp;Manage picklists
                         </a>
                     </li>
                     <g:if test="${projectInstance.picklistInstitutionCode}">
                     <li class="dropdown-divider"></li>
                     <li>
                         <a href="${createLink(controller: 'projectTools', action: 'matchRecordedByIdFromPicklist', id: projectInstance.id)}" class="dropdown-item">
-                            <i class="fa fa-wrench"></i>&nbsp;Update empty recordedByID values from picklist match
+                            <i class="fa fa-wrench fa-fw"></i>&nbsp;Update empty recordedByID values from picklist match
                         </a>
                     </li>
                     </g:if>
                     <li>
                         <a href="${createLink(controller: 'projectTools', action: 'reindexProjectTasks', id: projectInstance.id)}" class="dropdown-item">
-                            <i class="fa fa-flag"></i>&nbsp;Reindex tasks
+                            <i class="fa fa-flag fa-fw"></i>&nbsp;Reindex tasks
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
                     </cl:ifAdmin>
                     <li>
                         <a href="${createLink(controller: 'user', action: 'myStats', id: userInstance.id, params: ['projectId': projectInstance.id])}" class="dropdown-item">
-                            <i class="fa fa-signal"></i>&nbsp;View my stats for this project
+                            <i class="fa fa-signal fa-fw"></i>&nbsp;View my stats for this project
                         </a>
                     </li>
                     <li>
                         <a href="${createLink(controller: 'institution', action: 'index', id: projectInstance.institution.id)}" class="dropdown-item">
-                            <i class="fa fa-building"></i>&nbsp;View Institution page
+                            <i class="fa fa-building fa-fw"></i>&nbsp;View Institution page
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
-                    <li><a href="#" id="btnExportAll" class="dropdown-item"><i class="fa fa-download"></i>&nbsp;Export all tasks</a></li>
-                    <li><a href="#" id="btnExportTranscribed" class="dropdown-item"><i class="fa fa-download"></i>&nbsp;Export transcribed tasks</a></li>
-                    <li><a href="#" id="btnExportValidated" class="dropdown-item"><i class="fa fa-download"></i>&nbsp;Export validated tasks</a></li>
+                    <li><a href="#" id="btnExportAll" class="dropdown-item"><i class="fa fa-download fa-fw"></i>&nbsp;Export all tasks</a></li>
+                    <li><a href="#" id="btnExportTranscribed" class="dropdown-item"><i class="fa fa-download fa-fw"></i>&nbsp;Export transcribed tasks</a></li>
+                    <li><a href="#" id="btnExportValidated" class="dropdown-item"><i class="fa fa-download fa-fw"></i>&nbsp;Export validated tasks</a></li>
                 </ul>
             </div>
     </cl:headerContent>

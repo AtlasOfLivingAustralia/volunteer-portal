@@ -48,7 +48,7 @@
                                 <span style="font-weight: normal">( ${field.fieldDefinitionType}: <b>${field.format}</b> - </span>
 
                                 <button class="btnEditField btn btn-sm btn-outline-secondary" title="Edit column definition">
-                                    <i class="fa fa-edit"></i>
+                                    <i class="fa fa-pencil"></i>
                                 </button>
                                 <g:if test="${field.fieldName != 'externalIdentifier'}">
                                     <button class="btnDeleteField btn btn-sm btn-danger" title="Remove column">

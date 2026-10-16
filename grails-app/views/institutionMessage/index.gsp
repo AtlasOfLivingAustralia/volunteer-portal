@@ -156,7 +156,7 @@
                                            href="${createLink(controller: 'institutionMessage', action: 'resend', id: iMessage.id)}"><i class="fa fa-share"></i></a>
                                     <g:if test="${!iMessage.approved}">
                                         <a class="btn btn-sm btn-outline-secondary" title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
-                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
+                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-pencil"></i></a>
                                     </g:if>
                                     <g:else>
                                         <a class="btn btn-sm btn-outline-secondary" title="View Message Details"

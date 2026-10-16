@@ -277,7 +277,7 @@
                             <span class="visually-hidden">Add a comment</span>
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm animalDelete" title="Delete selection" tabindex="-1">
-                            <i aria-hidden="true" class="fa fa-trash"></i>
+                            <i aria-hidden="true" class="fa fa-times"></i>
                             <span class="visually-hidden">Delete selection</span>
                         </button>
                     </td>

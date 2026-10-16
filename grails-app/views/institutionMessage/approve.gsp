@@ -111,7 +111,7 @@
                                     </td>
                                     <td style="text-wrap: none">
                                         <a class="btn btn-sm btn-outline-secondary" title="Edit/Approve Message"
-                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-edit"></i></a>
+                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-pencil"></i></a>
                                         <a class="btn btn-sm btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>

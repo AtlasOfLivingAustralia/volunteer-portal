@@ -520,8 +520,11 @@ Log entry for that date.*
 - [X] Custom landing page admin
   - [X] Modernise index page - remove description and fix action buttons. Landing page name fontsize is too large. Bring in line with other admin lists (i.e. expeditions.)
   - [X] Add a confirmation when deleting a custom landing page. Currently it deletes without confirmation.
-- [ ] Update edit action icons from fa-edit to fa-pencil (consistency)
-  - [ ] Update news item edit page delete image button to no icon and btn-outline-delete.
+- [X] Update edit action icons from fa-edit to fa-pencil (consistency)
+  - [X] Update news item edit page delete image button to no icon and btn-outline-delete.
+  - [X] Add btn-outline-secondary to `user/adminList`
+  - [X] Update any occurrences of fa-trash to fa-times.
+- [ ] Audio/Wildlife Spotter edit template animals needs fixing
 - [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
     - Note 2026-09-25: a *second*, unrelated break on these templates — a bootbox 3 `confirm` signature that had been
       throwing — was fixed with the modal work. The carousel data attributes are still outstanding.

@@ -116,7 +116,7 @@
                                         <a class="btn btn-sm btn-outline-secondary"
                                             title="Institution settings"
                                            href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
-                                                class="fa fa-edit"></i></a>
+                                                class="fa fa-pencil"></i></a>
                                         <cl:ifSiteAdmin>
                                             <g:if test="${institutionInstance.getProjectCount() == 0}">
                                                 <a class="btn btn-sm btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>

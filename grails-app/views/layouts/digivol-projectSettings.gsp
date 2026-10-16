@@ -62,30 +62,30 @@
                                     <ul class="dropdown-menu" aria-labelledby="projectSettingsDropdownMenuButton">
                                         <li>
                                             <g:if test="${projectInstance.archived}">
-                                                <span class="expedition disabled" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off"></i> Activate expedition</span>
+                                                <span class="expedition disabled" title="You cannot activate an archived expedition."><i class="fa fa-toggle-off fa-fw"></i> Activate expedition</span>
                                             </g:if>
                                             <g:else>
                                             <a id="btnToggleActivation" class="dropdown-item" href="#">
-                                                <i id="project-active-toggle-icon" class="fa ${projectInstance.inactive ? 'fa-toggle-on' : 'fa-toggle-off'}"></i> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}
+                                                <i id="project-active-toggle-icon" class="fa ${projectInstance.inactive ? 'fa-toggle-on' : 'fa-toggle-off'} fa-fw"></i> ${projectInstance.inactive ? 'Activate expedition' : 'Deactivate expedition'}
                                             </a>
                                             </g:else>
                                         </li>
                                         <li class="dropdown-divider"></li>
                                         <li>
-                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-share"></i>&nbsp;Expedition administration</g:link>
+                                            <g:link controller="task" action="projectAdmin" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-share fa-fw"></i>&nbsp;Expedition administration</g:link>
                                         </li>
                                         <li>
-                                            <g:link controller="project" action="index" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-home"></i>&nbsp;Expedition home page</g:link>
+                                            <g:link controller="project" action="index" id="${projectInstance.id}" class="dropdown-item"><i class="fa fa-home fa-fw"></i>&nbsp;Expedition home page</g:link>
                                         </li>
                                         <li class="dropdown-divider"></li>
                                         <li>
                                             <g:link controller="institutionMessage" action="create" params="${[projectId: projectInstance.id]}" class="dropdown-item">
-                                                <i class="fa fa-envelope-o"></i>&nbsp;Send a message to Volunteers
+                                                <i class="fa fa-envelope-o fa-fw"></i>&nbsp;Send a message to Volunteers
                                             </g:link>
                                         </li>
                                         <li class="dropdown-divider"></li>
                                         <li>
-                                            <a id="btnDeleteProject" href="#" class="dropdown-item"><i class="fa fa-trash-o"></i>&nbsp;Delete expedition</a>
+                                            <a id="btnDeleteProject" href="#" class="dropdown-item alert-danger"><i class="fa fa-remove fa-fw"></i>&nbsp;Delete expedition</a>
                                         </li>
                                     </ul>
                                 </div>

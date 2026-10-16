@@ -11,7 +11,7 @@
     <style>
         .label-button {
             cursor: pointer;
-            font-size: 1.2em;
+            /*font-size: 1.2em;*/
         }
     </style>
 </head>
@@ -110,12 +110,16 @@
                                 <td class="text-center"><g:formatDate format="yyyy-MM-dd" date="${userInstance.created}"/></td>
 
                                 <td>
-                                    <i class="fa fa-edit label-button doLink"
-                                       data-href="${createLink(controller: 'user', action: 'edit', id: userInstance.id)}"
-                                       title="Edit User"></i>
 
-                                    <i class="fa fa-id-card-o label-button doLink" title="Display Notebook for User"
-                                       data-href="${createLink(controller: 'user', action: 'show', id: userInstance.id)}"></i>
+                                    <a class="btn btn-sm btn-outline-secondary doLink" data-href="${createLink(controller: 'user', action: 'edit', id: userInstance.id)}">
+                                        <i class="fa fa-pencil"
+
+                                           title="Edit User"></i>
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-secondary doLink" data-href="${createLink(controller: 'user', action: 'show', id: userInstance.id)}">
+                                        <i class="fa fa-id-card-o" title="Display Notebook for User"></i>
+                                    </a>
                                 </td>
                             </tr>
                         </g:each>

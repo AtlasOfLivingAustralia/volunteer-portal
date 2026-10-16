@@ -153,12 +153,12 @@ class ForumTagLib {
 
                             if ((forumMessage as ForumMessage).replyTo) {
                                 log.debug("Message is a reply")
-                                mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-message' title='Delete message'></button>")
+                                mkp.yieldUnescaped("<button class='fa fa-times message-icon delete-message' title='Delete message'></button>")
                             } else {
                                 log.debug("Message is not a reply")
                                 if (authorIsModerator) {
                                     log.debug("Moderator has ability to delete")
-                                    mkp.yieldUnescaped("<button class='fa fa-trash message-icon delete-topic' title='Delete topic'></button>")
+                                    mkp.yieldUnescaped("<button class='fa fa-times message-icon delete-topic' title='Delete topic'></button>")
                                 }
                             }
                         }

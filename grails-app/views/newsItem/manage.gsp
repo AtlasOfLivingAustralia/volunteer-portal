@@ -86,7 +86,9 @@
                         <g:each in="${newsItemList}" status="i" var="newsItem">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" data-news-item-id="${newsItem.id}">
                                 <td style="vertical-align: middle; width: 45%;">
-                                    ${fieldValue(bean: newsItem, field: "title")}
+                                    <g:link action="edit" id="${newsItem.id}" title="Edit News Item" alt="Edit">
+                                        ${fieldValue(bean: newsItem, field: "title")}
+                                    </g:link>
                                 </td>
 
                                 <!-- status -->
@@ -114,18 +116,11 @@
                                         <a class="btn btn-sm btn-outline-secondary toggle-news-item-status" alt="Deactivate" title="Deactivate News Item"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
-                                <!-- Edit -->
-                                    <g:link action="edit" id="${newsItem.id}" title="Edit News Item" alt="Edit">
-                                        <span class="btn btn-sm btn-outline-secondary edit-news-item">
-                                            <i class="fa fa-pencil"></i>
-                                        </span>
-                                    </g:link>
-
                                 <!-- Delete -->
                                     <button role="button" class="btn btn-sm btn-danger delete-news-item"
                                             data-news-item-title="${newsItem.title}"
                                             data-href="${createLink(controller: "newsItem", action: "delete", id: newsItem.id)}"
-                                            title="Delete News Item"><i class="fa fa-trash"></i></button>
+                                            title="Delete News Item"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                         </g:each>

@@ -10,12 +10,12 @@
     <style>
     .news-image-row {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .news-image-remove-btn {
         align-self: flex-start;
-        margin-left: 0.5rem;
         margin-top: 7px;
     }
     </style>
@@ -94,11 +94,10 @@
                             <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
                             <label class="form-label col-md-3" for="newsItemThumb">Image Thumbnail</label>
                             <div class="col-md-6 news-image-row">
-
-                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid form-label" alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
-                                <button role="button" class="btn btn-danger btn-sm news-image-remove-btn"
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid img-thumbnail w-200" alt="News Item Thumbnail" />
+                                <button role="button" class="btn btn-outline-danger btn-sm news-image-remove-btn d-block"
                                         data-href="${createLink(controller: "newsItem", action: "clearImage", id: newsItem.id)}"
-                                        title="Clear Image"><i class="fa fa-trash"></i></button>
+                                        title="Clear Image">Remove image</button>
                             </div>
                             </cl:ifNewsItemHasThumb>
 
