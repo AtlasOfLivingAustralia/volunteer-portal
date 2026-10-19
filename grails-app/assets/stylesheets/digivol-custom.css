@@ -146,7 +146,8 @@ table.task-table {
 }
 
 .admin .container .card {
-    margin: 2em 0;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
 }
 
 .admin table tbody tr td {

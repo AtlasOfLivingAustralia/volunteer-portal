@@ -52,6 +52,14 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
         ensureAnimalArray();
         self.model.animals.push({vernacularName: '', scientificName: '', description: '', categories: {}, images: [], audio: []});
         self.animalUiStatus.push({minimized: false});
+
+        $timeout(function () {
+            let cards = document.querySelectorAll('[data-animal-card]');
+            let lastCard = cards[cards.length - 1];
+            if (lastCard) {
+                lastCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0, false);
     };
 
     self.removeAnimal = function($index) {
@@ -528,6 +536,15 @@ var TemplateConfigController = ['$http', '$log', '$timeout', '$window', 'Upload'
                 bvp.alert("Couldn't save WildlifeSpotter config");
             });
         }
+    };
+
+    self.scrollToTop = function() {
+        $timeout(function () {
+            let topElement = document.querySelector('body');
+            if (topElement) {
+                topElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0, false);
     };
 }];
 
