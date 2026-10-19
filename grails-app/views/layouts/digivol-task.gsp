@@ -158,31 +158,23 @@
                                 <div class="transcribeSectionBody">
                                     <div class="row">
 
-                                        <div class="col-sm-6">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <label for="recordValues.0.transcriberNotes">${(validator) ? 'Transcriber' : 'Your'} Notes</label>
-                                                </div>
-
-                                                <div class="col-sm-8">
-                                                    <g:textArea name="recordValues.0.transcriberNotes"
-                                                                value="${recordValues?.get(0)?.transcriberNotes}"
-                                                                id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
-                                                </div>
+                                        <div class="col-12 col-lg-6">
+                                            <div class="col-12 mt-sm-1 mt-lg-0">
+                                                <label for="recordValues.0.transcriberNotes" class="form-label">${(validator) ? 'Transcriber' : 'Your'} Notes</label>
+                                                <g:textArea name="recordValues.0.transcriberNotes"
+                                                            value="${recordValues?.get(0)?.transcriberNotes}"
+                                                            id="recordValues.0.transcriberNotes" rows="5" cols="40" class="form-control"/>
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-12 col-lg-6">
                                             <g:if test="${validator}">
-                                                <div class="row">
-                                                    <div class="col-sm-4"><label for="recordValues.0.validatorNotes">Validator Notes</label></div>
-
-                                                    <div class="col-sm-8">
-                                                        <g:textArea name="recordValues.0.validatorNotes"
-                                                                    value="${recordValues?.get(0)?.validatorNotes}"
-                                                                    id="recordValues.0.validatorNotes" rows="5" cols="40"
-                                                                    class="form-control"/>
-                                                    </div>
+                                                <div class="col-12 mt-sm-1 mt-lg-0">
+                                                    <label for="recordValues.0.validatorNotes" class="form-label">Validator Notes</label>
+                                                    <g:textArea name="recordValues.0.validatorNotes"
+                                                                value="${recordValues?.get(0)?.validatorNotes}"
+                                                                id="recordValues.0.validatorNotes" rows="5" cols="40"
+                                                                class="form-control"/>
                                                 </div>
                                             </g:if>
                                         </div>

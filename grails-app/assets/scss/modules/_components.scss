@@ -689,10 +689,21 @@ h2.body-heading {
 	}
 
 }
+
+.qt-image-card {
+	display: flex;
+	flex-direction: column;
+
+	.card {
+		flex: 1;
+	}
+}
+
 .stepwizard-row {
 	display: table-row;
 
 }
+
 .stepwizard {
 	display: table;
 	width: 100%;
@@ -716,10 +727,36 @@ h2.body-heading {
 	filter: alpha(opacity=100) !important;
 	color: #aaa;
 }
+
 .stepwizard-step {    
 	display: table-cell;
 	text-align: left;
 	position: relative;
+}
+
+/* 1. Base style for all inactive nav-pills inside your specific container */
+#qa-questions-pager .nav-pills .nav-link {
+	color: #555555;            /* Dark grey text/icon colour */
+	background-color: #f0f0f0; /* Light grey background for unselected pills */
+	border-radius: 4px;        /* Optional: adjust capsule roundness if desired */
+	transition: all 0.2s ease;
+}
+
+/* 2. Hover state for unselected pills */
+#qa-questions-pager .nav-pills .nav-link:hover {
+	color: #000000;
+	background-color: #e0e0e0;
+}
+
+/* 3. The Active/Selected state override */
+#qa-questions-pager .nav-pills .nav-link.active,
+#qa-questions-pager .nav-pills .show > .nav-link {
+	color: #ffffff !important;            /* White text color when active */
+	background-color: #5c636a !important; /* Your custom active colour (e.g., Deep Orange) */
+}
+
+#qa-questions-pager .nav-item {
+	margin-left: 1rem;
 }
 
 .branding-row {
@@ -777,9 +814,6 @@ h2.body-heading {
 
 .transcription-actions {
 	padding: 30px 0;
-	.btn {
-		padding: 10px 20px;
-	}
 }
 
 // icon glyph size, not text — see typography conventions

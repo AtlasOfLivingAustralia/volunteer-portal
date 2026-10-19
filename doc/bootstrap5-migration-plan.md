@@ -525,7 +525,7 @@ Log entry for that date.*
   - [X] Add btn-outline-secondary to `user/adminList`
   - [X] Update any occurrences of fa-trash to fa-times.
 - [X] Audio/Wildlife Spotter edit template animals needs fixing
-- [ ] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
+- [X] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
     - Note 2026-09-25: a *second*, unrelated break on these templates — a bootbox 3 `confirm` signature that had been
       throwing — was fixed with the modal work. The carousel data attributes are still outstanding.
 - [ ] `bvp.alert` titles every message dialog "Message" and `bvp.confirm` titles every confirmation "Please confirm".
@@ -2093,4 +2093,5 @@ parallel. Ships this release.
   - Updated all FA icons to a set width
   - Updated action buttons on user/adminList to same style as others (btn-outline-secondary)
 - 2026-10-16 - Updated `wildlifeTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
-- 2026-10-17 - Updated `audioTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
+- 2026-10-19 - Updated `audioTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
+  - Updated questionnaire template to BS5 (carousel, buttons, layout)
