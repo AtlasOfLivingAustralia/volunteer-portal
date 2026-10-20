@@ -528,19 +528,17 @@ Log entry for that date.*
 - [X] Questionaire template is broken (BS5 requires data-bs-target / data-bs-slide-to)
     - Note 2026-09-25: a *second*, unrelated break on these templates — a bootbox 3 `confirm` signature that had been
       throwing — was fixed with the modal work. The carousel data attributes are still outstanding.
-- [ ] `bvp.alert` titles every message dialog "Message" and `bvp.confirm` titles every confirmation "Please confirm".
+- [X] `bvp.alert` titles every message dialog "Message" and `bvp.confirm` titles every confirmation "Please confirm".
   Bootbox rendered no header at all for these, so all 40 sites have gained a title bar. Cosmetic, but it is new text
   on 40 dialogs and some messages already begin with their own `<h3>` or `<strong>Warning!</strong>`
   (`transcribe/wildlifespotter.js` 448, `transcribe/audiotranscribe.js` 563, `transcribe/cameratrap.js` 570,
   `template-config.js` 522).
-    - Prompt: "Decide whether alert/confirm dialogs should have a title bar. If yes, strip the duplicated inline
-      headings from the four message strings above; if no, render those two helpers headerless with just a close
-      button."
 - [ ] Large lists migrate to list groups with overflow
   - [ ] `template/edit.gsp`
   - [ ] `leaderboard/index.gsp`
   - [ ] `stats/index.gsp` (Downloads tab)
   - [ ] `label/editCategory.gsp` (View tag usage)
+- [ ] Consistency on edit pages. Remove edit button, make item name a link.
 
 #### 6. Accessibility sweep
 
@@ -2095,3 +2093,4 @@ parallel. Ships this release.
 - 2026-10-16 - Updated `wildlifeTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
 - 2026-10-19 - Updated `audioTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
   - Updated questionnaire template to BS5 (carousel, buttons, layout)
+- 2026-10-20 - Updated calls to bvp.alert to remove any titles or headings.

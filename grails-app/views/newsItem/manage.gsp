@@ -155,8 +155,8 @@
             var $this = $(this);
             var href = $this.attr('data-href');
             var name = $this.attr('data-news-item-title');
-            let warningText = "<b>Warning:</b><br/>Are you sure you wish to delete the news item titled: " + name
-                + "?<br/>This action is permanent!"
+            let warningText = "Are you sure you wish to delete the news item titled: " + name
+                + "? This action is permanent!";
             bvp.confirm(warningText, function() {
                 $.postGo(href);
             });

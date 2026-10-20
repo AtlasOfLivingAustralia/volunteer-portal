@@ -561,7 +561,7 @@ function wildlifespotter(wsParams, imagePrefix, recordValues, placeholders) {
         submitRequiresConfirmation = true;
         postValidationFunction = function (validationResults) {
             console.log("I'm in the audio validation.");
-            if (validationResults.errorList.length > 0) bvp.alert("<h3>Invalid selection</h3><ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li>");
+            if (validationResults.errorList.length > 0) bvp.alert("<ul><li>" + _.pluck(validationResults.errorList, 'message').join('</li><li>') + "</li></ul>");
         };
 
         transcribeWidgets.addBeforeSubmitHook(function (e) {

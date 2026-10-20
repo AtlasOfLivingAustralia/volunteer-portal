@@ -224,8 +224,8 @@
             var $this = $(this);
             var href = $this.attr('data-href');
             var name = $this.attr('data-tutorial-name');
-            let warningText = "<b>Warning:</b><br/>Are you sure you wish to delete the tutorial titled: " + name
-                + "?<br/>This action is permanent!"
+            let warningText = "Are you sure you wish to delete the tutorial titled: " + name
+                + "? This action is permanent!";
             bvp.confirm(warningText, function() {
                 $.postGo(href);
             });
