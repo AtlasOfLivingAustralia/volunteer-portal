@@ -76,7 +76,7 @@
                                     </g:if>
                                 </td>
                                 <td class="text-center flex-nowrap">
-                                    <button class="btn btn-sm btn-outline-secondary btnEditField imageButton" title="Edit Field"><i class="fa fa-pencil"></i></button>
+%{--                                    <button class="btn btn-sm btn-outline-secondary btnEditField imageButton" title="Edit Field"><i class="fa fa-pencil"></i></button>--}%
                                     <button class="btn btn-sm btn-outline-secondary btnMoveFieldDown" title="Move Field Down"><i class="fa fa-arrow-down"></i></button>
                                     <button class="btn btn-sm btn-outline-secondary btnMoveFieldUp" title="Move Field Up"><i class="fa fa-arrow-up"></i></button>
                                     <button class="btn btn-sm btn-outline-secondary btnMoveFieldAnywhere" title="Move Field Anywhere"><i class="fa fa-arrows"></i></button>

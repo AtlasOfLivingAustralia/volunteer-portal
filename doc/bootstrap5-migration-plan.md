@@ -533,12 +533,12 @@ Log entry for that date.*
   on 40 dialogs and some messages already begin with their own `<h3>` or `<strong>Warning!</strong>`
   (`transcribe/wildlifespotter.js` 448, `transcribe/audiotranscribe.js` 563, `transcribe/cameratrap.js` 570,
   `template-config.js` 522).
-- [ ] Large lists migrate to list groups with overflow
+- [X] Large lists migrate to list groups with overflow
   - [X] `template/edit.gsp`
   - [X] `leaderboard/index.gsp`
-  - [ ] `stats/index.gsp` (Downloads tab)
-  - [ ] `label/editCategory.gsp` (View tag usage)
-- [ ] Consistency on edit pages. Remove edit button, make item name a link.
+  - [X] `stats/index.gsp` (Downloads tab)
+  - [X] `label/editCategory.gsp` (View tag usage)
+- [X] Consistency on edit pages. Remove edit button, make item name a link.
 
 #### 6. Accessibility sweep
 
@@ -2094,3 +2094,7 @@ parallel. Ships this release.
 - 2026-10-19 - Updated `audioTemplateConfig.gsp` to BS5 card layout, with updated button and thumbnail styles.
   - Updated questionnaire template to BS5 (carousel, buttons, layout)
 - 2026-10-20 - Updated calls to bvp.alert to remove any titles or headings.
+  - Updated large lists to condensed div with overflow on `labels/editCategory`, `adminStats/index (download tab)`, and `leaderboardAdmin/index`.
+  - Updated layout of `topList` (top 20 volunteers)
+  - Updated action buttons on `label/editCategory`
+  - Updated edit pages to remove edit buttons and make main column the edit link.

@@ -80,9 +80,6 @@
 
                                 <td>
                                     <g:form url="[action: 'delete', id: institutionInstance.id]" method="DELETE">
-                                        <a class="btn btn-sm btn-outline-secondary"
-                                           href="${createLink(controller: 'institutionAdmin', action: 'edit', id: institutionInstance.id)}"><i
-                                                class="fa fa-pencil"></i></a>
                                         <cl:ifSiteAdmin>
                                                 <a class="btn btn-sm btn-danger delete-institution" alt="Delete" title="Delete"><i class="fa fa-times"></i></a>
                                         </cl:ifSiteAdmin>

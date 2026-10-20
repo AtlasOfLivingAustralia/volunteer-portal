@@ -118,7 +118,17 @@
                                     </td>
                                     <td class="message-subject"
                                         style="vertical-align: middle; text-wrap: none; width: 30%">
-                                        ${iMessage.subject}
+                                        <g:if test="${!iMessage.approved}">
+                                            <a title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
+                                               href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}">${iMessage.subject}</a>
+                                        </g:if>
+                                        <g:else>
+                                            <a title="View Message Details"
+                                               href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}">${iMessage.subject}</a>
+                                        </g:else>
+
+
+%{--                                        ${iMessage.subject}--}%
                                     </td>
                                     <td style="vertical-align: middle; text-wrap: none">${iMessage.createdBy.displayName.capitalize()}</td>
                                     <td style="vertical-align: middle;">
@@ -154,14 +164,7 @@
                                     <td style="text-wrap: none">
                                         <a class="btn btn-sm btn-outline-secondary" title="Resend Message"
                                            href="${createLink(controller: 'institutionMessage', action: 'resend', id: iMessage.id)}"><i class="fa fa-share"></i></a>
-                                    <g:if test="${!iMessage.approved}">
-                                        <a class="btn btn-sm btn-outline-secondary" title="Edit<cl:ifSiteAdmin>/Approve</cl:ifSiteAdmin> Message"
-                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-pencil"></i></a>
-                                    </g:if>
-                                    <g:else>
-                                        <a class="btn btn-sm btn-outline-secondary" title="View Message Details"
-                                           href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-list-alt"></i></a>
-                                    </g:else>
+
                                 <cl:ifSiteAdmin>
                                     <g:if test="${!iMessage.approved}">
                                         <a class="btn btn-sm btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>

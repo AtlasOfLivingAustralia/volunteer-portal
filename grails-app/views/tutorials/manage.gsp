@@ -146,7 +146,16 @@
                         <g:each in="${tutorialList}" status="i" var="tutorial">
                             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" data-tutorial-id="${tutorial.id}">
                                 <td style="vertical-align: middle; width: 65%;">
-                                    <cl:tutorialLink tutorial="${tutorial}" hideLinkIcon="true">${fieldValue(bean: tutorial, field: "name")}</cl:tutorialLink>
+%{--                                    <cl:tutorialLink tutorial="${tutorial}" hideLinkIcon="true">${fieldValue(bean: tutorial, field: "name")}</cl:tutorialLink>--}%
+                                    <g:set var="editParams" value="[migrate: params.migrate ?: false]"/>
+                                    <cl:ifSiteAdmin>
+                                        <g:if test="${params.admin}">
+                                            <g:set var="editParams" value="[admin: true, migrate: params.migrate ?: false]"/>
+                                        </g:if>
+                                    </cl:ifSiteAdmin>
+                                    <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">
+                                        ${fieldValue(bean: tutorial, field: "name")}
+                                    </g:link>
                                 </td>
 
                                 <td style="vertical-align: middle; text-align: right;">
@@ -171,18 +180,22 @@
                                         <a class="btn btn-sm btn-outline-secondary toggle-tutorial-status" alt="Deactivate" title="Deactivate Tutorial"><i class="fa fa-toggle-on"></i></a>
                                     </g:else>
 
+                                <!-- View PDF -->
+                                    <a class="btn btn-sm btn-outline-secondary" target="_blank" alt="View Tutorial" title="View Tutorial"
+                                        href="<cl:tutorialLink tutorial="${tutorial}" linkOnly="true"/>"><i class="fa fa-external-link"></i></a>
+
                                 <!-- Edit -->
-                                    <g:set var="editParams" value="[migrate: params.migrate ?: false]"/>
-                                    <cl:ifSiteAdmin>
-                                        <g:if test="${params.admin}">
-                                            <g:set var="editParams" value="[admin: true, migrate: params.migrate ?: false]"/>
-                                        </g:if>
-                                    </cl:ifSiteAdmin>
-                                    <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">
-                                        <span class="btn btn-sm btn-outline-secondary edit-tutorial">
-                                            <i class="fa fa-pencil"></i>
-                                        </span>
-                                    </g:link>
+%{--                                    <g:set var="editParams" value="[migrate: params.migrate ?: false]"/>--}%
+%{--                                    <cl:ifSiteAdmin>--}%
+%{--                                        <g:if test="${params.admin}">--}%
+%{--                                            <g:set var="editParams" value="[admin: true, migrate: params.migrate ?: false]"/>--}%
+%{--                                        </g:if>--}%
+%{--                                    </cl:ifSiteAdmin>--}%
+%{--                                    <g:link action="edit" id="${tutorial.id}" title="Edit Tutorial" alt="Edit" params="${editParams}">--}%
+%{--                                        <span class="btn btn-sm btn-outline-secondary edit-tutorial">--}%
+%{--                                            <i class="fa fa-pencil"></i>--}%
+%{--                                        </span>--}%
+%{--                                    </g:link>--}%
 
                                 <!-- Delete -->
                                     <button role="button" class="btn btn-danger btn-sm delete-tutorial"

@@ -1419,17 +1419,23 @@ function notify() {
     /**
      * Builds a link to a given tutorial.
      * @attr tutorial the tutorial to link to
-     * @hideLinkIcon flag to determine when to show an external link icon.
+     * @attr hideLinkIcon flag to determine when to show an external link icon.
+     * @attr linkOnly if set to true, returns only the URL of the tutorial.
      */
     def tutorialLink = { attrs, body ->
         Tutorial tutorial = attrs.tutorial as Tutorial
         def hideLinkIcon = Boolean.parseBoolean(attrs.hideLinkIcon as String)
-        def mb = new MarkupBuilder(out)
-        mb.a([href: tutorialService.getTutorialUrl(tutorial), target: "_blank"]) {
-            if (!hideLinkIcon) {
-                mkp.yieldUnescaped("&nbsp;<span title='Open tutorial in new window' class='fa fa-external-link'></span>&nbsp;")
+        def linkOnly = Boolean.parseBoolean(attrs.linkOnly as String)
+        if (linkOnly) {
+            out << tutorialService.getTutorialUrl(tutorial)
+        } else {
+            def mb = new MarkupBuilder(out)
+            mb.a([href: tutorialService.getTutorialUrl(tutorial), target: "_blank"]) {
+                if (!hideLinkIcon) {
+                    mkp.yieldUnescaped("&nbsp;<span title='Open tutorial in new window' class='fa fa-external-link'></span>&nbsp;")
+                }
+                mkp.yieldUnescaped(body())
             }
-            mkp.yieldUnescaped(body())
         }
     }
 

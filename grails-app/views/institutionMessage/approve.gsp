@@ -82,7 +82,7 @@
                                     </td>
                                     <td class="message-subject"
                                         style="vertical-align: middle; text-wrap: none; width: 30%">
-                                        ${iMessage.subject}
+                                        <a href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}">${iMessage.subject}</a>
                                     </td>
                                     <td style="vertical-align: middle; text-wrap: none">${iMessage.createdBy.displayName.capitalize()}</td>
                                     <td style="vertical-align: middle;">
@@ -110,8 +110,8 @@
                                         <i class="fa fa-clock-o" title="Not Approved"></i>
                                     </td>
                                     <td style="text-wrap: none">
-                                        <a class="btn btn-sm btn-outline-secondary" title="Edit/Approve Message"
-                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-pencil"></i></a>
+%{--                                        <a class="btn btn-sm btn-outline-secondary" title="Edit/Approve Message"--}%
+%{--                                            href="${createLink(controller: 'institutionMessage', action: 'edit', id: iMessage.id)}"><i class="fa fa-pencil"></i></a>--}%
                                         <a class="btn btn-sm btn-danger delete-message" title="Delete Message"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>
