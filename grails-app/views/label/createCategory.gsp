@@ -38,7 +38,8 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h4><g:message code="default.label.category.label" default="${entityName}"/> Details</h4>
+                    <h3><g:message code="default.label.category.label" default="${entityName}"/> Details</h3>
+                    <div class="border-bottom border-secondary-subtle border-2 my-3"></div>
                 </div>
                 <div class="col-md-12" style="margin-top: 20px;">
                     <g:form action="saveCategory">

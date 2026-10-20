@@ -534,8 +534,8 @@ Log entry for that date.*
   (`transcribe/wildlifespotter.js` 448, `transcribe/audiotranscribe.js` 563, `transcribe/cameratrap.js` 570,
   `template-config.js` 522).
 - [ ] Large lists migrate to list groups with overflow
-  - [ ] `template/edit.gsp`
-  - [ ] `leaderboard/index.gsp`
+  - [X] `template/edit.gsp`
+  - [X] `leaderboard/index.gsp`
   - [ ] `stats/index.gsp` (Downloads tab)
   - [ ] `label/editCategory.gsp` (View tag usage)
 - [ ] Consistency on edit pages. Remove edit button, make item name a link.

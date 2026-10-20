@@ -239,8 +239,12 @@ class LeaderBoardService {
                 def user = User.findByUserId(kvp.key)
                 def details = userDetails[kvp.key]
                 if (user) {
-                    list << [name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]
-                    log.debug("Adding user details for ${[name: details?.displayName, email: details?.email, score: kvp?.value ?: 0, userId: user?.id]}")
+                    def userEmail = details?.email
+                    if (!userEmail) {
+                        userEmail = details?.userName ? details?.userName : null
+                    }
+                    list << [name: details?.displayName, email: userEmail, score: kvp?.value ?: 0, userId: user?.id]
+                    log.debug("Adding user details for ${[name: details?.displayName, email: userEmail, score: kvp?.value ?: 0, userId: user?.id]}")
                 } else {
                     log.warn("Failed to find user with key: ${kvp.key}")
                 }

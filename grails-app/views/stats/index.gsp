@@ -226,6 +226,7 @@
                             </div>
                         </div>
                     </div>
+                    <button class="btn btn-sm btn-outline-secondary float-end" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"><i class="fa fa-arrow-up"></i> Return to top</button>
                 </div>
 
                 <cl:ifSiteAdmin>
@@ -317,11 +318,13 @@
                                         <li>Date of transcription and validation</li>
                                     </ul></p>
                                     <b>Institutions</b><br />
-                                    <ul style="list-style-type: none;">
-                                        <g:each in="${institutionList}" var="institution">
-                                            <li style="padding-top: 5px;"><g:link action="institutionStatsDownload" id="${institution.id}">${institution.name}</g:link><br /></li>
-                                        </g:each>
-                                    </ul>
+                                    <div class="overflow-auto" style="max-height: 550px;">
+                                        <ul class="list-group list-group-flush">
+                                            <g:each in="${institutionList}" var="institution">
+                                                <li class="list-group-item" style="font-size: 0.9em;"><g:link action="institutionStatsDownload" id="${institution.id}">${institution.name}</g:link><br /></li>
+                                            </g:each>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>

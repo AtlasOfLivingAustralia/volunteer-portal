@@ -5,36 +5,6 @@
 
 <section id="digivol-stats" ng-app="stats" ng-controller="StatsCtrl" class="ng-cloak">
     <g:if test="${!disableStats}">
-%{--        <div class="card border-0 shadow-sm mb-3">--}%
-%{--            <div class="card-header bg-black text-white d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">--}%
-%{--                <h5 class="card-title mb-0 text-uppercase fw-bold fs-6 tracking-wide">--}%
-%{--                    ${instName} Stats--}%
-%{--                </h5>--}%
-%{--                <cl:ifSiteAdmin>--}%
-%{--                    <g:link controller="user" action="adminList" class="text-white">--}%
-%{--                        <i class="fa fa-users fa-sm" aria-hidden="true"></i>--}%
-%{--                    </g:link>--}%
-%{--                </cl:ifSiteAdmin>--}%
-%{--            </div>--}%
-
-%{--            <div class="card-body bg-black text-white py-3">--}%
-%{--                <h3 class="h5 mb-2 fs-4">--}%
-%{--                    <span data-ng-if="lbLoading"><cl:spinner/></span>--}%
-%{--                    <span data-ng-if="!lbLoading">{{transcriberCount | number}}</span>--}%
-%{--                    Volunteers--}%
-%{--                </h3>--}%
-
-%{--                <p class="mb-0">--}%
-%{--                    <span data-ng-if="lbLoading"><cl:spinner/></span>--}%
-%{--                    <span data-ng-if="!lbLoading">{{completedTasks | number}}</span>--}%
-%{--                    tasks of--}%
-%{--                    <span data-ng-if="lbLoading"><cl:spinner/></span>--}%
-%{--                    <span data-ng-if="!lbLoading">{{totalTasks | number}}</span>--}%
-%{--                    completed--}%
-%{--                </p>--}%
-%{--            </div>--}%
-%{--        </div>--}%
-
         <div class="card bg-dark text-white border-0 rounded-4 shadow-lg p-3 mb-3" style="max-width: 420px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #121824 !important;">
             <div class="card-body p-2">
                 <!-- Header -->
@@ -138,10 +108,10 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                        <img id="day-tripper-image" data-ng-src="{{avatarUrl(daily)}}" alt="Day Tripper leader" class="rounded-circle me-3" width="40" height="40">
+                        <img id="day-tripper-image" data-ng-src="{{avatarUrl(daily)}}" alt="Day Tripper leader" class="rounded border me-3" width="40" height="40">
                         <span data-ng-if="lbLoading"><cl:spinner/></span>
                         <span data-ng-if="!lbLoading">
-                            <a id="day-tripper-name" class="fw-semibold text-dark text-truncate" data-ng-href="{{userProfileUrl(daily)}}">{{daily.name}}</a>
+                            <a id="day-tripper-name" class="fw-semibold text-truncate" data-ng-href="{{userProfileUrl(daily)}}">{{daily.name}}</a>
                         </span>
                     </div>
                     <span id="day-tripper-amount" class="fw-bold text-dark">{{daily.score | number}}</span>
@@ -157,10 +127,10 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center me-2">
-                        <img id="weekly-wonder-image" data-ng-src="{{avatarUrl(weekly)}}" alt="Day Tripper leader" class="rounded-circle me-3" width="40" height="40">
+                        <img id="weekly-wonder-image" data-ng-src="{{avatarUrl(weekly)}}" alt="Day Tripper leader" class="rounded border me-3" width="40" height="40">
                         <span data-ng-if="lbLoading"><cl:spinner/></span>
                         <span data-ng-if="!lbLoading">
-                            <a id="weekly-wonder-name" class="fw-semibold text-dark text-truncate" data-ng-href="{{userProfileUrl(weekly)}}">{{weekly.name}}</a>
+                            <a id="weekly-wonder-name" class="fw-semibold text-truncate" data-ng-href="{{userProfileUrl(weekly)}}">{{weekly.name}}</a>
                         </span>
                     </div>
                     <span id="weekly-wonder-score" class="fw-bold text-dark">{{weekly.score | number}}</span>
@@ -176,10 +146,10 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center me-2">
-                        <img id="monthly-maestro-image" data-ng-src="{{avatarUrl(monthly)}}" alt="Monthly Maestro leader" class="rounded-circle me-3" width="40" height="40">
+                        <img id="monthly-maestro-image" data-ng-src="{{avatarUrl(monthly)}}" alt="Monthly Maestro leader" class="rounded border me-3" width="40" height="40">
                         <span data-ng-if="lbLoading"><cl:spinner/></span>
                         <span data-ng-if="!lbLoading">
-                            <a id="monthly-maestro-name" class="fw-semibold text-dark text-truncate" data-ng-href="{{userProfileUrl(monthly)}}">{{monthly.name}}</a>
+                            <a id="monthly-maestro-name" class="fw-semibold text-truncate" data-ng-href="{{userProfileUrl(monthly)}}">{{monthly.name}}</a>
                         </span>
                     </div>
                     <span id="monthly-maestro-score" class="fw-bold text-dark">{{monthly.score | number}}</span>
@@ -195,10 +165,10 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center me-2">
-                        <img id="alltime-leader-image" data-ng-src="{{avatarUrl(alltime)}}" alt="All-time Leader" class="rounded-circle me-3" width="40" height="40">
+                        <img id="alltime-leader-image" data-ng-src="{{avatarUrl(alltime)}}" alt="All-time Leader" class="rounded border me-3" width="40" height="40">
                         <span data-ng-if="lbLoading"><cl:spinner/></span>
                         <span data-ng-if="!lbLoading">
-                            <a id="alltime-leader-name" class="fw-semibold text-dark text-truncate" data-ng-href="{{userProfileUrl(alltime)}}">{{alltime.name}}</a>
+                            <a id="alltime-leader-name" class="fw-semibold text-truncate" data-ng-href="{{userProfileUrl(alltime)}}">{{alltime.name}}</a>
                         </span>
                     </div>
                     <span id="alltime-leader-score" class="fw-bold text-dark">{{alltime.score | number}}</span>
@@ -224,9 +194,9 @@
 
                 %{-- Begin template for task transcription contribution --}%
                 <!-- Contribution Item -->
-                <div data-ng-switch-when="task" class="list-group-item p-3">
+                <div data-ng-switch-when="task" class="list-group-item p-3 border-bottom">
                     <div class="d-flex align-items-start">
-                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded-circle me-3 flex-shrink-0" width="44" height="44">
+                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded border me-3 flex-shrink-0" width="44" height="44">
                         <div class="w-100">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <h6 class="mb-0 fw-bold text-dark"><a data-ng-href="{{userProfileUrl(contributor)}}">{{contributor.displayName}}</a></h6>
@@ -239,9 +209,9 @@
                             <div data-ng-if="contributor.projectType !== 'audio'" class="mt-2">
                                 <div class="d-flex align-items-center gap-3">
                                     <img data-ng-repeat="thumb in contributor.transcribedThumbs" data-ng-src="{{thumb.thumbnailUrl}}"
-                                         alt="Expedition Thumbnail" class="rounded border" width="48" height="48" style="object-fit: cover;">
+                                         alt="Expedition Thumbnail" class="img-thumbnail rounded border" width="48" height="48" style="object-fit: cover;">
                                 </div>
-                                <a data-ng-href="{{userProfileUrl(contributor)}}" class="btn btn-sm btn-outline-primary px-3 mt-2">
+                                <a data-ng-href="{{projectUrl(contributor)}}" class="btn btn-sm btn-outline-primary px-3 mt-2">
                                     <g:message code="join.expedition.label" /> &raquo;
                                 </a>
                             </div>
@@ -250,9 +220,9 @@
                 </div>
 
                 <!-- Contribution Item 2 (Forum Post) -->
-                <div data-ng-switch-when="forum" class="list-group-item p-3">
+                <div data-ng-switch-when="forum" class="list-group-item p-3 border-bottom">
                     <div class="d-flex align-items-start">
-                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded-circle me-3 flex-shrink-0" width="44" height="44">
+                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded border me-3 flex-shrink-0" width="44" height="44">
                         <div class="w-100" style="min-width: 0;">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <h6 class="mb-0 fw-bold text-dark">{{contributor.displayName}}</h6>
@@ -274,7 +244,7 @@
                             </div>
 
                             <div class="mt-2">
-                                <img data-ng-src="{{contributor.thumbnailUrl}}" class="rounded border" width="48" height="48" style="object-fit: cover;">
+                                <img data-ng-src="{{contributor.thumbnailUrl}}" class="img-thumbnail rounded border" width="48" height="48" style="object-fit: cover;">
                                 <div class="mt-2">
                                     <a data-ng-href="{{contributor.topicUrl}}" class="btn btn-sm btn-outline-primary px-3">
                                         <g:message code="join.discussion.label" /> &raquo;
@@ -288,10 +258,13 @@
             </div>
             <div class="list-group list-group-flush" data-ng-if="contributors.length === 0">
                 <div class="list-group-item p-3">
-                    <p class="mb-0 text-secondary small">No contributors yet.
+                    <p class="mb-1 text-secondary small">
+                        No contributors yet.
+                    </p>
+                    <p class="mb-0">
                         <a class="btn btn-sm btn-outline-primary"
-                           href="${createLink(controller: 'forum', action: 'index', params: [projectId: projectId])}">\
-                        <g:message code="start.discussion.label" />
+                           href="${createLink(controller: 'forum', action: 'index', params: [projectId: projectId])}">
+                            <g:message code="start.discussion.label" />
                         </a>
                     </p>
                 </div>
@@ -317,7 +290,7 @@
                 <!-- Contribution Item 2 (Forum Post) -->
                 <div data-ng-switch-when="forum" class="list-group-item p-3">
                     <div class="d-flex align-items-start">
-                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded-circle me-3 flex-shrink-0" width="44" height="44">
+                        <img data-ng-src="{{avatarUrl(contributor)}}" alt="{{contributor.displayName}}" class="rounded border me-3 flex-shrink-0" width="44" height="44">
                         <div class="w-100" style="min-width: 0;">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <h6 class="mb-0 fw-bold text-dark">{{contributor.displayName}}</h6>
@@ -339,7 +312,7 @@
                             </div>
 
                             <div class="mt-2">
-                                <img data-ng-src="{{contributor.thumbnailUrl}}" class="rounded border" width="48" height="48" style="object-fit: cover;">
+                                <img data-ng-src="{{contributor.thumbnailUrl}}" class="img-thumbnail rounded border" width="48" height="48" style="object-fit: cover;">
                                 <div class="mt-2">
                                     <a data-ng-href="{{contributor.topicUrl}}" class="btn btn-sm btn-outline-primary px-3">
                                         <g:message code="join.discussion.label" /> &raquo;

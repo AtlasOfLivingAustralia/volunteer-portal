@@ -9,18 +9,6 @@
     <g:set var="entityNamePlural" value="${message(code: 'default.label.plural.label', default: 'Tags')}"/>
     <title><g:message code="label.admin.editCategory.label" default="Edit Category"/></title>
     <style>
-        .label-button {
-            /*display: block;*/
-            /*position: absolute;*/
-            top: 0;
-            right: 20px;
-            padding: 4px 10px;
-            text-align: center;
-            cursor: pointer;
-            float: right;
-            font-size: 1.2em;
-        }
-
         .save-label-button, .cancel-label-button {
             display: none;
         }
@@ -53,6 +41,8 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
+                    <h3>Category Details</h3>
+                    <div class="border-bottom border-secondary-subtle border-2 my-3"></div>
                     <g:form controller="label" action="updateCategory" method="POST">
                     <div class="form-group required">
                         <label class="form-label col-md-2" for="name">
@@ -61,7 +51,7 @@
                         <div class="col-md-4" style="vertical-align: middle;">
                             <g:set var="isProtected" value="${(loadedDefaultLabels && labelCategory.isDefault)}"/>
                             <input class="form-control" id="name" name="name" type="text"
-                                   placeholder="Enter the category name"
+                                   placeholder="Example category"
                                    value="${labelCategory.name}"
                                    ${(isProtected ? "disabled='disabled'" : '')} required="required"/>
                             <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
@@ -88,7 +78,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4">
                                 <input type="submit" class="save btn btn-sm btn-primary" id="addButton"
-                                       value="${message(code: 'default.button.add.label', default: 'Save')}"/>
+                                       value="${message(code: 'default.button.add.label', default: 'Save Category')}"/>
                             </div>
                         </div>
                     </g:form>
@@ -111,7 +101,8 @@
 
     <div class="card">
         <div class="card-body">
-            <h4>${labelCategory.name} ${entityNamePlural}</h4>
+            <h3>${labelCategory.name} ${entityNamePlural}</h3>
+            <div class="border-bottom border-secondary-subtle border-2 my-3"></div>
 
             <div class="row">
                 <div class="col-md-12" style="margin-left: 5px;">
@@ -122,12 +113,12 @@
                             </label>
                             <div class="col-md-4">
                                 <input class="form-control" id="value" name="value" type="text"
-                                       placeholder="Enter the ${entityName} name"
+                                       placeholder="Example ${entityName}"
                                        required="required"/>
                                 <input type="hidden" name="categoryId" value="${labelCategory.id}"/>
                             </div>
-                            <input type="submit" class="save btn btn-sm btn-primary" id="addLabelButton"
-                                   value="${message(code: 'default.button.add.label', default: 'Add')}"/>
+                            <input type="submit" class="save btn btn-sm btn-primary mt-2" id="addLabelButton"
+                                   value="${message(code: 'default.button.add.label', default: 'Add Tag')}"/>
                         </div>
                     </g:form>
                 </div>
@@ -162,31 +153,45 @@
                                 <td style="vertical-align: middle;" class="col-md-2">
                                     ${User.get(label.createdBy)?.displayName ?: 'System'}
                                 </td>
-                                <td class="col-md-2" style="text-align: center;">
+                                <td class="col-md-2 text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary view-tags-button"
+                                            data-label-name="${label.value}"
+                                            data-label-id="${label.id}"
+                                            title="${message(code: 'label.viewtags.label', default: 'View Tag Usage')}">
+                                        <i class="fa fa-tags" aria-hidden="true"></i>
+                                    </button>
+
                                     <g:set var="isEditable" value="${(!isProtected || (isProtected && !label.isDefault))}"/>
                                     <g:if test="${(isEditable)}">
-                                        <i class="fa fa-ban label-button cancel-label-button" contenteditable="false"
-                                           title="${message(code: 'default.button.cancel.label', default: 'Cancel')}"></i>
-                                        <i class="fa fa-save label-button save-label-button" contenteditable="false"
-                                           title="${message(code: 'default.button.add.label', default: 'Save')}"></i>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary change-cat-button"
+                                                data-label-name="${label.value}"
+                                                data-label-id="${label.id}"
+                                                title="${message(code: 'label.changecat.label', default: 'Move to a different Category')}">
+                                            <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                                        </button>
 
-                                        <i class="fa fa-times label-button delete-label-button" contenteditable="false"
-                                           data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}"
-                                           title="${message(code: 'default.button.delete.label', default: 'Delete')}"></i>
-                                        <i class="fa fa-pencil label-button edit-label-button" contenteditable="false"
-                                           title="${message(code: 'default.button.edit.label', default: 'Edit')}"></i>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary edit-label-button"
+                                                title="${message(code: 'default.button.edit.label', default: 'Edit')}">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                                        </button>
 
-                                        <i class="fa fa-share-square-o label-button change-cat-button"
-                                           data-label-name="${label.value}"
-                                           data-label-id="${label.id}"
-                                           contenteditable="false"
-                                           title="${message(code: 'label.changecat.label', default: 'Move to a different Category')}"></i>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary save-label-button"
+                                                title="${message(code: 'default.button.add.label', default: 'Save')}">
+                                            <i class="fa fa-save" aria-hidden="true"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-label-button"
+                                                title="${message(code: 'default.button.cancel.label', default: 'Cancel')}">
+                                            <i class="fa fa-ban" aria-hidden="true"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-danger delete-label-button"
+                                                data-href="${createLink(controller: 'label', action: 'deleteLabel', id: label.id)}"
+                                                title="${message(code: 'default.button.delete.label', default: 'Delete')}">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                        </button>
                                     </g:if>
-                                    <i class="fa fa-tags label-button view-tags-button"
-                                       data-label-name="${label.value}"
-                                       data-label-id="${label.id}"
-                                       contenteditable="false"
-                                       title="${message(code: 'label.viewtags.label', default: 'View Tag Usage')}"></i>
+
                                 </td>
                             </tr>
                         </g:each>
@@ -207,7 +212,9 @@
                 <h4>${message(code: 'default.label.label', default: 'Tag')} Usage for: '<span id="view-label-name"></span>'</h4>
             </div>
             <div class="modal-body">
-                <div id="view-label-list"></div>
+                <div class="overflow-auto" style="max-height: 350px;">
+                    <div id="view-label-list"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="btn-close-view-labels">OK</button>
@@ -332,14 +339,14 @@ $(function($) {
             var $div = $('<div>');
             if (data.projects !== undefined && data.projects.length > 0) {
                 $div.append('<h4>Projects ('+ data.projects.length +'):</h4>');
-                var $ul = $('<ul>');
+                var $ul = $('<ul class="list-group list-group-flush">');
                 $.each(data.projects, function(index, project) {
                     if (index > 100) {
-                        var $li = $('<li>').text((data.projects.length - index) + ' more.');
+                        var $li = $('<li class="list-group-item" style="font-size: 0.9em;">').text((data.projects.length - index) + ' more.');
                         $ul.append($li);
                         return false;
                     }
-                    var $li = $('<li>').text(project.name);
+                    var $li = $('<li class="list-group-item" style="font-size: 0.9em;">').text(project.name);
                     $ul.append($li);
                 });
                 $div.append($ul);
@@ -347,9 +354,9 @@ $(function($) {
 
             if (data.landingPages !== undefined && data.landingPages.length > 0) {
                 $div.append('<h4>Landing Pages ('+ data.landingPages.length +'):</h4>');
-                var $ul = $('<ul>');
+                var $ul = $('<ul class="list-group list-group-flush">');
                 $.each(data.landingPages, function(index, page) {
-                    var $li = $('<li>').text(page.name);
+                    var $li = $('<li class="list-group-item" style="font-size: 0.9em;">').text(page.name);
                     $ul.append($li);
                 });
                 $div.append($ul);

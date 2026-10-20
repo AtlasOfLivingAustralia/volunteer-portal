@@ -692,6 +692,8 @@ class UserService {
         def results
         def missingIds
 
+        log.debug("serviceResults: ${serviceResults ?: 'null'}")
+
         if (serviceResults && !serviceResults.success) {
             log.error("Error in user id list for getUserDetailsById call: {} with ids: {}", serviceResults.message, userIds)
         }
@@ -703,6 +705,9 @@ class UserService {
             results = []
             missingIds = userIds
         }
+
+        log.debug("results: ${results}")
+        log.debug("missingIds: ${missingIds}")
 
         if (missingIds) {
             results.addAll(getMissingUserIdsAsUserDetails(missingIds))
