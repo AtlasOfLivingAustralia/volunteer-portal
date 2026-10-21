@@ -327,7 +327,7 @@ class VolunteerTagLib {
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
 
-            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [type: 'button', class:'fieldHelp', title:helpText, 'aria-label': 'Field help']
             if (attrs.placement) {
                 attributes.placement = attrs.placement
             }
@@ -348,7 +348,7 @@ class VolunteerTagLib {
                 }
             }
 
-            mb.a(attributes) {
+            mb.button(attributes) {
                 span(class:'help-container') {
                     i(class:'fa fa-question') {
                         mkp.yieldUnescaped('')

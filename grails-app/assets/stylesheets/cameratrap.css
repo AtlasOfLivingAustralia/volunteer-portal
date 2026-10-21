@@ -428,8 +428,17 @@
     margin-bottom: 0;
 }
 
-.ct-well .btn:active, .ct-well .btn.active, .ct-well .btn:focus {
+.ct-well .btn:active, .ct-well .btn.active {
     outline: none;
+}
+
+.ct-well .btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.ct-well .btn:focus-visible {
+    outline: 2px solid var(--bs-primary, #2B779A);
+    outline-offset: 2px;
 }
 
 .faux-table {

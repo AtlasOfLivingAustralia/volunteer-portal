@@ -212,7 +212,7 @@
             });
         });
 
-        bvp.bindTooltips("a.fieldHelp");
+        bvp.bindTooltips(".fieldHelp");
 
 
         $('#btnSaveField').click(function (e) {

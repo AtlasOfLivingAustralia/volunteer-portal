@@ -1218,11 +1218,13 @@ $tooltip-widths: (
 // Single source of truth for the field help "?" icon.
 // Emitted by g:fieldHelp (TranscribeTagLib) and cl:helpText (VolunteerTagLib);
 // .fieldHelp is also the selector bvp.bindTooltips() binds to.
-a.fieldHelp {
+.fieldHelp {
 	display: inline-block;
 	vertical-align: top;
 	margin-left: 0.5rem;   // spacing between the field and the ? icon
 	padding: 0 0.25rem;
+	border: 0;
+	background: transparent;
 	color: var(--bs-secondary, #6c757d);
 	text-decoration: none;
 	cursor: pointer;

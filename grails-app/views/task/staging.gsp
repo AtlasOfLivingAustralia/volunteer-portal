@@ -190,7 +190,7 @@
 
     $(document).ready(function () {
 
-        bvp.bindTooltips("a.fieldHelp");
+        bvp.bindTooltips(".fieldHelp");
 
         $(".btnAddFieldDefinition").click(function(e) {
             e.preventDefault();

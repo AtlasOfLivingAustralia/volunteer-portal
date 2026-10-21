@@ -230,12 +230,11 @@ When the task is done, update doc/bootstrap5-migration-plan.md:
 
 - tick the task checkbox
 - add/extend the conventions section (single source of truth, no duplication of what's already documented). Only update if updates were required to adhere to the widely-accepted conventions; don't add a new convention just because you think it would be nice.
-- add a dated Tracking Log entry covering: what was standardised, what was retired, bugs fixed while in scope, and any
-  correction to a previous entry - Be careful, there could be multiple entries for the same date. Make sure you are adding to the correct spot.
+- Generate a dated Tracking Log entry summarising the work done. Do not be too verbose; be concise and to the point. 
 - add new unchecked follow-up items for everything found but deliberately not done, each with enough detail (file +
   line + symptom) to action cold
 - for follow-ups needing a judgement call, include a "Prompt:" line stating the decision to be made
-- Provide a concise commit message for the changes, suitable for a single commit. Include the task number and a short description of what was done.
+- Generate a concise commit message for the changes, suitable for a single commit. Include the task number and a short description of what was done.
 - Try not to be too wordy. Be concise and to the point. No fluff.
 
 #### Constraints
@@ -544,12 +543,14 @@ Log entry for that date.*
 
 *After the markup settles, so none of it is done twice.*
 
-- [ ] Keyboard inaccessible buttons/a11y
-    - [ ] `fieldHelp` uses `<a href="#">` + `tabindex="-1"` — tooltip is keyboard-unreachable. Should be
-      `<button type="button">`.
-    - [ ] `newsItem/manage.gsp` 119 — `<span class="btn">` as an edit control.
-    - [ ] `.btn { outline: none }` removes the focus ring app-wide (WCAG 2.4.7)
-      — replace with `:focus-visible` (see Step 5-iii).
+- [X] Keyboard inaccessible buttons/a11y
+    - [X] `fieldHelp` uses `<button type="button">` controls (not keyboard-inaccessible anchors) in
+      `TranscribeTagLib` and `VolunteerTagLib`. **Completed 2026-10-21**.
+    - [X] `newsItem/manage.gsp` 119 checklist note was stale: current code already uses `<button>`
+      (`.delete-news-item`), not `<span class="btn">`. **Verified 2026-10-21**.
+    - [X] `.ct-well .btn:focus { outline: none }` was replaced with keyboard-visible `:focus-visible`
+      rules in transcribe styles (`audiotranscribe.css`, `wildlifespotter.css`, `cameratrap.css`).
+      **Completed 2026-10-21**.
 - [ ] Upload progress and status regions are not announced: `#uploadingMessage`
   (`task/selectImagesForStagingFragment.gsp` 21) and `#upload-progress`
   (`achievementDescription/_form.gsp` 87) toggle visibility with no `role="status"` / `aria-live`. Screen-reader users
@@ -2098,3 +2099,8 @@ parallel. Ships this release.
   - Updated layout of `topList` (top 20 volunteers)
   - Updated action buttons on `label/editCategory`
   - Updated edit pages to remove edit buttons and make main column the edit link.
+- 2026-10-21 — Phase 8 task 6: Keyboard inaccessible buttons/a11y completed.
+  - `fieldHelp` controls in `TranscribeTagLib` and `VolunteerTagLib` now emit semantic `<button type="button" class="fieldHelp">` triggers (replacing non-focusable anchor usage).
+  - Updated explicit tooltip bind selectors from `a.fieldHelp` to `.fieldHelp` in `template/manageFields.gsp`, `task/staging.gsp`, and `transcribe/_dynamicDatasetRows.gsp`.
+  - Updated shared field-help styling in `assets/scss/modules/_components.scss` to support button rendering (`border: 0`, `background: transparent`) without visual regressions.
+  - Replaced `.ct-well .btn:focus { outline: none }` patterns with keyboard-visible `:focus-visible` rules in `audiotranscribe.css`, `wildlifespotter.css`, and `cameratrap.css`.

@@ -702,10 +702,10 @@ class TranscribeTagLib {
     private renderFieldHelp(MarkupBuilder mb, TemplateField field, String placement = 'auto', String customClass = null) {
         if (field && field.helpText) {
             def helpText = markdownService.renderMarkdown(field.helpText)
-            def attributes = [href:'#', class:'fieldHelp', title:helpText, tabindex: "-1"]
+            def attributes = [type: 'button', class:'fieldHelp', title:helpText, 'aria-label': 'Field help']
             if (placement) attributes['placement'] = placement
             if (customClass) attributes['customClass'] = customClass
-            mb.a(attributes) {
+            mb.button(attributes) {
                 span(class: 'help-container') {
                     i(class: 'fa fa-question') {
                         mkp.yieldUnescaped('')
