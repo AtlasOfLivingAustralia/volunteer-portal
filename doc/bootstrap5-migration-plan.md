@@ -590,15 +590,6 @@ Log entry for that date.*
 - [X] `landingPageAdmin/editImage.gsp` no longer auto-submits on file `change`.
   Upload now requires an explicit `Upload` click (`btn-secondary`), and flash status is announced via a polite live
   region. **Completed 2026-10-21**.
-- [ ] Heading semantics / document outline (fold into "Keyboard inaccessible buttons/a11y" or track separately)
-    - `template/audioTemplateConfig.gsp` 47 and 154, and
-      `template/wildlifeTemplateConfig.gsp` 42 and 160, each render two `<h1>`
-      elements on one page; the second ("Animals") is a sub-section and should be
-      `<h2>`.
-    - `<h4>Step 1</h4>`, `<h4>EITHER</h4>`, `<h4>OR</h4>` in the specimen/label transcribe templates are layout labels,
-      not headings, and create empty outline levels.
-    - Prompt: "Fix the heading document outline: one h1 per page, no skipped levels, and no headings used purely for
-      visual weight. Convert the transcribe step labels to non-heading elements without changing the grid layout."
 - [ ] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
   "Pagination". Added during the rewrite in anticipation of pages with two paginators; that case exists
   (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name.
@@ -669,6 +660,11 @@ Log entry for that date.*
       - Prompt: "Decide whether transcribe field validation adopts `is-invalid` on the control (and what replaces the
         warning tier — a custom `is-warning`, or fold warnings into the existing alert only). Do this with the Phase 8
         group 8 manual transcribe review, not before, since it puts new red borders on the transcribe forms."
+    - [ ] Heading semantics / document outline 
+      - `<h4>Step 1</h4>`, `<h4>EITHER</h4>`, `<h4>OR</h4>` in the specimen/label transcribe templates are layout labels,
+        not headings, and create empty outline levels.
+      - Prompt: "Fix the heading document outline: one h1 per page, no skipped levels, and no headings used purely for
+        visual weight. Convert the transcribe step labels to non-heading elements without changing the grid layout."
   - [ ] **Inspect the 2026-09-24 `.well` → `.card` conversions.** 25 containers that rendered flat now draw a border
     and background. Highest risk: `admin/tools.gsp` and `admin/mappingTool.gsp`, where the new cards sit inside an
     existing `.card` > `.card-body` (card-in-card); and the 10 transcribe sections, which also gain the
