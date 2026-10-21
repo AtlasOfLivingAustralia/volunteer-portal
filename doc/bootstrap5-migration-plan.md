@@ -551,10 +551,12 @@ Log entry for that date.*
     - [X] `.ct-well .btn:focus { outline: none }` was replaced with keyboard-visible `:focus-visible`
       rules in transcribe styles (`audiotranscribe.css`, `wildlifespotter.css`, `cameratrap.css`).
       **Completed 2026-10-21**.
-- [ ] Upload progress and status regions are not announced: `#uploadingMessage`
-  (`task/selectImagesForStagingFragment.gsp` 21) and `#upload-progress`
-  (`achievementDescription/_form.gsp` 87) toggle visibility with no `role="status"` / `aria-live`. Screen-reader users
-  get no feedback that an upload started or finished.
+- [X] Upload progress and status regions are now announced: `#uploadingMessage`
+  (`task/selectImagesForStagingFragment.gsp` 26) and `#upload-progress`
+  (`achievementDescription/_form.gsp` 95) now expose `role="status"` / `aria-live="polite"` with atomic announcements,
+  and the badge upload flow announces start/complete/failure states. **Completed 2026-10-21**.
+- [X] Confirm whether `task/selectImagesForStagingFragment.gsp` is still reachable.
+  `submitStagingFiles(...)` has no in-repo implementation, so this may be dead modal code retained from a previous upload path.
 - [ ] `landingPageAdmin/editImage.gsp` 52–56 auto-submits the form on `change`
   with no confirmation and no announcement. Selecting a file immediately uploads and reloads. Working as built, but
   surprising.
@@ -2104,3 +2106,8 @@ parallel. Ships this release.
   - Updated explicit tooltip bind selectors from `a.fieldHelp` to `.fieldHelp` in `template/manageFields.gsp`, `task/staging.gsp`, and `transcribe/_dynamicDatasetRows.gsp`.
   - Updated shared field-help styling in `assets/scss/modules/_components.scss` to support button rendering (`border: 0`, `background: transparent`) without visual regressions.
   - Replaced `.ct-well .btn:focus { outline: none }` patterns with keyboard-visible `:focus-visible` rules in `audiotranscribe.css`, `wildlifespotter.css`, and `cameratrap.css`.
+- 2026-10-21 — Phase 8 task 6: upload progress/status announcements completed.
+  - Added live-region semantics to `achievementDescription/_form.gsp` `#upload-progress`.
+  - Added explicit badge upload status announcements (start, complete, failed) in
+    `achievementDescription/_form.gsp`.
+  - Removed `task/selectImagesForStagingFragment.gsp` as it is no longer reachable or needed.

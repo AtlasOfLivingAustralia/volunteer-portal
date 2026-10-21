@@ -92,13 +92,15 @@
     </div>
 </div>
 
-<div id="upload-progress" class="fieldcontain d-none">
+<div id="upload-progress" class="fieldcontain d-none" role="status" aria-live="polite" aria-atomic="true" aria-label="Badge image upload status">
     <div class="progress">
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
              style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
              aria-label="Image upload progress"></div>
     </div>
 </div>
+
+<div id="upload-status-message" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <asset:script type="text/javascript">
 jQuery(function($) {
@@ -174,6 +176,13 @@ jQuery(function($) {
     toggleTypeFields();
     $('#type').change(function(e) { toggleTypeFields(); });
 
+    var $uploadProgress = $('#upload-progress');
+    var $uploadStatusMessage = $('#upload-status-message');
+
+    function announceUploadStatus(message) {
+        $uploadStatusMessage.text(message);
+    }
+
     function upload(event) {
         event.preventDefault();
         // Get the selected files from the input.
@@ -208,13 +217,16 @@ jQuery(function($) {
         });
 
         event.target.innerHTML = 'Uploading...';
+        announceUploadStatus('Uploading badge image.');
         r.done(function( data, textStatus, jqXHR ) {
-            $('#upload-progress').addClass('d-none');
+            $uploadProgress.addClass('d-none');
+            announceUploadStatus('Badge image upload complete.');
             $('#badge').val(data.filename).trigger('change');
         });
 
         r.fail(function ( jqXHR, textStatus, errorThrown ) {
-            $('#upload-progress').addClass('d-none');
+            $uploadProgress.addClass('d-none');
+            announceUploadStatus('Badge image upload failed.');
             alert("Upload failed :(");
             console.log(errorThrown);
         });
@@ -227,7 +239,7 @@ jQuery(function($) {
         xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
-                $('#upload-progress').removeClass('d-none');
+                $uploadProgress.removeClass('d-none');
                 $('#upload-progress .progress-bar')
                     .width(percentComplete*100+"%")
                     .attr('aria-valuenow', Math.round(percentComplete*100));
