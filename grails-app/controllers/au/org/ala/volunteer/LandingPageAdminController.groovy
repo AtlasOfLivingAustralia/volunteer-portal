@@ -141,14 +141,18 @@ class LandingPageAdminController {
         if (params.containsKey('clear-hero')) {
             landingPage.landingPageImage = null
             landingPage.save(flush: true)
+            flash.message = message(code: 'landingPageAdmin.image.cleared', default: 'Image removed.')
 
-        } else {
+        } else if (params.containsKey('save-hero')) {
             def imageFile = request.getFile('heroImage')
-            if (imageFile) {
+            if (imageFile && !imageFile.empty) {
                 def heroImage = fileUploadService.uploadImage('landingPage', imageFile)
 
                 landingPage.landingPageImage = heroImage.name
                 landingPage.save(flush: true)
+                flash.message = message(code: 'landingPageAdmin.image.uploaded', default: 'Image uploaded.')
+            } else {
+                flash.message = message(code: 'landingPageAdmin.image.noFile', default: 'Select an image before uploading.')
             }
         }
         redirect(action: "editImage", params: ['id': landingPage.id])

@@ -538,6 +538,36 @@ Log entry for that date.*
   - [X] `stats/index.gsp` (Downloads tab)
   - [X] `label/editCategory.gsp` (View tag usage)
 - [X] Consistency on edit pages. Remove edit button, make item name a link.
+- [ ] Move flash.messages to the top of the page and overlay the content (like the system message).
+- [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
+  - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
+    `news.scss` **in addition to** digivol.css, as a last-loading overlay.
+  - [ ] Derive `$digivol-orange` from `base/_variables.scss` `$brand-color`; remove the two hard-coded `#d5502a` in
+    `_global.scss` (110, 120).
+  - [ ] "Create New Topic" uses `.pill--bg-new-post` (a badge component) as a button — switch to
+    `.forum-post-button` + `display: inline-block`.
+  - [ ] Remove unscoped `.btn { border-radius: 4px !important }`
+    (`_newsItems.scss` 170).
+  - [ ] Design decision: should `.forum-post-button` (black / orange hover)
+    align with `btn-primary`? Take to the colour discussion.
+  - Note: `_global.scss` restyles bare `table`/`th`/`td` — relevant to the
+    "Standardise table styles" task. `.pill--*` is relevant to "Tag styles".
+  - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
+    Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
+    file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
+  - [ ] Style the forum and user notebook nav-pills. Reduce their size and change to secondary colour.
+- [ ] Align notebook-2 heading sizes with the global scale
+  - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
+    `$screen-md`) and `h2: 1.5rem` (→ `1.875rem`). `notebook-2/_newsItems.scss`
+    176 sets `.a-feature.simple-header h1: 2rem`. These load after digivol.css and win on forum, user/show,
+    user/achievements, tutorials and newsItem/index, so those pages ignore the global scale in
+    `modules/_typography.scss`.
+  - Prompt: "Align the notebook-2 heading rules with the global heading scale in scss/modules/_typography.scss
+    (h1 = $font-size-2xl 26px, h2 = $font-size-xl 22px). Decide whether the responsive step-up
+    at $screen-md should be kept for all pages or dropped. Note notebook-2 has its own token scale ($
+    text-xs…$text-6xl) in _variables-and-mixins.scss — reconcile with the
+    $font-size-* tokens in base/_variables.scss, ideally by deriving one from the other so there is a single source of
+    truth."
 
 #### 6. Accessibility sweep
 
@@ -557,11 +587,9 @@ Log entry for that date.*
   and the badge upload flow announces start/complete/failure states. **Completed 2026-10-21**.
 - [X] Confirm whether `task/selectImagesForStagingFragment.gsp` is still reachable.
   `submitStagingFiles(...)` has no in-repo implementation, so this may be dead modal code retained from a previous upload path.
-- [ ] `landingPageAdmin/editImage.gsp` 52–56 auto-submits the form on `change`
-  with no confirmation and no announcement. Selecting a file immediately uploads and reloads. Working as built, but
-  surprising.
-    - Prompt: "Decide whether the hero image upload should keep auto-submit or gain an explicit Upload button like
-      every other upload in the app."
+- [X] `landingPageAdmin/editImage.gsp` no longer auto-submits on file `change`.
+  Upload now requires an explicit `Upload` click (`btn-secondary`), and flash status is announced via a polite live
+  region. **Completed 2026-10-21**.
 - [ ] Heading semantics / document outline (fold into "Keyboard inaccessible buttons/a11y" or track separately)
     - `template/audioTemplateConfig.gsp` 47 and 154, and
       `template/wildlifeTemplateConfig.gsp` 42 and 160, each render two `<h1>`
@@ -616,35 +644,6 @@ Log entry for that date.*
   four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
   source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw
   hex, not the custom property.
-- [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
-    - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
-      `news.scss` **in addition to** digivol.css, as a last-loading overlay.
-    - [ ] Derive `$digivol-orange` from `base/_variables.scss` `$brand-color`; remove the two hard-coded `#d5502a` in
-      `_global.scss` (110, 120).
-    - [ ] "Create New Topic" uses `.pill--bg-new-post` (a badge component) as a button — switch to
-      `.forum-post-button` + `display: inline-block`.
-    - [ ] Remove unscoped `.btn { border-radius: 4px !important }`
-      (`_newsItems.scss` 170).
-    - [ ] Design decision: should `.forum-post-button` (black / orange hover)
-      align with `btn-primary`? Take to the colour discussion.
-    - Note: `_global.scss` restyles bare `table`/`th`/`td` — relevant to the
-      "Standardise table styles" task. `.pill--*` is relevant to "Tag styles".
-    - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
-        Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
-        file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
-    - [ ] Style the forum and user notebook nav-pills. Reduce their size and change to secondary colour.
-- [ ] Align notebook-2 heading sizes with the global scale
-    - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
-      `$screen-md`) and `h2: 1.5rem` (→ `1.875rem`). `notebook-2/_newsItems.scss`
-      176 sets `.a-feature.simple-header h1: 2rem`. These load after digivol.css and win on forum, user/show,
-      user/achievements, tutorials and newsItem/index, so those pages ignore the global scale in
-      `modules/_typography.scss`.
-    - Prompt: "Align the notebook-2 heading rules with the global heading scale in scss/modules/_typography.scss
-      (h1 = $font-size-2xl 26px, h2 = $font-size-xl 22px). Decide whether the responsive step-up
-      at $screen-md should be kept for all pages or dropped. Note notebook-2 has its own token scale ($
-      text-xs…$text-6xl) in _variables-and-mixins.scss — reconcile with the
-      $font-size-* tokens in base/_variables.scss, ideally by deriving one from the other so there is a single source of
-      truth."
 - [ ] Rename eyebrow styles so they stop looking like heading overrides
     - `h2.heading`, `.pre-header` (`modules/_components.scss` 382–394) and
       `h2.body-heading` (396–403) are uppercase letter-spaced section labels, not heading sizes. `.modal h5` (884)
@@ -2111,3 +2110,11 @@ parallel. Ships this release.
   - Added explicit badge upload status announcements (start, complete, failed) in
     `achievementDescription/_form.gsp`.
   - Removed `task/selectImagesForStagingFragment.gsp` as it is no longer reachable or needed.
+- 2026-10-21 — Phase 8 task 6: landing page image upload now requires explicit submit.
+  - Replaced `#heroImage` auto-submit-on-change in `landingPageAdmin/editImage.gsp` with an explicit `Upload` button
+    (`btn-secondary`) and retained the existing Reset flow.
+  - Added a minimal flash message region with `role="status"` + `aria-live="polite"` so upload status is announced.
+  - `LandingPageAdminController.uploadImage` now only uploads when `save-hero` is submitted, and reports
+    uploaded/removed/no-file outcomes via flash messages.
+  - Added controller tests for clear, upload, and no-file branches.
+  - Commit message: `Phase 8 task 6: require explicit landing page image upload action`

@@ -37,6 +37,11 @@
             </div>
 
             <div class="display-inline-block">
+                <g:submitButton name="save-hero" class="save-hero btn btn-secondary"
+                                value="${message(code: 'default.button.upload.label', default: 'Upload')}"/>
+            </div>
+
+            <div class="display-inline-block">
                 <g:submitButton name="clear-hero" class="clear-hero btn btn-sm btn-outline-secondary"
                                 value="${message(code: 'default.button.reset.label', default: 'Reset')}"/>
             </div>
@@ -45,20 +50,6 @@
     </g:uploadForm>
 
 </div>
-
-
-
-<asset:script type="text/javascript" asset-defer="">
-
-    $(function() {
-
-        $('#heroImage').change(function(e){
-            // submit the forms after the file is selected
-            e.target.form.submit();
-        });
-    });
-
-</asset:script>
 
 </body>
 </html>
