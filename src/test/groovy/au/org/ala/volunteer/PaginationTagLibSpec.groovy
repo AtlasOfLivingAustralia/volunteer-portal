@@ -26,6 +26,14 @@ class PaginationTagLibSpec extends Specification implements TagLibUnitTest<Pagin
         html.endsWith('</ul></nav>')
     }
 
+    void "custom ariaLabel is applied to nav"() {
+        when:
+        def html = applyTemplate('<cl:paginate controller="test" action="index" total="30" ariaLabel="Topics, top" />')
+
+        then:
+        html.startsWith('<nav aria-label="Topics, top"><ul class="pagination">')
+    }
+
     void "last page disables next"() {
         given:
         params.offset = '20'

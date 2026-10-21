@@ -590,12 +590,9 @@ Log entry for that date.*
 - [X] `landingPageAdmin/editImage.gsp` no longer auto-submits on file `change`.
   Upload now requires an explicit `Upload` click (`btn-secondary`), and flash status is announced via a polite live
   region. **Completed 2026-10-21**.
-- [ ] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
+- [X] `PaginationTagLib` accepts an `ariaLabel` attribute that no call site passes — every paginator uses the default
   "Pagination". Added during the rewrite in anticipation of pages with two paginators; that case exists
-  (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name.
-    - Prompt: "Either give the duplicated paginators distinct `ariaLabel` values (e.g. 'Topics, top' / 'Topics,
-      bottom'), or delete the attribute as speculative generality. Two `<nav>`s with the same accessible name on one
-      page is a real, if minor, screen-reader defect."
+  (`forum/index.gsp` 71/220, `user/show.gsp` 135/238) but both currently emit the same name. **Completed 2026-10-21**.
 
 #### 7. CSS ownership, consolidation & dead code
 
@@ -2114,3 +2111,8 @@ parallel. Ships this release.
     uploaded/removed/no-file outcomes via flash messages.
   - Added controller tests for clear, upload, and no-file branches.
   - Commit message: `Phase 8 task 6: require explicit landing page image upload action`
+- 2026-10-21 — Phase 8 task 6: duplicate paginator names now distinct.
+  - Applied `ariaLabel` at duplicated paginator call sites in `forum/index.gsp` (`Topics, top` / `Topics, bottom`)
+    and `user/show.gsp` (`Tasks, top` / `Tasks, bottom`).
+  - Added `PaginationTagLibSpec` coverage to verify custom `ariaLabel` output on the wrapping `<nav>`.
+  - Commit message: `Phase 8 task 6: label duplicated paginators for a11y`
