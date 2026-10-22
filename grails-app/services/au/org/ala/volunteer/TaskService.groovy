@@ -24,14 +24,15 @@ import java.time.ZoneId
 
 import static au.org.ala.volunteer.jooq.tables.Field.FIELD
 import static au.org.ala.volunteer.jooq.tables.Project.PROJECT
+import static au.org.ala.volunteer.jooq.tables.Institution.INSTITUTION
 import static au.org.ala.volunteer.jooq.tables.Transcription.TRANSCRIPTION
 import static au.org.ala.volunteer.jooq.tables.Task.TASK
 import static org.jooq.impl.DSL.max
 import static org.jooq.impl.DSL.name
 import static org.jooq.impl.DSL.select
+import static org.jooq.impl.DSL.selectOne
 import static org.jooq.impl.DSL.table
 import static org.jooq.impl.DSL.when
-import static org.jooq.impl.DSL.or as jOr
 import static org.jooq.impl.DSL.field
 
 @Transactional
@@ -1397,15 +1398,15 @@ ORDER BY record_idx, name;
     }
 
     /**
-     *
-     * @param filter
-     * @param user
-     * @param project
-     * @param offset
-     * @param max
-     * @param sort
-     * @param order
-     * @return
+     * Get a list of tasks for the notebook view, filtered by the given filter and project, and sorted by the given sort and order.
+     * @param filter The filter to apply to the task list. Can be 'transcribed', 'validated', or 'saved'.
+     * @param user The user for whom to retrieve the task list.
+     * @param project The project to filter the task list by. Can be null to include all projects.
+     * @param offset The offset for pagination. Defaults to 0 if not provided.
+     * @param max The maximum number of tasks to return. Defaults to 100 if not provided, and is capped at 100.
+     * @param sort The column to sort the task list by. Can be 'id', 'projectName', 'dateTranscribed', or 'status'. Defaults to 'date_transcribed' if not provided.
+     * @param order The order to sort the task list by. Can be 'asc' or 'desc'. Defaults to 'desc' if not provided.
+     * @return A map containing the total number of matching tasks and a list of tasks for the current page, with each task represented as a map of its properties.
      */
     Map getNotebookTaskList(String filter, User user, Project project, Integer offset, Integer max, String sort, String order) {
         log.debug("Retrieving task list for notebook for user ${user}")
@@ -1417,31 +1418,31 @@ ORDER BY record_idx, name;
         if (!offset) offset = 0
         max = Math.max(Math.min(max ?: 0, 100), 1)
 
-        final projectFilter = PROJECT.ID.eq(project?.id)
-        def withWhereClauseList = []
-        if (FILTER_TRANSCRIBED.equalsIgnoreCase(filter) || !filter) {
-            withWhereClauseList.add(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.eq(user.userId))
-        }
-        if (FILTER_VALIDATED.equalsIgnoreCase(filter) || !filter) {
-            withWhereClauseList.add(TASK.FULLY_VALIDATED_BY.eq(user.userId))
-        }
+        final isSavedFilter = FILTER_SAVED.equalsIgnoreCase(filter)
 
-        def mainWhereClauseList = []
-        if (project) mainWhereClauseList.add(projectFilter)
-
-        final withClause =
-                select(TRANSCRIPTION.ID.as("transcription_id"),
-                       TRANSCRIPTION.TASK_ID.as("task_id"),
-                       TRANSCRIPTION.FULLY_TRANSCRIBED_BY.as("fully_transcribed_by"),
-                        TASK.FULLY_VALIDATED_BY.as("fully_validated_by"),
-                        TRANSCRIPTION.DATE_FULLY_TRANSCRIBED.as("date_fully_transcribed"),
-                        TASK.DATE_FULLY_VALIDATED.as("date_fully_validated"),
-                        TASK.IS_VALID.as("is_valid"),
-                        TASK.IS_FULLY_TRANSCRIBED.as("is_fully_transcribed"),
-                        TASK.PROJECT_ID.as("project_id"))
+        def transcribedTaskIds = create.selectDistinct(TRANSCRIPTION.TASK_ID.as("task_id"))
                 .from(TRANSCRIPTION)
                 .join(TASK).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))
-                .where(jOr(withWhereClauseList))
+                .where(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.eq(user.userId))
+        if (project) {
+            transcribedTaskIds = transcribedTaskIds.and(TASK.PROJECT_ID.eq(project.id))
+        }
+
+        def validatedTaskIds = create.select(TASK.ID.as("task_id"))
+                .from(TASK)
+                .where(TASK.FULLY_VALIDATED_BY.eq(user.userId))
+        if (project) {
+            validatedTaskIds = validatedTaskIds.and(TASK.PROJECT_ID.eq(project.id))
+        }
+
+        def notebookTaskIds
+        if (FILTER_TRANSCRIBED.equalsIgnoreCase(filter)) {
+            notebookTaskIds = transcribedTaskIds
+        } else if (FILTER_VALIDATED.equalsIgnoreCase(filter)) {
+            notebookTaskIds = validatedTaskIds
+        } else {
+            notebookTaskIds = transcribedTaskIds.union(validatedTaskIds)
+        }
 
         // SORTING
         final validSorts = [
@@ -1458,46 +1459,88 @@ ORDER BY record_idx, name;
 
         // Main select query
         def taskQuery
-        if (FILTER_SAVED.equalsIgnoreCase(filter)) {
+        if (isSavedFilter) {
             taskQuery = getSavedTaskQuery(create, user, project)
         } else {
-            taskQuery = create.with("user_transcription").as(withClause)
+            def notebookTaskIdsTable = notebookTaskIds.asTable("notebook_task_ids")
+            def notebookTaskId = notebookTaskIdsTable.field("task_id", Long)
+            def userTranscription =
+                    select(TRANSCRIPTION.TASK_ID.as("transcription_task_id"),
+                           DSL.max(TRANSCRIPTION.DATE_FULLY_TRANSCRIBED).as("date_fully_transcribed"))
+                            .from(TRANSCRIPTION)
+                            .where(TRANSCRIPTION.FULLY_TRANSCRIBED_BY.eq(user.userId))
+                            .groupBy(TRANSCRIPTION.TASK_ID)
+                            .asTable("user_transcription")
+
+            def userTranscriptionTaskId = field(name("user_transcription", "transcription_task_id"), Long)
+            def userTranscriptionDate = field(name("user_transcription", "date_fully_transcribed"))
+
+            taskQuery = create
                     .select(
-                            field(name("user_transcription", "transcription_id")),
-                            field(name("user_transcription", "task_id")),
-                            field(name("user_transcription", "fully_transcribed_by")),
-                            field(name("user_transcription", "fully_validated_by")),
-                            field(name("user_transcription", "is_valid")),
+                            TASK.ID.as("transcription_id"),
+                            TASK.ID.as("task_id"),
+                            userTranscriptionTaskId,
+                            TASK.FULLY_VALIDATED_BY.as("fully_validated_by"),
+                            TASK.IS_VALID.as("is_valid"),
                             PROJECT.ID.as("project_project_id"),
                             PROJECT.NAME.as("project_name"),
-                            field(name("user_transcription", "is_fully_transcribed")),
-                            when(field(name("user_transcription", "fully_validated_by")).eq(user.userId), field(name("user_transcription", "date_fully_validated")))
-                                    .otherwise(field(name("user_transcription", "date_fully_transcribed")))
+                            INSTITUTION.ID.as("institution_institution_id"),
+                            INSTITUTION.NAME.as("institution_name"),
+                            TASK.IS_FULLY_TRANSCRIBED.as("is_fully_transcribed"),
+                            when(TASK.FULLY_VALIDATED_BY.eq(user.userId), TASK.DATE_FULLY_VALIDATED)
+                                    .otherwise(userTranscriptionDate)
                                     .as("date_transcribed"),
-                            when(field(name("user_transcription", "is_valid")).eq(true), statusColumn.validatedStatus as String)
-                                    .when(field(name("user_transcription", "is_valid")).eq(false), statusColumn.invalidatedStatus as String)
-                                    .when(field(name("user_transcription", "fully_transcribed_by")).isNotNull(), statusColumn.transcribedStatus as String)
+                            when(TASK.IS_VALID.eq(true), statusColumn.validatedStatus as String)
+                                    .when(TASK.IS_VALID.eq(false), statusColumn.invalidatedStatus as String)
+                                    .when(TASK.IS_FULLY_TRANSCRIBED.eq(true), statusColumn.transcribedStatus as String)
+                            // When task.is_fully_transcribed is false AND the user has a transcription for the task, then the status is "In Progress" (not "Saved")
+                                    .when(userTranscriptionTaskId.isNotNull(), statusColumn.invalidatedStatus as String)
                                     .otherwise(statusColumn.savedStatus as String)
                                     .as("status")
-                    ).distinctOn(field(name("user_transcription", "task_id")))
-                    .from(table(name("user_transcription")))
-                    .join(PROJECT).on(field(name("user_transcription", "project_id")).eq(PROJECT.ID))
-                    .where(mainWhereClauseList)
-                    .orderBy(field(name("user_transcription", "task_id")).desc())
+                    )
+                    .from(notebookTaskIdsTable)
+                    .join(TASK).on(TASK.ID.eq(notebookTaskId))
+                    .leftJoin(userTranscription).on(userTranscriptionTaskId.eq(TASK.ID))
+                    .join(PROJECT).on(TASK.PROJECT_ID.eq(PROJECT.ID))
+                    .join(INSTITUTION).on(PROJECT.INSTITUTION_ID.eq(INSTITUTION.ID))
+                    .orderBy(TASK.ID.desc())
         }
 
-        // Wrapper query with column sort
-        def query = select(taskQuery.fields())
-            .from(taskQuery)
-            .orderBy(taskQuery.field(sortColumn).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC))
-
-        // Get the total rows
+        // Get the total rows using lightweight exact count queries.
         Stopwatch sw = Stopwatch.createStarted()
         def result = [:]
-        def totalCount = create.fetchCount(query)
+        Integer totalCount
+        if (isSavedFilter) {
+            def savedWhere = [TASK.IS_FULLY_TRANSCRIBED.eq(false),
+                              DSL.exists(
+                                      selectOne()
+                                              .from(FIELD)
+                                              .where(FIELD.TASK_ID.eq(TASK.ID))
+                                              .and(FIELD.SUPERCEDED.eq(false))
+                                              .and(FIELD.TRANSCRIBED_BY_USER_ID.eq(user.userId))
+                              )]
+            if (project) {
+                savedWhere.add(TASK.PROJECT_ID.eq(project.id))
+            }
+
+            totalCount = create.selectCount()
+                    .from(TASK)
+                    .where(savedWhere)
+                    .fetchOne(0, Integer)
+        } else {
+            totalCount = create.selectCount()
+                    .from(notebookTaskIds.asTable("notebook_task_ids"))
+                    .fetchOne(0, Integer)
+        }
+
         result.totalMatchingTasks = totalCount
         sw.stop()
         log.debug("TaskService.getNotebookTaskList()#CountTasks ${sw.toString()}")
+
+        // Wrapper query with column sort
+        def query = select(taskQuery.fields())
+                .from(taskQuery)
+                .orderBy(taskQuery.field(sortColumn).sort('asc'.equalsIgnoreCase(order) ? SortOrder.ASC : SortOrder.DESC))
 
         // Get the rows for the page
         query = query
@@ -1505,24 +1548,30 @@ ORDER BY record_idx, name;
                 .limit(max)
 
         sw.reset().start()
-        result.viewList = create.fetch(query).collect {row ->
-            // Find out if the user is a validator for any of the projects/institutions of the tasks in the list
-            def taskProject = Project.get(row.project_project_id as long)
-            def isValidatorForTaskProject = userService.isValidatorForProjectId(row.project_project_id as long, taskProject.institution.id)
-            log.debug("TaskService.getNotebookTaskList()#taskList.isValidator: ${isValidatorForTaskProject} for project ${taskProject.name} (${taskProject.id})")
+        def rows = create.fetch(query)
+        def validatorLookup = [:]
+        result.viewList = rows.collect { row ->
+            Long projectId = row.project_project_id as Long
+            Long institutionId = row.institution_institution_id as Long
+            String validatorKey = "${projectId}-${institutionId}"
+            if (!validatorLookup.containsKey(validatorKey)) {
+                validatorLookup[validatorKey] = userService.isValidatorForProjectId(projectId, institutionId)
+            }
 
             [
                     id: row.transcription_id,
                     task_id: row.task_id,
-                    fullyTranscribedBy: row.fully_transcribed_by,
+                    fullyTranscribedBy: row.transcription_task_id ? user.userId : null,
                     fullyValidatedBy: row.fully_validated_by,
                     isValid: row.is_valid,
                     projectId: row.project_project_id,
                     projectName: row.project_name,
+                    institutionId: row.institution_institution_id,
+                    institutionName: row.institution_name,
                     isFullyTranscribed: row.is_fully_transcribed,
                     dateTranscribed: row.date_transcribed,
                     status: row.status,
-                    isValidator: isValidatorForTaskProject
+                    isValidator: validatorLookup[validatorKey]
             ]
         }
         sw.stop()
@@ -1547,13 +1596,16 @@ ORDER BY record_idx, name;
         if (project) whereClause.add(PROJECT.ID.eq(project.id))
 
         def taskQuery = context.select(TRANSCRIPTION.ID.as("transcription_id"),
-                TRANSCRIPTION.TASK_ID,
+                TRANSCRIPTION.TASK_ID.as("transcription_task_id"),
                 TRANSCRIPTION.FULLY_TRANSCRIBED_BY,
+                TASK.ID.as("task_id"),
                 TASK.FULLY_VALIDATED_BY,
                 TASK.IS_FULLY_TRANSCRIBED,
                 TASK.IS_VALID,
                 PROJECT.ID.as("project_project_id"),
                 PROJECT.NAME.as("project_name"),
+                INSTITUTION.ID.as("institution_institution_id"),
+                INSTITUTION.NAME.as("institution_name"),
                 when(TASK.FULLY_VALIDATED_BY.eq(user.userId), TASK.DATE_FULLY_VALIDATED)
                     .when(TRANSCRIPTION.DATE_FULLY_TRANSCRIBED.isNotNull(), TRANSCRIPTION.DATE_FULLY_TRANSCRIBED)
                     .otherwise(field(name("field_entries", "date_last_updated")))
@@ -1567,6 +1619,7 @@ ORDER BY record_idx, name;
             .from(TRANSCRIPTION)
             .join(TASK).on(TASK.ID.eq(TRANSCRIPTION.TASK_ID))
             .join(PROJECT).on(PROJECT.ID.eq(TASK.PROJECT_ID))
+            .join(INSTITUTION).on(INSTITUTION.ID.eq(PROJECT.INSTITUTION_ID))
             .join((select(FIELD.TASK_ID, FIELD.TRANSCRIBED_BY_USER_ID, max(FIELD.UPDATED).as("date_last_updated"))
                     .from(FIELD)
                     .where(FIELD.SUPERCEDED.eq(false)) & FIELD.TRANSCRIBED_BY_USER_ID.eq(user.userId))
