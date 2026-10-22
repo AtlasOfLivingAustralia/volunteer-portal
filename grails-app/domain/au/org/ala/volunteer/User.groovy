@@ -86,4 +86,23 @@ class User implements AsyncEntity<User> {
         log.debug("User.hasBeenWelcomed: ${!(welcomeEmailSent == null)}")
         return !(welcomeEmailSent == null)
     }
+
+    /**
+     * Returns the initials of the user based on their first and last name.
+     * If both names are missing, it defaults to "VU" (Volunteer User).
+     * @return The initials in uppercase.
+     */
+    def getInitials() {
+        def initials = ""
+        if (firstName) {
+            initials += firstName[0]
+        }
+        if (lastName) {
+            initials += lastName[0]
+        }
+        if (!initials) {
+            initials = "VU" // default to Volunteer User if no initials can be derived
+        }
+        return initials.toUpperCase()
+    }
 }

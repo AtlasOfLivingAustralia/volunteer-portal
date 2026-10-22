@@ -243,14 +243,18 @@ class UserController {
         }
 
         def achievements = user.achievementAwards
+        def achievementList = achievementService.getAchievementsWithCounts(true, user)
         def score = WebUtils.formatNumberWithCommas(userService.getUserScore(user))
         def transcribedScore = WebUtils.formatNumberWithCommas(user.transcribedCount ?: 0)
         def validatedScore = WebUtils.formatNumberWithCommas(user.validatedCount ?: 0)
 
         Stopwatch sw = Stopwatch.createStarted()
-        def taskList = taskService.getNotebookTaskList(filter, user, project,
-                params.int('offset', 0), params.int('max', 10),
-                params.sort as String, params.order as String)
+        def taskList = [:]
+        if (currentUser && (currentUser == user.userId)) {
+            taskList = taskService.getNotebookTaskList(filter, user, project,
+                    params.int('offset', 0), params.int('max', 15),
+                    params.sort as String, params.order as String)
+        }
         sw.stop()
         log.debug("User.show()#taskList ${sw.toString()}")
 
@@ -259,6 +263,7 @@ class UserController {
                 currentUser          : currentUser,
                 project              : project,
                 achievements         : achievements,
+                achievementList      : achievementList,
                 score                : score,
                 transcribedScore     : transcribedScore,
                 validatedScore       : validatedScore,
@@ -268,7 +273,8 @@ class UserController {
                 isAdmin              : userService.isAdmin()
         ]
 
-        render(view: 'show', model: userService.appendNotebookFunctionalityToModel(myModel))
+        // render(view: 'show', model: userService.appendNotebookFunctionalityToModel(myModel))
+        render(view: 'notebook', model: userService.appendNotebookFunctionalityToModel(myModel))
     }
 
     /**
@@ -283,7 +289,7 @@ class UserController {
             return
         }
 
-        def achievementList = achievementService.getAchievementsWithCounts(currentUser)
+        def achievementList = achievementService.getAchievementsWithCounts(true, currentUser)
 
         render view: 'achievements', model: [currentUser: currentUser, achievementList: achievementList]
     }

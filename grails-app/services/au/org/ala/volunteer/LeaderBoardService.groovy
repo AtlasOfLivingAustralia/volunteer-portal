@@ -482,4 +482,32 @@ class LeaderBoardService {
             return 0
         }
     }
+
+    /**
+     * Calculates a users percentile rank based on their contribution score. Ignores users with no contribution.
+     * @param userId the user to rank
+     * @return the users percentile rank.
+     */
+    def getUserPercentile(String userId) {
+        // Get the user's percentile rank based on their contribution score
+        def userRank = getUserRank(userId)
+        if (userRank == 0) {
+            return 0
+        }
+        // Get the total users with a transcribed or validated count greater than 0, excluding ineligible users
+        def ineligibleUsers = settingsService.getSetting(SettingDefinition.IneligibleLeaderBoardUsers)
+        def totalUsers = User.createCriteria().count {
+            or {
+                gt("transcribedCount", 0)
+                gt("validatedCount", 0)
+            }
+            if (ineligibleUsers.size() > 0) {
+                not {
+                    inList("userId", ineligibleUsers)
+                }
+            }
+        }
+        def percentile = ((totalUsers - userRank) / totalUsers) * 100
+        return percentile
+    }
 }

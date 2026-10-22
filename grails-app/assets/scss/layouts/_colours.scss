@@ -1,7 +1,68 @@
+/*
+ * Background colours
+ */
 .bg-black {
   background-color: #000;
 }
 
 .bg-bronze {
     background-color: #CE8946;
+}
+
+.bg-digivol {
+  background-color: $brand-color;
+}
+
+.bg-light-subtle {
+    background-color: #F5F5F5;
+}
+
+/*
+ * Text colours
+ */
+.text-bg-success {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.text-bg-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.text-bg-info {
+    background-color: #17a2b8;
+    color: #000000;
+}
+
+.text-warning {
+    color: #ffc107;
+}
+
+.text-bg-light {
+    background-color: #f8f9fa;
+    color: #000000;
+}
+
+/*
+ * Border colours
+ */
+.border-purple {
+    border: 1px solid $purple !important;
+}
+
+.border-validated {
+    border: 1px solid $brand-success !important;
+}
+
+.border-transcribed {
+    border: 1px solid $purple !important;
+}
+
+.border-saved {
+    border: 1px solid $orange !important;
+}
+
+.border-in-progress {
+    border: 1px solid $link-color !important;
 }

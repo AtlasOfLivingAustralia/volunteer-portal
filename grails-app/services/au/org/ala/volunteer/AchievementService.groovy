@@ -448,7 +448,7 @@ class AchievementService implements EventPublisher {
      * @param user An optional user record to check if this user has a certain achievement.
      * @return a Map containing the achievements and counts.
      */
-    def getAchievementsWithCounts(User user = null) {
+    def getAchievementsWithCounts(boolean sortByAchieved = false, User user = null) {
         DSLContext context = jooqContextFactory()
         def results = context.select(ACHIEVEMENT_DESCRIPTION.ID,
                 count(ACHIEVEMENT_AWARD.ID).as("Awarded"))
@@ -494,6 +494,25 @@ class AchievementService implements EventPublisher {
                     awarded: awarded,
                     status: status
             ]
+        }
+
+        // Sort the results by awarded and then name alphabetically.
+        if (sortByAchieved) {
+            result = result.sort { a, b ->
+                if (a.awarded && b.awarded) {
+                    return a.achievement.name <=> b.achievement.name
+                } else if (a.awarded) {
+                    return -1
+                } else if (b.awarded) {
+                    return 1
+                } else {
+                    return a.achievement.name <=> b.achievement.name
+                }
+            }
+        } else {
+            result = result.sort { a, b ->
+                a.achievement.name <=> b.achievement.name
+            }
         }
 
         result

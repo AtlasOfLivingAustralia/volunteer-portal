@@ -1476,4 +1476,93 @@ function notify() {
             out << ")"
         }
     }
+
+    /**
+     * Displays a gravatar image for a user or email address.  If the user has no gravatar, a default image is displayed.
+     * @attr user The user instance to get the gravatar for
+     * @attr email The email address to get the gravatar for (overrides user instance)
+     * @attr size The size of the gravatar image (default 80)
+     * @attr cssClass The CSS class to apply to the image (default 'gravatar-image')
+     * @attr defaultImage The default image to use if the user has no gravatar (default '404')
+     * @attr rating The rating of the gravatar image (default 'g')
+     * @attr addLink If true, adds a link to the gravatar website around the image (default false)
+     */
+    def gravatarImage = { attrs, body ->
+        def user = attrs.user as User
+        def email = attrs.email ?: user?.email
+        def size = attrs.size ?: 80
+        def cssClass = attrs.cssClass ?: 'gravatar-image'
+        def defaultImage = attrs.defaultImage ?: '404'
+        def rating = attrs.rating ?: 'g'
+        def addLink = attrs.addLink ?: false
+        def gravatarUrl = "https://www.gravatar.com/avatar/${email?.trim()?.toLowerCase()?.encodeAsMD5()}?s=${size}&r=${rating}"
+        if (defaultImage && defaultImage != '404') {
+            gravatarUrl += "&d=${URLEncoder.encode(defaultImage, 'UTF-8')}"
+        } else {
+            gravatarUrl += "&d=404"
+        }
+        def noAvatar = false
+        // Check if the gravatar URL returns a 404, if so, use the default image instead
+        try {
+            def connection = new URL(gravatarUrl).openConnection()
+            connection.setRequestMethod("HEAD")
+            connection.connect()
+            if (connection.responseCode == 404) {
+                noAvatar = true
+            }
+        } catch (Exception e) {
+            log.error("Error checking gravatar URL: ${e.message}")
+            noAvatar = true
+        }
+        if (!noAvatar) {
+            if (addLink) {
+                out << "<a href=\"https://gravatar.com/\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"To customise your avatar, register your email address at gravatar.com...\">"
+            }
+            out << "<img src=\"${gravatarUrl}\" alt=\"Gravatar image\" width=\"53\" alt=\"Gravatar Image\" aria-label=\"Gravatar Image\" class=\"${cssClass}\"/>"
+            if (addLink) {
+                out << "</a>"
+            }
+        } else {
+            if (addLink) {
+                out << "<a href=\"https://gravatar.com/\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"To customise your avatar, register your email address at gravatar.com...\">"
+            }
+            out << "<div class=\"p-2 bg-danger rounded text-white me-3 default-avatar\" style=\"width: 53px; height: 53px; display: grid; place-items: center; font-weight: bold;\">"
+            out << "${user?.getInitials() ?: 'VU'}" // VU = Volunteer User
+            out << "</div>"
+            if (addLink) {
+                out << "</a>"
+            }
+        }
+    }
+
+    /**
+     * Displays a text description of the user's rank percentile based on their rank and total number of users.
+     * @attr rank The user's rank (1-based)
+     * @attr total The total number of users
+     */
+    def rankPercentile = { attrs, body ->
+        def rank = (attrs.rank as String)?.replaceAll(",", "")?.toInteger()
+        def total = (attrs.total as String)?.replaceAll(",", "")?.toInteger()
+        if (rank && total) {
+            def percentile = (1 - ((rank - 1) / total)) * 100
+            // Options: Top 1%, Top 5%, Top 10%, Top 25%, Top 50%, blank if lower than 50%
+            if (percentile >= 99.5) {
+                out << "Top 0.5% contributor"
+            } else if (percentile >= 99) {
+                out << "Top 1% contributor"
+            } else if (percentile >= 95) {
+                out << "Top 5% contributor"
+            } else if (percentile >= 90) {
+                out << "Top 10% contributor"
+            } else if (percentile >= 75) {
+                out << "Top 25% contributor"
+            } else if (percentile >= 50) {
+                out << "Top 50% contributor"
+            } else {
+                out << ""
+            }
+        } else {
+            out << "N/A"
+        }
+    }
 }

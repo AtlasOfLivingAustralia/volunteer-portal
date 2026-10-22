@@ -1066,14 +1066,20 @@ table thead th {
 	width: 60%;
 	margin: 30px auto;
 }
+
 .profile-tabs>li>a {
 	border-radius: 0;
 }
+
 @media (min-width: $screen-xs-max) {
 	.avatar-holder {
 		width: 100%;
 		margin: 0;
 	}
+}
+
+.default-avatar {
+	font-size: $font-size-xl;
 }
 
 

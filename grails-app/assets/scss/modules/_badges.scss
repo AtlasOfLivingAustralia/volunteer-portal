@@ -14,9 +14,9 @@
 
 /* Softened corners rather than a full pill — the 1em pill was the pre-2026 style.
    Lives here, not in digivol-custom.css, which loads after the SCSS and silently won. */
-.badge {
-	border-radius: 0.5em;
-}
+//.badge {
+//	border-radius: 0.5em;
+//}
 
 /* Status — semantic */
 
@@ -38,16 +38,18 @@
 }
 
 .badge--transcribed {
-	background-color: #9b59b6;
+	background-color: $purple-light;
+	color: $purple;
 }
 
 .badge--saved {
-	background-color: #e67e22;
+	background-color: $orange-light;
+	color: $orange;
 }
 
 .badge--validated {
-	background-color: #5cb85c;
-	color: #212529;
+	background-color: #aceaac;
+	color: $brand-success;
 }
 
 /* Forum topic types — semantic, same vocabulary as task status */
@@ -62,7 +64,8 @@
 }
 
 .badge--announcement {
-	background-color: #9b59b6;
+	background-color: $purple;
+	color: #FFFFFF;
 }
 
 .badge--discussion {
@@ -105,7 +108,8 @@
 }
 
 .badge--purple {
-	background-color: #9b59b6;
+	background-color: $purple-light;
+	color: $purple;
 }
 
 .badge--darkgrey {
@@ -129,7 +133,6 @@
 .not-a-badge:hover {
 	color: var(--brand-primary);
 }
-
 
 .char-counter {
 	padding-top: 0.5rem;
