@@ -2116,3 +2116,5 @@ parallel. Ships this release.
     and `user/show.gsp` (`Tasks, top` / `Tasks, bottom`).
   - Added `PaginationTagLibSpec` coverage to verify custom `ariaLabel` output on the wrapping `<nav>`.
   - Commit message: `Phase 8 task 6: label duplicated paginators for a11y`
+- 2026-10-22 - Redesigned user notebook for BS5, with updated buttons, cards and layout.
+  - Optimised `getNotebookTaskList()` query and count performance
