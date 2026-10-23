@@ -2118,3 +2118,5 @@ parallel. Ships this release.
   - Commit message: `Phase 8 task 6: label duplicated paginators for a11y`
 - 2026-10-22 - Redesigned user notebook for BS5, with updated buttons, cards and layout.
   - Optimised `getNotebookTaskList()` query and count performance
+- 2026-10-23 - Cleaned up old/unused Styles for notebook/forum
+  - Added thumbnail to notebook task history table. Also added functionality to open image in a modal.
