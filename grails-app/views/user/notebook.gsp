@@ -167,7 +167,7 @@
         <!-- FULL ACHIEVEMENT POPUP MODAL WINDOW ONLY FOR LOGGED-IN USER-->
         <g:render template="notebookBadgeModal" model="[achievementList: achievementList]"/>
         <!-- End of Full Achievement Popup Modal Window -->
-
+        <g:render template="notebookTaskImageModal" />
         <g:render template="notebookTaskHistory" model="[userInstance: userInstance, currentUser: currentUser, viewTaskList: viewTaskList, totalMatchingTasks: totalMatchingTasks]"/>
     </g:if>
 
@@ -179,6 +179,21 @@
     $(document).ready(function () {
         // Initialise tooltips
         bvp.bindTooltips("");
+
+        $('.open-full-image').on('click', function() {
+            const fullImageUrl = $(this).data('full-src');
+            // Get the task name from the data attribute
+            const taskName = $(this).data('task-name');
+            // Open the full image in a modal
+            $('#taskImageDisplay').attr('src', fullImageUrl);
+            $('#taskImageModalTitle').text(taskName);
+            $('#taskImageModalTitle').attr('title', taskName);
+            $('#taskImageModalTitle').attr('aria-label', taskName);
+            const imageModal = document.querySelector('#imageModal')
+            const modal = bootstrap.Modal.getOrCreateInstance(imageModal) // Returns a Bootstrap modal instance
+            modal.show();
+        });
+
     });
 </asset:script>
 </body>

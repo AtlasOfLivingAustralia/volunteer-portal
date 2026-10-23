@@ -65,10 +65,13 @@
             <!-- Sample Table Row 1 -->
         <g:each in="${viewTaskList}" var="row">
             <tr>
-                <td class="text-muted fw-mono">${row.task_id}</td>
+                <td class="text-muted fw-mono pointer">
+                    <cl:taskThumbnail taskId="${row.task_id}" height="60" openFullImage="true"/>
+%{--                    ${row.task_id}--}%
+                </td>
                 <td>
-                    <div class="fw-semibold text-dark"><a href="${createLink(controller: 'project', action: 'index', id: row.projectId)}">${row.projectName}</a></div>
-                    <small class="text-muted fs-8"><a href="${createLink(controller: 'institution', action: 'index', id: row.institutionId)}">${row.institutionName}</a></small>
+                    <div class="fw-semibold text-dark"><a href="${createLink(controller: 'project', action: 'index', id: row.projectId)}" target="_blank">${row.projectName}</a></div>
+                    <small class="text-muted fs-8"><a href="${createLink(controller: 'institution', action: 'index', id: row.institutionId)}" target="_blank">${row.institutionName}</a></small>
                 </td>
                 <td class="text-nowrap text-muted"> <g:formatDate date="${row.dateTranscribed}"
                                                                   format="${DateConstants.DATE_TIME_FORMAT}"/></td>

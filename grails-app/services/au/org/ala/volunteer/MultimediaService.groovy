@@ -93,7 +93,7 @@ class MultimediaService {
                 mapping: 'taskImage',
                 params: [
                     multimediaId: media.id.toString(),
-                    externalIdentifier: media.task.externalIdentifier,
+                    externalIdentifier: URLEncoder.encode(media.task.externalIdentifier, "UTF-8"),
                     size: size
                 ],
                 absolute: true
@@ -144,7 +144,7 @@ class MultimediaService {
                 mapping: 'taskImage',
                 params: [
                     multimediaId: media.id.toString(),
-                    externalIdentifier: media.task.externalIdentifier,
+                    externalIdentifier: URLEncoder.encode(media.task.externalIdentifier, "UTF-8"),
                     size: 'thumb'
                 ],
                 absolute: absolute

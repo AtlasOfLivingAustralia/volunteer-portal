@@ -944,54 +944,13 @@ h2.body-heading {
 }
 
 /* Forum Styles */
-.forum-table {
-	.forum-thumb {
-		margin: 10px;
-	}
-	th, td {
-	}
-	.button {
-		&.sortable {
-			padding: 0 10px 10px 8px;
-			background-color: transparent;
-			font-weight: 400;
-			a.btn {
-				padding: 0;
-			}
 
-		}
-	}
-}
-.expedition-forum {
-	h3 {
-		font-weight: 400;
-		margin-top: 0;
-	}
-	.expedition-details {
-			padding: 10px 0;
-	}
-	.expedition-progress {
-		margin-top: 10px;
-		margin-bottom: 20px;
-	}
-}
+.forum {
+	// Main Forum class
 
-.input-hint {
-	cursor:pointer;
-	float: right;
-	color: #999;
-	font-size: $font-size-lg;
-	&:hover {
-		color: $black;
+	.container {
+		background-color: white;
 	}
-}
-
-.tab-pane-header {
-	margin-bottom: 20px;
-}
-table thead th {
-	font-weight: 400;
-	color: $black;
 }
 
 /* Map Styles */
@@ -1244,5 +1203,9 @@ $tooltip-widths: (
 .count_message {
 	color: white;
 	background-color: darken(darkgrey, 20%);
+}
+
+.pointer {
+	cursor: pointer;
 }
 

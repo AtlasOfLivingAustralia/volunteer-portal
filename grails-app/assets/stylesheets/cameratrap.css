@@ -289,11 +289,6 @@
     text-overflow: ellipsis;
 }
 
-.pointer {
-    cursor: pointer;
-}
-
-
 .cycler { position:relative; }
 .cycler img {
     transition: opacity 1.5s ease-in-out;

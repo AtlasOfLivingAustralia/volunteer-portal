@@ -701,14 +701,22 @@ class VolunteerTagLib {
     def taskThumbnail = { attrs, body ->
         Stopwatch sw = Stopwatch.createStarted()
         def task
-        if (attrs.taskId) task = Task.get(attrs.taskId as long)
+        if (attrs.taskId) task = Task.get(attrs.taskId as long) as Task
         else if (attrs.task) task = attrs.task as Task
 
         def fixedHeight = attrs.fixedHeight
+        def height = attrs.height as Integer
         def withHidden = attrs.withHidden
+        def openFullImage = attrs.openFullImage
 
         if (fixedHeight == null) fixedHeight = true
         if (withHidden == null) withHidden = false
+        if (openFullImage == null) openFullImage = false
+        if (height == null) {
+            height = 100
+        } else {
+            fixedHeight = true
+        }
 
         if (task) {
             def url = "", fullUrl = ''
@@ -719,7 +727,7 @@ class VolunteerTagLib {
                             mapping: 'taskImage',
                             params: [
                                     multimediaId: mm.id.toString(),
-                                    externalIdentifier: mm.task.externalIdentifier,
+                                    externalIdentifier: URLEncoder.encode(mm.task.externalIdentifier, "UTF-8"),
                                     size: 'thumb'
                             ]
                     )
@@ -727,8 +735,10 @@ class VolunteerTagLib {
                             mapping: 'taskImage',
                             params: [
                                     multimediaId: mm.id.toString(),
-                                    externalIdentifier: mm.task.externalIdentifier
-                            ]
+                                    externalIdentifier: URLEncoder.encode(mm.task.externalIdentifier, "UTF-8")
+                            ],
+                            // Add server URL to the full image link to ensure it works in emails and other contexts where relative links may not resolve correctly
+                            absolute: true
                     )
                 } else {
                     url = multimediaService.getImageThumbnailUrl(mm)
@@ -736,20 +746,39 @@ class VolunteerTagLib {
                 }
             }
 
+            def imageExists = true
+            try {
+                // URL encode the fullUrl to handle spaces and special characters
+                //def connection = new URL(URLEncoder.encode(fullUrl, "UTF-8")).openConnection()
+                log.debug("Checking task image URL: ${fullUrl}")
+                def connection = new URL(fullUrl).openConnection()
+                connection.setRequestMethod("HEAD")
+                connection.connect()
+                log.debug("Checking task image URL: ${fullUrl}, response code: ${connection.responseCode}")
+                if (connection.responseCode != 200) {
+                    log.debug("Task image URL not found: ${fullUrl}")
+                    imageExists = false
+                }
+            } catch (Exception e) {
+                log.error("Error checking task image URL: ${e.message}")
+                imageExists = false
+            }
+
             if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
                 url = resource(file:'/icons-audio-52.png')
             }
 
-            if (!url) {
+            log.debug("taskThumbnail: taskId=${task.id}, url=${url}, fullUrl=${fullUrl}, imageExists=${imageExists}")
+            if (!url || !imageExists) {
                 // sample
                 url = resource(file:'/sample-task-thumbnail.jpg')
             }
-            if (!fullUrl) {
+            if (!fullUrl || !imageExists) {
                 fullUrl = resource(file: '/sample-task.jpg')
             }
 
             if (url && task.project.projectType.name != ProjectType.PROJECT_TYPE_AUDIO) {
-                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? ' style="height:100px"' : ''} />"
+                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? " style=\"height:${height}px\"" : ''} class=\"img-thumbnail ${openFullImage ? 'open-full-image' : ''}\" data-task-id=${task.id} data-task-name=\"${task.externalIdentifier}\"/>"
                 if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             } else {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" />"
@@ -757,7 +786,7 @@ class VolunteerTagLib {
             }
 
         }
-        log.debug("taskThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}")
+        log.debug("taskThumbnail: ${sw.stop().elapsed(TimeUnit.SECONDS)}s")
     }
 
     /**
