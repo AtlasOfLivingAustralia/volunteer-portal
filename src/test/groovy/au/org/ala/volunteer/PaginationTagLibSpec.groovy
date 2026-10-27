@@ -19,7 +19,7 @@ class PaginationTagLibSpec extends Specification implements TagLibUnitTest<Pagin
         def html = applyTemplate('<cl:paginate controller="test" action="index" total="30" />')
 
         then:
-        html.startsWith('<nav aria-label="Pagination"><ul class="pagination">')
+        html.startsWith('<nav class="" aria-label="Pagination"><ul class="pagination">')
         html.contains('<li class="page-item disabled"><span class="page-link" aria-hidden="true">&laquo;</span></li>')
         html.contains('<li class="page-item active" aria-current="page"><span class="page-link">1</span></li>')
         html.contains('aria-label="Next page"')
@@ -31,7 +31,7 @@ class PaginationTagLibSpec extends Specification implements TagLibUnitTest<Pagin
         def html = applyTemplate('<cl:paginate controller="test" action="index" total="30" ariaLabel="Topics, top" />')
 
         then:
-        html.startsWith('<nav aria-label="Topics, top"><ul class="pagination">')
+        html.startsWith('<nav class="" aria-label="Topics, top"><ul class="pagination">')
     }
 
     void "last page disables next"() {

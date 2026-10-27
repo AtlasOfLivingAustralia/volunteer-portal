@@ -132,14 +132,14 @@ class VolunteerStatsServiceSpec extends Specification implements ServiceUnitTest
         service.metaClass.getStatsForProjects = { String sessionId, int projectCount ->
             assert sessionId == capturedSessionId
             assert projectCount == 2
-            [tasks: 10,
-             transcriptions: 6,
-             transcribers: 4,
+            [totalTasks: 10,
+             completedTasks: 6,
+             transcriberCount: 4,
              transcriptionCount: 12,
-             templateCount: 2,
-             speciesCount: 8,
-             avgTimeToTranscribe: 45,
-             maxTimeToTranscribe: 120,
+             templates: 2,
+             speciesTranscribed: 8,
+             avgTranscriptionTime: 45,
+             maxTranscriptionTime: 120,
              institutionCount: 1]
         }
         service.metaClass.loadLeaderBoardStats = { Institution institution, String sessionId, boolean disableHonourBoard ->
@@ -220,7 +220,8 @@ class VolunteerStatsServiceSpec extends Specification implements ServiceUnitTest
                 assert query.contains('stats_session_filter')
                 assert params.sessionId == sessionId
                 if (query.contains('task_count') && query.contains('transcribed_count')) return [task_count: 10, transcribed_count: 6]
-                if (query.contains('transcription_count') && query.contains('transcriber_count')) return [transcription_count: 12, transcriber_count: 4, avg_time: 45, max_time: 120]
+                if (query.contains('transcription_count') && query.contains('transcriber_count')) return [transcription_count: 12, transcriber_count: 4]
+                if (query.contains('avg_time') && query.contains('max_time')) return [avg_time: 45, max_time: 120]
                 if (query.contains('template_count')) return [template_count: 2]
                 if (query.contains('species_count')) return [species_count: 8]
                 if (query.contains('institution_count')) return [institution_count: 1]
@@ -242,15 +243,15 @@ class VolunteerStatsServiceSpec extends Specification implements ServiceUnitTest
         def result = service.getStatsForProjects(sessionId, 2)
 
         then:
-        result.tasks == 10
-        result.transcriptions == 6
-        result.transcribers == 4
+        result.totalTasks == 10
+        result.completedTasks == 6
+        result.transcriberCount == 4
         result.transcriptionCount == 12
         result.projectCount == 2
-        result.templateCount == 2
-        result.speciesCount == 8
-        result.avgTimeToTranscribe == 45
-        result.maxTimeToTranscribe == 120
+        result.templates == 2
+        result.speciesTranscribed == 8
+        result.avgTranscriptionTime == 45
+        result.maxTranscriptionTime == 120
         result.institutionCount == 1
         result.projectsInLabels == []
         result.projectTempTable == 'stats_session_filter'
