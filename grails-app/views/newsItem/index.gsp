@@ -95,24 +95,8 @@
 
         function doSearch() {
             let q = encodeURIComponent($('#searchbox').val());
-            window.location = getLink("${createLink(controller: 'newsItem', action: 'index')}", "q", q);
+            window.location = bvp.getNewLink("${createLink(controller: 'newsItem', action: 'index')}", window.location.search, ['q'], {q: q});
         }
-
-        function getLink(url, replaceParam, replaceVar) {
-            const params = new URLSearchParams(window.location.search);
-            let searchQuery = params.get('q');
-
-            let goUrl = "";
-
-            if (searchQuery || replaceParam === 'q') {
-                goUrl += (goUrl.length === 0) ? "?" : "&";
-                if (replaceParam === 'q') goUrl += "q=" + replaceVar;
-                else goUrl += "q=" + searchQuery;
-            }
-
-            return url + goUrl;
-        }
-
     });
 
 </asset:script>

@@ -539,35 +539,9 @@ Log entry for that date.*
   - [X] `label/editCategory.gsp` (View tag usage)
 - [X] Consistency on edit pages. Remove edit button, make item name a link.
 - [ ] Move flash.messages to the top of the page and overlay the content (like the system message).
-- [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
+- [X] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
   - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
     `news.scss` **in addition to** digivol.css, as a last-loading overlay.
-  - [ ] Derive `$digivol-orange` from `base/_variables.scss` `$brand-color`; remove the two hard-coded `#d5502a` in
-    `_global.scss` (110, 120).
-  - [ ] "Create New Topic" uses `.pill--bg-new-post` (a badge component) as a button — switch to
-    `.forum-post-button` + `display: inline-block`.
-  - [ ] Remove unscoped `.btn { border-radius: 4px !important }`
-    (`_newsItems.scss` 170).
-  - [ ] Design decision: should `.forum-post-button` (black / orange hover)
-    align with `btn-primary`? Take to the colour discussion.
-  - Note: `_global.scss` restyles bare `table`/`th`/`td` — relevant to the
-    "Standardise table styles" task. `.pill--*` is relevant to "Tag styles".
-  - [ ] `notebook-reset.css` 263 sets `::-webkit-file-upload-button { appearance: button; font: inherit }` unscoped.
-    Harmless today — it only restores defaults our theming then overrides — but it is a global pseudo-element rule in a
-    file that loads outside the SCSS pipeline. Fold into the digivol-custom / stylesheet-consolidation item.
-  - [ ] Style the forum and user notebook nav-pills. Reduce their size and change to secondary colour.
-- [ ] Align notebook-2 heading sizes with the global scale
-  - `notebook-2/_global.scss` 12–30 sets `h1: 1.875rem` (→ `2.25rem` at
-    `$screen-md`) and `h2: 1.5rem` (→ `1.875rem`). `notebook-2/_newsItems.scss`
-    176 sets `.a-feature.simple-header h1: 2rem`. These load after digivol.css and win on forum, user/show,
-    user/achievements, tutorials and newsItem/index, so those pages ignore the global scale in
-    `modules/_typography.scss`.
-  - Prompt: "Align the notebook-2 heading rules with the global heading scale in scss/modules/_typography.scss
-    (h1 = $font-size-2xl 26px, h2 = $font-size-xl 22px). Decide whether the responsive step-up
-    at $screen-md should be kept for all pages or dropped. Note notebook-2 has its own token scale ($
-    text-xs…$text-6xl) in _variables-and-mixins.scss — reconcile with the
-    $font-size-* tokens in base/_variables.scss, ideally by deriving one from the other so there is a single source of
-    truth."
 
 #### 6. Accessibility sweep
 
@@ -1170,6 +1144,7 @@ parallel. Ships this release.
   checkbox branch emitted only a class literal, so `validate[required]` was lost.
   **Completed 2026-09-30** alongside the Phase 8 group 3 radio item in the same `TranscribeTagLib` `switch` edit,
   with focused taglib-spec coverage for checkbox/radio class emission.
+- [ ] Replace JavaScript getLink() local functions and update doSearch() calls to use new bvp.getNewLink().
 - [ ] `picklist/show.gsp` 11 — `location.href = "?q=" + query` with no
   `encodeURIComponent`. Any `&`, `#` or `+` in the search term corrupts the query string. Every other `doSearch()` in
   the app encodes. Behaviour bug.
@@ -2120,3 +2095,12 @@ parallel. Ships this release.
   - Optimised `getNotebookTaskList()` query and count performance
 - 2026-10-23 - Cleaned up old/unused Styles for notebook/forum
   - Added thumbnail to notebook task history table. Also added functionality to open image in a modal.
+- 2026-10-27 - Refactored forum UI to Bootstrap card-based layout across topic list/view/edit/new-topic pages.
+  - Added forum moderator actions for topic state: mark answered/unanswered and lock/unlock.
+  - Updated forum watch behavior (topic + expedition context) and related button states.
+  - Added quoted-reply handling path in preview/edit flows, including quote detection.
+  - Extended watched expeditions sorting support (sort/order) in forum service/controller.
+  - Updated shared URL builder in bvp-common.js and migrated callers (leaderBoard, newsItem, project).
+  - Added forum SCSS updates (badges, borders, forms/TomSelect, blockquotes, avatar sizing); removed legacy forum CSS block from digivol-custom.css.
+  - Added/updated forum backup GSP snapshots and added new specs: ForumControllerSpec, ForumTagLibSpec.
+

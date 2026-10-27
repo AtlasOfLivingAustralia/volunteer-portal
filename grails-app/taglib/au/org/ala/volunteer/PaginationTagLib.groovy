@@ -75,8 +75,12 @@ class PaginationTagLib {
         linkTagAttrs.params = linkParams
 
         def cssClasses = "pagination"
+        def navCssClasses = ""
         if (attrs.class) {
             cssClasses = "pagination " + attrs.class
+        }
+        if (attrs.navClass) {
+            navCssClasses = attrs.navClass
         }
 
         // "" must suppress the arrow, so test for null rather than truthiness
@@ -93,7 +97,7 @@ class PaginationTagLib {
 
         linkTagAttrs.class = 'page-link'
 
-        writer << "<nav aria-label=\"${attrs.ariaLabel ?: 'Pagination'}\">"
+        writer << "<nav class=\"${navCssClasses}\" aria-label=\"${attrs.ariaLabel ?: 'Pagination'}\">"
         writer << "<ul class=\"${cssClasses}\">"
 
         if (prevText) {

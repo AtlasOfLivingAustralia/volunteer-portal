@@ -94,6 +94,14 @@
 		}
 	}
 
+	&.forum {
+		background-color: #fff;
+		padding:  1rem 0 1rem 0;
+		h1, h2 {
+			color: $black;
+		}
+	}
+
 	&.expedition {
 		background-color: #fff;
 		padding: 60px 0 0 0;
@@ -947,10 +955,21 @@ h2.body-heading {
 
 .forum {
 	// Main Forum class
-
-	.container {
+	main {
 		background-color: white;
 	}
+}
+
+blockquote {
+	border-left: 5px solid #a9a9a9;
+	background-color: #f5f5f5;
+	padding: 5px;
+	margin-top: 5px;
+	font-style: normal;
+}
+
+blockquote p {
+	padding: 0;
 }
 
 /* Map Styles */
@@ -1038,7 +1057,9 @@ h2.body-heading {
 }
 
 .default-avatar {
-	font-size: $font-size-xl;
+	/* Scales font fluidly; fits wide letters automatically without class swapping */
+	font-size: clamp(0.875rem, 45cqw, 1.5rem);
+	text-transform: uppercase;
 }
 
 

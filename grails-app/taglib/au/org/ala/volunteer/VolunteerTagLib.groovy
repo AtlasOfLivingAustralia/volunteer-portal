@@ -1519,7 +1519,7 @@ function notify() {
     def gravatarImage = { attrs, body ->
         def user = attrs.user as User
         def email = attrs.email ?: user?.email
-        def size = attrs.size ?: 80
+        def size = attrs.size as Integer ?: 80
         def cssClass = attrs.cssClass ?: 'gravatar-image'
         def defaultImage = attrs.defaultImage ?: '404'
         def rating = attrs.rating ?: 'g'
@@ -1547,7 +1547,7 @@ function notify() {
             if (addLink) {
                 out << "<a href=\"https://gravatar.com/\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"To customise your avatar, register your email address at gravatar.com...\">"
             }
-            out << "<img src=\"${gravatarUrl}\" alt=\"Gravatar image\" width=\"53\" alt=\"Gravatar Image\" aria-label=\"Gravatar Image\" class=\"${cssClass}\"/>"
+            out << "<img src=\"${gravatarUrl}\" alt=\"Gravatar image\" width=\"${size}\" height=\"${size}\" alt=\"Gravatar Image\" aria-label=\"Gravatar Image\" class=\"${cssClass}\"/>"
             if (addLink) {
                 out << "</a>"
             }
@@ -1555,8 +1555,15 @@ function notify() {
             if (addLink) {
                 out << "<a href=\"https://gravatar.com/\" target=\"_blank\" rel=\"noopener noreferrer\" title=\"To customise your avatar, register your email address at gravatar.com...\">"
             }
-            out << "<div class=\"p-2 bg-danger rounded text-white me-3 default-avatar\" style=\"width: 53px; height: 53px; display: grid; place-items: center; font-weight: bold;\">"
-            out << "${user?.getInitials() ?: 'VU'}" // VU = Volunteer User
+            def initials = user?.getInitials() ?: 'VU' // VU = Volunteer User
+            // If initials have 2 wide characters, use a smaller font size
+
+            def fontClass = "default-avatar"
+//            if (size < 50) {
+//                fontClass = "fs-6"
+//            }
+            out << "<div class=\"p-2 bg-danger rounded text-white me-3\" style=\"container-type: inline-size; width: ${size}px; height: ${size}px; display: grid; place-items: center; font-weight: bold;\">"
+            out << "<span class='${fontClass}'>${user?.getInitials() ?: 'VU'}</span>" // VU = Volunteer User
             out << "</div>"
             if (addLink) {
                 out << "</a>"

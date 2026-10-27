@@ -343,7 +343,7 @@
 <asset:javascript src="digivol-stats.js" asset-defer=""/>
 <asset:script type="text/javascript">
 digivolStats({
-    statsUrl: bvp.getNewLink("${createLink(controller: 'index', action: 'stats')}", ['q', 'tag', 'tags'], '', ''),
+    statsUrl: bvp.getNewLink("${createLink(controller: 'index', action: 'stats')}", window.location.search, ['q', 'tag', 'tags'], {}),
     contributorsUrl: "${createLink(controller: 'index', action: 'contributors')}",
     forumActivityUrl: "${createLink(controller: 'index', action: 'forumActivity')}",
     projectUrl: "${createLink(controller: 'project', action: 'index', id: -1)}",

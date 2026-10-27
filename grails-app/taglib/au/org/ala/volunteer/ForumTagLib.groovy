@@ -33,11 +33,11 @@ class ForumTagLib {
             def replies = forumService.getTopicMessages(topic, params)
             def mb = new MarkupBuilder(out)
 
-            replies.each { ForumMessage reply ->
+            replies.eachWithIndex { ForumMessage reply, int index ->
                 attrs.user = reply.user
                 attrs.messageId = reply.id
 
-                printMessageRow(attrs, false, reply)
+                printMessageRow(attrs, false, (index == replies.size() - 1), reply)
             }
         }
     }
@@ -67,12 +67,13 @@ class ForumTagLib {
      * @param message optional message object to display
      * @return
      */
-    private def printMessageRow(attrs, isPreview, message = null) {
+    private def printMessageRow(attrs, isPreview, isLastMessage, message = null) {
         def user = attrs.user as User
         def canEdit = false
         def authorIsModerator = false
         def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
         def topicId
+        def isLocked = false
 
         def forumMessage
         if (isEdit) {
@@ -92,6 +93,11 @@ class ForumTagLib {
             canEdit = forumService.isMessageEditable(forumMessage as ForumMessage, userService.currentUser)
             def project = getProjectFromTopic(attrs.topic as ForumTopic)
             authorIsModerator = userService.isAdmin() ?: userService.isUserForumModerator(user, project)
+            isLocked = forumMessage.topic.locked
+
+            // If the topic is locked, only admins can edit messages
+            if (isLocked) canEdit = false
+            if (userService.isAdmin()) canEdit = true
         }
 
         log.debug("ForumTagLib | messageText: ${messageText}")
@@ -100,79 +106,96 @@ class ForumTagLib {
             def userProps = userService.detailsForUserId(user.userId)
             def mb = new MarkupBuilder(out)
 
-            mb.li(class: "forum-post__list-item ${isEdit ? 'hr-spacer' : ''}") {
-                article('data-topic-id': topicId) {
-                    div(class: 'forum-post__header') {
-                        h2(class: 'forum-post__heading') {
-                            if (isPreview) {
-                                if (isEdit) {
-                                    def postUserProps = userService.detailsForUserId(forumMessage?.user?.userId as String)
-                                    mkp.yield(postUserProps.displayName + " - PREVIEW")
-                                } else {
-                                    mkp.yield(userProps.displayName + " - PREVIEW")
-                                }
+            mb.div([class: "card shadow-sm border ${isLastMessage ? '' : 'mb-3'}"] + (topicId ? ['data-topic-id': topicId] : [:])) {
+                div(class: "card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom") {
+                    mkp.yieldUnescaped(cl.gravatarImage(user: user, size: 43, cssClass: "rounded me-3 img-fluid"))
+                    strong(class: "text-dark me-auto") {
+                        if (isPreview) {
+                            if (isEdit) {
+                                def postUserProps = userService.detailsForUserId(forumMessage?.user?.userId as String)
+                                mkp.yield("${postUserProps.displayName} - PREVIEW")
                             } else {
-                                a(href: createLink(controller: 'user', action: 'show', id: forumMessage.user.id), title: "Open user's notebook in new window", target: "_blank") {
-                                    mkp.yield(userProps.displayName)
-                                }
+                                mkp.yield("${userProps.displayName} - PREVIEW")
+                            }
+                        } else {
+                            a(href: createLink(controller: 'user', action: 'show', id: forumMessage.user.id), class: 'author-name', title: "Open user's notebook in new window", target: "_blank") {
+                                mkp.yield(userProps.displayName)
                             }
                         }
-                        time(class: 'forum-post__date-time') {
-                            if (isPreview) {
-                                if (isEdit) {
-                                    mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
-                                } else {
-                                    mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
-                                }
-                            } else {
+                    }
+                    time(class: "text-muted small font-monospace") {
+                        if (isPreview) {
+                            if (isEdit) {
                                 mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
+                            } else {
+                                mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
                             }
+                        } else {
+                            mkp.yieldUnescaped(formatDate(date: forumMessage?.date, format: DateConstants.DATE_FORUM_POST))
                         }
                     }
+                }
 
-                    if (isEdit && !forumMessage?.replyTo) {
-                        mkp.yieldUnescaped("<div data-topic-id='${topicId}' class='forum-post__text message-text'>")
-                    } else {
-                        mkp.yieldUnescaped("<div data-message-id='${attrs.messageId}' class='forum-post__text message-text'>")
+                def divParams = [:]
+                if (isEdit && !forumMessage?.replyTo) {
+                    divParams['data-topic-id'] = topicId
+                } else {
+                    divParams['data-message-id'] = attrs.messageId
+                }
+
+                div([class: "card-body p-3"] + divParams) {
+                    div(class: "card-text text-secondary mb-0 message-text") {
+                        boolean quotePreview = isPreview && (attrs.isQuotedReply?.toString() == 'true')
+                        String processedMarkdown = quotePreview ? (messageText ?: "") : messageText?.replace("\n", "  \n")
+                        mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
                     }
-                    String processedMarkdown = messageText?.replace("\n", "  \n")
-                    mkp.yieldUnescaped(markdownService.renderMarkdown(processedMarkdown ?: ""))
-                    mkp.yieldUnescaped("</div>")
-                    log.debug("authorIsModerator: ${authorIsModerator}")
-
-                    if (!isPreview) {
-                        log.debug("Not a preview")
-                        def timeLeft = forumService.messageEditTimeLeft(forumMessage as ForumMessage, userService.currentUser)
-                        log.debug("timeleft to edit: ${timeLeft}")
-
-                        mkp.yieldUnescaped("<div class='forum-post__footer' data-message-id='${forumMessage?.id}'>")
-
+                }
+                if (!isPreview) {
+                    def timeLeft = forumService.messageEditTimeLeft(forumMessage as ForumMessage, userService.currentUser)
+                    div(class: "card-footer bg-white d-flex justify-content-end gap-2 py-1 px-3 border-top-0", 'data-message-id':"${forumMessage?.id}") {
+                        if (timeLeft) {
+                            div(class: "text-danger small me-auto") {
+                                mkp.yield("You have ${timeLeft.minutes} minutes to edit or delete this message.")
+                            }
+                        }
                         if (canEdit) {
-                            log.debug("Can edit post")
-                            mkp.yieldUnescaped("<button class='fa fa-pencil message-icon edit-message' title='Edit message'></button>")
+                            button(class: "btn btn-link btn-sm text-muted text-decoration-none px-1 edit-message") {
+                                i(class: "fa fa-pencil me-1", title: "Edit message", aria: "Edit message") {
+                                    mkp.yield("")
+                                }
+                                mkp.yield(" Edit")
+                            }
 
                             if ((forumMessage as ForumMessage).replyTo) {
-                                log.debug("Message is a reply")
-                                mkp.yieldUnescaped("<button class='fa fa-times message-icon delete-message' title='Delete message'></button>")
+                                button(class: "btn btn-link btn-sm text-muted text-decoration-none px-1 delete-message") {
+                                    i(class: "fa fa-times me-1", title: "Delete message", aria: "Delete message") {
+                                        mkp.yield("")
+                                    }
+                                    mkp.yield(" Delete")
+                                }
                             } else {
                                 log.debug("Message is not a reply")
                                 if (authorIsModerator) {
                                     log.debug("Moderator has ability to delete")
-                                    mkp.yieldUnescaped("<button class='fa fa-times message-icon delete-topic' title='Delete topic'></button>")
+                                    button(class: "btn btn-link btn-sm text-muted text-decoration-none px-1 delete-topic") {
+                                        i(class: "fa fa-times me-1", title: "Delete topic", aria: "Delete topic") {
+                                            mkp.yield("")
+                                        }
+                                        mkp.yield(" Delete")
+                                    }
                                 }
                             }
                         }
-
-                        mkp.yieldUnescaped("<button class='fa fa-quote-right message-icon message-quote' title='Click to quote this message'></button>")
-                        mkp.yieldUnescaped("</div>")
-
-                        if (timeLeft) {
-                            div(class: 'forum-post__footer forum-post__edit-warning') {
-                                mkp.yield("You have ${timeLeft.minutes} minutes to edit or delete this message.")
+                        if (!isLocked) {
+                            button(class: "btn btn-link btn-sm text-muted text-decoration-none px-1 message-quote") {
+                                i(class: "fa fa-quote-right me-1") {
+                                    mkp.yield("")
+                                }
+                                mkp.yield(" Quote")
                             }
                         }
                     }
-                 }
+                }
             }
         }
     }
@@ -187,7 +210,7 @@ class ForumTagLib {
     def messagePreview = { attrs, body ->
         log.debug("ForumTagLib | attrs: ${attrs}")
 
-        printMessageRow(attrs, true)
+        printMessageRow(attrs, true, false)
     }
 
     /**
@@ -195,32 +218,181 @@ class ForumTagLib {
      * @attr newPost true if it's a new topic
      * @attr user the user object posting the new message
      * @attr topic the topic record if editing or replying to an existing topic
-     * @attr forumMessage required if editing a forum message
+     * @attr forumMessage (optional) the forum message object being edited (required when editing a message)
      * @attr isEdit true if editing a forum message
      */
     def topicReplyBox = {attrs, body ->
         def user = attrs.user as User
         def topic
-        def forumMessage = attrs.forumMessage as ForumMessage
+        def projectId = attrs.projectId ? attrs.projectId as Long : null
+        def forumMessage = attrs.forumMessage as ForumMessage ? attrs.forumMessage as ForumMessage : null
         def isEdit = attrs.isEdit ? attrs.isEdit == "true" : false
         def newPost = attrs.newPost ? attrs.newPost == "true" : false
+        def includeTopicTitle = attrs.includeTopicTitle ? Boolean.valueOf(attrs.includeTopicTitle as String) == true : false
+        log.debug("ForumTagLib | topicReplyBox | attrs: ${attrs} | isEdit: ${isEdit} | newPost: ${newPost} | includeTopicTitle: ${includeTopicTitle}")
+        def isProjectWatching = false
         def isWatching = false
 
         // If coming from edit, it seems to not know the subclass
         if (isEdit) {
             topic = ForumTopic.get(attrs.topic.id as long)
         } else {
-            topic = attrs.topic
+            topic = attrs.topic as ForumTopic
         }
 
         if (!newPost) {
-            isWatching = forumService.isUserWatchingTopic(user, topic)
+            isWatching = forumService.isUserWatchingTopic(user, topic as ForumTopic)
+            isProjectWatching = forumService.isUserWatchingProject(user, getProjectFromTopic(topic as ForumTopic))
+        } else if (projectId) {
+            def projectInstance = Project.get(projectId as long)
+            isProjectWatching = forumService.isUserWatchingProject(user, projectInstance)
+            log.debug("ForumTagLib | topicReplyBox | newPost | projectId: ${projectId} | isProjectWatching: ${isProjectWatching}")
         }
 
         if (user) {
             def userProps = userService.detailsForUserId(user.userId)
             def mb = new MarkupBuilder(out)
 
+            mb.div(class: "card shadow-sm border") {
+                div(class: "card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom") {
+                    strong(class: "text-dark") {
+                        if (isEdit) {
+                            def postAuthorProps = userService.detailsForUserId(forumMessage.user.userId)
+                            mkp.yield(postAuthorProps.displayName)
+                        } else {
+                            mkp.yield(userProps.displayName)
+                        }
+                    }
+                    if (!isEdit) {
+                        time(class: 'text-muted small font-monospace') {
+                            mkp.yieldUnescaped(formatDate(date: new Date(), format: DateConstants.DATE_FORUM_POST))
+                        }
+                    }
+                }
+                div(class: "card-body p-3") {
+                    if (includeTopicTitle) {
+                        div(class: "form-floating mb-1") {
+                            def topicTitle = params.title ?: ""
+                            if (isEdit) {
+                                topicTitle = params.title ?: forumMessage.topic.title
+                            }
+                            input(type: "text", class: "form-control border shadow-inner", placeholder: "Topic title", id: "title", name: "title", value: topicTitle)
+                            label(for: "title", class: "text-muted") {
+                                mkp.yield("Topic title")
+                            }
+                        }
+                    }
+                    // Text Editor Interface Layout Row Component
+                    div(class: "form-floating mb-1") {
+                        // Message text is either blank, a query string parameter or the message text.
+                        def messageText = params.messageText ?: ""
+                        if (isEdit) {
+                            messageText = params.messageText ?: forumMessage.text
+                        }
+
+                        def textAreaParams = [
+                            class: "form-control border shadow-inner",
+                            placeholder: "Leave a reply here",
+                            name: "messageText",
+                            id: "messageText",
+                            style: "height: 180px; resize: vertical;"
+                        ]
+                        textarea(textAreaParams) {
+                            mkp.yield(messageText)
+                        }
+                        label(for: "messageText", class: "text-muted") {
+                            mkp.yield("Type your reply content or solution updates...")
+                        }
+                    }
+
+                    div(class: "d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3") {
+                        def allowTopicType = newPost || (isEdit && forumMessage?.replyTo == null && userService.isAdmin())
+                        if (allowTopicType) {
+                            div(class: 'd-flex mt-2 gap-2 align-items-center') {
+                                span(class: "text-muted fs-7 me-1") {
+                                    mkp.yield("Mark thread as:")
+                                }
+
+                                def currentTopicType = newPost ? ForumTopicType.Question.ordinal() : forumMessage.topic.topicType.ordinal()
+                                div(class: "btn-group btn-group-sm", role: "group", ariaLabel: "Topic type") {
+                                    [ForumTopicType.Question, ForumTopicType.Discussion, ForumTopicType.Announcement].eachWithIndex { topicType, i ->
+                                        String id = "topicType-${topicType.name().toLowerCase()}"
+                                        String checked = i == currentTopicType ? ' checked="checked"' : ''
+                                        mkp.yieldUnescaped("<input type=\"radio\" class=\"btn-check\" name=\"topicType\" id=\"${id}\" value=\"${topicType.ordinal()}\"${checked}>")
+                                        mkp.yieldUnescaped("<label class=\"btn btn-outline-secondary btn-sm\" for=\"${id}\">${topicType.name()}</label>")
+                                    }
+
+                                }
+                            }
+                        }
+                        div(class: 'd-flex gap-2 ms-auto') {
+                            mb.a(href: createLink(controller: 'forum', action: 'markdownHelp'), target: '_blank') {
+                                mkp.yield(message(code: 'forum.newpost.markdownhelp.link', default: 'Markdown help'))
+                                mkp.yieldUnescaped("<span class='fa fa-external-link ms-2'></span>")
+                            }
+                        }
+                    }
+
+                    // FOOTER ACTIONS CONTROL BAR STRIP
+                    def divParams = [:]
+                    divParams['id'] = "forumTopicFooterActions"
+                    divParams['data-watched'] = isWatching ? 'true' : 'false'
+                    if (!newPost) {
+                        divParams['data-topic-id'] = topic.id
+                    }
+                    div([class: "d-flex justify-content-between align-items-center flex-wrap gap-3"] + divParams) {
+                        if (isProjectWatching) {
+                            span(class: "d-inline-block", tabindex: "0", 'data-bs-toggle': "tooltip", 'data-bs-title': "You are watching this expedition forum, you cannot watch individual topics.") {
+                                button(class: "btn btn-outline-warning btn-sm disabled d-flex align-items-center gap-1 me-1",
+                                        'aria-disabled': isProjectWatching, id: 'toggleWatch', type: "button") {
+                                    i(class: "watchIcon fa fa-star") {
+                                        mkp.yield("")
+                                    }
+                                    span(class: "watch-button-label") {
+                                        mkp.yield("Unwatch topic")
+                                    }
+                                }
+                            }
+                        } else {
+                            button(class: "btn btn-outline-warning btn-sm ${isProjectWatching ? 'disabled' : ''} d-flex align-items-center gap-1 me-1",
+                                    'aria-disabled': isProjectWatching, id: 'toggleWatch', type: "button") {
+                                def watchedIcon = (isWatching || isProjectWatching) ? "fa-star" : "fa-star-o"
+                                i(class: "watchIcon fa ${watchedIcon}") {
+                                    mkp.yield("")
+                                }
+                                def label = (isWatching || isProjectWatching) ? "Unwatch topic" : "Watch topic"
+                                span(class: "watch-button-label") {
+                                    mkp.yield(label)
+                                }
+                            }
+                        }
+
+                        // Consolidated Form Action Triggers
+                        if (newPost) {
+                            input(type: 'submit', class: 'btn btn-primary', name: '_action_insertForumTopic', value: message(code: 'forum.newpost.save', default: 'Save topic'))
+                        } else if (isEdit) {
+                            mb.input(type: 'submit', class: 'btn btn-outline-secondary ms-auto', name: '_action_previewMessageEdit', value: message(code: 'forum.reply.preview', default: 'Preview'))
+                            mb.input(type: 'submit', class: 'btn btn-primary', name: '_action_updateTopicMessage', value: message(code: 'forum.reply.comment', default: 'Update'))
+                        } else {
+                            div(class: "d-flex gap-2") {
+                                mb.input(type: 'submit', class: 'btn btn-outline-secondary ms-auto', name: '_action_previewMessage', value: message(code: 'forum.reply.preview', default: 'Preview'))
+                                mb.input(type: 'submit', class: 'btn btn-primary', name: '_action_saveNewTopicMessage', value: message(code: 'forum.reply.comment', default: 'Reply'))
+                                // Integrated Custom Colored Answer Action Button
+                                if (topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
+                                    String buttonLabel = "${message(code: 'forum.project.reply.comment.answered', default: 'Reply and mark as ')}"
+                                    button(type: "submit", class: "btn btn-success px-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2", name: '_action_saveNewTopicMessageAnswered') {
+                                        span(buttonLabel)
+                                        span(class: "badge bg-white text-success rounded-1 px-2 py-0.5 text-uppercase tracking-wider font-monospace fs-7 fw-bold") {
+                                            mkp.yield("Answered")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+/*
             mb.li(class: "forum-post__list-item") {
                 label(for: 'post', class: 'forum-post__header') {
                     span(class: 'forum-post__heading') {
@@ -311,6 +483,168 @@ class ForumTagLib {
                             }
                         }
                     }
+                }
+            }
+ */
+        }
+
+    }
+
+    def forumTopicHeader = {attrs, body ->
+        Project projectInstance = null
+        Task taskInstance = null
+        def topic = attrs.topic //as ForumTopic
+
+        if (topic) {
+            if (topic.instanceOf(ProjectForumTopic)) {
+                def unproxyObject = Hibernate.unproxy(topic)
+                projectInstance = unproxyObject.project
+            } else if (topic.instanceOf(TaskForumTopic)) {
+                def unproxyObject = Hibernate.unproxy(topic)
+                taskInstance = unproxyObject.task
+            }
+        } else {
+            projectInstance = attrs.projectInstance as Project
+            taskInstance = attrs.taskInstance as Task
+        }
+
+        def isModerator = userService.isAdmin() ?: userService.isUserForumModerator(userService.currentUser, projectInstance)
+
+        // Construct the breadcrumbs
+        pageScope.crumbs = []
+        pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index'), label: message(code: "default.forum.label", default: "Forum")]
+        if (projectInstance) {
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index', params: [projectId: projectInstance.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
+        } else if (taskInstance) {
+            pageScope.crumbs << [link: createLink(controller: 'forum', action: 'index', params: [projectId: taskInstance.project.id]), label: message(code: 'forum.project.forum', default: 'Expedition Forum')]
+        }
+
+        if (attrs.lastLabel) {
+            if (topic) {
+                pageScope.crumbs << [link: createLink(controller: 'forum', action: 'viewForumTopic', id: topic.id), label: topic.title]
+            }
+        }
+
+        // Render the header
+        def mb = new MarkupBuilder(out)
+        String pageTitle = attrs.title
+        if (topic) {
+            pageTitle = topic.title as String
+        }
+
+        def topicTypeStyle = topic ? topic.topicType.name().toLowerCase() : ForumTopicType.Discussion.name().toLowerCase()
+
+        def returnButton = {
+            def params = projectInstance ? [projectId: projectInstance?.id] : [:]
+            def returnLink = createLink(controller: 'forum', action: 'index', params: params)
+            mb.a(href: returnLink, class: "btn btn-sm btn-outline-secondary ms-auto") {
+                i(class: "fa fa-arrow-left me-1", style: "display: inline-flex;") {
+                    mkp.yieldUnescaped("&nbsp;")
+                }
+                mkp.yield("Return to forum")
+            }
+        }
+
+        def modActionButton = {
+            mb.button([class: "btn btn-sm btn-outline-secondary ms-auto dropdown-toggle", type: "button", id: "forumTopicModActionsDropdown", 'data-bs-toggle': "dropdown", 'aria-expanded': "false"]) {
+                mkp.yield("Moderator Actions")
+            }
+            def noActions = true
+            mb.ul(class: "dropdown-menu") {
+                if (topic && topic.topicType == ForumTopicType.Question && !topic.isAnswered) {
+                    li() {
+                        a(class: "dropdown-item", href: createLink(controller: 'forum', action: 'toggleTopicAnswered', id: topic.id, params: [answered: true])) {
+                            mkp.yield("Set topic as Answered")
+                        }
+                    }
+                    noActions = false
+                } else if (topic && topic.topicType == ForumTopicType.Question && topic.isAnswered) {
+                    li() {
+                        a(class: "dropdown-item", href: createLink(controller: 'forum', action: 'toggleTopicAnswered', id: topic.id, params: [answered: false])) {
+                            mkp.yield("Set topic as Unanswered")
+                        }
+                    }
+                    noActions = false
+                }
+                if (userService.isAdmin() && topic) {
+                    li() {
+                        a(class: "dropdown-item", href: createLink(controller: 'forum', action: 'toggleTopicLocked', id: topic.id, params: [locked: !topic.locked])) {
+                            mkp.yield(topic.locked ? "Unlock topic" : "Lock topic")
+                        }
+                    }
+                    noActions = false
+                }
+                if (noActions) {
+                    li() {
+                        a(class: "dropdown-item disabled", href: "#") {
+                            mkp.yield("No actions available")
+                        }
+                    }
+                }
+            }
+        }
+
+        mb.div(class: "card border-0 shadow-sm bg-white px-4 py-2 mb-4 mt-2") {
+            div(class: "d-flex align-items-center gap-2 my-2") {
+                if (topic || taskInstance || projectInstance) {
+                    if (topic) {
+                        if (topic?.isAnswered) {
+                            span(class: "badge badge--answered border-answered rounded px-2.5 py-1.5 text-uppercase font-monospace") {
+                                mkp.yield(topic ? "Answered" : ForumTopicType.Discussion.name())
+                            }
+                        } else {
+                            span(class: "badge badge--${topicTypeStyle} border-${topicTypeStyle} rounded px-2.5 py-1.5 text-uppercase font-monospace") {
+                                mkp.yield(topic ? topic.topicType.name() : ForumTopicType.Discussion.name())
+                            }
+                        }
+                    }
+
+                    if (taskInstance || projectInstance) {
+                        small(class: "text-muted") {
+                            span(class: "fw-medium text-dark") {
+                                mkp.yield(taskInstance ? taskInstance.project.name : projectInstance.name)
+                            }
+                        }
+                    }
+
+                    returnButton()
+                }
+            }
+
+            div(class: "d-flex align-items-center justify-content-between w-100") {
+                h1(class: "h4 fw-bold text-dark mb-0 d-inline-flex align-items-center gap-2 flex-wrap me-2") {
+                    if (topic?.locked) {
+                        span(class: "btn btn-sm btn-outline-secondary py-1 d-inline-flex align-items-center gap-1") {
+                            mkp.yieldUnescaped("<i class=\"fa fa-lock\" title=\"Topic is locked\" aria-label=\"Topic is locked\"></i>")
+                        }
+                    }
+                    span() {
+                        mkp.yieldUnescaped(pageTitle)
+                    }
+                    // External link icon
+                    if (taskInstance || projectInstance) {
+                        // External link icon
+                        def link = ""
+                        String title = ""
+                        if (taskInstance) {
+                            link = createLink(controller: 'task', action: 'show', id: taskInstance.id)
+                            title = "Open task in new window"
+                        } else if (projectInstance) {
+                            link = createLink(controller: 'project', action: 'index', id: projectInstance.id)
+                            title = "Open expedition in new window"
+                        }
+                        a(href: link, class: "text-muted small", target: "_blank", title: title) {
+                            i(class: "fa fa-external-link fs-6", style: "display: inline-flex;") {
+                                mkp.yieldUnescaped("&nbsp;")
+                            }
+                        }
+                    }
+                }
+
+                if (!topic && !taskInstance && !projectInstance) {
+                    returnButton()
+                } else if (topic) {
+                    modActionButton()
                 }
             }
         }
@@ -437,7 +771,7 @@ class ForumTagLib {
                 output += "<optgroup label='${institution}'>"
             }
 
-            def option = "<option value='${row.projectId}' ${currentSelectedProject == row.projectId ? 'selected' : ''}>${row.projectName} (${row.topicCount} topics)</option>"
+            def option = "<option value='${row.projectId}' ${currentSelectedProject == row.projectId ? 'selected' : ''}>${row.projectName}</option>"
             output += option
         }
 

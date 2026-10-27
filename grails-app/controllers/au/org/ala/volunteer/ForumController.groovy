@@ -38,7 +38,7 @@ class ForumController {
             project = Project.get(params.long('projectId'))
             pageTitle = message(code: 'default.forum.expedition.label', default: 'Project Forum')
             session[SESSION_KEY_PROJECT_ID] = project.id
-        } else if (params.watched) {
+        } else if (watched) {
             pageTitle = message(code: 'forum.watched.label', default: 'Watched Topics')
         } else {
             session.removeAttribute(SESSION_KEY_PROJECT_ID)
@@ -71,7 +71,10 @@ class ForumController {
             return
         }
 
-        def forumProjectsWatched = forumService.getForumProjectWatchList(currentUser)
+        def sort = params.sort ?: 'lastReply'
+        def order = params.order ?: 'desc'
+
+        def forumProjectsWatched = forumService.getForumProjectWatchList(currentUser, sort, order)
         [forumProjectWatched: forumProjectsWatched]
     }
 
@@ -294,12 +297,16 @@ class ForumController {
         def topic = ForumTopic.get(params.long("topicId"))
         if (topic) {
             def topicValues = getTopicParameters(topic)
+            def previewText = params.messageText as String
+            def isQuotedReply = params.boolean("isQuotedReply") || isForumQuoteMarkdown(previewText)
+            if (!isQuotedReply) {
+                previewText = markdownService.sanitizeMarkdown(previewText)
+            }
 
             render view:'viewForumTopic',
                     model: [topic: topic, replyTo: topicValues.replyTo, userInstance: userService.currentUser,
                             projectInstance: topicValues.projectInstance, taskInstance: topicValues.taskInstance,
-                            isWatching: topicValues.isWatched],
-                    params: [messageText: markdownService.sanitizeMarkdown(params.messageText)]
+                            isWatching: topicValues.isWatched, isQuotedReply: isQuotedReply]
         }
     }
 
@@ -310,12 +317,26 @@ class ForumController {
         def message = ForumMessage.get(params.int("messageId"))
         def isWatched = forumService.isUserWatchingTopic(userService.currentUser, message?.topic)
         def title = message?.topic?.title
+        def previewText = params.messageText as String
+        def isQuotedReply = params.boolean("isQuotedReply") || isForumQuoteMarkdown(previewText)
+        if (!isQuotedReply) {
+            previewText = markdownService.sanitizeMarkdown(previewText)
+        }
         if (params.title) {
             title = params.title
         }
         render view:'editMessage',
                model: [forumMessage: message, isWatched: isWatched, isEditingTopic: params.isEditingTopic,
-                    title: title, userInstance: userService.currentUser, messageText: markdownService.sanitizeMarkdown(params.messageText)]
+                    title: title, userInstance: userService.currentUser, messageText: previewText,
+                    isQuotedReply: isQuotedReply]
+    }
+
+    private static boolean isForumQuoteMarkdown(String text) {
+        if (!text) {
+            return false
+        }
+        def lines = text.readLines().collect { it?.trim() }
+        return lines.any { it?.startsWith('>') && it.contains(' wrote:') }
     }
 
     /**
@@ -349,6 +370,15 @@ class ForumController {
             }
         } else {
             errors << "Message text must not be empty"
+        }
+
+        if (params.topicType) {
+            def topicType = ForumTopicType.getInstance(params.int('topicType'))
+            if (topicType) {
+                message.topic.topicType = topicType
+                message.topic.isAnswered = false
+                message.topic.save(flush: true, failOnError: true)
+            }
         }
 
         if (params.title && !errors) {
@@ -619,6 +649,32 @@ class ForumController {
         }
         
         render(results as JSON)
+    }
+
+    @Transactional
+    def toggleTopicAnswered(ForumTopic topic) {
+        def answered = params.boolean("answered")
+        if (!topic || !checkModerator(topic)) {
+            return
+        }
+
+        topic.isAnswered = answered
+        topic.save(flush: true, failOnError: true)
+
+        redirect(action: 'viewForumTopic', id: topic?.id)
+    }
+
+    @Transactional
+    def toggleTopicLocked(ForumTopic topic) {
+        def locked = params.boolean("locked")
+        if (!topic || !checkModerator(topic)) {
+            return
+        }
+
+        topic.locked = locked
+        topic.save(flush: true, failOnError: true)
+
+        redirect(action: 'viewForumTopic', id: topic?.id)
     }
 
 }

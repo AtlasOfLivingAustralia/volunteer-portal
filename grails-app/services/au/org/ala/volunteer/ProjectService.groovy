@@ -1449,6 +1449,7 @@ class ProjectService implements EventPublisher {
             [
                     projectId: row.id,
                     projectName: row.project_name,
+                    projectNameWithCount: "${row.project_name} (${row.topic_count} topic${row.topic_count == 1 ? '' : 's'})",
                     institutionName: row.institution_name,
                     topicCount: row.topic_count
             ]

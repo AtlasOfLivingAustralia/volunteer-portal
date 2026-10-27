@@ -397,33 +397,38 @@ let bvp = {};
      * Builds a new link with the current query params, replacing one of them with a new value. Note: replaceVar is URI
      * encoded when added to the url, do NOT encode before calling this function
      * @param url the base url to append to
+     * @param queryString  the current query string to parse and check for params
      * @param checkParams the list of parameters to check and keep
-     * @param replaceParam the parameter to replace with the new value
-     * @param replaceVar the new value to replace the parameter with
+     * @param updates an object of key/value pairs to update in the query string
      * @returns {string}
      */
-    lib.getNewLink = function(url, checkParams, replaceParam, replaceVar) {
-        console.log(url, checkParams);
-        const params = new URLSearchParams(window.location.search);
-        console.log(params);
-        let goUrl = "";
+    lib.getNewLink = function(url, queryString, checkParams, updates = {}) {
+        const params = new URLSearchParams(queryString);
 
-        for (let checkParam in checkParams) {
-            console.log(checkParams[checkParam]);
-
-            if (replaceParam === checkParams[checkParam]) {
-                goUrl += (goUrl.length === 0) ? "?" : "&";
-                goUrl += checkParams[checkParam] + "=" + encodeURIComponent(replaceVar);
-            } else {
-                if (params.has(checkParams[checkParam])) {
-                    goUrl += (goUrl.length === 0) ? "?" : "&";
-                    goUrl += checkParams[checkParam] + "=" + params.get(checkParams[checkParam]);
+        // 1. Process updates from the calling code
+        for (const [key, value] of Object.entries(updates)) {
+            if (checkParams.includes(key)) {
+                if (value === null || value === undefined || value === '') {
+                    params.delete(key);
+                } else {
+                    params.set(key, value);
                 }
             }
-            console.log(goUrl);
         }
 
-        return url + goUrl;
+        // 2. Automatically clean up parameters across the entire URL
+        for (const key of Array.from(params.keys())) {
+            const currentValue = params.get(key);
+
+            // Strip empty parameter values (e.g., "?q=")
+            if (currentValue === '' || currentValue === null) {
+                params.delete(key);
+                continue;
+            }
+        }
+
+        const newQueryString = params.toString();
+        return newQueryString ? `${url}?${newQueryString}` : url;
     };
 
 })(bvp);

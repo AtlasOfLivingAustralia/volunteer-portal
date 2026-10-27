@@ -62,7 +62,6 @@
             </thead>
             <tbody class="fs-7">
 
-            <!-- Sample Table Row 1 -->
         <g:each in="${viewTaskList}" var="row">
             <tr>
                 <td class="text-muted fw-mono pointer">

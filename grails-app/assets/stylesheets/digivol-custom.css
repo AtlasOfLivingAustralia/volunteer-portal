@@ -214,37 +214,6 @@ table.task-table {
 }
 /*** End - Admin ***/
 
-/*** Begin - Forum ***/
-
-.contact .card, .forum .card, .tutorial .card {
-    margin-top: 20px;
-}
-
-.forum #searchResults {
-    padding-top: 2em;
-}
-
-.forum .task-summary {
-    height: 440px;
-    overflow-y: scroll
-}
-
-.forum .project-forum .thumbnail {
-    margin-top: 20px;
-}
-
-.forum .project-forum .thumbnail .caption{
-    padding: 10px 20px;
-
-}
-
-.forum .project-forum .tabbable {
-    background-color: #f6f6f6;
-    padding-top: 2em;
-    padding-left: 1em;
-}
-
-/*** End - Forum ***/
 
 /*** LeaderBoard ***/
 

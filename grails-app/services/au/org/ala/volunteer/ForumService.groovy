@@ -169,6 +169,7 @@ class ForumService {
                 FORUM_TOPIC.LAST_REPLY_DATE.as("last_reply_date"),
                 FORUM_TOPIC.IS_ANSWERED.as("is_answered"),
                 FORUM_TOPIC.VIEWS.as("views"),
+                FORUM_TOPIC.LOCKED.as("locked"),
                 coalesce(field(name("topic_replies", "replies")), 0).as("replies"),
                 PROJECT.NAME.as("project_name"),
                 PROJECT.ID.as("project_id"),
@@ -219,6 +220,7 @@ class ForumService {
                 lastReply: row.last_reply_date,
                 isAnswered: row.is_answered,
                 views: row.views,
+                locked: row.locked,
                 replies: row.replies,
                 projectName: projectName,
                 projectId: projectId,
@@ -291,6 +293,9 @@ class ForumService {
      * @return true if the user is watching the project, false otherwise
      */
     boolean isUserWatchingProject(User user, Project project) {
+        if (project == null || user == null) {
+            return false
+        }
         def watchList = ProjectForumWatchList.findByProject(project)
         if (watchList && watchList.users) {
             def existing = watchList.users.find {
@@ -708,7 +713,7 @@ class ForumService {
      * @param user the user to query on
      * @return a list of projects that the user is watching, including the last topic for each project
      */
-    def getForumProjectWatchList(User user) {
+    def getForumProjectWatchList(User user, String sort, String order) {
         DSLContext create = jooqContext()
         def watchedForums = []
         def c = ProjectForumWatchList.createCriteria()
@@ -744,7 +749,33 @@ class ForumService {
 
             watchedForums.add(row)
         }
-        watchedForums = watchedForums.sort { it.project.name }
+
+        def validSorts = [
+                'projectName': 'project_name',
+                'lastTopic': 'topic_name',
+                'topicType': 'topic_type',
+                'author': 'user_name',
+                'lastReply': 'last_reply_date'
+        ].withDefault { 'last_reply_date' }
+        def sortColumn = [validSorts[sort]]
+        if (sort?.equalsIgnoreCase('topicType')) {
+            sortColumn.add('answered')
+        }
+
+        def sortValue = { row ->
+            switch (sortColumn[0]) {
+                case 'project_name': return row.project.name
+                case 'topic_name': return row.lastTopic?.title
+                case 'topic_type': return row.lastTopic.isAnswered ? 'answered' : row.lastTopic?.topicType?.name()?.toLowerCase()
+                case 'user_name': return row.lastMessage?.user?.displayName
+                case 'last_reply_date': return row.lastMessage?.date
+                default: return row.lastMessage?.date
+            }
+        }
+        watchedForums = watchedForums.sort { a, b ->
+            def comparison = sortValue(a) <=> sortValue(b)
+            'asc'.equalsIgnoreCase(order) ? comparison : -comparison
+        }
         return watchedForums
     }
 

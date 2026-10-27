@@ -129,7 +129,7 @@
             const params = ['mode', 'tag', 'statusFilter', 'activeFilter', 'q'];
             let url = "${createLink(controller: 'project', action: 'list')}";
             // Check the query string for mode, only append it to the url if it exists
-            url = bvp.getNewLink(url, params, 'q', q);
+            url = bvp.getNewLink(url, window.location.search, params, {q: q});
             console.log(url);
 
             window.location = url;

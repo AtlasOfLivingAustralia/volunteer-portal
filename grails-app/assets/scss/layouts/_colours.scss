@@ -51,18 +51,30 @@
     border: 1px solid $purple !important;
 }
 
-.border-validated {
+.border-validated, .border-answered {
     border: 1px solid $brand-success !important;
 }
 
-.border-transcribed {
+.border-transcribed, .border-announcement {
     border: 1px solid $purple !important;
 }
 
-.border-saved {
+.border-saved, .border-question {
     border: 1px solid $orange !important;
 }
 
-.border-in-progress {
+.border-in-progress, .border-discussion {
     border: 1px solid $link-color !important;
+}
+
+.border-orange {
+    border: 1px solid $orange !important;
+}
+
+.border-red {
+    border: 1px solid $brand-danger !important;
+}
+
+.border-primary {
+    border: 1px solid $btn-primary-bg !important;
 }

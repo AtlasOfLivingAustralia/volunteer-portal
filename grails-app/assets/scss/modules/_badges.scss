@@ -48,28 +48,40 @@
 }
 
 .badge--validated {
-	background-color: #aceaac;
+	background-color: $green-light;
 	color: $brand-success;
 }
 
 /* Forum topic types — semantic, same vocabulary as task status */
 
 .badge--question {
-	background-color: #e67e22;
+	background-color: $orange-light;
+	color: $orange;
 }
 
 .badge--answered {
-	background-color: #5cb85c;
-	color: #212529;
+	background-color: $green-light;
+	color: $brand-success;
 }
 
 .badge--announcement {
-	background-color: $purple;
-	color: #FFFFFF;
+	background-color: $purple-light;
+	color: $purple;
 }
 
 .badge--discussion {
-	background-color: #337ab7;
+	background-color: $blue-light;
+	color: $brand-primary;
+}
+
+.badge-keyword {
+	background-color: $red-light;
+	color: $brand-danger;
+}
+
+.badge-project {
+	background-color: $brand-primary;
+	color: $blue-light;
 }
 
 /* Label category palette — mirrors the LabelColour enum.
@@ -79,11 +91,12 @@
 
 .badge--base {
 	background-color: #777;
+	color: white;
 }
 
 .badge--green {
-	background-color: #5cb85c;
-	color: #212529;
+	background-color: $green-light;
+	color: $brand-success;
 }
 
 .badge--red {
@@ -96,7 +109,8 @@
 }
 
 .badge--blue {
-	background-color: #337ab7;
+	background-color: $blue-light;
+	color: $brand-primary;
 }
 
 .badge--lightblue {
