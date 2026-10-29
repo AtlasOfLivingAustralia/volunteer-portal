@@ -236,8 +236,12 @@
     }); // end .ready()
 
     function doSearch() {
-        var query = $("#projectAdminSearch").val();
-        location.href = "?q=" + query;
+        const baseUrl = "${createLink(controller: 'task', action: 'projectAdmin', id: projectInstance.id)}";
+        const params = ['q', 'mode', 'max', 'offset', 'statusFilter', 'sort', 'order']
+        let query = $("#projectAdminSearch").val();
+        let newUrl = bvp.getNewLink(baseUrl, window.location.search, params, {q: query});
+        window.location.href = newUrl;
+        // location.href = baseUrl + "?q=" + query;
     }
 
     function validateInSeparateWindow(taskId) {

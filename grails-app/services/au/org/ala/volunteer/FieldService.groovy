@@ -66,13 +66,14 @@ class FieldService {
                 task.number_of_matching_transcriptions,
                 task.external_identifier,
                 task.fully_validated_by,
+                count(distinct transcription.id) as number_of_transcriptions,
                 CASE WHEN (task.is_valid = true) THEN 3 
                     WHEN (task.is_valid = false) THEN 2 
                     WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = TRUE) THEN 1 
                     ELSE 0 END AS task_status
             from field f
             join task on (f.task_id = task.id)
-            left join transcription on (transcription.task_id = task.id)
+            left join transcription on (transcription.task_id = task.id and transcription.fully_transcribed_by is not null)
             left join vp_user u1 on (transcription.fully_transcribed_by = u1.user_id)
             left join vp_user v1 on (task.fully_validated_by = v1.user_id)
             where f.superceded = false
@@ -82,7 +83,8 @@ class FieldService {
             and (lower(f.value) like :query  
                 or lower(task.external_identifier) like :query 
                 or lower(concat(u1.first_name, ' ', u1.last_name)) like :query
-                or lower(concat(v1.first_name, ' ', v1.last_name)) like :query) """.stripIndent()
+                or lower(concat(v1.first_name, ' ', v1.last_name)) like :query) 
+            group by task.id """.stripIndent()
 
         def sortClause = " order by "
         switch (params.sort) {
@@ -116,7 +118,11 @@ class FieldService {
         def taskList = []
         sql.eachRow(selectQuery, queryParams) { row ->
             Task task = Task.get(row.id as long)
-            if (task) taskList.add(task)
+            log.debug("Task ${task.id} has ${row.number_of_transcriptions} transcriptions")
+            if (task) {
+                task.numberOfTranscriptions = (row.number_of_transcriptions ?: 0) as Integer
+                taskList.add(task)
+            }
         }
 
         def taskCount = sql.firstRow(countQuery, queryParams)?.taskCount

@@ -539,9 +539,16 @@ Log entry for that date.*
   - [X] `label/editCategory.gsp` (View tag usage)
 - [X] Consistency on edit pages. Remove edit button, make item name a link.
 - [ ] Move flash.messages to the top of the page and overlay the content (like the system message).
-- [X] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
+- [X] Updated broken admin task list
+  - [X] Task list grid mode layout
+  - [X] Task show details needs refresh
+- [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
   - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
     `news.scss` **in addition to** digivol.css, as a last-loading overlay.
+  - [ ] News Items
+  - [X] Forum
+  - [X] Notebook
+  - [ ] Tutorials
 
 #### 6. Accessibility sweep
 
@@ -2103,4 +2110,13 @@ parallel. Ships this release.
   - Updated shared URL builder in bvp-common.js and migrated callers (leaderBoard, newsItem, project).
   - Added forum SCSS updates (badges, borders, forms/TomSelect, blockquotes, avatar sizing); removed legacy forum CSS block from digivol-custom.css.
   - Added/updated forum backup GSP snapshots and added new specs: ForumControllerSpec, ForumTagLibSpec.
-
+- 2026-10-29 - Refreshed task admin thumbnail grid in `grails-app/views/task/_taskListThumbs.gsp` with clearer status badges/progress and action buttons (transcribe/resume/validate/view), improving scanability for high-volume task management.
+  - Added transcription-count awareness to task listings via `grails-app/services/au/org/ala/volunteer/TaskService.groovy` and `grails-app/services/au/org/ala/volunteer/FieldService.groovy`, including grouped SQL and non-null transcription joins.
+  - Introduced transient numberOfTranscriptions on `grails-app/domain/au/org/ala/volunteer/Task.groovy` so list screens can show progress without schema changes.
+  - Hardened showDetails query handling in `grails-app/controllers/au/org/ala/volunteer/TaskController.groovy` (sortable whitelist, bounded max, default sort/order) to keep field browsing controlled and predictable.
+  - Reworked `grails-app/views/task/showDetails.gsp` into structured metadata + grouped transcription field sections, with collapsible transcriber/activity panels and optional system metadata visibility.
+  - Extended `grails-app/taglib/au/org/ala/volunteer/VolunteerTagLib.groovy` with richer transcriber output, new activity log rendering, reusable return-to-top control, and more flexible thumbnail rendering options.
+  - Updated `grails-app/views/task/adminList.gsp` search URL handling to preserve filter/sort/paging context when searching.
+  - Added fixed-header anchor support (`grails-app/views/layouts/digivol-main.gsp`) and smooth scroll targeting from summary metadata to transcription groups in `grails-app/views/task/showDetails.gsp`.
+  - Cleaned carousel structure in `grails-app/views/transcribe/templateViews/questionnaireTranscribe.gsp` and added unit tests for showDetails defaults/capping/grouping in `src/test/groovy/au/org/ala/volunteer/TaskControllerSpec.groovy`.
+  - Added supporting UI styling in `grails-app/assets/scss/layouts/_colours.scss`, `grails-app/assets/scss/modules/_buttons.scss`, and `grails-app/assets/scss/modules/_components.scss`.

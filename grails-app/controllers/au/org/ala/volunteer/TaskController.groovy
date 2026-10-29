@@ -22,6 +22,11 @@ class TaskController {
     public static final String PROJECT_LIST_LAST_PROJECT_ID_KEY = "project.admin.list.lastProjectId"
     public static final String VIEW_TASK_LIST_ADMIN = 'adminList'
     public static final String VIEW_TASK_LIST = 'list'
+    private static final int SHOW_DETAILS_MAX_FIELDS = 100
+    private static final Set<String> SHOW_DETAILS_SORTABLE_COLUMNS = [
+            'id', 'name', 'recordIdx', 'superceded', 'value',
+            'created', 'updated', 'transcribedByUserId', 'validatedByUserId'
+    ] as Set<String>
 
     def taskService
     def fieldSyncService
@@ -212,13 +217,26 @@ class TaskController {
         def taskInstance = Task.get(params.int('id'))
         Project project = taskInstance?.project
         if (project && currentUser && userService.isValidator(project)) {
+            int requestedMax = params.int('max') ?: SHOW_DETAILS_MAX_FIELDS
+            params.max = Math.min(requestedMax, SHOW_DETAILS_MAX_FIELDS)
+            params.sort = SHOW_DETAILS_SORTABLE_COLUMNS.contains(params.sort as String) ? params.sort : 'updated'
+            params.order = (params.order in ['asc', 'desc']) ? params.order : 'asc'
+
             def c = Field.createCriteria()
             def fields = c.list(params) {
                 eq('task', taskInstance)
             }
+            def fieldsByTranscriber = [:].withDefault { [] }
+            fields.each { Field field ->
+                String groupKey = field.transcribedByUserId ?: 'Unknown'
+                fieldsByTranscriber[groupKey] << field
+            }
 
-            // def fields = Field.findAllByTask(taskInstance, [order: 'updated,superceded'])
-            [taskInstance: taskInstance, fields: fields]
+            def transcriptionList = Transcription.findAllByTaskAndFullyTranscribedByIsNotNull(taskInstance, [sort: 'dateFullyTranscribed', order: 'desc'])
+            def viewedTasks = ViewedTask.findAllByTask(taskInstance, [sort: 'lastView', order: 'desc'])
+            log.debug("<task.showDetails> taskId = ${taskInstance.id} || viewedTasks.size() = ${viewedTasks?.size()}")
+
+            [taskInstance: taskInstance, transcriptions: transcriptionList, fields: fields, fieldsByTranscriber: fieldsByTranscriber, viewedTasks: viewedTasks]
         } else {
             render(view: '/notPermitted')
         }

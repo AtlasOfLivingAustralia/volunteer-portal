@@ -24,7 +24,10 @@ class Task implements Serializable, AsyncEntity<Task> {
     Integer timeToTranscribe
     Integer timeToValidate
     Integer numberOfMatchingTranscriptions
+    Integer numberOfTranscriptions = 0
     Boolean isFullyTranscribed = false
+
+    static transients = ['numberOfTranscriptions']
 
     static belongsTo = [project: Project]
     static hasMany = [multimedia: Multimedia, viewedTasks: ViewedTask, fields: Field, transcriptions: Transcription, forumTopics: TaskForumTopic]

@@ -183,14 +183,16 @@ class TaskService {
                 task.external_identifier,
                 task.fully_validated_by,
                 concat(vu.last_name, ' ', vu.first_name) as validator,
+                count(distinct t.id) as number_of_transcriptions,
                 CASE WHEN (task.is_valid = true) THEN 3 
                     WHEN (task.is_valid = false) THEN 2 
                     WHEN (task.is_valid IS NULL AND task.is_fully_transcribed = TRUE) THEN 1 
                     ELSE 0 END AS task_status
             from task
             join project on (project.id = task.project_id)
+            left join transcription t on (t.task_id = task.id and t.fully_transcribed_by is not null)
             left join vp_user vu on (vu.user_id = task.fully_validated_by)
-            where project_id = :projectId """.stripIndent()
+            where task.project_id = :projectId """.stripIndent()
 
         def queryParams = [:]
         queryParams.projectId = project.id
@@ -238,15 +240,18 @@ class TaskService {
                 break
         }
 
-        def selectQuery = query + statusFilterClause + sortClause + (params.max ? " limit ${params.max} " : "") +
+        def selectQuery = query + statusFilterClause + " group by task.id, vu.last_name, vu.first_name " + sortClause + (params.max ? " limit ${params.max} " : "") +
                 (params.offset ? " offset ${params.offset} " : "")
-        def countQuery = "select count(*) as taskCount from (" + query + statusFilterClause + ") taskList"
+        def countQuery = "select count(*) as taskCount from (" + query + statusFilterClause + " group by task.id, vu.last_name, vu.first_name) taskList"
 
         def sql = new Sql(dataSource)
         def taskList = []
         sql.eachRow(selectQuery, queryParams) { row->
             Task task = Task.get(row.id as long)
-            if (task) taskList.add(task)
+            if (task) {
+                task.numberOfTranscriptions = (row.number_of_transcriptions ?: 0) as Integer
+                taskList.add(task)
+            }
         }
 
         def rowCount = sql.firstRow(countQuery, queryParams)?.taskCount as Integer

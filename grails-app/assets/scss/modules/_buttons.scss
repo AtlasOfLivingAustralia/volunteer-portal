@@ -39,6 +39,22 @@
 	}
 }
 
+.btn-link {
+	color: $btn-primary-bg;
+
+	&:hover, &:focus {
+		color: $btn-primary-hover-bg;
+	}
+
+	&:active, &.active, &.show {
+		color: $btn-primary-hover-bg;
+	}
+
+	&:disabled, &.disabled {
+		color: $btn-primary-bg;
+	}
+}
+
 .btn-outline-primary {
 	color: $btn-primary-bg;
 	border-color: $btn-primary-bg;

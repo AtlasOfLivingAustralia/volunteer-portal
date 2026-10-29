@@ -23,7 +23,7 @@
     <![endif]-->
 </head>
 <body class="${pageProperty(name: 'body.class')}" data-ng-app="${pageProperty(name: 'body.data-ng-app')}">
-<nav class="navbar navbar-expand-xl navbar-light bg-light fixed-top">
+<nav id="fixed-digivol-header" class="navbar navbar-expand-xl navbar-light bg-light fixed-top">
     <div class="container">
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                 aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation" role="button">

@@ -3,6 +3,7 @@ package au.org.ala.volunteer
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.query.api.BuildableCriteria
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
@@ -168,5 +169,90 @@ class TaskControllerSpec extends Specification implements ControllerUnitTest<Tas
         then:
         response.status == 302
         response.redirectedUrl == "/image/taskPlaceholder"
+    }
+
+    void "showDetails defaults to updated sort and groups fields by transcriber with Unknown fallback"() {
+        given:
+        def project = new Project(id: 11L)
+        def taskInstance = new Task(id: 22L, project: project)
+        def sampleFields = [
+                new Field(id: 1L, name: 'catalogNumber', transcribedByUserId: 'user-1', updated: new Date(3)),
+                new Field(id: 2L, name: 'scientificName', transcribedByUserId: null, updated: new Date(2)),
+                new Field(id: 3L, name: 'country', transcribedByUserId: 'user-1', updated: new Date(1))
+        ]
+
+        controller.userService = new Expando(
+                currentUserId: 'validator-1',
+                isValidator : { Project p -> true }
+        )
+
+        GroovySpy(Task, global: true)
+        GroovySpy(Field, global: true)
+        GroovySpy(Transcription, global: true)
+        GroovySpy(ViewedTask, global: true)
+
+        Task.get(22) >> taskInstance
+        Map capturedCriteriaParams = [:]
+        BuildableCriteria criteria = Mock(BuildableCriteria)
+        Field.createCriteria() >> criteria
+        criteria.list(_, _) >> { listParams, ignored ->
+            capturedCriteriaParams = listParams
+            sampleFields
+        }
+        Transcription.findAllByTaskAndFullyTranscribedByIsNotNull(_, _) >> []
+        ViewedTask.findAllByTask(_, _) >> []
+
+        controller.params.id = '22'
+
+        when:
+        def model = controller.showDetails()
+
+        then:
+        capturedCriteriaParams.sort?.toString() == 'updated'
+        capturedCriteriaParams.order?.toString() == 'asc'
+        capturedCriteriaParams.max?.toString() == '100'
+        model.fieldsByTranscriber.keySet().toList() == ['user-1', 'Unknown']
+        model.fieldsByTranscriber['user-1']*.name == ['catalogNumber', 'country']
+        model.fieldsByTranscriber['Unknown']*.name == ['scientificName']
+    }
+
+    void "showDetails preserves requested sort/order and caps max to 100"() {
+        given:
+        def project = new Project(id: 41L)
+        def taskInstance = new Task(id: 42L, project: project)
+
+        controller.userService = new Expando(
+                currentUserId: 'validator-2',
+                isValidator : { Project p -> true }
+        )
+
+        GroovySpy(Task, global: true)
+        GroovySpy(Field, global: true)
+        GroovySpy(Transcription, global: true)
+        GroovySpy(ViewedTask, global: true)
+
+        Task.get(42) >> taskInstance
+        Map capturedCriteriaParams = [:]
+        BuildableCriteria criteria = Mock(BuildableCriteria)
+        Field.createCriteria() >> criteria
+        criteria.list(_, _) >> { listParams, ignored ->
+            capturedCriteriaParams = listParams
+            []
+        }
+        Transcription.findAllByTaskAndFullyTranscribedByIsNotNull(_, _) >> []
+        ViewedTask.findAllByTask(_, _) >> []
+
+        controller.params.id = '42'
+        controller.params.sort = 'name'
+        controller.params.order = 'asc'
+        controller.params.max = '999'
+
+        when:
+        controller.showDetails()
+
+        then:
+        capturedCriteriaParams.sort?.toString() == 'name'
+        capturedCriteriaParams.order?.toString() == 'asc'
+        capturedCriteriaParams.max?.toString() == '100'
     }
 }

@@ -45,32 +45,10 @@
                             </li>
                         </ul>
                     </div>
-%{--                    <div id="qa-questions-pager" class="stepwizard">--}%
-%{--                        <div class="stepwizard-row">--}%
-%{--                            <div class="stepwizard-step">--}%
-%{--                                <span>Steps</span>--}%
-%{--                                <g:each in="${fieldList}" var="f" status="st">--}%
-%{--                                    <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>--}%
-%{--                                    <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${isActive}"--}%
-%{--                                            data-bs-target="#qaCarousel"--}%
-%{--                                            data-bs-slide-to="${st}">--}%
-%{--                                        ${st + 1}--}%
-%{--                                    </button>--}%
-%{--                                </g:each>--}%
-%{--                                <button type="button" class="btn btn-sm btn-circle btn-outline-secondary ${validator ? 'active' : ''}"--}%
-%{--                                        title="${message(code: 'questionnaire.summary.button.tooltip', default: 'Click any time to view and submit your choices')}"--}%
-%{--                                        data-container="body"--}%
-%{--                                        data-bs-target="#qaCarousel"--}%
-%{--                                        data-bs-slide-to="${fieldList.size()}">--}%
-%{--                                    ${fieldList.size() + 1}--}%
-%{--                                </button>--}%
-%{--                            </div>--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
 
                     <div class="row">
                         <div id="qaCarousel" class="carousel slide" data-bs-interval="" style="min-height: 382px">
-                        <div class="carousel-inner">
+                            <div class="carousel-inner">
                             <g:each in="${fieldList}" var="f" status="st">
                                 <g:set var="name" value="${g.widgetName(field: f.field, recordIdx: f.recordIdx)}"/>
                                 <g:set var="isActive" value="${!validator && st == 0 ? 'active' : ''}"/>
@@ -95,8 +73,9 @@
 
                                 </div>
                             </g:each>
-                        %{-- summary page last --}%
-                            <div id="item-summary" class="carousel-item ${validator ? 'active' : ''}"
+
+                                %{-- summary page last --}%
+                                <div id="item-summary" class="carousel-item ${validator ? 'active' : ''}"
                                  data-item-index="${fieldList.size()}">
                                 <h5 class="mb-2">Data summary</h5>
                                 <div class="col-12"><p>
@@ -124,9 +103,10 @@
                                     </table>
                                 </div>
                             </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
+
                     <div class="col-12">
 
                         <div class="transcription-actions">

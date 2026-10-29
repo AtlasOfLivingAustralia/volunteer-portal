@@ -431,21 +431,39 @@ class VolunteerTagLib {
 
     def transcribers = { attrs ->
         def taskInstance = attrs.task as Task
-        taskInstance.attach()
+        def transcriptionList = attrs.transcriptionList ? attrs.transcriptionList as List<Transcription> : []
+        def printEmptyRow = attrs.printEmptyRow ? Boolean.valueOf(attrs.printEmptyRow as String) : false
+        if (taskInstance) {
+            taskInstance.attach()
+            transcriptionList = taskInstance.transcriptions?.sort { it.dateFullyTranscribed }?.reverse() ?: []
+        } else {
+            transcriptionList = transcriptionList?.sort { it.dateFullyTranscribed }?.reverse()  ?: []
+        }
+
+        out << "<div class=\"bg-body-tertiary p-2 list-group list-group-flush rounded border small\">"
 
         int transcribedCount = 0
-        taskInstance?.transcriptions?.each { transcription ->
+        transcriptionList.each { transcription ->
             if (transcription.dateFullyTranscribed) {
-                out << "<p>"
-                out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
-                out << "${cl.displayNameForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
-                out << "</p>"
+                out << "<div class=\"list-group-item d-flex justify-content-between py-2 border-light-subtle\">"
+                out << "    <span class=\"fw-medium text-dark\">" +
+                        "<a href=\"#\" class=\"scroll-link\" data-target-transcription=\"transcription-${transcription.fullyTranscribedBy}\">" +
+                        "${cl.displayNameForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}</a></span>"
+                out << "    <span class=\"text-muted font-monospace\">${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}</span>"
+                out << "</div>"
+//                out << "<div class='list-group-item d-flex justify-content-between align-items-start py-2 fs-7'>"
+//                out << "${transcription.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")} by "
+//                out << "${cl.displayNameForUserId(id: transcription.fullyTranscribedBy) ?: '<span class=\"muted\">unknown</span>'}"
+//                out << "</div>"
                 transcribedCount++
             }
         }
-        if (transcribedCount == 0) {
+        if (transcribedCount == 0 && printEmptyRow) {
+            out << "<div class='list-group-item d-flex justify-content-between align-items-start py-2 fs-7'>"
             out << "<span class=\"muted\">Not transcribed</span>"
+            out << "</div>"
         }
+        out << "</div>"
     }
 
     /**
@@ -708,6 +726,8 @@ class VolunteerTagLib {
         def height = attrs.height as Integer
         def withHidden = attrs.withHidden
         def openFullImage = attrs.openFullImage
+        def noStyles = attrs.noStyles ? Boolean.valueOf(attrs.noStyles as String) : false
+        def customCss = attrs.customCss
 
         if (fixedHeight == null) fixedHeight = true
         if (withHidden == null) withHidden = false
@@ -716,6 +736,10 @@ class VolunteerTagLib {
             height = 100
         } else {
             fixedHeight = true
+        }
+        if (customCss) {
+            fixedHeight = false
+            noStyles = false
         }
 
         if (task) {
@@ -750,13 +774,10 @@ class VolunteerTagLib {
             try {
                 // URL encode the fullUrl to handle spaces and special characters
                 //def connection = new URL(URLEncoder.encode(fullUrl, "UTF-8")).openConnection()
-                log.debug("Checking task image URL: ${fullUrl}")
                 def connection = new URL(fullUrl).openConnection()
                 connection.setRequestMethod("HEAD")
                 connection.connect()
-                log.debug("Checking task image URL: ${fullUrl}, response code: ${connection.responseCode}")
                 if (connection.responseCode != 200) {
-                    log.debug("Task image URL not found: ${fullUrl}")
                     imageExists = false
                 }
             } catch (Exception e) {
@@ -768,7 +789,6 @@ class VolunteerTagLib {
                 url = resource(file:'/icons-audio-52.png')
             }
 
-            log.debug("taskThumbnail: taskId=${task.id}, url=${url}, fullUrl=${fullUrl}, imageExists=${imageExists}")
             if (!url || !imageExists) {
                 // sample
                 url = resource(file:'/sample-task-thumbnail.jpg')
@@ -778,7 +798,19 @@ class VolunteerTagLib {
             }
 
             if (url && task.project.projectType.name != ProjectType.PROJECT_TYPE_AUDIO) {
-                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight ? " style=\"height:${height}px\"" : ''} class=\"img-thumbnail ${openFullImage ? 'open-full-image' : ''}\" data-task-id=${task.id} data-task-name=\"${task.externalIdentifier}\"/>"
+                String image = "<img src=\"${url}\" data-full-src=\"$fullUrl\" "
+                if (fixedHeight && !noStyles) {
+                    image += "style=\"height:${height}px\" "
+                }
+                if (!noStyles) {
+                    image += "class=\"img-thumbnail ${openFullImage ? 'open-full-image' : ''} ${customCss}\" "
+                }
+                image += "data-task-id=${task.id} data-task-name=\"${task.externalIdentifier}\"/>"
+                out << image
+
+//                out << "<img src=\"${url}\" data-full-src=\"$fullUrl\"${fixedHeight && !noStyles ? " style=\"height:${height}px\"" : ''} " +
+//                        "${!noStyles ? "class=\"img-thumbnail ${openFullImage ? 'open-full-image' : ''} ${customCss}\"" : ''} " +
+//                        "data-task-id=${task.id} data-task-name=\"${task.externalIdentifier}\"/>"
                 if (withHidden) out << "<img class=\"hidden\" src=\"$fullUrl\"/>"
             } else {
                 out << "<img src=\"${url}\" data-full-src=\"$fullUrl\" />"
@@ -1110,6 +1142,55 @@ class VolunteerTagLib {
         } else {
             out << notFound ?: id
         }
+    }
+
+    def activityLog = { attrs, body ->
+        def viewedTasks = attrs.viewedTasks ? attrs.viewedTasks as List<ViewedTask> : []
+        def task = null
+        if (viewedTasks) {
+            task = Task.get(viewedTasks.first().taskId)
+        }
+        def transcriptions = attrs.transcriptions ? attrs.transcriptions as List<Transcription> : []
+        def viewedTasksMatched = []
+        if (transcriptions.size() > 0) {
+            // Iterate through a descending sorted list of viewed tasks and find the matching transcription for each viewed task. If a match is found, add it to the matched list.
+            new ArrayList<ViewedTask>(viewedTasks).sort { a, b -> b.lastUpdated <=> a.lastUpdated }.each { view ->
+                if (transcriptions.find { it.task.id == view.task.id && it.fullyTranscribedBy == view.userId && isDateWithinTwoHours(it.dateFullyTranscribed, view.lastUpdated)}) {
+                    // If the list already has a matched transcription against a user/viewed task, don't add it again. A user can view a task multiple times.
+                    // We want to add it on the later view, so we only add it if it doesn't already exist in the list.
+
+                    if (!viewedTasksMatched.find { it.userId == view.userId && it.task.id == view.task.id }) {
+                        viewedTasksMatched << view
+                    }
+                }
+            }
+        } else {
+            viewedTasksMatched = viewedTasks
+        }
+
+        out << "<div class=\"bg-body-tertiary p-2 list-group list-group-flush rounded border small\">"
+        viewedTasks.sort {it.lastUpdated }.each { view ->
+            out << "    <div class=\"list-group-item d-flex justify-content-between py-2 border-light-subtle\">"
+            out << "        <span class=\"fw-medium text-dark\">${cl.userDisplayString(id: view.userId)}</span>"
+            // If transcriptions exist, search the transcription list for the transcription that matches the viewed task and display a transcription badge.
+            if (viewedTasksMatched.find { it.userId == view.userId && it.id == view.id }) {
+                out << "        <span class=\"badge badge--transcribed ms-auto me-2\">Transcribed</span>"
+            } else if (view.userId == task?.fullyValidatedBy && task?.isValid) {
+                out << "        <span class=\"badge badge--validated ms-auto me-2\">Validated</span>"
+            }
+            out << "        <span class=\"text-muted font-monospace\">${view.lastUpdated?.format("yyyy-MM-dd HH:mm:ss")}</span>"
+            out << "    </div>"
+        }
+        out << "</div>"
+    }
+
+    private def isDateWithinTwoHours(Date dateOrigin, Date dateToCheck) {
+        if (!dateOrigin || !dateToCheck) {
+            return false
+        }
+        def twoHoursInMillis = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+        def timeDifference = Math.abs(dateOrigin.time - dateToCheck.time)
+        return timeDifference <= twoHoursInMillis
     }
 
 
@@ -1600,5 +1681,9 @@ function notify() {
         } else {
             out << "N/A"
         }
+    }
+
+    def returnToTopButton = { attrs, body ->
+        out << "<button class=\"btn btn-sm btn-outline-secondary float-end\" onclick=\"window.scrollTo({ top: 0, behavior: 'smooth' });\"><i class=\"fa fa-arrow-up\"></i> Return to top</button>"
     }
 }

@@ -1137,6 +1137,11 @@ blockquote p {
 	margin-top: 0.5rem;
 }
 
+.task-list .card {
+	margin-bottom: 0.25rem !important;
+	margin-top: 0 !important;
+}
+
 /* Index Styles */
 .index-news-nav {
 	padding: $card-footer-padding;
