@@ -352,4 +352,35 @@ class TutorialService {
 
         tutorial.save(flush: true, failOnError: true)
     }
+
+    def getDisplayDescription(Tutorial tutorial) {
+        // Look at the list of projects for the tutorial and gather info like the project type, name and template and create a description string for display purposes.
+        def description = ""
+        if (tutorial.projects) {
+            def projectDescriptions = tutorial.projects.collect { project ->
+                def projectType = project.projectType?.label ?: "Unknown Type"
+                def projectName = project.name ?: "Unnamed Project"
+                return "${projectName}"
+            }
+            // Look for the most used project type:
+            def projectTypeCounts = [:]
+            tutorial.projects.each { project ->
+                def projectType = project.projectType?.label ?: "Unknown Type"
+                projectTypeCounts[projectType] = (projectTypeCounts[projectType] ?: 0) + 1
+            }
+            def mostUsedProjectType = projectTypeCounts.max { it.value }?.key
+            // Look at the templates used in the projects:
+            def templateCounts = [:]
+            tutorial.projects.each { project ->
+                def templateName = project.template?.viewName ?: "Unknown Template"
+                templateCounts[templateName] = (templateCounts[templateName] ?: 0) + 1
+            }
+            def mostUsedTemplate = templateCounts.max { it.value }?.key
+            // Construct a description based on the most used project type, name and template:
+            description = "Tutorial covering ${mostUsedProjectType} projects, most commonly using the ${mostUsedTemplate} " +
+                    "template.<br/>Some of the projects include: " +
+                    "${projectDescriptions.take(3).join(', ')}" + (tutorial.projects.size() > 3 ? ", and more..." : "")
+        }
+        return description
+    }
 }

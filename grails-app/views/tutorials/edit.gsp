@@ -36,7 +36,7 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-12">
                     <g:hasErrors bean="${tutorial}">
                         <div class="alert alert-danger">
                             <ul class="errors" role="alert" style="padding-left: 0px;">
@@ -48,16 +48,18 @@
                         </div>
                     </g:hasErrors>
                 </div>
-                <div class="col-md-12">
+                <div class="col-12">
                     <h4>Tutorial Details</h4>
                     <p>Edit the following details for your Tutorial. You may upload a new version of the tutorial. This will overwrite the existing version.</p>
                 </div>
-                <div class="col-md-12" style="margin-top: 20px;">
+                <cl:hr/>
+
+                <div class="col-12" style="margin-top: 20px;">
                     <g:form action="update" id="${tutorial?.id}" enctype="multipart/form-data">
 
                         <div class="form-group <cl:ifNotSiteAdmin>required</cl:ifNotSiteAdmin>">
-                            <label class="form-label col-md-3" for="institutionId">Institution</label>
-                            <div class="col-md-6">
+                            <label class="form-label col-6" for="institutionId">Institution</label>
+                            <div class="col-6 col-md-12">
                             <cl:ifSiteAdmin>
                                 <g:select class="form-select" name="institutionId" id="institutionId" from="${institutionList}"
                                           optionKey="id" value="${tutorial?.institution?.id}" noSelection="['':'- Select an Institution -']"/>
@@ -70,47 +72,51 @@
                         </div>
 
                         <div class="form-group required">
-                            <label class="form-label col-md-3" for="name">Tutorial name</label>
+                            <label class="form-label col-6" for="name">Tutorial name</label>
 
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-12">
                                 <g:textField class="form-control" maxlength="130" name="name" id="name" value="${tutorial?.name}" required="required"/>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="description">Description</label>
+                            <label class="form-label col-6" for="description">Description</label>
 
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-12">
                                 <g:textField class="form-control" name="description" maxlength="255" id="description" value="${tutorial?.description}" />
+                            </div>
+                            <div class="form-text">
+                                <p class="text-muted small mb-1">This description will be displayed in the tutorial library. If left blank, a default description will be generated:</p>
+                                <blockquote class="col-6 small">${raw(displayDescription)}</blockquote>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="tutorialFileLink">Tutorial File</label>
+                            <label class="form-label col-6" for="tutorialFileLink">Tutorial File</label>
 
-                            <div class="col-md-6 tutorial-text-row">
+                            <div class="col-6 col-md-12 tutorial-text-row">
                                 <cl:tutorialLink tutorial="${tutorial}"><span class="fa fa-file"></span>&nbsp;${tutorial?.filename}</cl:tutorialLink>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="tutorialFile">Upload New Tutorial File</label>
+                            <label class="form-label col-6" for="tutorialFile">Upload New Tutorial File</label>
 
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-12">
                                 <input type="file" class="form-control" name="tutorialFile" id="tutorialFile" accept="application/pdf,.pdf"/>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="fileInfo">Tutorial Created</label>
-                            <div class="col-md-6 tutorial-text-row">
+                            <label class="form-label col-6" for="fileInfo">Tutorial Created</label>
+                            <div class="col-6 col-md-12 tutorial-text-row">
                                 <g:formatDate date="${tutorial?.dateCreated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.createdBy?.displayName}
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label col-md-3" for="fileInfo">Tutorial Last Updated</label>
-                            <div class="col-md-6 tutorial-text-row">
+                            <label class="form-label col-6" for="fileInfo">Tutorial Last Updated</label>
+                            <div class="col-6 col-md-12 tutorial-text-row">
                                 <g:if test="${tutorial?.lastUpdated}">
                                 <g:formatDate date="${tutorial?.lastUpdated}" format="dd/MM/yyyy HH:mm:ss" /> by ${tutorial?.updatedBy ? tutorial?.updatedBy?.displayName : 'System (migration)'}
                                 </g:if>
@@ -121,7 +127,7 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9 tutorial-button-row">
+                            <div class="col-md-offset-3 col-6 tutorial-button-row">
                                 <g:if test="${!migrate}">
                                 <g:submitButton name="edit" class="save btn btn-sm btn-primary tutorial-upload"
                                                 value="${message(code: 'default.button.update.label', default: 'Save')}"/>
@@ -131,9 +137,10 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-12">
                     <h4>Expeditions</h4>
+                    <cl:hr/>
                     <g:if test="${migrate}">
                     <p>Below is a list of expeditions that potentially have this tutorial linked. Please select the checkbox to confirm which projects to save:</p>
                     <p>If an Institution is not yet selected, selecting the first checkbox will set the Institution to that Expedition's institution.</p>

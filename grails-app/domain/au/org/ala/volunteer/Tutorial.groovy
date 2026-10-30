@@ -20,7 +20,7 @@ class Tutorial {
 
     static belongsTo = [Project]
     static hasMany = ['projects': Project]
-
+    static transients = ['displayDescription']
 
     static constraints = {
         name nullable: false, maxSize: 130

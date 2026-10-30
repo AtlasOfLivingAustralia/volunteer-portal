@@ -1529,11 +1529,17 @@ function notify() {
     /**
      * Builds a link to a given tutorial.
      * @attr tutorial the tutorial to link to
+     * @attr tutorialId the id of the tutorial to link to (if tutorial is not provided)
      * @attr hideLinkIcon flag to determine when to show an external link icon.
      * @attr linkOnly if set to true, returns only the URL of the tutorial.
      */
     def tutorialLink = { attrs, body ->
-        Tutorial tutorial = attrs.tutorial as Tutorial
+        Tutorial tutorial = attrs.tutorial as Tutorial ?: null
+        if (!tutorial && attrs.tutorialId) {
+            tutorial = Tutorial.get(attrs.tutorialId as Long)
+        }
+        if (!tutorial) return
+
         def hideLinkIcon = Boolean.parseBoolean(attrs.hideLinkIcon as String)
         def linkOnly = Boolean.parseBoolean(attrs.linkOnly as String)
         if (linkOnly) {
@@ -1685,5 +1691,9 @@ function notify() {
 
     def returnToTopButton = { attrs, body ->
         out << "<button class=\"btn btn-sm btn-outline-secondary float-end\" onclick=\"window.scrollTo({ top: 0, behavior: 'smooth' });\"><i class=\"fa fa-arrow-up\"></i> Return to top</button>"
+    }
+
+    def hr = { attrs, body ->
+        out << "<div class=\"border-bottom border-secondary-subtle border-2 my-3\"></div>"
     }
 }

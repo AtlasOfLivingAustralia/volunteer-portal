@@ -548,7 +548,7 @@ Log entry for that date.*
   - [ ] News Items
   - [X] Forum
   - [X] Notebook
-  - [ ] Tutorials
+  - [X] Tutorials
 
 #### 6. Accessibility sweep
 
@@ -2120,3 +2120,6 @@ parallel. Ships this release.
   - Added fixed-header anchor support (`grails-app/views/layouts/digivol-main.gsp`) and smooth scroll targeting from summary metadata to transcription groups in `grails-app/views/task/showDetails.gsp`.
   - Cleaned carousel structure in `grails-app/views/transcribe/templateViews/questionnaireTranscribe.gsp` and added unit tests for showDetails defaults/capping/grouping in `src/test/groovy/au/org/ala/volunteer/TaskControllerSpec.groovy`.
   - Added supporting UI styling in `grails-app/assets/scss/layouts/_colours.scss`, `grails-app/assets/scss/modules/_buttons.scss`, and `grails-app/assets/scss/modules/_components.scss`.
+- 2026-10-30 - Updated grails-app/views/tutorials/index.gsp to BS5 card layout, with updated button and thumbnail styles.
+  - Updated tutorial list to display in a modal instead of separate page.
+  - Added auto generated description for tutorials without a description.

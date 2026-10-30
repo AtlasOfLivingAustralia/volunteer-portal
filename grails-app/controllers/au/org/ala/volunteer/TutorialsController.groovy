@@ -1,6 +1,8 @@
 package au.org.ala.volunteer
 
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -27,23 +29,22 @@ class TutorialsController {
     }
 
     /**
-     * List of tutorials for an institution
-     * @return
+     * Returns a list of tutorials for the given institution or admin.
+     * @return a JSON list of tutorials
      */
-    def groupList() {
-        def institution = Institution.get(params.long('institution'))
-        def admin = params.boolean("admin") == true
-        log.debug("groupList: admin ${admin}")
-        if (!institution && !admin) {
-            flash.message = "Cannot find Institution with that ID"
-            redirect (action: 'index')
-            return
-        }
-
-        def tutorialList
+    def tutorialListForInstitution() {
+        // Get the list of tutorials for the institution or admin
+        // and return via JSON for the modal
+        def institutionId = params.long('institutionId') ?: 0L
+        def admin = (institutionId == "admin")
+        def tutorialList = []
         if (admin) tutorialList = Tutorial.findAllByInstitutionIsNullAndIsActive(true, [sort: 'name', order: 'asc'])
-        else tutorialList = Tutorial.findAllByInstitutionAndIsActive(institution, true, [sort: 'name', order: 'asc'])
-        [institution: institution, tutorialList: tutorialList]
+        else tutorialList = Tutorial.findAllByInstitutionAndIsActive(Institution.get(institutionId), true, [sort: 'name', order: 'asc'])
+        def resultList = tutorialList.collect { tutorial ->
+            def displayDescription = StringUtils.isEmpty(tutorial.description) ? tutorialService.getDisplayDescription(tutorial) : tutorial.description
+            [id: tutorial.id, name: tutorial.name, description: displayDescription, filename: tutorial.filename]
+        }
+        render(resultList as JSON)
     }
 
     /**
@@ -82,6 +83,7 @@ class TutorialsController {
 
         render(view: 'edit', model: [tutorial: tutorial,
                                      tutorialUrl: tutorialService.getTutorialUrl(tutorial),
+                                     displayDescription: tutorialService.getDisplayDescription(tutorial),
                                      institutionList: getInstitutionList(),
                                      projectMatchList: projectMatchList])
     }
