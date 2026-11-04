@@ -6,7 +6,7 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'newsItem.name.label', default: 'News Item')}"/>
     <title><g:message code="default.create.label" args="[entityName]"/></title>
-    <asset:stylesheet src="bootstrap-datepicker"/>
+    <asset:stylesheet src="bootstrap-datepicker.css"/>
 </head>
 
 <body class="admin">

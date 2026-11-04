@@ -538,7 +538,6 @@ Log entry for that date.*
   - [X] `stats/index.gsp` (Downloads tab)
   - [X] `label/editCategory.gsp` (View tag usage)
 - [X] Consistency on edit pages. Remove edit button, make item name a link.
-- [ ] Move flash.messages to the top of the page and overlay the content (like the system message).
 - [X] Updated broken admin task list
   - [X] Task list grid mode layout
   - [X] Task show details needs refresh
@@ -553,6 +552,9 @@ Log entry for that date.*
   - [X] Forum
   - [X] Notebook
   - [X] Tutorials
+- [X] Restyle the angular-ui-bootstrap 1.3.3 datepicker popup used by `stats/index.gsp`. Its compiled datepicker
+  template already uses BS5 button classes; scoped rules in `admin-stats.css` style the calendar and replace missing
+  Glyphicon chevrons with Font Awesome icons. No `uib-timepicker` usage is active in the app.
 
 #### 6. Accessibility sweep
 
@@ -655,24 +657,6 @@ deferring.
   `.form-group.required .form-label` would have been a new visual convention nobody had seen, and weight alone is
   not an accessible signal. The asterisk plus the control's `required`/`aria-required` attribute carries the
   meaning. *(Unblocks group 3 — no longer blocking.)*
-- [ ] Volunteer search forms have no `action` and no hidden inputs, so they are still JS-only and the `<form>` is
-  decorative on submit.
-    - Prompt: "Decide whether volunteer search should work without JS. If so, give each form a real GET action plus
-      hidden inputs for `mode`/`statusFilter`/
-      `activeFilter`/`sort`/`order` and delete the URL-building JS."
-- [ ] `stats/index.gsp` 312 — the date-range Search button is `btn-sm btn-primary` next to default-size trigger
-  buttons. Left as-is because the search conventions call for `btn-sm btn-primary` on admin filters.
-    - Prompt: "Decide whether an admin filter button adjacent to default-size controls should match its neighbours or
-      the filter convention. This is the first place the two rules conflict." *(Blocks group 5, stats page.)*
-- [ ] angular-ui-bootstrap 1.3.3 datepicker/timepicker emit `btn-default` + glyphicons — renders unstyled. Legacy
-  library, maintenance only. The surrounding markup in `stats/index.gsp` 275–314 was migrated to BS5 on 2026-09-23, but
-  the **popup panel itself is still unstyled** — the directive templates are compiled into the vendor bundle.
-    - Prompt: "Decide whether the stats date range keeps angular-ui-bootstrap with a compatibility shim scoped to
-      `.uib-datepicker-popup`, or is rewritten to reuse the vendored bootstrap-datepicker outside Angular. A shim means
-      reintroducing `btn-default`/`glyphicon` selectors the phase has otherwise deleted — scope it tightly or not at
-      all." *(Blocks group 5, stats page.)*
-- [ ] No `pagination-sm` variant. Admin tables use the default size like everything else. Deferred with no evidence it's
-  wanted — revisit only if the dense admin lists look unbalanced.
 
 ---
 
@@ -2160,5 +2144,6 @@ parallel. Ships this release.
   - Deleted the legacy CSS and SCSS entry points left over from the notebook-2 removal, plus the unused `forum.css`, `jquery-ui.css`, `institution-dropdown.css` and `digivol-expedition.css`.
   - Added `.css` extensions to asset links in the layouts and linked `typeahead.css`.
   - Updated the BS5 plan: eyebrow convention rewritten, two Phase 8 items closed.
-
-
+- 2026-11-05 - Phase 8 group 5 datepicker popup styling completed.
+  - Added scoped calendar styling and Font Awesome chevrons in `admin-stats.css`; no widget markup or vendor files changed.
+  - Confirmed the active Statistics page uses the datepicker only; no `uib-timepicker` usage was found.

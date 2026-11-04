@@ -1,3 +1,75 @@
 /*= encoding UTF-8
  *= require angular/angular-ui-bootstrap
+ *= require_self
  */
+
+#admin-stats .uib-datepicker-popup.dropdown-menu {
+  padding: 0.5rem;
+}
+
+#admin-stats .uib-datepicker table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0.125rem;
+}
+
+#admin-stats .uib-datepicker th,
+#admin-stats .uib-datepicker td {
+  padding: 0.125rem;
+}
+
+#admin-stats .uib-datepicker td button {
+  width: 100%;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem;
+}
+
+#admin-stats .uib-datepicker .btn-secondary {
+  color: var(--bs-body-color, #212529);
+  background-color: transparent;
+  border-color: transparent;
+}
+
+#admin-stats .uib-datepicker .btn-secondary:hover,
+#admin-stats .uib-datepicker .btn-secondary:focus-visible {
+  background-color: var(--bs-tertiary-bg, #f8f9fa);
+  border-color: var(--bs-border-color, #dee2e6);
+  color: var(--bs-body-color, #212529);
+}
+
+#admin-stats .uib-datepicker .btn-info {
+  color: #fff;
+  background-color: #a6a6a6;
+  border-color: rgba(108, 117, 125, 0.5);
+}
+
+/* Increase specificity by including the parent button class */
+#admin-stats .btn-secondary span.ng-binding.text-info {
+  color: #054670 !important; /* Replace with your desired color */
+}
+
+#admin-stats tbody button.active {
+  background-color: #acc3ff !important;
+  color: #054670 !important;
+}
+
+#admin-stats .uib-button-bar button.btn-info {
+  background-color: #acc3ff !important;
+  color: #054670 !important;
+  border-color: #acc3ff !important;
+}
+
+#admin-stats .uib-datepicker .glyphicon-chevron-left,
+#admin-stats .uib-datepicker .glyphicon-chevron-right {
+  font-family: FontAwesome;
+  font-style: normal;
+}
+
+#admin-stats .uib-datepicker .glyphicon-chevron-left::before {
+  content: "\f053";
+}
+
+#admin-stats .uib-datepicker .glyphicon-chevron-right::before {
+  content: "\f054";
+}

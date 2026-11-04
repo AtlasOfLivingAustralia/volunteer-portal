@@ -4,7 +4,8 @@
 <head>
     <title><cl:pageTitle title="Admin Stats" /></title>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
-    <asset:stylesheet src="admin-stats" />
+    <asset:stylesheet src="admin-stats.css" />
+    <asset:stylesheet src="bootstrap-datepicker.css"/>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 
 </head>
@@ -372,7 +373,7 @@
     </div>
 
     <div class="col-auto">
-        <button type="button" class="search btn btn-sm btn-primary" ng-click="$ctrl.confirm()">Search</button>
+        <button type="button" class="search btn btn-sm btn-secondary" ng-click="$ctrl.confirm()">Search</button>
     </div>
 </div>
 </script>
