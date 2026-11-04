@@ -2158,4 +2158,11 @@ parallel. Ships this release.
     - the `.card-filter` margin check
     - the bare element selector audit
     - Tidied the forum markdown help page and the tutorials modal.
+  - Removed `digivol-custom.css`, the last post-SCSS override stylesheet. `digivol.css` now loads `main` with no later custom file.
+  - Moved the rules still in use into `modules/_components.scss`. Tokenised the font sizes to the `$font-size-*` scale. Covered `.tag`, `.currentFilter`, sortable table headers, `.admin` page tweaks and the stats/map helpers.
+  - Deleted dead selectors, including the commented-out `.admin h1` and the unused nav/subheading rules.
+  - Added `.projectActionLinks` to `_buttons.scss`.
+  - Closed the `digivol-custom.css` font-size review item in the BS5 migration plan.
+
+
 
