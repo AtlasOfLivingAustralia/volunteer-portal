@@ -19,7 +19,7 @@
     <meta property="og:image"         content="${thumbnail}" />
     <cl:googleMapsScript callback="onGmapsReady"/>
     <asset:stylesheet src="image-viewer"/>
-    <asset:stylesheet src="transcribe-widgets" />
+    <asset:stylesheet src="transcribe-widgets.css" />
     <g:layoutHead/>
 
     <style type="text/css">

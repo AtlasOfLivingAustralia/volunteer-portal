@@ -56,7 +56,7 @@
 <a name="expeditionList" class="expeditionListAnchor"></a>
 <section id="what-you-do" class="dark">
     <div class="container">
-        <h2 class="heading"><g:message code="index.whatyoudo.title" /></h2>
+        <h2 class="eyebrow"><g:message code="index.whatyoudo.title" /></h2>
 
         <div class="row">
             <div class="col-sm-1 col-4">
@@ -101,7 +101,7 @@
 <g:if test="${newsItem}">
 <section id="latest-news-item">
     <div class="container">
-        <h2 class="heading"><g:message code="index.news.heading" /></h2>
+        <h2 class="eyebrow"><g:message code="index.news.heading" /></h2>
 
         <div class="row">
             <div class="card shadow-sm mb-2">
@@ -143,7 +143,7 @@
 
 <section id="expedition-feature">
     <div class="container">
-        <h2 class="heading"><g:message code="index.feature.heading" /></h2>
+        <h2 class="eyebrow"><g:message code="index.feature.heading" /></h2>
 
         <div class="row">
             <div class="col-md-6">
@@ -189,7 +189,7 @@
 
                 <div class="row">
                     <div class="col-sm-8">
-                        <h2 class="heading">
+                        <h2 class="eyebrow">
                             <g:message code="index.more.heading" />
                         </h2>
                     </div>

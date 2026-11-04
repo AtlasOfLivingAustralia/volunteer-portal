@@ -606,18 +606,14 @@ Log entry for that date.*
   fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
 - [X] Remove `digivol-custom.css` as a post-SCSS override: tokenise retained font sizes, move live rules into SCSS, and
   delete obsolete selectors and redundant styles. `digivol.css` now loads `main` without a later custom stylesheet.
-- [ ] `layouts/_commonCss.gsp` still calls `<g:pageProperty name="page.primaryColour">`
-  four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
-  source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw
-  hex, not the custom property.
-- [ ] Rename eyebrow styles so they stop looking like heading overrides
-    - `h2.heading`, `.pre-header` (`modules/_components.scss` 382–394) and
-      `h2.body-heading` (396–403) are uppercase letter-spaced section labels, not heading sizes. `.modal h5` (884)
-      includes the same `h2-heading` mixin.
-    - Prompt: "Rename the h2-heading mixin and its consumers to an `.eyebrow`
-      component so they are not mistaken for heading size overrides. Update call sites in modules/_components.scss,
-      modules/_sections.scss, notebook-2/_newsItems.scss 218 and the GSPs using class='heading' /
-      'pre-header' / 'body-heading'. Behaviour must not change."
+- [X] Consolidate primary-colour lookup in `layouts/_commonCss.gsp`. Resolve `page.primaryColour` once, with the
+  existing `#d5502a` default, and reuse the raw hex for both the `theme-color` meta tag and `--brand-primary`.
+  The earlier note about four lookups and `hexToRbg` was stale; the layout had two lookups and no `hexToRbg` call.
+- [X] Rename eyebrow styles so they stop looking like heading overrides. `h2.heading`, `.pre-header`,
+  `h2.body-heading` and `.modal h5` are uppercase, letter-spaced eyebrow styles, not heading sizes. The live page
+  headings now use `.eyebrow`; About-page section labels use `.eyebrow--body` to retain their distinct typography.
+  The dark-section color rule and modal heading appearance are unchanged. No current GSP uses `.pre-header`, and the
+  referenced `notebook-2/_newsItems.scss` is absent from this repository.
 
 
 #### 8. Manual review (no AI)
@@ -664,10 +660,6 @@ deferring.
     - Prompt: "Decide whether volunteer search should work without JS. If so, give each form a real GET action plus
       hidden inputs for `mode`/`statusFilter`/
       `activeFilter`/`sort`/`order` and delete the URL-building JS."
-- [ ] `project/list.gsp`, `institution/list.gsp` and `institution/index.gsp` do not echo `params.q` back into the search
-  input — the term appears only as a removable `.currentFilter` tag. `newsItem/manage`, `tutorials/manage`,
-  `task/manageUploads` and `picklist/show` do echo it. Inconsistent.
-    - Prompt: "Pick one: echo the term in the field, or show it as a removable tag."
 - [ ] `stats/index.gsp` 312 — the date-range Search button is `btn-sm btn-primary` next to default-size trigger
   buttons. Left as-is because the search conventions call for `btn-sm btn-primary` on admin filters.
     - Prompt: "Decide whether an admin filter button adjacent to default-size controls should match its neighbours or
@@ -877,9 +869,9 @@ what caused `h3` to render smaller than `h2` inside `.a-feature`.
 Display/hero headings opt in explicitly: `.a-feature.home h1` and
 `.a-feature.wildlifespotter h1` use `$font-size-3xl`. Everything else uses the global scale.
 
-`h2.heading`, `.pre-header`, `h2.body-heading` and `.modal h5` (via the
-`h2-heading` mixin) are *eyebrow* styles — uppercase, letter-spaced, 14–16px. They are not heading sizes. Leave them
-alone.
+`.eyebrow`, `.eyebrow--body` and `.modal h5` (via the `eyebrow` mixin) are eyebrow styles — uppercase,
+letter-spaced section labels, not heading sizes. Their typography is intentional; do not change it as part of heading
+scale adjustments.
 
 `font-size` used to size an icon glyph rather than text may stay in `px`:
 `.icon-size` (87px) and `.digivol-logo` (0.5rem) are the only such exceptions.
@@ -2163,6 +2155,10 @@ parallel. Ships this release.
   - Deleted dead selectors, including the commented-out `.admin h1` and the unused nav/subheading rules.
   - Added `.projectActionLinks` to `_buttons.scss`.
   - Closed the `digivol-custom.css` font-size review item in the BS5 migration plan.
-
+  - Renamed the eyebrow styles, previously `h2.heading`, `.pre-header` and `.body-heading`, to `.eyebrow` and `.eyebrow--body`. Renamed the mixin to match and updated about, home, institution, project and leaderboard-admin views.
+  - Resolved `page.primaryColour` once in `_commonCss.gsp` and reused it for the `theme-color` meta tag and `--brand-primary`.
+  - Deleted the legacy CSS and SCSS entry points left over from the notebook-2 removal, plus the unused `forum.css`, `jquery-ui.css`, `institution-dropdown.css` and `digivol-expedition.css`.
+  - Added `.css` extensions to asset links in the layouts and linked `typeahead.css`.
+  - Updated the BS5 plan: eyebrow convention rewritten, two Phase 8 items closed.
 
 

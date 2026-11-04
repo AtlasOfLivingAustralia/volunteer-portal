@@ -3,7 +3,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="leaderBoardAdmin.label" default="Honour Board Configuration"/></title>
-    <asset:stylesheet src="label-autocomplete"/>
+    <asset:stylesheet src="label-autocomplete.css"/>
+    <asset:stylesheet src="typeahead.css"/>
     <style>
         li.user > span {
             margin-right: 5px;

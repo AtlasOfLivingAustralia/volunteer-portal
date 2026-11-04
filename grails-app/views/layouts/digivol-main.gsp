@@ -119,7 +119,7 @@
 
 <section id="why" class="white">
     <div class="container">
-        <h2 class="heading"><g:message code="layout.whyinvolved.heading" /></h2>
+        <h2 class="eyebrow"><g:message code="layout.whyinvolved.heading" /></h2>
 
         <div class="row">
             <div class="col-sm-4">
@@ -142,7 +142,7 @@
 
 <section id="logos-institutions">
     <div class="container">
-        <h2 class="heading">Institutions using DigiVol</h2>
+        <h2 class="eyebrow">Institutions using DigiVol</h2>
 
         <div class="row">
 

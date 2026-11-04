@@ -1,8 +1,9 @@
 <%-- Allow overriding of primary branding colour --%>
-<meta name="theme-color" content="${g.pageProperty(name: "page.primaryColour", default: "#d5502a")}"/>
+<g:set var="primaryColour" value="${g.pageProperty(name: 'page.primaryColour', default: '#d5502a')}"/>
+<meta name="theme-color" content="${primaryColour}"/>
 <style>
     :root {
-        --brand-primary: <g:pageProperty name="page.primaryColour" default="#d5502a"/>;
+        --brand-primary: ${primaryColour};
     }
 
     .navbar-brand,

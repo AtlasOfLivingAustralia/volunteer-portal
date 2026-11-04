@@ -514,7 +514,7 @@
 	}
 }
 
-@mixin h2-heading {
+@mixin eyebrow {
 	text-transform: uppercase;
 	font-size: $font-size-sm;
 	letter-spacing: 2px;
@@ -524,22 +524,23 @@
 	font-weight: 400;
 }
 
-h2.heading, .pre-header {
-	@include h2-heading;
+.eyebrow {
+	@include eyebrow;
 }
 
-h2.heading {
+h2.eyebrow {
 	letter-spacing: 1px;
 	margin-bottom: 25px;
 }
 
-h2.body-heading {
+h2.eyebrow--body {
 	text-transform: uppercase;
 	font-size: $font-size-md;
 	letter-spacing: 2px;
 	margin-bottom: 15px;
 	margin-top: 20px;
 	color: $black;
+	font-weight: $headings-font-weight;
 }
 .media-list {
 	.media {
@@ -1007,8 +1008,7 @@ blockquote p {
 /* Modal Style */
 .modal {
 	h5 {
-		/*@extend h2.heading;*/
-		@include h2-heading;
+		@include eyebrow;
 		margin-bottom: 0;
 	}
 	// Modal forms are denser than page forms. Spacing belongs to the .form-group

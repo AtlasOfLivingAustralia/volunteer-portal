@@ -22,7 +22,7 @@
                 <div class="col-12 col-lg-12 col-xl-8">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2 class="heading">
+                            <h2 class="eyebrow">
                                 <g:if test="${params.q || params.tag}">
                                     Expeditions matching:
                                     <g:if test="${params.q}">

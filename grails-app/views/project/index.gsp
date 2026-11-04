@@ -189,7 +189,7 @@
             <div class="row">
                 <div class="col-sm-12 col-lg-4">
                     <div class="map-header">
-                        <h2 class="heading">Record Locations</h2>
+                        <h2 class="eyebrow">Record Locations</h2>
                         <p>On this map you'll find all the location of transcribed records of the ${projectInstance.name} expedition</p>
                     </div>
                 </div>
@@ -206,7 +206,7 @@
             <div class="col-xl-8">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h2 class="heading">
+                        <h2 class="eyebrow">
                             Expedition Volunteers
                         </h2>
                     </div>
