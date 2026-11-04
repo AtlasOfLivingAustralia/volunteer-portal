@@ -2156,3 +2156,13 @@ parallel. Ships this release.
   - `./gradlew assetCompile --offline` and `./gradlew compileGroovyPages --offline` passed.
   - Follow-ups: responsive notebook table headers are still hidden with `display: none`; `forum-2.scss` and
     `_forum.scss` appear unreferenced, and table-only rules in `forum.css` need a runtime-markup check.
+  - Removed the whole `notebook-2` SCSS overlay (6 files, about 1,490 lines). The `news.scss`, `tutorials-2.scss` and `notebook-reset.css` links in the news and tutorial views went with it.
+  - Moved the `.custom-search-input` component CSS from `_nav.scss` to its documented home, `modules/_search.scss`. Dropped two redundant `!important`s.
+  - Closed these Phase 8 group 7 cleanup items in the BS5 plan:
+    - dead forum-2 styles
+    - the `forum.css` table audit
+    - the search CSS move and its `!important` check
+    - the `.card-filter` margin check
+    - the bare element selector audit
+    - Tidied the forum markdown help page and the tutorials modal.
+
