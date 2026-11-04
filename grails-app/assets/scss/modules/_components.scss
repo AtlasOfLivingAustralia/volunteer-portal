@@ -4,7 +4,7 @@
 
 	&.home {
 		color: white;
-		//background: url(../img/feature-digivol-b.jpg) no-repeat center center fixed;
+		background-image: url(../images/feature-digivol-b.jpg);
 		background-position: center;
 		background-repeat: no-repeat;
 		background-attachment: fixed;
@@ -526,6 +526,11 @@
 
 h2.heading, .pre-header {
 	@include h2-heading;
+}
+
+h2.heading {
+	letter-spacing: 1px;
+	margin-bottom: 25px;
 }
 
 h2.body-heading {
@@ -1301,4 +1306,198 @@ $tooltip-widths: (
 	main {
 		background-color: white;
 	}
+}
+
+/* Rules retained from digivol-custom.css */
+
+.display-inline-block {
+	display: inline-block;
+}
+
+.ellipsis {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.word-wrap-break-word {
+	word-break: break-word;
+}
+
+.expedition-inactive {
+	opacity: 0.5;
+}
+
+.institution-settings-btn {
+	z-index: 10;
+	right: 25px;
+	top: 10px;
+	padding: 1rem;
+}
+
+.tag {
+	font-size: $font-size-xs;
+	padding: 0.3em 0.4em 0.4em;
+	margin: 0 0.1em;
+
+	a {
+		color: #bbb;
+		cursor: pointer;
+		opacity: 0.8;
+		margin: 0 0 0 0.3em;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	.remove {
+		vertical-align: bottom;
+		top: 0;
+	}
+}
+
+.currentFilter {
+	display: inline;
+	padding: 0.2em 0.6em 0.3em;
+	font-size: $font-size-xs;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: 0.25em;
+	background-color: #d5502a;
+}
+
+table .sortable a:visited,
+.sortable a:link,
+.sortable a:active,
+.sortable a:hover {
+	border: none;
+	box-shadow: none;
+	position: relative;
+}
+
+table .sorted a:visited,
+.sorted a:link,
+.sorted a:active,
+.sorted a:hover {
+	font-weight: bold;
+	padding-left: 12px;
+}
+
+table .sorted.desc a:before {
+	content: '\f078';
+	font-family: FontAwesome;
+	left: -5px;
+	position: absolute;
+}
+
+table .sorted.asc a:before {
+	content: '\f077';
+	font-family: FontAwesome;
+	left: -5px;
+	position: absolute;
+}
+
+table.task-table {
+	font-size: $font-size-xs;
+	vertical-align: middle;
+}
+
+.admin {
+	.a-feature.simple-header {
+		padding: 1em 0;
+	}
+
+	#page-header {
+		margin-top: 90px;
+		margin-bottom: 20px;
+	}
+
+	.container .card {
+		margin-top: 2em;
+		margin-bottom: 0.5em;
+	}
+
+	table tbody tr td {
+		vertical-align: middle;
+	}
+
+	.modal .modal-header {
+		padding: 15px;
+	}
+
+	table.template-fields {
+		margin-top: 1.5em;
+	}
+
+	.list-group-item.active a {
+		color: white;
+	}
+
+	.card.subpanel {
+		margin-top: 0;
+	}
+
+	.twitter-typeahead {
+		width: 100%;
+	}
+
+	#mapWidgets #mapCanvas {
+		height: 400px;
+	}
+
+	.numberCircle {
+		border-radius: 50%;
+		padding: 2px 8px;
+		background: #fff;
+		border: 2px solid #666;
+		color: #666;
+		text-align: center;
+		font-size: $font-size-lg;
+	}
+}
+
+#digivol-stats {
+	padding: 0;
+	margin: 0;
+}
+
+#recordsMap {
+	min-height: 400px;
+	z-index: 0;
+}
+
+.thumbnail a.thumbImg {
+	display: block;
+	text-align: center;
+	min-height: 226px;
+}
+
+.thumbnail .projectDescription {
+	min-height: 44px;
+}
+
+.image-origin p {
+	min-height: 1em;
+}
+
+.row-centered {
+	text-align: center;
+}
+
+[data-notify="container"] > [data-notify="icon"] > img {
+	height: auto;
+	min-height: 40px;
+	width: 40px;
+	margin-right: 10px;
+	float: left;
+}
+
+#parent {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }

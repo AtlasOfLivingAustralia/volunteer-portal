@@ -604,15 +604,8 @@ Log entry for that date.*
   inherited from `_nav.scss`. With the float now scoped to `.body`, check whether any are still needed.
 - [X] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
   fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
-- [ ] Review the font-size overrides in `digivol-custom.css`: live off-scale values at 89 (`75%`), 101 (`12px`), 126
-  (`larger`), 160 (`12px`), 243 (`16px`), 253 (`18px`), 315 (`inherit`). The file loads after the SCSS, so these beat
-  the `$font-size-*` scale. Line 169 is a commented-out
-  `.admin h1 { font-size: 2.5em !important }` — dead, delete. The `100px`
-  `.btn-file` glyph hack noted here previously is gone — the whole rule was deleted on 2026-09-23. Line numbers in this
-  item predate that deletion and are now ~19 lines out.
-    - Prompt: "Tokenise or delete each font-size in digivol-custom.css against the `$font-size-*` scale. Then decide
-      whether digivol-custom.css should exist at all, or be folded into the SCSS pipeline so load order stops being a
-      factor — it now has no form or file-upload rules left."
+- [X] Remove `digivol-custom.css` as a post-SCSS override: tokenise retained font sizes, move live rules into SCSS, and
+  delete obsolete selectors and redundant styles. `digivol.css` now loads `main` without a later custom stylesheet.
 - [ ] `layouts/_commonCss.gsp` still calls `<g:pageProperty name="page.primaryColour">`
   four times (18, 21, 28, 37) now that `--brand-primary` exists at the top of the block. Consolidating would leave one
   source of truth for the branding colour. Note line 21 passes it through `<cl:hexToRbg>`, so that one needs the raw

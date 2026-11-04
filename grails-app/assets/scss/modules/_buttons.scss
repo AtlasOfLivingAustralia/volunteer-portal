@@ -94,6 +94,10 @@
 	border-radius: 15px;
 }
 
+.projectActionLinks {
+	margin-top: 20px;
+}
+
 @media (min-width: $screen-md) and (max-width: $screen-xl) {
 	.projectActionLinks .btn {
 		display: block;
