@@ -542,10 +542,14 @@ Log entry for that date.*
 - [X] Updated broken admin task list
   - [X] Task list grid mode layout
   - [X] Task show details needs refresh
-- [ ] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
+- [X] notebook-2 design system alignment (forum, user/show, user/achievements, tutorials, newsItem/index)
   - These pages load `forum-2.scss` / `notebook-2.scss` / `tutorials-2.scss` /
     `news.scss` **in addition to** digivol.css, as a last-loading overlay.
-  - [ ] News Items
+  - [X] News Items
+    - [X] Update index and item pages for BS5.
+    - [X] Add image caption field to news item.
+    - [X] Add help text to content editor field to indicate the first 2 paragraphs will be displayed as lead text.
+    - [X] Update news item on home page to display lead text and image caption.
   - [X] Forum
   - [X] Notebook
   - [X] Tutorials
@@ -1267,6 +1271,8 @@ parallel. Ships this release.
   - Prompt: "Verify `transcribeValidation` and any remaining transcribe JS selectors do not depend on
     `validate[required]`, then remove the class emission and update/extend tests."
 - [ ] `achievements/awards.gsp` Table is too large, add pagination and move the grant user form to the top. A search box wouldn't go astray either.
+- [ ] Migrate current messages (`flash.message`) to newer overlay message system (see `newsItem/edit.gsp`)
+
 ---
 
 ## Tracking Log
@@ -2123,3 +2129,10 @@ parallel. Ships this release.
 - 2026-10-30 - Updated grails-app/views/tutorials/index.gsp to BS5 card layout, with updated button and thumbnail styles.
   - Updated tutorial list to display in a modal instead of separate page.
   - Added auto generated description for tutorials without a description.
+- 2026-11-03 - Migrated News Items index/show/create/edit pages to Bootstrap 5, with a single featured latest item on the index.
+  - Added an image caption field to news items (DB migration, validation, tag stripping for XSS safety).
+  - Added editor help text explaining that the first 2 paragraphs are used as lead text.
+  - Added sortable author column and `updatedBy` tracking on news item edits and image removal.
+  - Built a reusable alert taglib, partial and SCSS for domain/system alerts.
+  - Updated the BS5 migration plan
+

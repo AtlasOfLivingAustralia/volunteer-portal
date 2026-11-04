@@ -104,33 +104,35 @@
         <h2 class="heading"><g:message code="index.news.heading" /></h2>
 
         <div class="row">
-            <div class="col-md-12">
-                <h3><g:link controller="newsItem" action="show" id="${newsItem.id}">${newsItem.title}</g:link></h3>
-                <div id="news-parent">
-                    <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
-                        <g:link controller="newsItem" action="show" id="${newsItem.id}">
-                            <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-fluid news-image"
-                                 alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
-                        </g:link>
-                    </cl:ifNewsItemHasThumb>
-                    <g:set var="newsItemUrl" value="${createLink(controller: 'newsItem', action: 'show', id: newsItem.id)}"/>
-                    ${raw(newsItem.truncateContent(200).replace('[linktag]', "<br /><a href='${newsItemUrl}' class='btn btn-sm btn-outline-secondary news-item-more'>Read more...</a>"))}
-                </div>
-                <div class="index-news-nav">
-                    <div class="index-news__archive-link">
-                        <g:link class="btn btn-sm btn-outline-secondary" controller="newsItem" action="index">View other DigiVol news</g:link>
+            <div class="card shadow-sm mb-2">
+                <div class="card-body">
+                    <h3 class="pt-2"><g:link controller="newsItem" action="show" id="${newsItem.id}">${newsItem.title}</g:link></h3>
+                    <div id="news-parent" class="text-secondary lh-lg">
+                        <cl:ifNewsItemHasThumb newsItemId="${newsItem.id}">
+                            <g:link controller="newsItem" action="show" id="${newsItem.id}">
+                                <img src="<cl:newsItemThumbUrl newsItemId="${newsItem.id}"/>" class="img-thumbnail img-fluid news-image"
+                                     alt="News Item Thumbnail" style="max-width: 200px; max-height: 200px;"/>
+                            </g:link>
+                        </cl:ifNewsItemHasThumb>
+                        <g:set var="newsItemUrl" value="${createLink(controller: 'newsItem', action: 'show', id: newsItem.id)}"/>
+                            <cl:newsItemContentWithLeadText newsItemId="${newsItem.id}" leadTextOnly="true" class="fs-6 mb-4"/>
                     </div>
-                    <div class="index-news__discuss-link">
-                        <g:if test="${newsItem.topic}">
-                            <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="viewForumTopic" id="${newsItem.topic.id}">
-                                <g:message code="index.news.topic.linkLabel" />
-                            </g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="addForumTopic" params='[title: "${newsItem.title}", linkToNewsItem: newsItem.id]'>
-                                <g:message code="index.news.topic.linkLabel" />
-                            </g:link>
-                        </g:else>
+                    <div class="index-news-nav">
+                        <div class="index-news__archive-link">
+                            <g:link class="btn btn-sm btn-outline-secondary" controller="newsItem" action="show" id="${newsItem.id}">Read the full article <i class="fa fa-arrow-right"></i></g:link>
+                        </div>
+                        <div class="index-news__discuss-link">
+                            <g:if test="${newsItem.topic}">
+                                <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="viewForumTopic" id="${newsItem.topic.id}">
+                                    <g:message code="index.news.topic.linkLabel" />
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link class="btn btn-sm btn-outline-secondary" controller="forum" action="addForumTopic" params='[title: "${newsItem.title}", linkToNewsItem: newsItem.id]'>
+                                    <g:message code="index.news.topic.linkLabel" />
+                                </g:link>
+                            </g:else>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -94,13 +94,15 @@
 		}
 	}
 
-	&.forum {
+	&.forum, &.news {
 		background-color: #fff;
 		padding:  1rem 0 1rem 0;
 		h1, h2 {
 			color: $black;
 		}
 	}
+
+
 
 	&.expedition {
 		background-color: #fff;
@@ -1062,6 +1064,13 @@ blockquote p {
 	text-transform: uppercase;
 }
 
+.gravatar-image {
+	border-radius: 0.25rem !important;
+	margin-right: 1rem !important;
+	max-width: 100%;
+	height: auto;
+}
+
 
 .transcribeSection {
   .row {
@@ -1272,3 +1281,24 @@ $tooltip-widths: (
 	background-color: transparent;
 }
 
+// News Items Styles
+
+#newsfeed .sorted.desc a:before {
+	content: '\f078';
+	font-family: FontAwesome;
+	left:-5px;
+	position:absolute;
+}
+
+#newsfeed .sorted.asc a:before {
+	content: '\f077';
+	font-family: FontAwesome;
+	left:-5px;
+	position:absolute;
+}
+
+.news {
+	main {
+		background-color: white;
+	}
+}

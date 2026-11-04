@@ -12,7 +12,7 @@
 </head>
 
 <body class="forum">
-<cl:headerContent selectedNavItem="forum">
+<cl:headerContent title="${message(code: 'forum.title.label')}" selectedNavItem="forum" hideTitle="${true}">
     <g:if test="${params.projectId || params.watched}">
         <%
             pageScope.crumbs = [

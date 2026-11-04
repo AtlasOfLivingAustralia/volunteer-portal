@@ -2,14 +2,13 @@ body {
 	background-color: $background-grey;
 	color: $body-copy;
 }
+
 body.expedition-landing {
 	.navbar {
  		background-color: transparent !important;
  	}
 }
-p {
-	line-height: 22px;
-}
+
 p.intro {
 	font-weight: 600;
 	color: $black;

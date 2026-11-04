@@ -19,15 +19,16 @@ class NewsItemController {
 
     def index() {
         // Cards for latest 3 news items
-        def featuredNewsItems
+        def featuredNewsItems = []
         if (NewsItem.count() > 0) {
-            featuredNewsItems = newsItemService.getFeaturedNewsItems(3)
+            featuredNewsItems = newsItemService.getFeaturedNewsItems(1) as List<NewsItem>
         }
 
         // list of all news items
         params.max = Math.min(params.max ? params.int('max') : 15, 100)
         def newsItemList = newsItemService.list(params)
-        render view: 'index', model:[featuredNewsItems: featuredNewsItems, newsItemList: newsItemList,
+        def featuredNewsItem = featuredNewsItems?.first()
+        render view: 'index', model:[featuredNewsItem: featuredNewsItem, newsItemList: newsItemList,
                                      newsItemCount: newsItemList.size()]
     }
 
@@ -137,6 +138,21 @@ class NewsItemController {
         newsItem.createdBy = userService.getCurrentUser()
         newsItem.dateCreated = new Date()
 
+        // Image caption is required when an image exists, but optional otherwise. If an image is uploaded, ensure the caption is provided.
+        if (request instanceof MultipartHttpServletRequest) {
+            MultipartFile f = ((MultipartHttpServletRequest) request).getFile('newsItemThumb')
+            if (f != null && f.size > 0 && !params.imageCaption) {
+                newsItem.errors.rejectValue('imageCaption', 'newsItem.imageCaption.required', 'Image caption is required when an image is uploaded.')
+            } else {
+                // Strip any html tags from the image caption to prevent XSS attacks
+                if (params.imageCaption) {
+                    newsItem.imageCaption = params.imageCaption.replaceAll(/<[^>]*>/, '')
+                } else {
+                    newsItem.imageCaption = null
+                }
+            }
+        }
+
         if (!newsItem.validate()) {
             log.debug("NewsItem has errors: ${newsItem.errors}")
             render view: 'create', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
@@ -193,6 +209,8 @@ class NewsItemController {
             if (!result) {
                 flash.message = "Error removing image for news item with ID ${newsItem.id}"
             } else {
+                newsItem.updatedBy = userService.getCurrentUser()
+                newsItem.save(flush: true, failOnError: true)
                 log.debug("Image removed successfully for news item with ID ${newsItem.id}")
                 flash.message = "Image removed successfully."
             }
@@ -223,6 +241,8 @@ class NewsItemController {
                 return
             }
         }
+
+        newsItem.updatedBy = userService.getCurrentUser()
 
         if (!newsItem.validate()) {
             log.debug("NewsItem has errors: ${newsItem.errors}")
@@ -255,7 +275,18 @@ class NewsItemController {
                     }
                 }
             } else {
-                log.debug("No file uploaded or file is empty.")
+                log.warn("No file uploaded or file is empty.")
+            }
+        }
+
+        if (newsItemService.getImageUrl(newsItem.id) != null) {
+            if (!params.imageCaption) {
+                newsItem.errors.rejectValue('imageCaption', 'newsItem.imageCaption.required', 'Image caption is required when an image is uploaded.')
+                render view: 'edit', model: [newsItem: newsItem, defaultEndDate: datePickerRanges.endDate, defaultStartDate: datePickerRanges.startDate]
+                return
+            } else {
+                // Strip any html tags from the image caption to prevent XSS attacks
+                newsItem.imageCaption = params.imageCaption.replaceAll(/<[^>]*>/, '')
             }
         }
 

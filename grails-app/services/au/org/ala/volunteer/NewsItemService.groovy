@@ -1,6 +1,7 @@
 package au.org.ala.volunteer
 
 import grails.gorm.transactions.Transactional
+import org.hibernate.sql.JoinType
 import org.springframework.web.multipart.MultipartFile
 
 import java.nio.file.DirectoryStream
@@ -27,7 +28,29 @@ class NewsItemService {
             params.order = 'desc'
         }
 
-        def newsItemList = NewsItem.createCriteria().list(params) {
+        String sort = params.sort
+        if (sort == 'author') {
+            sort = 'author.lastName'
+        }
+
+        def queryParams = new LinkedHashMap(params)
+        queryParams.remove('sort')
+        queryParams.remove('order')
+
+        def authorFilter = []
+        if (params.q) {
+            authorFilter = User.createCriteria().list {
+                or {
+                    ilike('firstName', "%${params.q}%")
+                    ilike('lastName', "%${params.q}%")
+                }
+                projections {
+                    property('id')
+                }
+            }
+        }
+
+        def newsItemList = NewsItem.createCriteria().list(queryParams) {
             if (params.statusFilter == 'active') {
                 eq('isActive', true)
             } else if (params.statusFilter == 'inactive') {
@@ -37,10 +60,14 @@ class NewsItemService {
                 or {
                     ilike('title', "%${params.q}%")
                     ilike('content', "%${params.q}%")
+                    if (authorFilter) {
+                        'in'('createdBy.id', authorFilter)
+                    }
                 }
             }
             if (!listAll) eq('isActive', true) // Ensure only active news items are returned
-            order(params.sort, params.order)
+            createAlias('createdBy', 'author', JoinType.LEFT_OUTER_JOIN)
+            order(sort, params.order as String)
         }
 
         newsItemList

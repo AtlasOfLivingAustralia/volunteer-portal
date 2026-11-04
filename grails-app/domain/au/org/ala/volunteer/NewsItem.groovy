@@ -12,6 +12,7 @@ class NewsItem {
     String title
     @SanitizedHtml
     String content
+    String imageCaption
     Boolean isActive
     Date dateExpires
     ForumTopic topic
@@ -24,6 +25,7 @@ class NewsItem {
     static constraints = {
         title nullable: false, maxSize: 60
         content nullable: false
+        imageCaption nullable: true, maxSize: 255
         isActive nullable: false
         dateExpires nullable: false
         topic nullable: true
@@ -43,7 +45,8 @@ class NewsItem {
     String toString() {
         return new ToStringBuilder(this)
                 .append("title", title)
-                .append("content", "${content.length() > 40 ? content.substring(0, 40) + "..." : content}")
+                .append("content", "${content?.length() > 40 ? content?.substring(0, 40) + "..." : content}")
+                .append("imageCaption", imageCaption)
                 .append("isActive", isActive)
                 .append("dateExpires", dateExpires)
                 .append("dateCreated", dateCreated)

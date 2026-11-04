@@ -70,15 +70,15 @@ class VolunteerTagLib {
         out << '</div>'
     }
 
-    def showCurrentUserName = {attrs, body ->
+    def showCurrentUserName = { attrs, body ->
         out << userService.authService.displayName
     }
 
-    def showCurrentUserEmail = {attrs, body ->
+    def showCurrentUserEmail = { attrs, body ->
         out << userService.authService.email
     }
 
-    def urlAppend = {attrs, body ->
+    def urlAppend = { attrs, body ->
         def base = attrs.remove('base')?.toString() ?: ''
         def path = attrs.remove('path')?.toString() ?: ''
         out << (base?.endsWith('/') ? base + path : base + '/' + path)
@@ -96,13 +96,13 @@ class VolunteerTagLib {
         }
     }
 
-   /**
-    * Build navigation links to the custom landing page
-    */
-    def showLandingPage = {attrs, body ->
+    /**
+     * Build navigation links to the custom landing page
+     */
+    def showLandingPage = { attrs, body ->
         def numberOfCustomLinksAtTopPage = grailsApplication.config.getProperty('numberOfCustomLinksAtTopPage', Integer)?.intValue() ?: 1
 
-        List<LandingPage> landingPages = adminService.getCustomLandingPageSettings ()
+        List<LandingPage> landingPages = adminService.getCustomLandingPageSettings()
         def mb = new MarkupBuilder(out)
         def buildLandingPage = {
             landingPages.each {
@@ -121,7 +121,7 @@ class VolunteerTagLib {
         }
         if (landingPages.size() > numberOfCustomLinksAtTopPage) {
             mb.li(class: "nav-item dropdown") {
-                a([href: "#", class:"nav-link dropdown-toggle", 'data-bs-toggle': "dropdown", "id": "landingPageDropdownMenuLink"]) {
+                a([href: "#", class: "nav-link dropdown-toggle", 'data-bs-toggle': "dropdown", "id": "landingPageDropdownMenuLink"]) {
                     span(class: 'fa fa-camera') {
                         mkp.yield("")
                     }
@@ -141,14 +141,14 @@ class VolunteerTagLib {
      * @param project
      *
      */
-    def ifValidator = {attrs, body ->
+    def ifValidator = { attrs, body ->
         Project p = attrs.project as Project
         if (userService.isValidator(p)) {
             out << body()
         }
     }
 
-    def ifNotValidator = {attrs, body ->
+    def ifNotValidator = { attrs, body ->
         Project p = attrs.project as Project
         if (!userService.isValidator(p)) {
             out << body()
@@ -158,7 +158,7 @@ class VolunteerTagLib {
     /**
      * Prints the contents if the user is a Site Admin OR an Institution Admin
      */
-    def ifAdmin = {attrs, body ->
+    def ifAdmin = { attrs, body ->
         if (isAdmin()) {
             out << body()
         }
@@ -167,13 +167,13 @@ class VolunteerTagLib {
     /**
      * Prints the contents if the user is a Site Admin
      */
-    def ifSiteAdmin = {attrs, body ->
+    def ifSiteAdmin = { attrs, body ->
         if (isSiteAdmin()) {
             out << body()
         }
     }
 
-    def ifNotSiteAdmin = {attrs, body ->
+    def ifNotSiteAdmin = { attrs, body ->
         if (!isSiteAdmin()) {
             out << body()
         }
@@ -204,7 +204,7 @@ class VolunteerTagLib {
      * @attr id the HTML ID of the element
      * @attr label the button label
      */
-    def templateEditableButton = {attrs, body ->
+    def templateEditableButton = { attrs, body ->
         def editAllowed = false
         if (isSiteAdmin()) {
             editAllowed = true
@@ -219,14 +219,14 @@ class VolunteerTagLib {
             out << "<button class=\"${attrs.styleClass}\" id=\"${attrs.id}\">${attrs.label}</button>"
         } else {
             out << "<button class=\"${attrs.styleClass}\" style=\\\"pointer-events: auto;\\\" id=\"${attrs.id}\" " +
-                    "title=\"${message(code:'template.edit.button.nopermission', default:'Not allowed')}\" disabled>${attrs.label}</button>"
+                    "title=\"${message(code: 'template.edit.button.nopermission', default: 'Not allowed')}\" disabled>${attrs.label}</button>"
         }
     }
 
     /**
      * @attr project The Project.
      */
-    def hasProjectBackgroundImage = {attrs, body ->
+    def hasProjectBackgroundImage = { attrs, body ->
         String bgImagePath = projectService.getBackgroundImage(attrs.project as Project)
         if (bgImagePath) {
             out << body()
@@ -327,7 +327,7 @@ class VolunteerTagLib {
         if (helpText) {
             helpText = markdownService.renderMarkdown(helpText)
 
-            def attributes = [type: 'button', class:'fieldHelp', title:helpText, 'aria-label': 'Field help']
+            def attributes = [type: 'button', class: 'fieldHelp', title: helpText, 'aria-label': 'Field help']
             if (attrs.placement) {
                 attributes.placement = attrs.placement
             }
@@ -349,8 +349,8 @@ class VolunteerTagLib {
             }
 
             mb.button(attributes) {
-                span(class:'help-container') {
-                    i(class:'fa fa-question') {
+                span(class: 'help-container') {
+                    i(class: 'fa fa-question') {
                         mkp.yieldUnescaped('')
                     }
                 }
@@ -365,7 +365,7 @@ class VolunteerTagLib {
      *
      * @param date
      */
-    def lastUpdated = {attrs ->
+    def lastUpdated = { attrs ->
         if (attrs.date) {
             out << "<p class='lastUpdated'>last updated: ${attrs.date}</p>"
         }
@@ -399,14 +399,14 @@ class VolunteerTagLib {
             if (taskInstance.isFullyTranscribed) {
                 taskInstance.transcriptions.each {
                     if (it.dateFullyTranscribed) {
-                        transcribers << [user:userService.detailsForUserId(it.fullyTranscribedBy), dateFullyTranscribed: it.dateFullyTranscribed]
+                        transcribers << [user: userService.detailsForUserId(it.fullyTranscribedBy), dateFullyTranscribed: it.dateFullyTranscribed]
                     }
                 }
             }
             def mb = new MarkupBuilder(out)
 
             transcribers.each { transcriber ->
-                mb.span(class:"badge badge--transcribed") {
+                mb.span(class: "badge badge--transcribed") {
                     mkp.yield("Transcribed by ${transcriber.user?.displayName} on ${transcriber.dateFullyTranscribed?.format("yyyy-MM-dd HH:mm:ss")}")
                 }
             }
@@ -421,7 +421,7 @@ class VolunteerTagLib {
                     status = "Validated by ${validator.displayName} on ${taskInstance?.dateFullyValidated?.format("yyyy-MM-dd HH:mm:ss")}"
                     badgeClass = "badge badge--validated"
                 }
-                mb.span(class:badgeClass) {
+                mb.span(class: badgeClass) {
                     mkp.yield(status)
                 }
             }
@@ -437,7 +437,7 @@ class VolunteerTagLib {
             taskInstance.attach()
             transcriptionList = taskInstance.transcriptions?.sort { it.dateFullyTranscribed }?.reverse() ?: []
         } else {
-            transcriptionList = transcriptionList?.sort { it.dateFullyTranscribed }?.reverse()  ?: []
+            transcriptionList = transcriptionList?.sort { it.dateFullyTranscribed }?.reverse() ?: []
         }
 
         out << "<div class=\"bg-body-tertiary p-2 list-group list-group-flush rounded border small\">"
@@ -473,7 +473,7 @@ class VolunteerTagLib {
         if (attrs.userId) {
             def user = userService.detailsForUserId(attrs.userId)
             def mb = new MarkupBuilder(out)
-            mb.span(class:'userDisplayName') {
+            mb.span(class: 'userDisplayName') {
                 if (user) {
                     mkp.yield(user.displayName)
                 } else {
@@ -485,11 +485,7 @@ class VolunteerTagLib {
 
     /**
      * @attr title //REQUIRED
-     * @attr selectedNavItem
-     * @attr crumbLabel
-     * @attr hideTitle
-     * @attr hideCrumbs
-     * @attr complexBodyMarkup
+     * @attr selectedNavItem* @attr crumbLabel* @attr hideTitle* @attr hideCrumbs* @attr complexBodyMarkup
      */
     def headerContent = { attrs, body ->
 
@@ -503,7 +499,7 @@ class VolunteerTagLib {
 
         final int maxBreadcrumbLabelLength = 42
 
-        sitemesh.captureContent(tag:'page-header') {
+        sitemesh.captureContent(tag: 'page-header') {
 
             def crumbList = []
             def keyIndex = 1
@@ -593,7 +589,7 @@ class VolunteerTagLib {
 
         }
 
-        sitemesh.captureContent(tag:'page-title') {
+        sitemesh.captureContent(tag: 'page-title') {
             def heading = ""
             if (!attrs.hideTitle) {
                 heading = attrs.title
@@ -602,10 +598,10 @@ class VolunteerTagLib {
             if (attrs.complexBodyMarkup) {
                 mb.mkp.yieldUnescaped(bodyContent)
             } else {
-                mb.div(class:"row") {
-                    div(class:"col-sm-12") {
+                mb.div(class: "row") {
+                    div(class: "col-sm-12") {
                         if (heading) {
-                            mb.h1(class:'bvp-heading') {
+                            mb.h1(class: 'bvp-heading') {
                                 mkp.yield(attrs.title)
                             }
                         }
@@ -639,7 +635,7 @@ class VolunteerTagLib {
         }
     }
 
-    def multimediaForSize = {attrs, body ->
+    def multimediaForSize = { attrs, body ->
         def mm = attrs.multimedia as Multimedia
         if (!mm) {
             log.warn("No multimedia provided for multimediaForSize tag")
@@ -658,9 +654,9 @@ class VolunteerTagLib {
             url = g.createLink(
                     mapping: 'taskImage',
                     params: [
-                            multimediaId: mm.id.toString(),
+                            multimediaId      : mm.id.toString(),
                             externalIdentifier: mm.task.externalIdentifier,
-                            size: size
+                            size              : size
                     ]
             )
         } else {
@@ -683,15 +679,15 @@ class VolunteerTagLib {
                 url = g.createLink(
                         mapping: 'taskImage',
                         params: [
-                                multimediaId: mm.id.toString(),
+                                multimediaId      : mm.id.toString(),
                                 externalIdentifier: mm.task.externalIdentifier,
-                                size: 'thumb'
+                                size              : 'thumb'
                         ]
                 )
                 fullUrl = g.createLink(
                         mapping: 'taskImage',
                         params: [
-                                multimediaId: mm.id.toString(),
+                                multimediaId      : mm.id.toString(),
                                 externalIdentifier: mm.task.externalIdentifier
                         ]
                 )
@@ -703,7 +699,7 @@ class VolunteerTagLib {
 
         if (!url) {
             // sample
-            url = resource(file:'/sample-task-thumbnail.jpg')
+            url = resource(file: '/sample-task-thumbnail.jpg')
         }
         if (!fullUrl) {
             fullUrl = resource(file: '/sample-task.jpg')
@@ -750,15 +746,15 @@ class VolunteerTagLib {
                     url = g.createLink(
                             mapping: 'taskImage',
                             params: [
-                                    multimediaId: mm.id.toString(),
+                                    multimediaId      : mm.id.toString(),
                                     externalIdentifier: URLEncoder.encode(mm.task.externalIdentifier, "UTF-8"),
-                                    size: 'thumb'
+                                    size              : 'thumb'
                             ]
                     )
                     fullUrl = g.createLink(
                             mapping: 'taskImage',
                             params: [
-                                    multimediaId: mm.id.toString(),
+                                    multimediaId      : mm.id.toString(),
                                     externalIdentifier: URLEncoder.encode(mm.task.externalIdentifier, "UTF-8")
                             ],
                             // Add server URL to the full image link to ensure it works in emails and other contexts where relative links may not resolve correctly
@@ -786,12 +782,12 @@ class VolunteerTagLib {
             }
 
             if (task.project.projectType.name == ProjectType.PROJECT_TYPE_AUDIO) {
-                url = resource(file:'/icons-audio-52.png')
+                url = resource(file: '/icons-audio-52.png')
             }
 
             if (!url || !imageExists) {
                 // sample
-                url = resource(file:'/sample-task-thumbnail.jpg')
+                url = resource(file: '/sample-task-thumbnail.jpg')
             }
             if (!fullUrl || !imageExists) {
                 fullUrl = resource(file: '/sample-task.jpg')
@@ -822,8 +818,7 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr startTime
-     * @attr endTime
+     * @attr startTime* @attr endTime
      */
     def timeAgo = { attrs, body ->
         def s = attrs.startTime as Date
@@ -838,9 +833,7 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr active
-     * @attr title
-     * @attr href
+     * @attr active* @attr title* @attr href
      */
     def settingsMenuItem = { attrs, body ->
         def active = attrs.active
@@ -848,12 +841,12 @@ class VolunteerTagLib {
             active = attrs.title
         }
         def target = attrs.target
-        def current = pageProperty(name:'page.pageTitle')?.toString()
+        def current = pageProperty(name: 'page.pageTitle')?.toString()
 
         def mb = new MarkupBuilder(out)
         mb.li(class: "list-group-item ${active == current ? 'active' : ''}") {
-            a(href:attrs.href, target: "${target ?: ''}") {
-                i(class:'fa fa-chevron-right') { mkp.yieldUnescaped('&nbsp;')}
+            a(href: attrs.href, target: "${target ?: ''}") {
+                i(class: 'fa fa-chevron-right') { mkp.yieldUnescaped('&nbsp;') }
                 mkp.yield(attrs.title)
             }
         }
@@ -902,12 +895,12 @@ class VolunteerTagLib {
         out << "/>"
     }
 
-    def wsPlaceholderImage = {attrs, body ->
+    def wsPlaceholderImage = { attrs, body ->
         log.debug("No image, using placeholder image")
         def title = attrs.remove('title')
         def alt = attrs.remove('alt')
         def cssClass = attrs.remove('class')
-        String imageUrl = resource(file:'/ws-placeholder-150.png')
+        String imageUrl = resource(file: '/ws-placeholder-150.png')
         out << "<img src=${imageUrl}"
 
         if (cssClass) {
@@ -960,15 +953,15 @@ class VolunteerTagLib {
                 url = g.createLink(controller: 'image', action: 'size', mapping: 'imageSizeQuery', params: params)
             } else {
                 log.debug("No image, using placeholder image")
-                url = resource(file:'/ws-placeholder-150.png')
+                url = resource(file: '/ws-placeholder-150.png')
             }
 
         } else {
             log.debug("No image, using placeholder image")
-            url = resource(file:'/ws-placeholder-150.png')
+            url = resource(file: '/ws-placeholder-150.png')
         }
 
-        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+        out << (template ? url.replace('%7B', '{').replace('%7D', '}') : url)
     }
 
     def audioUrl = { attrs, body ->
@@ -977,7 +970,7 @@ class VolunteerTagLib {
         def format = attrs.remove('format') ?: 'wav'
         def template = attrs.remove('template')?.toBoolean()
         String url = g.createLink(controller: 'image', action: 'audioFile', params: [prefix: prefix, name: name, format: format])
-        out << (template ? url.replace('%7B', '{').replace('%7D','}') : url)
+        out << (template ? url.replace('%7B', '{').replace('%7D', '}') : url)
     }
 
     /**
@@ -1051,8 +1044,7 @@ class VolunteerTagLib {
     }
 
     /**
-     * @attr email
-     * @atte name
+     * @attr email* @atte name
      */
     def contactLink = { attrs, body ->
         def name = attrs.name ?: attrs.email
@@ -1155,7 +1147,7 @@ class VolunteerTagLib {
         if (transcriptions.size() > 0) {
             // Iterate through a descending sorted list of viewed tasks and find the matching transcription for each viewed task. If a match is found, add it to the matched list.
             new ArrayList<ViewedTask>(viewedTasks).sort { a, b -> b.lastUpdated <=> a.lastUpdated }.each { view ->
-                if (transcriptions.find { it.task.id == view.task.id && it.fullyTranscribedBy == view.userId && isDateWithinTwoHours(it.dateFullyTranscribed, view.lastUpdated)}) {
+                if (transcriptions.find { it.task.id == view.task.id && it.fullyTranscribedBy == view.userId && isDateWithinTwoHours(it.dateFullyTranscribed, view.lastUpdated) }) {
                     // If the list already has a matched transcription against a user/viewed task, don't add it again. A user can view a task multiple times.
                     // We want to add it on the later view, so we only add it if it doesn't already exist in the list.
 
@@ -1169,7 +1161,7 @@ class VolunteerTagLib {
         }
 
         out << "<div class=\"bg-body-tertiary p-2 list-group list-group-flush rounded border small\">"
-        viewedTasks.sort {it.lastUpdated }.each { view ->
+        viewedTasks.sort { it.lastUpdated }.each { view ->
             out << "    <div class=\"list-group-item d-flex justify-content-between py-2 border-light-subtle\">"
             out << "        <span class=\"fw-medium text-dark\">${cl.userDisplayString(id: view.userId)}</span>"
             // If transcriptions exist, search the transcription list for the transcription that matches the viewed task and display a transcription badge.
@@ -1218,16 +1210,16 @@ class VolunteerTagLib {
         ]
         def mb = new MarkupBuilder(out)
 
-        mb.meta(name:'grails.env', content: "${Environment.current}")
+        mb.meta(name :'grails.env', content: "${Environment.current}")
         metaList.each {
             def content = g.meta(name: 'info.' + it)
             if (content) {
-                mb.meta(name:it, content: content)
+                mb.meta(name :it, content: content)
             } else {
                 log.debug("info.$it not found in meta info")
             }
         }
-        mb.meta(name:'java.version', content: "${System.getProperty('java.version')}")
+        mb.meta(name :'java.version', content: "${System.getProperty('java.version')}")
     }
 
     /**
@@ -1308,7 +1300,7 @@ class VolunteerTagLib {
         def trackers = grailsApplication.config.getProperty('digivol.trackers', List) ?: []
         switch (trackers) {
             case String:
-                trackers = ((String)trackers).split(',')*.trim()
+                trackers = ((String )trackers).split(',')*.trim()
         }
         out << gson.toJson(trackers)
     }
@@ -1327,8 +1319,8 @@ class VolunteerTagLib {
         Project project = attrs.project
         User user = project.createdBy
 
-        if(user){
-            String date = g.formatDate(date:project.dateCreated, format: "dd MMMM, yyyy")
+        if (user){
+            String date = g.formatDate(date :project.dateCreated, format: "dd MMMM, yyyy")
             out << "<small>Created by <a href=\"${createLink(controller: 'user', action: 'show',)}/${user?.id}\">${user?.displayName}</a> on ${date}.</small>"
         }
     }
@@ -1366,7 +1358,8 @@ class VolunteerTagLib {
             url += "?" + opts.collect { "${URLEncoder.encode(it.key, 'UTF-8')}=${URLEncoder.encode(it.value, 'UTF-8')}" }.join("&")
         }
         asset.script(type: 'text/javascript', src: url, async: true, defer: true)
-        asset.script(type: 'text/javascript') {'''
+        asset.script(type: 'text/javascript')
+            {'''
 var gmapsReady = false;
 function onGmapsReady() {
     gmapsReady = true;
@@ -1390,7 +1383,7 @@ function notify() {
 
     def loginLink = { attrs, body ->
         def mb = new MarkupBuilder(out)
-        mb.a([href: createLoginLink(attrs,body)] + attrs) {
+        mb.a([href: createLoginLink(attrs, body)] + attrs) {
             mkp.yieldUnescaped(body())
         }
     }
@@ -1646,10 +1639,17 @@ function notify() {
             // If initials have 2 wide characters, use a smaller font size
 
             def fontClass = "default-avatar"
-//            if (size < 50) {
-//                fontClass = "fs-6"
-//            }
-            out << "<div class=\"p-2 bg-danger rounded text-white me-3\" style=\"container-type: inline-size; width: ${size}px; height: ${size}px; display: grid; place-items: center; font-weight: bold;\">"
+            def paddingClass = "p-2"
+            if (size < 50) {
+                fontClass = "fs-6"
+                paddingClass = "p-1"
+            }
+            if (size < 40) {
+                fontClass = "fs-7"
+                paddingClass = "p-1"
+            }
+
+            out << "<div class=\"${paddingClass} bg-danger rounded text-white me-3\" style=\"container-type: inline-size; width: ${size}px; height: ${size}px; display: grid; place-items: center; font-weight: bold;\">"
             out << "<span class='${fontClass}'>${user?.getInitials() ?: 'VU'}</span>" // VU = Volunteer User
             out << "</div>"
             if (addLink) {
@@ -1696,4 +1696,71 @@ function notify() {
     def hr = { attrs, body ->
         out << "<div class=\"border-bottom border-secondary-subtle border-2 my-3\"></div>"
     }
+
+    def newsItemContentWithLeadText = { attrs, body ->
+        def newsItemId = attrs.newsItemId as long
+        def newsItem = NewsItem.get(newsItemId)
+        def cssClass = attrs.remove('class')
+        def leadTextOnly = Boolean.valueOf(attrs.remove('leadTextOnly') as String) ?: false
+        if (newsItem) {
+            // Find the first 2 paragraphs of the content to use as lead text, check for <p> tags and if not found, use the first 2 paragraphs separated by double newlines.
+            def leadText = ""
+            def remainingText = ""
+            if (newsItem.content.contains("<p>")) {
+                def paragraphs = newsItem.content.split("</p>")
+                leadText = paragraphs.take(2).join("</p>")
+                remainingText = paragraphs.drop(2).join("</p>")
+            } else {
+                leadText = newsItem.content.split("\n\n").take(2).join("\n\n")
+                remainingText = newsItem.content.split("\n\n").drop(2).join("\n\n")
+            }
+            out << "<div class=\"lead text-body ${cssClass}\">${leadText}</div>"
+            if (!leadTextOnly) {
+                out << "${remainingText}"
+            }
+        } else {
+            out << "<p class=\"text-muted\">News item not found.</p>"
+        }
+    }
+
+    def previousNewsItem = { attrs, body ->
+        def newsItemId = attrs.newsItemId as long
+        def cssClass = attrs.remove('class')
+        def newsItem = NewsItem.get(newsItemId)
+        if (newsItem) {
+            def previousNewsItem = NewsItem.createCriteria().get {
+                lt('dateCreated', newsItem.dateCreated)
+                order('dateCreated', 'desc')
+                maxResults(1)
+            }
+            if (previousNewsItem) {
+                out << "<a href=\"${createLink(controller: 'newsItem', action: 'show', id: previousNewsItem.id)}\" class=\"${cssClass}\">${body()}</a>"
+            } else {
+                out << "<a href=\"${createLink(controller: 'newsItem', action: 'index')}\" class=\"${cssClass}\">${body()}</a>"
+            }
+        } else {
+            out << "<a href=\"${createLink(controller: 'newsItem', action: 'index')}\" class=\"${cssClass}\">${body()}</a>"
+        }
+    }
+
+    def nextNewsItem = { attrs, body ->
+        def newsItemId = attrs.newsItemId as long
+        def cssClass = attrs.remove('class')
+        def newsItem = NewsItem.get(newsItemId)
+        if (newsItem) {
+            def nextNewsItem = NewsItem.createCriteria().get {
+                gt('dateCreated', newsItem.dateCreated)
+                order('dateCreated', 'asc')
+                maxResults(1)
+            }
+            if (nextNewsItem) {
+                out << "<a href=\"${createLink(controller: 'newsItem', action: 'show', id: nextNewsItem.id)}\" class=\"${cssClass}\">${body()}</a>"
+            } else {
+                out << "<a href=\"${createLink(controller: 'newsItem', action: 'index')}\" class=\"${cssClass}\">${body()}</a>"
+            }
+        } else {
+            out << "<a href=\"${createLink(controller: 'newsItem', action: 'index')}\" class=\"${cssClass}\">${body()}</a>"
+        }
+    }
+
 }

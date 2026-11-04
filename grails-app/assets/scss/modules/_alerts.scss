@@ -1,0 +1,24 @@
+// Domain alert - top left of screen, used for domain validation errors and other important messages
+.domain-alert {
+  position: fixed;
+  z-index: 2080;
+  top: 90px;
+  left: 20px;
+  max-width: 720px;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.digivol-system-alert {
+  position: fixed;
+  z-index: 1080;
+  top: 90px;
+  right: 20px;
+  max-width: 720px;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
