@@ -7,8 +7,6 @@
     <title><cl:pageTitle title="${message(code: 'newsItem.list.title')}"/></title>
     <content tag="pageType">news</content>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
-    <asset:stylesheet src="notebook-reset.css"/>
-    <asset:stylesheet src="news.scss"/>
 </head>
 <body class="news">
 <cl:headerContent title="${message(code: 'newsItem.list.title')}" hideTitle="true" selectedNavItem="bvp">

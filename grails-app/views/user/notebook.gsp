@@ -33,7 +33,7 @@
         <h1 class="mb-0 fw-bold text-dark">
             ${cl.displayNameForUserId(id: userInstance.userId)}
         <cl:ifSiteAdmin>
-            <a href="#" class="text-muted ms-2 fs-6" title="Administrator: Edit User" aria-label="Administrator: Edit User"><i class="fa fa-external-link"></i></a>
+            <a href="${createLink(controller: 'user', action: 'edit', id: userInstance.id)}" class="text-muted ms-2 fs-6" title="Administrator: Edit User" aria-label="Administrator: Edit User"><i class="fa fa-external-link"></i></a>
         </cl:ifSiteAdmin>
         </h1>
     </div>

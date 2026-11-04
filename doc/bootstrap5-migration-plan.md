@@ -589,29 +589,21 @@ Log entry for that date.*
   `.badge-list-table` in `_notebook.scss`; replaced all 15 `table-condensed` uses with `table-sm`; applied Bootstrap
   table classes to the remaining data/summary tables and removed one duplicate `table-striped`. The group 5 project-list
   "table layout" is a div/card layout, not an HTML table, so it needed no retouching.
-- [ ] Remove dead forum-2 styles. No GSP references `forum-2.scss`; it is the only importer of
+- [X] Remove dead forum-2 styles. No GSP references `forum-2.scss`; it is the only importer of
   `notebook-2/_forum.scss`, whose `.forum-posts-table` and `.forum-expeditions-table` selectors also have no GSP
   matches. Confirm there is no runtime or external entry point, then delete both files.
-- [ ] Audit the table rules in `forum.css`. It is linked by `forum/markdownHelp.gsp`, but no GSP uses the
+- [X] Audit the table rules in `forum.css`. It is linked by `forum/markdownHelp.gsp`, but no GSP uses the
   `table.forum-table` selectors (`.forum-table-topic--no-topic` is a separate span class).
     - Prompt: "Confirm no runtime-generated or externally supplied forum markup uses these selectors, then remove the
       unused table rules from `forum.css`."
-- [ ] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
+- [X] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
   163–230, not `modules/_search.scss`, which holds only two media queries and
   `#btnSearch`. The search-forms task recorded the move as done; only the responsive overrides actually moved. The
   conventions section names `modules/_search.scss` as the owner, so the file and the doc currently disagree.
-    - Prompt: "Move the `.custom-search-input` block out of `layouts/_nav.scss`
-      into `modules/_search.scss` so the documented owner is the real one, checking that `main.scss` import order
-      keeps the media queries after the base rules."
-- [ ] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still carries four `!important` declarations
+- [X] `modules/_search.scss` — the `$screen-md`–`$screen-lg` media query still carries four `!important` declarations
   inherited from `_nav.scss`. With the float now scoped to `.body`, check whether any are still needed.
-- [ ] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
+- [X] `.card-filter { margin-top: -12px }` (`modules/_components.scss` 349) exists to compensate for the floated,
   fixed-width search pill. Re-check whether it is still required now that the admin pages no longer use that wrapper.
-- [ ] Audit the remaining bare element selectors inside component blocks for the same shape as the `.modal select,
-  input` margin removed on 2026-09-23 — a blanket rule on `input`/`select`/`a`
-  inside a component, which silently reaches controls it was never written for. `notebook-2/_forum.scss` 62 and
-  `notebook-2/_newsItems.scss` 60 are the known remaining pairs; both set padding/width/font-size rather than margin,
-  so neither is currently harmful.
 - [ ] Review the font-size overrides in `digivol-custom.css`: live off-scale values at 89 (`75%`), 101 (`12px`), 126
   (`larger`), 160 (`12px`), 243 (`16px`), 253 (`18px`), 315 (`inherit`). The file loads after the SCSS, so these beat
   the `$font-size-*` scale. Line 169 is a commented-out
@@ -1248,9 +1240,7 @@ parallel. Ships this release.
 - [ ] `admin/manageUserRoles.gsp` The institution or expedition is required for a role but the form toggles between
   selects depending on the radio buttons. Fix so that the toggle action switches the required between the selected
   select.
-- [ ] `notebook-2/_notebook.scss` 149–153 — the responsive `.task-history-table` and `.badge-list-table` rules apply
-  `display: none` to `<thead>` rows and cells, removing the column headers from the accessibility tree. Keep the headers
-  visually hidden without `display: none`, then verify header association and the mobile card layout.
+
 ---
 
 ## Phase 9 - NTH

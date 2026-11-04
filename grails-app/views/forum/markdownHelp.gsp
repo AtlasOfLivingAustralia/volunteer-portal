@@ -4,8 +4,7 @@
 <head>
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <title><g:message code="default.application.name"/> - Atlas of Living Australia - Forum formatting help</title>
-    <asset:stylesheet src="forum.css"/>
-
+    <content tag="pageType">forum</content>
 </head>
 
 <body class="forum">
@@ -17,7 +16,7 @@
     %>
 </cl:headerContent>
 <div class="container">
-    <div class="card">
+    <div class="card my-2">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
@@ -35,7 +34,7 @@
 
                     <h3>Markdown syntax</h3>
 
-                    <table class="table table-sm" style="width: 100%">
+                    <table class="table" style="width: 100%">
                         <thead>
                         <tr>
                             <th>Effect</th>

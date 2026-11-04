@@ -277,23 +277,6 @@ class UserController {
         render(view: 'notebook', model: userService.appendNotebookFunctionalityToModel(myModel))
     }
 
-    /**
-     * Displays a list of achievements for the user.
-     */
-    def achievements() {
-        def currentUser = userService.currentUser
-
-        if (!currentUser) {
-            // flash.message = "Missing user id, or user not found!"
-            render(view: '/notPermitted')
-            return
-        }
-
-        def achievementList = achievementService.getAchievementsWithCounts(true, currentUser)
-
-        render view: 'achievements', model: [currentUser: currentUser, achievementList: achievementList]
-    }
-
     def edit() {
         if (!userService.isAdmin()) {
             render(view: '/notPermitted')

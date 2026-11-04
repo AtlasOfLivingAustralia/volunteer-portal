@@ -6,9 +6,6 @@
     <meta name="layout" content="${grailsApplication.config.getProperty('ala.skin', String)}"/>
     <g:set var="entityName" value="${message(code: 'user.label')}"/>
     <title><cl:pageTitle title="${message(code: 'default.tutorials.label', default: 'Tutorials')}"/></title>
-
-    <asset:stylesheet src="notebook-reset.css"/>
-    <asset:stylesheet src="tutorials-2.scss"/>
 </head>
 <body>
 

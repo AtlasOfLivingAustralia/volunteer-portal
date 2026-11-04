@@ -1,5 +1,5 @@
 <!-- Tutorial List Modal -->
-<div class="modal fade" id="tutorialsModal" tabindex="-1" aria-labelledby="tutorialsModalLabel" aria-hidden="true">
+<div class="modal fade" style="max-height: 800px;" id="tutorialsModal" tabindex="-1" aria-labelledby="tutorialsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
 
@@ -51,7 +51,7 @@
             <!-- Modal Footer -->
             <div class="modal-footer border-top-0 pt-0 px-4 pb-4 justify-content-between">
                 <span class="text-muted small">Need help? <a href="mailto:digivol@australian.museum?subject=Tutorial%20help" class="text-decoration-none">Contact Support</a></span>
-                <button type="button" class="btn btn-light rounded px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary rounded px-4" data-bs-dismiss="modal">Close</button>
             </div>
 
         </div>
