@@ -5,7 +5,7 @@
         <g:each in="${taskInstance.multimedia}" var="m">
             <cl:multimediaForSize multimedia="${m}" size="small" width="200" style="padding-right: 10px"/>
         </g:each>
-        <table>
+        <table class="table table-sm table-borderless">
             <g:if test="${catalogNumber}">
                 <tr>
                     <td>Catalog No.</td>

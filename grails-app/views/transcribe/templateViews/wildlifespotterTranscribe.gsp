@@ -223,7 +223,7 @@
         </div>
 
         <script id="status-detail-list-template" type="text/x-mustache-template">
-            <table class="table table-condensed">
+            <table class="table table-sm">
                 <tr style="border-top: 0;">
                     <th class="col-md-6" style="border-top: 0;">Species Name</th>
                 <g:if test="${AutoValidationType.fromString(viewParams.autoValidationType as String) == AutoValidationType.speciesWithCount}">

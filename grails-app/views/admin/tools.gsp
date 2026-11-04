@@ -144,7 +144,7 @@
 
                             <div id="test-s3-results" class="d-none" style="margin-top: 15px">
                                 <div id="test-s3-message" class="alert" role="alert"></div>
-                                <table class="table table-condensed table-bordered">
+                                <table class="table table-sm table-bordered">
                                     <tbody>
                                     <tr>
                                         <th>Status</th>

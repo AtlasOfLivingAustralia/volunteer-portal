@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.volunteer.User; au.org.ala.volunteer.Task" %>
-<table class="table table-striped table-condensed">
+<table class="table table-sm table-striped">
     <thead>
     <tr>
         <g:sortableColumn property="id" style="padding: 0.9em;"

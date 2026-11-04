@@ -27,7 +27,7 @@
                     {{activities.length}} Users currently online
                     <small>(Last refreshed {{ lastRefreshed | date:'medium' }})</small>
                 </div>
-                <table class="table table-condensed table-striped table-bordered table-hover">
+                <table class="table table-sm table-striped table-bordered table-hover">
                     <thead>
                     <tr>
                         <th>User</th>

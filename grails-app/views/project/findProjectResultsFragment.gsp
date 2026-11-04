@@ -1,4 +1,4 @@
-<table class="table table-striped table-condensed">
+<table class="table table-sm table-striped">
     <g:each in="${projectList}" var="project">
         <tr projectId="${project.id}">
             <td style="width: 125px"><cl:featuredImage project="${project}" style="height: 75px;"/></td>

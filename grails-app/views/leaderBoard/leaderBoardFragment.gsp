@@ -1,5 +1,5 @@
 <div>
-    <table class="table table-bordered table-condensed table-striped">
+    <table class="table table-bordered table-sm table-striped">
         <thead style="background-color: #f0f0e8">
         <tr>
             <td colspan="2" style="vertical-align: middle">

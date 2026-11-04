@@ -23,7 +23,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
-                    <table class="table table-striped table-hover table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                         <tr>
                             <g:sortableColumn property="name" title="${message(code: 'validationRule.name.label', default: 'Rule')}"/>

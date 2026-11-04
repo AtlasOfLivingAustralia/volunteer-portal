@@ -71,7 +71,7 @@
     <div class="card">
         <div class="card-body">
             <h4>Disk Usage Statistics*</h4>
-            <table class="table table-condensed">
+            <table class="table table-sm">
                 <tr>
                     <th><g:message code="system.space.usable" default="Usable space"/></th>
                     <th><g:message code="system.space.free" default="Free space"/></th>

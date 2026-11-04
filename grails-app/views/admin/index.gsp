@@ -21,11 +21,11 @@
             <div class="row">
                 <div class="col-md-12 table-responsive">
 
-                    <table class="table table-condensed table-striped table-hover admin-table">
+                    <table class="table table-sm table-hover admin-table">
                         <thead>
                         <tr>
                             <th>Tool</th>
-                            <th>Description</th>
+                            <th class="ps-3">Description</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -34,143 +34,143 @@
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'institutionAdmin', action: 'index')}">Manage Institutions</a>
                             </td>
-                            <td>Manage Institutions</td>
+                            <td class="text-base ps-3">Manage Institutions</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'project', action: 'manage')}">Manage Expeditions</a>
                             </td>
-                            <td>Download expedition images and remove from server, clone and edit expedition.</td>
+                            <td class="text-base ps-3">Download expedition images and remove from server, clone and edit expedition.</td>
                         </tr>
                         <tr>
                             <td>
                                 <a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'project', action: 'create')}">Create new Expedition</a>
                             </td>
-                            <td>Create a new ${message(code: 'default.application.name')} Expedition</td>
+                            <td class="text-base ps-3">Create a new ${message(code: 'default.application.name')} Expedition</td>
                         </tr>
                         <tr>
                             <td>
                                 <a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'template', action: 'list')}">Templates</a>
                             </td>
-                            <td>Manage expedition templates and their fields</td>
+                            <td class="text-base ps-3">Manage expedition templates and their fields</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'picklist', action: 'manage')}">Bulk manage Picklists</a>
                             </td>
-                            <td>Allows modification to the values held in various picklists</td>
+                            <td class="text-base ps-3">Allows modification to the values held in various picklists</td>
                         </tr>
                         <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'validationRule', action: 'list')}">Validation Rules</a>
                             </td>
-                            <td>Manage transcription validation rules</td>
+                            <td class="text-base ps-3">Manage transcription validation rules</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'task', action: 'manageProjectTaskUploads')}">Manage Task Uploads</a>
                             </td>
-                            <td>Manage task image uploads to DigiVol</td>
+                            <td class="text-base ps-3">Manage task image uploads to DigiVol</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'frontPage', action: 'edit')}">Configure Front Page</a>
                             </td>
-                            <td>Configure the appearance of the front page</td>
+                            <td class="text-base ps-3">Configure the appearance of the front page</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'newsItem', action: 'manage')}">Manage News Items</a>
                             </td>
-                            <td>Manage News Items</td>
+                            <td class="text-base ps-3">Manage News Items</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'landingPageAdmin', action: 'index')}">Configure Landing Page</a>
                             </td>
-                            <td>Configure the appearance of a landing page</td>
+                            <td class="text-base ps-3">Configure the appearance of a landing page</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'leaderBoardAdmin', action: 'index')}">Manage Leaderboard</a>
                             </td>
-                            <td>Configure the appearance of the Honour Board</td>
+                            <td class="text-base ps-3">Configure the appearance of the Honour Board</td>
                         </tr>
                         </cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'stats', action: 'index')}">Stats</a></td>
-                            <td>Various Statistics (Experimental!)</td>
+                            <td class="text-base ps-3">Various Statistics (Experimental!)</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'tutorials', action: 'manage')}">Manage Tutorials</a>
                             </td>
-                            <td>Manage tutorials for Expeditions</td>
+                            <td class="text-base ps-3">Manage tutorials for Expeditions</td>
                         </tr>
                     <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'admin', action: 'tools')}">Tools</a></td>
-                            <td>Tools to assist with the config/management of DigiVol. Includes Mapping, Bulk user update,
+                            <td class="text-base ps-3">Tools to assist with the config/management of DigiVol. Includes Mapping, Bulk user update,
                             Index Cache management, Index search query testing and AWS S3 configuration test.</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'user', action: 'adminList')}">Manage Users</a></td>
-                            <td>List of all User accounts on DigiVol</td>
+                            <td class="text-base ps-3">List of all User accounts on DigiVol</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'user', action: 'listOptOut')}">Users Opted-Out</a></td>
-                            <td>List of all Users who have opted-out of receiving Institution Messages</td>
+                            <td class="text-base ps-3">List of all Users who have opted-out of receiving Institution Messages</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'admin', action: 'manageInstitutionAdmins')}">Manage Institution Admins</a>
                             </td>
-                            <td>Manage Institution Admins</td>
+                            <td class="text-base ps-3">Manage Institution Admins</td>
                         </tr>
                     </cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'admin', action: 'manageUserRoles')}">Manage User Roles</a>
                             </td>
-                            <td>Manage User Roles, such as validators and forum moderators.</td>
+                            <td class="text-base ps-3">Manage User Roles, such as validators and forum moderators.</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'institutionMessage', action: 'index')}">Institution Messages</a>
                             </td>
-                            <td>Create and send messages to volunteers of your institutions and expeditions.</td>
+                            <td class="text-base ps-3">Create and send messages to volunteers of your institutions and expeditions.</td>
                         </tr>
                         <cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'achievementDescription', action: 'index')}">Manage Badges</a>
                             </td>
-                            <td>Manage Achievements</td>
+                            <td class="text-base ps-3">Manage Achievements</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'label', action: 'index')}">Manage Tags</a></td>
-                            <td>Manage Expedition Tags</td>
+                            <td class="text-base ps-3">Manage Expedition Tags</td>
                         </tr>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'setting', action: 'index')}">Advanced Settings</a>
                             </td>
-                            <td>Advanced Settings</td>
+                            <td class="text-base ps-3">Advanced Settings</td>
                         </tr>
                         </cl:ifSiteAdmin>
                         <tr>
                             <td><a class="btn btn-sm btn-primary btn-admin-menu"
                                    href="${createLink(controller: 'report', action: 'index')}">DigiVol Reporting</a>
                             </td>
-                            <td>Admin Reports</td>
+                            <td class="text-base ps-3">Admin Reports</td>
                         </tr>
                         </tbody>
                     </table>

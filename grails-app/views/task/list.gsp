@@ -23,7 +23,7 @@
     <div class="card" style="margin-top: 2em;">
         <div class="card-body">
             <h4>Expedition Statistics</h4>
-            <table class="table table-condensed">
+            <table class="table table-sm">
                 <tr>
                     <th style="text-align: center;"><g:message code="project.stats.total-tasks" default="Total Tasks"/></th>
                     <th style="text-align: center;"><g:message code="project.stats.transcribed-tasks" default="Transcribed"/></th>
@@ -86,7 +86,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-condensed table-striped table-hover task-table">
+                    <table class="table table-sm table-striped table-hover task-table">
                         <thead>
                         <tr>
 

@@ -583,11 +583,19 @@ Log entry for that date.*
 
 *Last: pure consolidation of whatever survives groups 1–6.*
 
-- [ ] Standardise table styles. Moved here from group 2 on 2026-09-25: the work is an ownership question, not a
-  component one. `notebook-2/_global.scss` restyles bare `table`/`th`/`td` as a last-loading overlay, so any
-  convention written in group 2 would have been overridden on the five notebook-2 pages and rebased here anyway.
-  Consequence accepted at the time of the move: the group 5 page-level table items (notably the project list table
-  layout) land first and may need re-touching once the convention exists.
+- [X] Standardise table styles. Moved here from group 2 on 2026-09-25: the work is an ownership question, not a
+  component one. **Completed 2026-11-04:** removed bare table-element styling from
+  `notebook-2/_global.scss` and scoped the responsive table/card presentation to `.task-history-table` and
+  `.badge-list-table` in `_notebook.scss`; replaced all 15 `table-condensed` uses with `table-sm`; applied Bootstrap
+  table classes to the remaining data/summary tables and removed one duplicate `table-striped`. The group 5 project-list
+  "table layout" is a div/card layout, not an HTML table, so it needed no retouching.
+- [ ] Remove dead forum-2 styles. No GSP references `forum-2.scss`; it is the only importer of
+  `notebook-2/_forum.scss`, whose `.forum-posts-table` and `.forum-expeditions-table` selectors also have no GSP
+  matches. Confirm there is no runtime or external entry point, then delete both files.
+- [ ] Audit the table rules in `forum.css`. It is linked by `forum/markdownHelp.gsp`, but no GSP uses the
+  `table.forum-table` selectors (`.forum-table-topic--no-topic` is a separate span class).
+    - Prompt: "Confirm no runtime-generated or externally supplied forum markup uses these selectors, then remove the
+      unused table rules from `forum.css`."
 - [ ] `.custom-search-input` component CSS still lives in `layouts/_nav.scss`
   163–230, not `modules/_search.scss`, which holds only two media queries and
   `#btnSearch`. The search-forms task recorded the move as done; only the responsive overrides actually moved. The
@@ -846,6 +854,20 @@ striped and animated variants. BS2's `.progress-striped.active > .bar` is gone. 
 **Removed — do not reintroduce:** `alert-block` (BS2); a bare `class="alert"` with no variant; `&times;` inside
 `.btn-close`; `aria-hidden` on a close button; `<a href="#">` (use a `<button>`);
 `<span class="caret">`; `.progress-striped`, `.progress.active`, `.bar`; `<tr class="alert">` (use `table-warning`).
+
+#### Tables:
+
+Use Bootstrap 5's `.table` base class for standard data tables. Add modifiers such as `table-striped`, `table-hover`,
+`table-bordered` or `table-sm` only when the table needs them; `table-sm` is the compact-spacing replacement for
+Bootstrap 3's `table-condensed`. For narrow screens, wrap the table in `.table-responsive` rather than putting that
+class on the table.
+
+Keep email/presentation tables, transcribe layout tables and bespoke interactive result widgets outside this convention.
+Keep component-specific table styling scoped to its component. Notebook task-history and badge-list table/card styling
+belongs to `.task-history-table` and `.badge-list-table` in `notebook-2/_notebook.scss`; shared notebook globals must
+not style bare `table`, `thead`, `tbody`, `th` or `td` elements.
+
+**Removed — do not reintroduce:** `table-condensed`; bare table-element styling in shared notebook globals.
 
 #### Typography:
 
@@ -1226,6 +1248,9 @@ parallel. Ships this release.
 - [ ] `admin/manageUserRoles.gsp` The institution or expedition is required for a role but the form toggles between
   selects depending on the radio buttons. Fix so that the toggle action switches the required between the selected
   select.
+- [ ] `notebook-2/_notebook.scss` 149–153 — the responsive `.task-history-table` and `.badge-list-table` rules apply
+  `display: none` to `<thead>` rows and cells, removing the column headers from the accessibility tree. Keep the headers
+  visually hidden without `display: none`, then verify header association and the mobile card layout.
 ---
 
 ## Phase 9 - NTH
@@ -2135,4 +2160,9 @@ parallel. Ships this release.
   - Added sortable author column and `updatedBy` tracking on news item edits and image removal.
   - Built a reusable alert taglib, partial and SCSS for domain/system alerts.
   - Updated the BS5 migration plan
-
+- 2026-11-04 - Phase 8 group 7 "Standardise table styles" completed.
+  - Scoped notebook table/card styling to its two table components, replaced 15 Bootstrap 3 `table-condensed` uses with
+    Bootstrap 5 `table-sm`, and aligned the remaining data/summary tables with the documented `.table` convention.
+  - `./gradlew assetCompile --offline` and `./gradlew compileGroovyPages --offline` passed.
+  - Follow-ups: responsive notebook table headers are still hidden with `display: none`; `forum-2.scss` and
+    `_forum.scss` appear unreferenced, and table-only rules in `forum.css` need a runtime-markup check.

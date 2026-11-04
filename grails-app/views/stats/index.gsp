@@ -93,7 +93,7 @@
                                 <div class="card-body">
                                     <span data-ng-if="statsCtrl.loadingVolunteerData"><cl:spinner/></span>
                                     <span data-ng-if="!statsCtrl.loadingVolunteerData">
-                                        <table width="100%">
+                                        <table class="table table-sm table-borderless" width="100%">
                                             <tr data-ng-if="statsCtrl.showInstitutionCounts">
                                                 <td><b>New Volunteers<cl:ifNotSiteAdmin> for this Institution</cl:ifNotSiteAdmin>*:</b></td>
                                                 <td class="text-end">{{ statsCtrl.newVolunteers }}</td>

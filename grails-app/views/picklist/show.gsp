@@ -57,7 +57,7 @@
                         </button>
                     </div>
 
-                    <table class="table table-condensed table-striped">
+                    <table class="table table-sm table-striped">
                         <thead>
                         <tr>
                             <g:sortableColumn property="id" title="${message(code: 'picklistItem.id.label', default: 'Id')}"/>

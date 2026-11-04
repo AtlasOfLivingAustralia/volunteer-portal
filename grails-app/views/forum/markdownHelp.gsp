@@ -35,7 +35,7 @@
 
                     <h3>Markdown syntax</h3>
 
-                    <table style="width: 100%">
+                    <table class="table table-sm" style="width: 100%">
                         <thead>
                         <tr>
                             <th>Effect</th>

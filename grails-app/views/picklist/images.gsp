@@ -42,7 +42,7 @@
 </div>
 
 <div class="container-fluid">
-    <table class="table table-condensed table-bordered">
+    <table class="table table-sm table-bordered">
         <thead>
         <tr>
             <th style="width: 300px;">Value</th>

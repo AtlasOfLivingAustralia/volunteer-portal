@@ -134,6 +134,100 @@
     //margin-top: variables-and-mixins.$space-1;
   }
 
+  .task-history-table,
+  .badge-list-table {
+    @media screen and (max-width: variables-and-mixins.$screen-md) {
+      &,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+      }
+
+      thead tr,
+      thead th {
+        display: none;
+        position: absolute;
+        top: -9999px;
+        bottom: -9999px;
+        border: transparent;
+      }
+
+      tbody {
+        position: relative;
+
+        tr {
+          padding: variables-and-mixins.$space-3;
+          border: solid variables-and-mixins.$light-grey 1px;
+          border-radius: 10px;
+
+          & + tr {
+            margin-top: variables-and-mixins.$space-6;
+          }
+        }
+
+        td,
+        th {
+          padding: 0;
+          border: none;
+          position: relative;
+
+          &:first-child,
+          &:last-child {
+            border: none;
+          }
+        }
+      }
+    }
+
+    border-collapse: separate;
+    border-spacing: 0 variables-and-mixins.$space-6;
+
+    thead {
+      color: variables-and-mixins.$dark-grey;
+
+      th {
+        border: solid white 1px;
+        padding-top: 0;
+        padding-bottom: 0;
+
+        &:first-child {
+          border-left: solid white 1px;
+          border-radius: 10px 0 0 10px;
+        }
+
+        &:last-child {
+          border-right: solid white 1px;
+          border-radius: 0 10px 10px 0;
+        }
+      }
+    }
+
+    th,
+    td {
+      padding-top: variables-and-mixins.$space-6;
+      padding-bottom: variables-and-mixins.$space-6;
+      padding-left: variables-and-mixins.$space-3;
+      padding-right: variables-and-mixins.$space-3;
+      font-weight: 400;
+      text-align: left;
+      border-top: solid variables-and-mixins.$light-grey 1px;
+      border-bottom: solid variables-and-mixins.$light-grey 1px;
+
+      &:first-child {
+        border-left: solid variables-and-mixins.$light-grey 1px;
+        border-radius: 10px 0 0 10px;
+      }
+
+      &:last-child {
+        border-right: solid variables-and-mixins.$light-grey 1px;
+        border-radius: 0 10px 10px 0;
+      }
+    }
+  }
+
 .task-history-pagination-nav {
   padding: 5px;
   font-size: variables-and-mixins.$text-sm;
